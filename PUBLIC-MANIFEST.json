@@ -67,9 +67,9 @@
       "sha256": "8f6a48cf57fc561a99cfcfbfd014d34ae536af2b5d572a98e416c1379cd037ee"
     },
     {
-      "bytes": 2983,
+      "bytes": 3441,
       "path": "CHANGELOG.md",
-      "sha256": "30b7673345092904e84e27fe8abbc01b2179b6a4b3d6f76114ad9a7d63b5c35c"
+      "sha256": "3eaf6762ce4895c2e6da63d3b7a6e0bb43909161138dea17c24a00797d055014"
     },
     {
       "bytes": 2555,
@@ -107,9 +107,9 @@
       "sha256": "a2051423e481cb93c33f8bd83afd476f689f417f2771887a0feba91e5fd9673e"
     },
     {
-      "bytes": 6360,
+      "bytes": 6967,
       "path": "README.md",
-      "sha256": "9d33e2a816739137027ed595f5e963b5df0832d5b6d81c724f9f6b7f33433726"
+      "sha256": "5128cc6ed7b6ce32389cdefbce218e61edf785700763b5718e3f9906c262c6f2"
     },
     {
       "bytes": 1552,
@@ -517,9 +517,9 @@
       "sha256": "5247b667adf8e3b5c5f1c6bcc9c0bd545b708cba97f9cb686d507db1adcc01aa"
     },
     {
-      "bytes": 3789,
+      "bytes": 4250,
       "path": "docs/ideal-ui/acceptance-matrix.md",
-      "sha256": "4bff8b3c093f007b65617f5e7164d9aabfbd9d25f6adc306f0a7d85c3af1b2c8"
+      "sha256": "103f6445c52b56535dddb109226312a84a1260f28df98995f7f2c842bdeea280"
     },
     {
       "bytes": 11338,
@@ -562,9 +562,9 @@
       "sha256": "4496cd5b0cc301ffa7dd87d7fbb5cc7593903190a37cee48ee32831915093e5f"
     },
     {
-      "bytes": 5536,
+      "bytes": 9020,
       "path": "docs/ideal-ui/verification.md",
-      "sha256": "01b9ab6b34771c7ab2f9bb01fd3b44a1c97005c496eb7ec55fab0d482e2a4e80"
+      "sha256": "880ab59e9515091b3e386c05aef47fa5d79e834fe1f1be80e9c133ce2a28c071"
     },
     {
       "bytes": 6023,
@@ -9697,9 +9697,9 @@
       "sha256": "6ca55fc56d9840f89d38592578309c533e7cc7acdd377b29873721f6bd355996"
     },
     {
-      "bytes": 7142,
+      "bytes": 11373,
       "path": "tests/test_workspace_v3_structure.py",
-      "sha256": "f0b726f6603d015464ba282f568ca128f26c042ee891b4b5e09ae810f529c03a"
+      "sha256": "b66fa81a5f96b58c0aaeca63d3d9782563896841db1c2835010412b38718fbe3"
     },
     {
       "bytes": 41,
@@ -9744,5 +9744,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2",
-  "source_commit": "6f7bf2a29f940574a0b6c9e7e586305c5d5d7311"
+  "source_commit": "a06229a5c867bdb5d8f868726422e2db7e082b83"
 }

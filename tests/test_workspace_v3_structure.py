@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import pytest
@@ -90,6 +91,100 @@ def test_workspace_has_eight_domains_and_no_classic_navigation() -> None:
         ).read_text()
     )
     assert present <= expected | {"generated", "showcase"}
+
+
+# Structural gap, recorded rather than passed. The established screens named on the
+# left were moved under features/workspace and renamed; the import check above therefore
+# finds nothing, yet the new workspace still renders three of them. A renamed component
+# is not a purpose-built screen. These tables state exactly what remains, so the gap can
+# neither grow unnoticed nor be reported as closed without rebuilding the routes.
+ESTABLISHED_SCREENS = {
+    "PlanningWorkspace": "planning/PlanningStudio",
+    "PlanningRequests": "requests/LeaveRequestWorkspace",
+    "CompliancePanel": "shared/ComplianceWorkspace",
+    "ActualWorkflow": "governance/ActualReconciliation",
+    "FlexAdoptionSettings": "settings/FlexTimeSettings",
+}
+# Renders of those modules by the new workspace. ComplianceWorkspace, ActualReconciliation
+# and FlexTimeSettings carry the established implementation over (routes: requests/leave,
+# requests/outside, people/contracts, governance/privacy, governance/actuals and
+# settings/flextime). LeaveRequestWorkspace was rewritten for v3 and is shared with the
+# established /requests route. PlanningStudio serves the established /planning route only.
+RECORDED_EMBEDDINGS = {
+    "frontend/src/ideal/screens/live/IntegratedFeatureView.tsx": {
+        "ComplianceWorkspace": 4,
+        "ActualReconciliation": 1,
+        "FlexTimeSettings": 1,
+        "LeaveRequestWorkspace": 1,
+    }
+}
+# Workspace components that still link to an established URL instead of a /workspace route.
+RECORDED_ESTABLISHED_LINKS = {
+    "frontend/src/features/workspace/people/ContractWorkflow.tsx",
+    "frontend/src/features/workspace/people/NewStaffTaskList.tsx",
+    "frontend/src/features/workspace/planning/WorkflowNavigation.tsx",
+    "frontend/src/features/workspace/settings/FlexTimeSettings.tsx",
+}
+STRUCTURAL_GAP_NOTICE = "新workspaceの従来画面からの独立は未完了である"
+
+
+def _workspace_sources() -> list[Path]:
+    roots = ("features/workspace", "ideal", "app/workspace")
+    return sorted(
+        path
+        for root in roots
+        for path in (ROOT / "frontend/src" / root).rglob("*.ts*")
+        if "__tests__" not in path.parts
+        and ".test." not in path.name
+        and ".stories." not in path.name
+    )
+
+
+def test_established_screen_wrappers_resolve_to_the_recorded_modules() -> None:
+    for name, module in ESTABLISHED_SCREENS.items():
+        wrapper = (ROOT / f"frontend/src/components/{name}.tsx").read_text()
+        assert f'from "@/features/workspace/{module}"' in wrapper, name
+        assert (ROOT / f"frontend/src/features/workspace/{module}.tsx").is_file()
+
+
+def test_workspace_embeds_no_established_screen_beyond_the_recorded_gap() -> None:
+    modules = {
+        module.rsplit("/", 1)[1]: ROOT / f"frontend/src/features/workspace/{module}.tsx"
+        for module in ESTABLISHED_SCREENS.values()
+    }
+    found: dict[str, dict[str, int]] = {}
+    for path in _workspace_sources():
+        if path in modules.values():
+            continue
+        text = path.read_text()
+        renders = {
+            component: len(re.findall(rf"<{component}[\s/>]", text))
+            for component in modules
+        }
+        renders = {component: count for component, count in renders.items() if count}
+        if renders:
+            found[path.relative_to(ROOT).as_posix()] = renders
+    assert found == RECORDED_EMBEDDINGS
+
+
+def test_workspace_links_to_no_established_url_beyond_the_recorded_gap() -> None:
+    established = re.compile(
+        r"""href=\{?["'`]/(?:planning|settings|requests|schedule|dashboard)\b"""
+    )
+    found = {
+        path.relative_to(ROOT).as_posix()
+        for path in _workspace_sources()
+        if established.search(path.read_text())
+    }
+    assert found == RECORDED_ESTABLISHED_LINKS
+
+
+def test_public_documents_state_the_structural_gap_while_it_exists() -> None:
+    assert RECORDED_EMBEDDINGS and RECORDED_ESTABLISHED_LINKS
+    assert STRUCTURAL_GAP_NOTICE in (ROOT / "README.md").read_text(encoding="utf-8")
+    verification = (ROOT / "docs/ideal-ui/verification.md").read_text(encoding="utf-8")
+    assert "Structural independence from the established screens" in verification
+    assert "not achieved" in verification
 
 
 def test_mobile_brand_keeps_an_accessible_name_when_visual_text_is_hidden() -> None:

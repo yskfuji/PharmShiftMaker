@@ -48,6 +48,62 @@ build and optical audit was the E2E keyboard helper described above; application
 rendering and build inputs remained byte-identical. Failed setup or pre-fix runs
 are retained outside the package but are not counted as passes.
 
+## Structural independence from the established screens
+
+Status: **not achieved** (source inspection on 2026-10-04, after the rows above
+were recorded; no browser run was repeated for this section).
+
+The v3 design requires each of the 25 workspace routes to be a purpose-built
+screen. It must not show an established screen inside the new shell, whether
+through an iframe, a wrapper, a conditional branch or a renamed component. A
+search of `frontend/src/features/workspace` and `frontend/src/app/workspace` for
+the established component names (`LegacyFeature`, `PlanningWorkspace`,
+`PlanningRequests`, `CompliancePanel`, `ActualWorkflow`, `FlexAdoptionSettings`)
+finds nothing. That search is not sufficient: the v3 restructuring moved those
+implementations under `features/workspace`, renamed them, and left a re-export at
+the established path. Each was therefore compared, line by line, with the last
+revision before the restructuring (that revision is not part of the public
+history). The percentage is the share of the earlier component's non-blank,
+non-import, non-comment lines that appear unchanged in the current module.
+
+| Established component | Current module | Unchanged lines | Rendered by the workspace |
+|---|---|---|---|
+| `CompliancePanel` | `shared/ComplianceWorkspace` | 73% | `requests/leave`, `requests/outside`, `people/contracts`, `governance/privacy` |
+| `ActualWorkflow` | `governance/ActualReconciliation` | 98% | `governance/actuals` |
+| `FlexAdoptionSettings` | `settings/FlexTimeSettings` | 100% | `settings/flextime` |
+| `PlanningWorkspace` | `planning/PlanningStudio` | 98% | Not rendered; established `/planning` only |
+| `PlanningRequests` | `requests/LeaveRequestWorkspace` | 16% | `requests/leave`; treated as rewritten, shared with the established `/requests` route |
+
+Findings:
+
+- Six of the 25 routes show a carried-over established implementation through
+  `frontend/src/ideal/screens/live/IntegratedFeatureView.tsx`. One module,
+  `ComplianceWorkspace`, serves four of them by switching on a `section` value.
+- Four components under `features/workspace` link to established URLs
+  (`/planning`, `/planning/workflows/…`, `/settings`) rather than to a workspace
+  route: `people/ContractWorkflow`, `people/NewStaffTaskList`,
+  `planning/WorkflowNavigation` and `settings/FlexTimeSettings`.
+  `WorkflowNavigation` is reached only from the established `/planning` screen.
+- Thirty of the 33 component files under `features/workspace` are Client
+  Components, and the route content is selected inside a Client Component. The
+  route pages and the shell are Server Components.
+- The primary navigation has no link back to the established screens, and all 25
+  routes are referenced from U01–U27 in `usecases.json`.
+
+`tests/test_workspace_v3_structure.py` records the six embedded routes and the
+four linking components exactly. It fails if either set grows or shrinks, and it
+requires the README to state the gap while the record is non-empty. It does not
+measure similarity, so it cannot detect a further rename of the same code; the
+comparison above has to be repeated by a reviewer. The U01–U27 journeys and the
+optical matrix above were recorded against these same screens: they show that
+the routes work, not that the routes are purpose-built.
+
+The six routes have not been rebuilt. Rebuilding them is separate work and is
+required before the workspace may be described as independent of the
+established screens.
+
+## Pending evaluations
+
 The following human and field evaluations remain pending and therefore block
 **production adoption**, but do not by themselves block publication of the
 source repository with `IDEAL_UI` OFF by default:
