@@ -99,8 +99,12 @@ class LoadedConfig:
 
 
 def _load_yaml(path: Path) -> YamlMapping:
+    # Callers append fixed configuration filenames (or integer-formatted
+    # year/month filenames) to the explicitly selected configuration root.
+    # codeql[py/path-injection]
     if not path.exists():
         raise FileNotFoundError(path)
+    # codeql[py/path-injection]
     with path.open("r", encoding="utf-8") as fh:
         loaded_raw: Any = yaml.safe_load(fh)
     if loaded_raw is None:
@@ -406,6 +410,8 @@ def _read_yaml_holiday_requests(
 ) -> list[HolidayRequest]:
     filename = f"holiday_requests_{year:04d}_{month:02d}.yaml"
     file_path = config_path / filename
+    # `year` and `month` are integers and cannot introduce path separators.
+    # codeql[py/path-injection]
     if not file_path.exists():
         return []
     raw = _load_yaml(file_path)

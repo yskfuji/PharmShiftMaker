@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import Mapping
 from typing import Any
 
@@ -35,6 +36,25 @@ def test_aws_provider_uses_injected_client(monkeypatch: pytest.MonkeyPatch) -> N
     )
     assert resolver.require("DATABASE_URL") == "postgresql://prod"
     assert fake_client.calls == 1
+
+
+def test_aws_provider_does_not_disclose_secret_identifier(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    resource_locator = "prod/private/pharmshift"
+
+    class FailingClient:
+        def get_secret_value(self, SecretId: str) -> Mapping[str, Any]:
+            raise RuntimeError(f"backend rejected {SecretId}")
+
+    monkeypatch.setenv("AWS_SECRETS_MANAGER_SECRET_ID", resource_locator)
+    resolver = SecretsResolver(
+        provider="aws", aws_client_factory=FailingClient, cache_seconds=0
+    )
+    with caplog.at_level(logging.INFO), pytest.raises(SecretResolutionError) as raised:
+        resolver.get("DATABASE_URL")
+    assert resource_locator not in str(raised.value)
+    assert resource_locator not in caplog.text
 
 
 def test_vault_provider_supports_kv_v2(monkeypatch: pytest.MonkeyPatch) -> None:

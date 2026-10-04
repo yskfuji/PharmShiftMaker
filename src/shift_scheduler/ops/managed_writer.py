@@ -127,8 +127,12 @@ def reserve_in_session(
 
 @contextmanager
 def file_lock(root: str | Path, copy_id: str) -> Iterator[int]:
+    if len(copy_id) != 32 or not copy_id.isalnum():
+        raise ValueError("copy_id must be a 32-character alphanumeric identifier")
     # The open directory, not an independently re-resolved path, is the trust root.
     directory = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    # `copy_id` is separator-free and the dir_fd remains the trust root.
+    # codeql[py/path-injection]
     fd = os.open(
         ".lock-" + copy_id,
         os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW,

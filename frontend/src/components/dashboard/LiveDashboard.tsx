@@ -7,6 +7,7 @@ import {planningRead} from '@/lib/planningRead';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/Card';
 import {errorText} from '@/lib/errorText';
 import MembershipHelp from '@/components/MembershipHelp';
+import Link from 'next/link';
 
 type Membership = {scope_id: string; role: string};
 type Metric = {value: number | null; state: 'available' | 'unknown'; reason: string | null};
@@ -63,7 +64,7 @@ export default function LiveDashboard({initialPeriod}: {initialPeriod: string}) 
           return <Card key={key}><CardHeader><CardTitle className="text-base">{label}</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold tabular-nums">{metric?.state === 'available' && metric.value !== null ? `${metric.value}件` : '未確認'}</p>{metric?.reason && <p className="mt-2 text-sm">{metric.reason}</p>}</CardContent></Card>;
         })}</div>
         <div className="rounded-xl border border-line bg-surface p-4 space-y-3"><h2 className="text-lg font-bold">次の操作</h2>
-          <div className="flex flex-wrap gap-3"><a className="underline p-2" href={`/planning?scope=${encodeURIComponent(scope)}&period=${period}`}>勤務表・公開状態を確認</a><a className="underline p-2" href={`/planning/workflows/leave?scope=${encodeURIComponent(scope)}&period=${period}`}>休暇の申請・判断</a></div>
+          <div className="flex flex-wrap gap-3"><Link className="underline p-2" href={{pathname: '/planning', query: {scope, period}}}>勤務表・公開状態を確認</Link><Link className="underline p-2" href={{pathname: '/planning/workflows/leave', query: {scope, period}}}>休暇の申請・判断</Link></div>
           <p className="text-sm text-fg-muted">取得時刻：{new Date(current.observed_at).toLocaleString('ja-JP', {timeZone: 'Asia/Tokyo'})}（日本時間）</p>
           <details><summary>集計の参照元</summary><ul className="mt-2 space-y-2">{current.sources.map(s => <li key={`${s.kind}:${s.id}`} className="break-all text-sm">{s.kind === 'publication' ? '公開版' : '申請'}：{s.id} ／版 {s.version}</li>)}</ul>{!current.sources.length && <p>対象月の該当記録はありません。</p>}</details>
         </div>

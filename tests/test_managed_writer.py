@@ -29,6 +29,15 @@ def reservation(factory, root, monkeypatch, data=b"synthetic p0 export"):
     return item
 
 
+def test_file_lock_rejects_non_identifier_before_touching_storage(tmp_path):
+    root = tmp_path / "managed"
+    root.mkdir()
+    with pytest.raises(ValueError, match="32-character alphanumeric"):
+        with writer.file_lock(root, "../outside"):
+            pytest.fail("invalid copy identifier acquired a lock")
+    assert not list(root.iterdir())
+
+
 def test_register_before_bytes_retry_identity_and_filesystem_reconciliation(
     sqlite_session_factory, tmp_path, monkeypatch
 ):

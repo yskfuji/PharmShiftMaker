@@ -1785,7 +1785,7 @@ def facility_admin(session: Any, user: Any, scope_id: str) -> None:
             session, list(memberships(session, user)), scope_id
         )
     except flex_adoption.Refused as exc:
-        raise HTTPException(403, str(exc)) from exc
+        raise HTTPException(403, "施設管理者による確認が必要です") from exc
 
 
 def flex_step(
@@ -1802,7 +1802,9 @@ def flex_step(
         try:
             return step()
         except flex_adoption.Refused as exc:
-            raise HTTPException(403, str(exc)) from exc
+            raise HTTPException(
+                403, "フレックス勤務の操作は許可されていません"
+            ) from exc
 
     return once(session, scope_id, user.user_id, operation, request, action)
 
@@ -1816,8 +1818,8 @@ def flex_adoptions(scope_id: Scope, session: DB, user: User) -> dict[str, Any]:
             session, list(memberships(session, user)), scope_id
         )
         can_manage, reason = True, None
-    except flex_adoption.Refused as exc:
-        can_manage, reason = False, str(exc)
+    except flex_adoption.Refused:
+        can_manage, reason = False, "施設管理者による確認が必要です"
     try:
         staged = staged_payload(session, scope_id)
     except HTTPException:

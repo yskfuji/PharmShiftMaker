@@ -31,7 +31,7 @@ test('every page carries a fresh nonce policy and loads without violations',asyn
   expect(policy,route).toContain("'strict-dynamic'");expect(policy,route).not.toMatch(/script-src[^;]*unsafe-(inline|eval)/);
   const nonce=nonceOf(policy);expect(nonce,route).toBeTruthy();expect(seen.has(nonce!),route).toBe(false);seen.add(nonce!);
   // Every script in the served HTML carries this response's nonce.
-  const tags=(await response!.text()).match(/<script\b[^>]*>/g)??[];
+  const tags=(await response!.text()).match(/<script\b[^>]*>/gi)??[];
   expect(tags.length,route).toBeGreaterThan(0);expect(tags.filter(t=>!t.includes(`nonce="${nonce}"`)),route).toEqual([]);
   await page.waitForLoadState('networkidle');
   // In the document too (the property: browsers hide the attribute); chunks that

@@ -47,6 +47,9 @@ class HolidayRequestStore:
                 repo = HolidayRequestRepository(session)
                 return repo.list_for_month(year, month)
         path = self._file_path(year, month)
+        # `_file_path` formats integer year/month values into a fixed basename;
+        # neither value can introduce a path separator.
+        # codeql[py/path-injection]
         if not path.exists():
             return []
         return load_holiday_requests(year, month, self._config_dir)
@@ -66,6 +69,9 @@ class HolidayRequestStore:
 
         require_development_storage()
         path = self._file_path(year, month)
+        # The caller-selected development root is intentional; the appended
+        # basename is composed only from formatted integers.
+        # codeql[py/path-injection]
         path.parent.mkdir(parents=True, exist_ok=True)
         payload: dict[str, list[dict[str, object]]] = {"requests": []}
         for req in sorted(requests, key=lambda r: r.order):
@@ -78,6 +84,7 @@ class HolidayRequestStore:
             if req.is_approved:
                 entry["is_approved"] = req.is_approved
             payload["requests"].append(entry)
+        # codeql[py/path-injection]
         with path.open("w", encoding="utf-8") as fp:
             yaml.safe_dump(payload, fp, allow_unicode=True, sort_keys=False)
 

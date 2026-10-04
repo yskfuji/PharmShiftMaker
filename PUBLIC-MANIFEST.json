@@ -3112,9 +3112,9 @@
       "sha256": "9e5e0480fa3198018afb26cb5d40ddc000604ebdbbe30d41696ed9e357fcc840"
     },
     {
-      "bytes": 6194,
+      "bytes": 6204,
       "path": "frontend/src/components/dashboard/LiveDashboard.tsx",
-      "sha256": "14c173f0d926d1fff7dfc036f599f0f2044467736fd8e13d84277f8d97f67c37"
+      "sha256": "051f537c9d7c9e3d50017fdf0f9c3065f805e3ac732360aa2c8826d23cf7936d"
     },
     {
       "bytes": 4147,
@@ -3282,9 +3282,9 @@
       "sha256": "6d47893a0a7a93ab8432ad4cf89710cdcbe5d5360f41ec83a0803b4f87a02ba5"
     },
     {
-      "bytes": 17840,
+      "bytes": 17847,
       "path": "frontend/src/features/workspace/planning/PlanningRouteViews.tsx",
-      "sha256": "b3abeedd2799ea283468f3ec157e0451d35f5b9b5b3fc0b5869bebc0dbd4635c"
+      "sha256": "f8d123696af16fd7fa4392d23f9688e277f903983d9dc87c03fd8ce5c246c915"
     },
     {
       "bytes": 34278,
@@ -3662,9 +3662,9 @@
       "sha256": "a46c9bd4df9674ba81fb5723f84eecc6dc40563c8bd6c1b1d71a8119516d2a40"
     },
     {
-      "bytes": 2929,
+      "bytes": 3347,
       "path": "frontend/src/lib/apiClient.ts",
-      "sha256": "4b9710503efc34508a8a1aebba9194867fa3724aeb09d8891dac9192203f3423"
+      "sha256": "11a1d5ceba2f5205639b275cef101d0ac52d453343b5d4253ac1df98cbcaa101"
     },
     {
       "bytes": 262,
@@ -3922,9 +3922,9 @@
       "sha256": "ecc3d4447050b848f057c6ed10288e27406b9587d63b3f7ab3ccbfaee0bfb0ad"
     },
     {
-      "bytes": 5658,
+      "bytes": 5659,
       "path": "frontend/tests/proxy-e2e/production-like.spec.ts",
-      "sha256": "5befee0d3d9e02e78c2b94b68ba4f94ee3a1f5c0b04a4cc8373cfe1e213d1a8e"
+      "sha256": "e62bededdc535411f0ab55783b9edda7cf78823eef97bea31b7697fc530a7dec"
     },
     {
       "bytes": 3996,
@@ -3957,9 +3957,9 @@
       "sha256": "ae214ef2f3796442d0cfcd084ea1d9f3b7337814d9f78ac73c125ba3d14494e5"
     },
     {
-      "bytes": 5195,
+      "bytes": 5196,
       "path": "frontend/tests/remediation-e2e/csp.spec.ts",
-      "sha256": "8c1fd1fc6180f459dfead430e26f2eae2c8614ba86abd1c2294b17b52de1f8f5"
+      "sha256": "5fa2b5b2eac37b9fb68b6335aa835d5f0c9a2709c8d2d6cb5ac8413a7c6654c6"
     },
     {
       "bytes": 8034,
@@ -7582,9 +7582,9 @@
       "sha256": "f6103bf592719a5cb61a42e6ca634152be097567e080e67fa0ff5959b68d0616"
     },
     {
-      "bytes": 18497,
+      "bytes": 18779,
       "path": "scripts/backup_pipeline.py",
-      "sha256": "acfaaba40f919e49f793ee7a30dcd45d34ccbaa5f5508f3e9a1549ece2fb210e"
+      "sha256": "789bf6a674065880acbdd96ec40b43221d63643079096c15a7a5d5635e423441"
     },
     {
       "bytes": 8354,
@@ -8032,9 +8032,9 @@
       "sha256": "e11756eefe758189846fd15421fadc24c9f8f8fc006befba2e8bbc976417ce9b"
     },
     {
-      "bytes": 76477,
+      "bytes": 76632,
       "path": "src/shift_scheduler/api/routers/compliance.py",
-      "sha256": "b9700798243ce4e18b625c8f497f7b7d36e0294b2f544d9b3913cfcbb861e42b"
+      "sha256": "1d202c82443dc48c212f8ce10babec4963c4f4e68cf6f660ea45f8affa05a6d4"
     },
     {
       "bytes": 1876,
@@ -8387,9 +8387,9 @@
       "sha256": "34be0992a0b67da79cfb3975de876af10e9e172c310fc28b7d1e28ab03744305"
     },
     {
-      "bytes": 6069,
+      "bytes": 6450,
       "path": "src/shift_scheduler/data/holiday_request_store.py",
-      "sha256": "bb8f5a3d5538c98da35a1877c148a70f3fb848230e7585faa40df8429ac24f4a"
+      "sha256": "df5dacb3481f1d7ce34585a8ae9c3d5e6704020c9ab891b19714d7927bab34d1"
     },
     {
       "bytes": 6479,
@@ -8397,14 +8397,14 @@
       "sha256": "4dcfcaf38ab2060e69f6a4cce63ea4b6b9acd93b8a9d9ed47a1ddf6ef9b10481"
     },
     {
-      "bytes": 16155,
+      "bytes": 16475,
       "path": "src/shift_scheduler/data/loaders.py",
-      "sha256": "6b3105b2dd246ad6aeca4405801255f31d08acfbf17ea2a84db28668e0d2e874"
+      "sha256": "8716a0c660dea13315f929493a27f5c8c37c91b308eda02c57d5994fb71076e9"
     },
     {
-      "bytes": 5390,
+      "bytes": 5779,
       "path": "src/shift_scheduler/data/schedule_store.py",
-      "sha256": "232657e213b8785bc9a28bfbdaf9be796df9abc949505ea5bf73577f59e6df3f"
+      "sha256": "5ed5dc74236001c0d39165ef68aa60c3092ff34eacadedb80bad4770863b10b3"
     },
     {
       "bytes": 322,
@@ -8587,9 +8587,9 @@
       "sha256": "86efdee62cd886b0b87688dfcbf81cf829b78d76d851db8593a28b2088323644"
     },
     {
-      "bytes": 21257,
+      "bytes": 21497,
       "path": "src/shift_scheduler/ops/managed_writer.py",
-      "sha256": "4a75c6c4c7937cb553fb600bd7ed3cb9ec0845289c295392a870d1547fb9b1e3"
+      "sha256": "fd8807a951059b6c94eb8ee0bb06371d7409c5468d28ce6d8d657843ae189263"
     },
     {
       "bytes": 119,
@@ -8642,9 +8642,9 @@
       "sha256": "970c5961b350e078b81f2c9bf56e3e6fd039d2da4e9ff6fdf6b7b47f1aca30d4"
     },
     {
-      "bytes": 8984,
+      "bytes": 8938,
       "path": "src/shift_scheduler/security/secrets.py",
-      "sha256": "0ce9baf64c745ac8bc0830773286242f1e34e087303324787e8bd20057736b83"
+      "sha256": "d8e51746caa55751facfa26bd329ae563504ca3de586b84d9c1852905722815e"
     },
     {
       "bytes": 122,
@@ -9337,9 +9337,9 @@
       "sha256": "6f90217d07e9bc505549319fb980ee8fd34569b93b425580e75b12a2e7d3e0d5"
     },
     {
-      "bytes": 5451,
+      "bytes": 5804,
       "path": "tests/test_managed_writer.py",
-      "sha256": "ddb4805a351d7e6e0a491c417a11c453626dee29f8edf5700573885c0cb3c9f7"
+      "sha256": "c26769f3ee7b0f39486daacbaf83980bc91c13e35960fb4a5b3dc06344cd912e"
     },
     {
       "bytes": 1357,
@@ -9512,9 +9512,9 @@
       "sha256": "4604adcb8703da760f67db090a93921617d2605abfe9dcb854527c38a35a1f7a"
     },
     {
-      "bytes": 2140,
+      "bytes": 2919,
       "path": "tests/test_security_secrets.py",
-      "sha256": "bcce71ce6f65f26cdd86e48ea4b1759d627c4f38af0cf4fc5df9e98beb779d44"
+      "sha256": "332b46406b4c73e526408468cf78035aa40e049375e08e05d84e2ccfcf0224f7"
     },
     {
       "bytes": 8223,
@@ -9729,5 +9729,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2",
-  "source_commit": "6905c405c89a17162bda0b35213f19cd09c27227"
+  "source_commit": "9fd3e33e1f690b58f17785f5054e344a3a8ea7a3"
 }

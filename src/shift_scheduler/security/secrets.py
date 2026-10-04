@@ -134,12 +134,12 @@ class SecretsResolver:
         region = os.getenv("AWS_REGION")
 
         client = self._create_aws_client(region)
-        logger.info("Fetching secrets from AWS Secrets Manager secret_id=%s", secret_id)
+        logger.info("Fetching secrets from AWS Secrets Manager")
         try:
             response_raw = client.get_secret_value(SecretId=secret_id)
         except Exception as exc:  # noqa: BLE001
             raise SecretResolutionError(
-                f"Failed to fetch AWS secret '{secret_id}': {exc}"
+                "Failed to fetch secret from AWS Secrets Manager"
             ) from exc
 
         response = response_raw
@@ -177,7 +177,7 @@ class SecretsResolver:
         namespace = os.getenv("VAULT_NAMESPACE")
         if namespace:
             headers["X-Vault-Namespace"] = namespace
-        logger.info("Fetching secrets from Vault path=%s", secret_path)
+        logger.info("Fetching secrets from Vault")
         payload: Mapping[str, Any] = self._fetch_vault_json(url, headers)
         data_raw: Any = payload.get("data") or {}
         if not isinstance(data_raw, Mapping):

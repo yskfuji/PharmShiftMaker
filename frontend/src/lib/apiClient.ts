@@ -68,8 +68,16 @@ export async function generateSchedule(
 }
 
 export async function getConfirmedSchedule(year: number, month: number): Promise<ScheduleGenerateResponse> {
+  if (!Number.isInteger(year) || year < 2000 || year > 2100) {
+    throw new RangeError("year must be an integer from 2000 through 2100");
+  }
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    throw new RangeError("month must be an integer from 1 through 12");
+  }
   const token = await getAuthToken();
-  const response = await fetch(`${API_BASE_URL}/schedules/${year}/${month}`, {
+  const yearSegment = encodeURIComponent(year.toString(10));
+  const monthSegment = encodeURIComponent(month.toString(10));
+  const response = await fetch(`${API_BASE_URL}/schedules/${yearSegment}/${monthSegment}`, {
     method: "GET",
     cache: "no-store",
     headers: {

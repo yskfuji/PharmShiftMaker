@@ -19,7 +19,7 @@ test('the nonce is fresh on every request through the proxy and the policy is se
   expect(headers.some(h=>h.name.toLowerCase()==='age')).toBe(false);          // not served from a cache
   expect(headers.find(h=>h.name.toLowerCase()==='cache-control')?.value).toContain('no-store');
   const nonce=nonceOf(policies[0].value)!;expect(nonce).toBeTruthy();seen.push(nonce);
-  const tags=(await response.text()).match(/<script\b[^>]*>/g)??[];
+  const tags=(await response.text()).match(/<script\b[^>]*>/gi)??[];
   expect(tags.filter(t=>!t.includes(`nonce="${nonce}"`))).toEqual([]);
   expect(policies[0].value).toContain('connect-src \'self\' https://pharmshift.test:18540');
  }

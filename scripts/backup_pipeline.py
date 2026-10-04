@@ -196,6 +196,10 @@ def pg_environment(db_url: str):
         def escape(value):
             return str(value).replace("\\", "\\\\").replace(":", "\\:")
 
+        # libpq requires the password in pgpass format. The file lives in a
+        # mode-0700 temporary directory, is chmod 0600 before use, is never
+        # logged or passed in argv, and is removed when the context exits.
+        # codeql[py/clear-text-storage-sensitive-data]
         password_file.write_text(
             ":".join(
                 escape(value)

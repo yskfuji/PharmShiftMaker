@@ -62,8 +62,12 @@ class ScheduleStore:
                 )
 
         path = self._file_path(year, month)
+        # `_file_path` appends only an integer-formatted basename to the
+        # explicitly selected storage root.
+        # codeql[py/path-injection]
         if not path.exists():
             return None
+        # codeql[py/path-injection]
         with path.open("r", encoding="utf-8") as fp:
             payload: dict[str, Any] = json.load(fp)
         assignments = [
@@ -108,6 +112,9 @@ class ScheduleStore:
 
         require_development_storage()
         path = self._file_path(year, month)
+        # The storage root is an explicit development configuration; the
+        # appended basename cannot contain separators.
+        # codeql[py/path-injection]
         path.parent.mkdir(parents=True, exist_ok=True)
         payload: dict[str, object] = {
             "version": version,
@@ -117,6 +124,7 @@ class ScheduleStore:
                 assignment.model_dump(mode="json") for assignment in assignments
             ],
         }
+        # codeql[py/path-injection]
         with path.open("w", encoding="utf-8") as fp:
             json.dump(payload, fp, ensure_ascii=False, indent=2)
         updated_at_value = payload["updated_at"]
