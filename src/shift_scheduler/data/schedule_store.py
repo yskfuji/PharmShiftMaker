@@ -11,7 +11,11 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from shift_scheduler.data.loaders import DEFAULT_CONFIG_DIR, USE_DB_BACKEND
+from shift_scheduler.data.loaders import (
+    DEFAULT_CONFIG_DIR,
+    USE_DB_BACKEND,
+    period_component,
+)
 from shift_scheduler.db.repositories import ScheduleRepository
 from shift_scheduler.db.session import get_session_factory
 from shift_scheduler.domain import Assignment
@@ -41,9 +45,10 @@ class ScheduleStore:
             self._storage_dir = storage_dir or (DEFAULT_CONFIG_DIR / "schedules")
 
     def _file_path(self, year: int, month: int) -> Path:
-        return self._storage_dir / f"schedule_{year:04d}_{month:02d}.json"
+        return self._storage_dir / f"schedule_{period_component(year, month)}.json"
 
     def load(self, year: int, month: int) -> PersistedSchedule | None:
+        period_component(year, month)
         if USE_DB_BACKEND:
             if self._session_factory is None:  # pragma: no cover - defensive
                 raise RuntimeError("Session factory is not configured")
@@ -91,6 +96,7 @@ class ScheduleStore:
         version: int,
         updated_by: str,
     ) -> PersistedSchedule:
+        period_component(year, month)
         if USE_DB_BACKEND:
             if self._session_factory is None:  # pragma: no cover - defensive
                 raise RuntimeError("Session factory is not configured")
@@ -138,6 +144,7 @@ class ScheduleStore:
         )
 
     def current_version(self, year: int, month: int) -> int:
+        period_component(year, month)
         if USE_DB_BACKEND:
             if self._session_factory is None:  # pragma: no cover - defensive
                 raise RuntimeError("Session factory is not configured")

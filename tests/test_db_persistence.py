@@ -90,3 +90,13 @@ def test_holiday_request_store_crud(
     assert deleted.person_id == "ph"
 
     assert store.list_requests(2025, 2) == []
+
+
+def test_holiday_request_store_accepts_last_representable_month(
+    sqlite_session_factory: sessionmaker, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(holiday_store_module, "USE_DB_BACKEND", True)
+    store = HolidayRequestStore()
+
+    store.save_requests(9999, 12, [])
+    assert store.list_requests(9999, 12) == []

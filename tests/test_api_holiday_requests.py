@@ -145,3 +145,11 @@ def test_pharmacist_cannot_modify_other_person_request() -> None:
         headers=pharmacist_headers,
     )
     assert update_response.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "path", ["/holiday-requests/10000/1", "/holiday-requests/2025/13"]
+)
+def test_period_path_is_bounded(path: str) -> None:
+    response = client.get(path, headers=_auth_headers("admin", "pass-admin"))
+    assert response.status_code == 422

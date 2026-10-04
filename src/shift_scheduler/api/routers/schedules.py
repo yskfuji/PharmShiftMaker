@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from pydantic import BaseModel, Field
 
 from shift_scheduler.api.dependencies import (
@@ -25,6 +25,8 @@ from shift_scheduler.optimizer.warnings import generate_schedule_warnings
 
 router = APIRouter(prefix="/schedules", tags=["schedules"])
 SCHEDULE_STORE = ScheduleStore()
+CalendarYear = Annotated[int, Path(ge=1, le=9999, description="対象年")]
+CalendarMonth = Annotated[int, Path(ge=1, le=12, description="対象月")]
 
 
 class ScheduleGenerateRequest(BaseModel):
@@ -220,8 +222,8 @@ def generate_schedule(
 
 @router.get("/{year}/{month}", response_model=ScheduleGenerateResponse)
 async def get_confirmed_schedule(
-    year: int,
-    month: int,
+    year: CalendarYear,
+    month: CalendarMonth,
     user: UserPrincipal = Depends(get_current_user),
 ) -> ScheduleGenerateResponse:
     persisted = SCHEDULE_STORE.load(year, month)

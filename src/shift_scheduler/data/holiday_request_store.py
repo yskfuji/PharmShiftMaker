@@ -13,6 +13,7 @@ from shift_scheduler.data.loaders import (
     DEFAULT_CONFIG_DIR,
     USE_DB_BACKEND,
     load_holiday_requests,
+    period_component,
 )
 from shift_scheduler.db.repositories import HolidayRequestRepository
 from shift_scheduler.db.session import get_session_factory
@@ -35,11 +36,14 @@ class HolidayRequestStore:
         return self._config_dir
 
     def _file_path(self, year: int, month: int) -> Path:
-        return self._config_dir / f"holiday_requests_{year:04d}_{month:02d}.yaml"
+        return (
+            self._config_dir / f"holiday_requests_{period_component(year, month)}.yaml"
+        )
 
     def list_requests(self, year: int, month: int) -> list[HolidayRequest]:
         """指定年月の希望休を読み込む. ファイルが無ければ空リスト."""
 
+        period_component(year, month)
         if USE_DB_BACKEND:
             if self._session_factory is None:  # pragma: no cover - defensive
                 raise RuntimeError("Session factory is not configured")
@@ -57,6 +61,7 @@ class HolidayRequestStore:
     def save_requests(
         self, year: int, month: int, requests: Sequence[HolidayRequest]
     ) -> None:
+        period_component(year, month)
         if USE_DB_BACKEND:
             if self._session_factory is None:  # pragma: no cover - defensive
                 raise RuntimeError("Session factory is not configured")
@@ -92,6 +97,7 @@ class HolidayRequestStore:
         self, year: int, month: int, request: HolidayRequest
     ) -> HolidayRequest:
         """希望休を追加または更新して保存する."""
+        period_component(year, month)
         if USE_DB_BACKEND:
             if self._session_factory is None:  # pragma: no cover - defensive
                 raise RuntimeError("Session factory is not configured")
@@ -131,6 +137,7 @@ class HolidayRequestStore:
     ) -> HolidayRequest:
         """指定の希望休を削除し、削除したレコードを返す."""
 
+        period_component(year, month)
         if USE_DB_BACKEND:
             if self._session_factory is None:  # pragma: no cover - defensive
                 raise RuntimeError("Session factory is not configured")

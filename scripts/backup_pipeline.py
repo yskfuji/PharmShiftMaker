@@ -178,8 +178,21 @@ def pg_environment(db_url: str):
     url = make_url(db_url)
     if url.get_backend_name() != "postgresql":
         raise ValueError("This backup path requires PostgreSQL")
-    env = os.environ.copy()
-    env.pop("PGPASSWORD", None)
+    # Database utilities do not need the application's ambient secrets.  Build
+    # their environment from a small portability allowlist instead of copying
+    # credentials such as DATABASE_URL, Vault tokens or cloud access keys.
+    inherited_keys = (
+        "PATH",
+        "LANG",
+        "LC_ALL",
+        "LC_CTYPE",
+        "TZ",
+        "SYSTEMROOT",
+        # Non-secret identifier consumed by the repository's guarded local
+        # PostgreSQL audit bridge during isolated backup/restore drills.
+        "PHARMSHIFT_AUDIT_PG_CONTAINER",
+    )
+    env = {key: os.environ[key] for key in inherited_keys if key in os.environ}
     env.update(
         PGHOST=url.host or "localhost",
         PGPORT=str(url.port or 5432),

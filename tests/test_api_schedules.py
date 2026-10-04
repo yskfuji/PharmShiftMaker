@@ -71,6 +71,12 @@ def _build_day_infos() -> list[DayInfo]:
     ]
 
 
+@pytest.mark.parametrize("path", ["/schedules/10000/1", "/schedules/2025/13"])
+def test_confirmed_schedule_period_path_is_bounded(path: str) -> None:
+    response = client.get(path, headers=_auth_headers())
+    assert response.status_code == 422
+
+
 def _build_shift_types() -> list[ShiftType]:
     return [
         ShiftType(

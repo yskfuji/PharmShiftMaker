@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from datetime import date as date_type
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from pydantic import BaseModel, Field
 
 from shift_scheduler.api.dependencies import AppRole, UserPrincipal, get_current_user
@@ -15,6 +16,8 @@ from shift_scheduler.domain import DayType, HolidayRequest, HolidayRequestKind
 
 router = APIRouter(prefix="/holiday-requests", tags=["holiday_requests"])
 _STORE = HolidayRequestStore()
+CalendarYear = Annotated[int, Path(ge=1, le=9999, description="対象年")]
+CalendarMonth = Annotated[int, Path(ge=1, le=12, description="対象月")]
 
 
 class HolidayRequestRecord(BaseModel):
@@ -116,8 +119,8 @@ def _validate_day_limit(
 
 @router.get("/{year}/{month}", response_model=HolidayRequestListResponse)
 def list_holiday_requests(
-    year: int,
-    month: int,
+    year: CalendarYear,
+    month: CalendarMonth,
     person_id: str | None = Query(None, description="絞り込み対象の職員ID"),
     user: UserPrincipal = Depends(get_current_user),
 ) -> HolidayRequestListResponse:
@@ -142,8 +145,8 @@ def list_holiday_requests(
     status_code=status.HTTP_201_CREATED,
 )
 def upsert_holiday_request(
-    year: int,
-    month: int,
+    year: CalendarYear,
+    month: CalendarMonth,
     payload: HolidayRequestUpsertRequest,
     user: UserPrincipal = Depends(get_current_user),
 ) -> HolidayRequestRecord:
@@ -191,8 +194,8 @@ def upsert_holiday_request(
 
 @router.delete("/{year}/{month}", response_model=HolidayRequestRecord)
 def delete_holiday_request(
-    year: int,
-    month: int,
+    year: CalendarYear,
+    month: CalendarMonth,
     payload: HolidayRequestDeleteRequest,
     user: UserPrincipal = Depends(get_current_user),
 ) -> HolidayRequestRecord:

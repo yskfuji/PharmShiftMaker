@@ -87,10 +87,16 @@ class ConfigRepository:
 
     def list_holiday_requests(self, year: int, month: int) -> list[HolidayRequest]:
         start_date = date(year, month, 1)
+        end_date = _month_end(start_date)
+        upper_bound = (
+            HolidayRequestModel.request_date < end_date
+            if end_date is not None
+            else HolidayRequestModel.request_date <= date.max
+        )
         stmt = select(HolidayRequestModel).where(
             and_(
                 HolidayRequestModel.request_date >= start_date,
-                HolidayRequestModel.request_date < _month_end(start_date),
+                upper_bound,
             )
         )
         rows = self._session.scalars(stmt).all()
@@ -124,7 +130,9 @@ class ConfigRepository:
         return quotas
 
 
-def _month_end(start: date) -> date:
+def _month_end(start: date) -> date | None:
     if start.month == 12:
+        if start.year == date.max.year:
+            return None
         return date(start.year + 1, 1, 1)
     return date(start.year, start.month + 1, 1)

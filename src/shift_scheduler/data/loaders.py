@@ -53,6 +53,13 @@ _MONTH_CONFIG_FILENAME = re.compile(
 )
 
 
+def period_component(year: int, month: int) -> str:
+    """Return the separator-free calendar component accepted by file backends."""
+    if not 1 <= year <= 9999 or not 1 <= month <= 12:
+        raise ValueError("year and month must form a valid four-digit calendar period")
+    return f"{year:04d}_{month:02d}"
+
+
 def is_db_backend() -> bool:
     """Return True when the DB backend is enabled via env overrides."""
 
@@ -279,7 +286,7 @@ def load_shift_types(config_dir: Path | None = None) -> list[ShiftType]:
 def load_day_infos(
     year: int, month: int, config_dir: Path | None = None
 ) -> list[DayInfo]:
-    filename = f"calendar_{year:04d}_{month:02d}.yaml"
+    filename = f"calendar_{period_component(year, month)}.yaml"
     config_path = _resolve_config_dir(config_dir) / filename
     raw = _load_yaml(config_path.parent, config_path.name)
     return [
@@ -295,10 +302,11 @@ def load_day_infos(
 def load_holiday_requests(
     year: int, month: int, config_dir: Path | None = None
 ) -> list[HolidayRequest]:
+    period = period_component(year, month)
     if USE_DB_BACKEND:
         with _config_repo() as repo:
             return repo.list_holiday_requests(year, month)
-    filename = f"holiday_requests_{year:04d}_{month:02d}.yaml"
+    filename = f"holiday_requests_{period}.yaml"
     config_path = _resolve_config_dir(config_dir) / filename
     raw = _load_yaml(config_path.parent, config_path.name)
     requests: list[HolidayRequest] = []
@@ -318,6 +326,7 @@ def load_holiday_requests(
 def load_leave_quotas(
     year: int, month: int, config_dir: Path | None = None
 ) -> list[LeaveQuota]:
+    period_component(year, month)
     if USE_DB_BACKEND:
         with _config_repo() as repo:
             base_entries = repo.list_leave_quotas(year)
@@ -428,7 +437,7 @@ def _count_leave_usage(
 def _read_yaml_holiday_requests(
     year: int, month: int, config_path: Path
 ) -> list[HolidayRequest]:
-    filename = f"holiday_requests_{year:04d}_{month:02d}.yaml"
+    filename = f"holiday_requests_{period_component(year, month)}.yaml"
     file_path = config_path / filename
     # `year` and `month` are integers and cannot introduce path separators.
     # codeql[py/path-injection]
@@ -450,6 +459,7 @@ def _read_yaml_holiday_requests(
 
 
 def load_all(year: int, month: int, config_dir: Path | None = None) -> LoadedConfig:
+    period_component(year, month)
     if USE_DB_BACKEND:
         return _load_all_from_db(year, month, config_dir)
     config_directory = _resolve_config_dir(config_dir)

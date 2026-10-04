@@ -19,10 +19,16 @@ class HolidayRequestRepository:
         self._session = session
 
     def list_for_month(self, year: int, month: int) -> list[HolidayRequest]:
+        end_date = _month_end(year, month)
+        upper_bound = (
+            HolidayRequestModel.request_date < end_date
+            if end_date is not None
+            else HolidayRequestModel.request_date <= date.max
+        )
         stmt = select(HolidayRequestModel).where(
             and_(
                 HolidayRequestModel.request_date >= date(year, month, 1),
-                HolidayRequestModel.request_date < _month_end(year, month),
+                upper_bound,
             )
         )
         rows = self._session.scalars(stmt).all()
@@ -78,10 +84,16 @@ class HolidayRequestRepository:
         self, year: int, month: int, requests: list[HolidayRequest]
     ) -> None:
         month_start = date(year, month, 1)
+        month_end = _month_end(year, month)
+        upper_bound = (
+            HolidayRequestModel.request_date < month_end
+            if month_end is not None
+            else HolidayRequestModel.request_date <= date.max
+        )
         stmt = delete(HolidayRequestModel).where(
             and_(
                 HolidayRequestModel.request_date >= month_start,
-                HolidayRequestModel.request_date < _month_end(year, month),
+                upper_bound,
             )
         )
         self._session.execute(stmt)
@@ -97,10 +109,16 @@ class HolidayRequestRepository:
         self._session.flush()
 
     def _next_order(self, year: int, month: int) -> int:
+        month_end = _month_end(year, month)
+        upper_bound = (
+            HolidayRequestModel.request_date < month_end
+            if month_end is not None
+            else HolidayRequestModel.request_date <= date.max
+        )
         stmt = select(func.max(HolidayRequestModel.order)).where(
             and_(
                 HolidayRequestModel.request_date >= date(year, month, 1),
-                HolidayRequestModel.request_date < _month_end(year, month),
+                upper_bound,
             )
         )
         current_max = self._session.scalar(stmt)
@@ -117,7 +135,9 @@ class HolidayRequestRepository:
         )
 
 
-def _month_end(year: int, month: int) -> date:
+def _month_end(year: int, month: int) -> date | None:
     if month == 12:
+        if year == date.max.year:
+            return None
         return date(year + 1, 1, 1)
     return date(year, month + 1, 1)
