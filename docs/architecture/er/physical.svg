@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: physical Pages: 1 -->
+<svg width="1620pt" height="3197pt"
+ viewBox="0.00 0.00 1620.00 3197.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 3193)">
+<title>physical</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-3193 1616.25,-3193 1616.25,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_legacy</title>
+<polygon fill="none" stroke="#9aa0a6" points="19.62,-8 19.62,-645 524.25,-645 524.25,-8 19.62,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="271.94" y="-631.5" font-family="Noto Sans JP" font-size="10.00">legacy</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_planning</title>
+<polygon fill="none" stroke="#9aa0a6" points="18.88,-653 18.88,-1607 1604.25,-1607 1604.25,-653 18.88,-653"/>
+<text xml:space="preserve" text-anchor="middle" x="811.56" y="-1593.5" font-family="Noto Sans JP" font-size="10.00">planning</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_compliance</title>
+<polygon fill="none" stroke="#9aa0a6" points="8,-1615 8,-3181 486.75,-3181 486.75,-1615 8,-1615"/>
+<text xml:space="preserve" text-anchor="middle" x="247.38" y="-3167.5" font-family="Noto Sans JP" font-size="10.00">compliance</text>
+</g>
+<!-- holiday_requests -->
+<g id="node1" class="node">
+<title>holiday_requests</title>
+<polygon fill="none" stroke="black" points="40.5,-20.12 40.5,-163.88 161.75,-163.88 161.75,-20.12 40.5,-20.12"/>
+<polygon fill="#e8eef7" stroke="none" points="41.5,-147.12 41.5,-162.88 160.75,-162.88 160.75,-147.12 41.5,-147.12"/>
+<text xml:space="preserve" text-anchor="start" x="64" y="-152.32" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">holiday_requests</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-136.57" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-136.62" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-120.88" font-family="Noto Sans JP" font-size="9.00">person_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-120.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-105.12" font-family="Noto Sans JP" font-size="9.00">request_date</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-105.12" font-family="Noto Sans JP" font-size="9.00">date</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-89.38" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-89.38" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-73.62" font-family="Noto Sans JP" font-size="9.00">order</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-73.62" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-57.88" font-family="Noto Sans JP" font-size="9.00">is_approved</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-57.88" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-42.12" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-42.12" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-26.38" font-family="Noto Sans JP" font-size="9.00">updated_at</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-26.38" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- people -->
+<g id="node3" class="node">
+<title>people</title>
+<polygon fill="none" stroke="black" points="352.5,-19.75 352.5,-116.25 464.75,-116.25 464.75,-19.75 352.5,-19.75"/>
+<polygon fill="#e8eef7" stroke="none" points="353.5,-99.5 353.5,-115.25 463.75,-115.25 463.75,-99.5 353.5,-99.5"/>
+<text xml:space="preserve" text-anchor="start" x="394.38" y="-104.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">people</text>
+<text xml:space="preserve" text-anchor="start" x="356.5" y="-88.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="409" y="-89" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="356.5" y="-73.25" font-family="Noto Sans JP" font-size="9.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="409" y="-73.25" font-family="Noto Sans JP" font-size="9.00">varchar_255</text>
+<text xml:space="preserve" text-anchor="start" x="356.5" y="-57.5" font-family="Noto Sans JP" font-size="9.00">role</text>
+<text xml:space="preserve" text-anchor="start" x="409" y="-57.5" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="356.5" y="-41.75" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="409" y="-41.75" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="356.5" y="-26" font-family="Noto Sans JP" font-size="9.00">updated_at</text>
+<text xml:space="preserve" text-anchor="start" x="409" y="-26" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- holiday_requests&#45;&gt;people -->
+<g id="edge3" class="edge">
+<title>holiday_requests&#45;&gt;people</title>
+<path fill="none" stroke="black" d="M169.55,-86.7C217.96,-82.9 283.22,-77.77 333.17,-73.85"/>
+<polygon fill="black" stroke="black" points="333.34,-77.35 343.04,-73.07 332.79,-70.37 333.34,-77.35"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-86.45" font-family="Noto Sans JP" font-size="8.00">person_id→person_id</text>
+</g>
+<!-- leave_quotas -->
+<g id="node2" class="node">
+<title>leave_quotas</title>
+<polygon fill="none" stroke="black" points="40.5,-190 40.5,-318 161.75,-318 161.75,-190 40.5,-190"/>
+<polygon fill="#e8eef7" stroke="none" points="41.5,-301.25 41.5,-317 160.75,-317 160.75,-301.25 41.5,-301.25"/>
+<text xml:space="preserve" text-anchor="start" x="72.25" y="-306.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">leave_quotas</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-290.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-290.75" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-275" font-family="Noto Sans JP" font-size="9.00">person_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-275" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-259.25" font-family="Noto Sans JP" font-size="9.00">year</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-259.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-243.5" font-family="Noto Sans JP" font-size="9.00">leave_type</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-243.5" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-227.75" font-family="Noto Sans JP" font-size="9.00">total_days</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-227.75" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-212" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-212" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-196.25" font-family="Noto Sans JP" font-size="9.00">updated_at</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-196.25" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- leave_quotas&#45;&gt;people -->
+<g id="edge4" class="edge">
+<title>leave_quotas&#45;&gt;people</title>
+<path fill="none" stroke="black" d="M169.46,-211.3C207.83,-187.14 256.91,-156.56 301,-130 311.85,-123.46 323.39,-116.64 334.7,-110"/>
+<polygon fill="black" stroke="black" points="336.4,-113.07 343.26,-105 332.86,-107.02 336.4,-113.07"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-190.03" font-family="Noto Sans JP" font-size="8.00">person_id→person_id</text>
+</g>
+<!-- profiles -->
+<g id="node4" class="node">
+<title>profiles</title>
+<polygon fill="none" stroke="black" points="309,-142.5 309,-459.5 508.25,-459.5 508.25,-142.5 309,-142.5"/>
+<polygon fill="#e8eef7" stroke="none" points="310,-442.75 310,-458.5 507.25,-458.5 507.25,-442.75 310,-442.75"/>
+<text xml:space="preserve" text-anchor="start" x="392.5" y="-447.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">profiles</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-432.2" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">profile_id</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-432.25" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-416.5" font-family="Noto Sans JP" font-size="9.00">name</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-416.5" font-family="Noto Sans JP" font-size="9.00">varchar_255</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-400.75" font-family="Noto Sans JP" font-size="9.00">employment_type</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-400.75" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-385" font-family="Noto Sans JP" font-size="9.00">can_night_duty</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-385" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-369.25" font-family="Noto Sans JP" font-size="9.00">can_on_call</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-369.25" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-353.5" font-family="Noto Sans JP" font-size="9.00">can_evening</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-353.5" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-337.75" font-family="Noto Sans JP" font-size="9.00">can_ward_alone</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-337.75" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-322" font-family="Noto Sans JP" font-size="9.00">weekend_allowed</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-322" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-306.25" font-family="Noto Sans JP" font-size="9.00">holiday_allowed</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-306.25" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-290.5" font-family="Noto Sans JP" font-size="9.00">allowed_weekdays</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-290.5" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-274.75" font-family="Noto Sans JP" font-size="9.00">max_consecutive_working_days</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-274.75" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-259" font-family="Noto Sans JP" font-size="9.00">night_duty_min</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-259" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-243.25" font-family="Noto Sans JP" font-size="9.00">night_duty_max</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-243.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-227.5" font-family="Noto Sans JP" font-size="9.00">on_call_min</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-227.5" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-211.75" font-family="Noto Sans JP" font-size="9.00">on_call_max</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-211.75" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-196" font-family="Noto Sans JP" font-size="9.00">evening_min</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-196" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-180.25" font-family="Noto Sans JP" font-size="9.00">evening_max</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-180.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-164.5" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-164.5" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="313" y="-148.75" font-family="Noto Sans JP" font-size="9.00">updated_at</text>
+<text xml:space="preserve" text-anchor="start" x="452.5" y="-148.75" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- schedule_assignments -->
+<g id="node5" class="node">
+<title>schedule_assignments</title>
+<polygon fill="none" stroke="black" points="35.62,-513.75 35.62,-610.25 166.62,-610.25 166.62,-513.75 35.62,-513.75"/>
+<polygon fill="#e8eef7" stroke="none" points="36.62,-593.5 36.62,-609.25 165.62,-609.25 165.62,-593.5 36.62,-593.5"/>
+<text xml:space="preserve" text-anchor="start" x="51.25" y="-598.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">schedule_assignments</text>
+<text xml:space="preserve" text-anchor="start" x="39.62" y="-582.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="116.12" y="-583" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="39.62" y="-567.25" font-family="Noto Sans JP" font-size="9.00">schedule_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="116.12" y="-567.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="39.62" y="-551.5" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="116.12" y="-551.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="39.62" y="-535.75" font-family="Noto Sans JP" font-size="9.00">assignment_date</text>
+<text xml:space="preserve" text-anchor="start" x="116.12" y="-535.75" font-family="Noto Sans JP" font-size="9.00">date</text>
+<text xml:space="preserve" text-anchor="start" x="39.62" y="-520" font-family="Noto Sans JP" font-size="9.00">shift_id</text>
+<text xml:space="preserve" text-anchor="start" x="116.12" y="-520" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+</g>
+<!-- schedules -->
+<g id="node6" class="node">
+<title>schedules</title>
+<polygon fill="none" stroke="black" points="354,-486 354,-614 463.25,-614 463.25,-486 354,-486"/>
+<polygon fill="#e8eef7" stroke="none" points="355,-597.25 355,-613 462.25,-613 462.25,-597.25 355,-597.25"/>
+<text xml:space="preserve" text-anchor="start" x="386.5" y="-602.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">schedules</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-586.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="412.75" y="-586.75" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-571" font-family="Noto Sans JP" font-size="9.00">year</text>
+<text xml:space="preserve" text-anchor="start" x="412.75" y="-571" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-555.25" font-family="Noto Sans JP" font-size="9.00">month</text>
+<text xml:space="preserve" text-anchor="start" x="412.75" y="-555.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-539.5" font-family="Noto Sans JP" font-size="9.00">version</text>
+<text xml:space="preserve" text-anchor="start" x="412.75" y="-539.5" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-523.75" font-family="Noto Sans JP" font-size="9.00">updated_by</text>
+<text xml:space="preserve" text-anchor="start" x="412.75" y="-523.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-508" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="412.75" y="-508" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-492.25" font-family="Noto Sans JP" font-size="9.00">updated_at</text>
+<text xml:space="preserve" text-anchor="start" x="412.75" y="-492.25" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- schedule_assignments&#45;&gt;schedules -->
+<g id="edge19" class="edge">
+<title>schedule_assignments&#45;&gt;schedules</title>
+<path fill="none" stroke="black" d="M174.52,-559.16C222.88,-557.26 286.24,-554.77 334.7,-552.86"/>
+<polygon fill="black" stroke="black" points="334.69,-556.37 344.54,-552.48 334.41,-549.37 334.69,-556.37"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-560.68" font-family="Noto Sans JP" font-size="8.00">schedule_id→id</text>
+</g>
+<!-- staff_timeline -->
+<g id="node7" class="node">
+<title>staff_timeline</title>
+<polygon fill="none" stroke="black" points="40.5,-344.12 40.5,-487.88 161.75,-487.88 161.75,-344.12 40.5,-344.12"/>
+<polygon fill="#e8eef7" stroke="none" points="41.5,-471.12 41.5,-486.88 160.75,-486.88 160.75,-471.12 41.5,-471.12"/>
+<text xml:space="preserve" text-anchor="start" x="71.88" y="-476.32" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">staff_timeline</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-460.57" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">id</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-460.62" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-444.88" font-family="Noto Sans JP" font-size="9.00">person_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-444.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-429.12" font-family="Noto Sans JP" font-size="9.00">profile_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-429.12" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-413.38" font-family="Noto Sans JP" font-size="9.00">from_date</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-413.38" font-family="Noto Sans JP" font-size="9.00">date</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-397.62" font-family="Noto Sans JP" font-size="9.00">to_date</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-397.62" font-family="Noto Sans JP" font-size="9.00">date</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-381.88" font-family="Noto Sans JP" font-size="9.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-381.88" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-366.12" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-366.12" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="44.5" y="-350.38" font-family="Noto Sans JP" font-size="9.00">updated_at</text>
+<text xml:space="preserve" text-anchor="start" x="111.25" y="-350.38" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- staff_timeline&#45;&gt;people -->
+<g id="edge22" class="edge">
+<title>staff_timeline&#45;&gt;people</title>
+<path fill="none" stroke="black" d="M169.59,-349.53C175.33,-343.37 180.96,-337.13 186.25,-331 233.07,-276.74 252.2,-266.71 283,-202 297.18,-172.22 281.18,-156.37 301,-130 310.11,-117.88 322.34,-107.72 335.26,-99.36"/>
+<polygon fill="black" stroke="black" points="336.74,-102.56 343.47,-94.38 333.11,-96.58 336.74,-102.56"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-313.44" font-family="Noto Sans JP" font-size="8.00">person_id→person_id</text>
+</g>
+<!-- staff_timeline&#45;&gt;profiles -->
+<g id="edge23" class="edge">
+<title>staff_timeline&#45;&gt;profiles</title>
+<path fill="none" stroke="black" d="M169.55,-390.62C205.03,-377.26 249.55,-360.5 290.47,-345.1"/>
+<polygon fill="black" stroke="black" points="291.52,-348.44 299.65,-341.65 289.06,-341.89 291.52,-348.44"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-378.42" font-family="Noto Sans JP" font-size="8.00">profile_id→profile_id</text>
+</g>
+<!-- account_memberships -->
+<g id="node8" class="node">
+<title>account_memberships</title>
+<polygon fill="none" stroke="black" points="34.88,-664.62 34.88,-871.38 167.38,-871.38 167.38,-664.62 34.88,-664.62"/>
+<polygon fill="#e8eef7" stroke="none" points="35.88,-854.62 35.88,-870.38 166.38,-870.38 166.38,-854.62 35.88,-854.62"/>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-859.83" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">account_memberships</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-844.08" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">membership_id</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-844.12" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-828.38" font-family="Noto Sans JP" font-size="9.00">issuer</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-828.38" font-family="Noto Sans JP" font-size="9.00">varchar_512</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-812.62" font-family="Noto Sans JP" font-size="9.00">subject</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-812.62" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-796.88" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-796.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-781.12" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-781.12" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-765.38" font-family="Noto Sans JP" font-size="9.00">role</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-765.38" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-749.62" font-family="Noto Sans JP" font-size="9.00">active</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-749.62" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-733.88" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-733.88" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-718.12" font-family="Noto Sans JP" font-size="9.00">evidence</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-718.12" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-702.38" font-family="Noto Sans JP" font-size="9.00">created_by</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-702.38" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-686.62" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-686.62" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="38.88" y="-670.88" font-family="Noto Sans JP" font-size="9.00">deactivated_at</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-670.88" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- actual_work_events -->
+<g id="node9" class="node">
+<title>actual_work_events</title>
+<polygon fill="none" stroke="black" points="45.38,-897.75 45.38,-994.25 156.88,-994.25 156.88,-897.75 45.38,-897.75"/>
+<polygon fill="#e8eef7" stroke="none" points="46.38,-977.5 46.38,-993.25 155.88,-993.25 155.88,-977.5 46.38,-977.5"/>
+<text xml:space="preserve" text-anchor="start" x="57.62" y="-982.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">actual_work_events</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-966.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">key</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-967" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-951.25" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-951.25" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-935.5" font-family="Noto Sans JP" font-size="9.00">external_id</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-935.5" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-919.75" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-919.75" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-904" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-904" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+<!-- planning_change_cases -->
+<g id="node10" class="node">
+<title>planning_change_cases</title>
+<polygon fill="none" stroke="black" points="327.75,-694.75 327.75,-917.25 489.5,-917.25 489.5,-694.75 327.75,-694.75"/>
+<polygon fill="#e8eef7" stroke="none" points="328.75,-900.5 328.75,-916.25 488.5,-916.25 488.5,-900.5 328.75,-900.5"/>
+<text xml:space="preserve" text-anchor="start" x="356.5" y="-905.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_change_cases</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-889.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">case_id</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-890" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-874.25" font-family="Noto Sans JP" font-size="9.00">scope_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-874.25" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-858.5" font-family="Noto Sans JP" font-size="9.00">publication_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-858.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-842.75" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-842.75" font-family="Noto Sans JP" font-size="9.00">varchar_24</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-827" font-family="Noto Sans JP" font-size="9.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-827" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-811.25" font-family="Noto Sans JP" font-size="9.00">version</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-811.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-795.5" font-family="Noto Sans JP" font-size="9.00">affected_assignments</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-795.5" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-779.75" font-family="Noto Sans JP" font-size="9.00">proposed_assignments</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-779.75" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-764" font-family="Noto Sans JP" font-size="9.00">validation</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-764" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-748.25" font-family="Noto Sans JP" font-size="9.00">evidence</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-748.25" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-732.5" font-family="Noto Sans JP" font-size="9.00">created_by</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-732.5" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-716.75" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-716.75" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="331.75" y="-701" font-family="Noto Sans JP" font-size="9.00">updated_at</text>
+<text xml:space="preserve" text-anchor="start" x="433.75" y="-701" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- planning_publications -->
+<g id="node21" class="node">
+<title>planning_publications</title>
+<polygon fill="none" stroke="black" points="664.5,-886.12 664.5,-1029.88 789.5,-1029.88 789.5,-886.12 664.5,-886.12"/>
+<polygon fill="#e8eef7" stroke="none" points="665.5,-1013.12 665.5,-1028.88 788.5,-1028.88 788.5,-1013.12 665.5,-1013.12"/>
+<text xml:space="preserve" text-anchor="start" x="680.5" y="-1018.33" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_publications</text>
+<text xml:space="preserve" text-anchor="start" x="668.5" y="-1002.58" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">publication_id</text>
+<text xml:space="preserve" text-anchor="start" x="733.75" y="-1002.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="668.5" y="-986.88" font-family="Noto Sans JP" font-size="9.00">draft_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="733.75" y="-986.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="668.5" y="-971.12" font-family="Noto Sans JP" font-size="9.00">scope_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="733.75" y="-971.12" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="668.5" y="-955.38" font-family="Noto Sans JP" font-size="9.00">period_key</text>
+<text xml:space="preserve" text-anchor="start" x="733.75" y="-955.38" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="668.5" y="-939.62" font-family="Noto Sans JP" font-size="9.00">version</text>
+<text xml:space="preserve" text-anchor="start" x="733.75" y="-939.62" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="668.5" y="-923.88" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="733.75" y="-923.88" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="668.5" y="-908.12" font-family="Noto Sans JP" font-size="9.00">published_by</text>
+<text xml:space="preserve" text-anchor="start" x="733.75" y="-908.12" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="668.5" y="-892.38" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="733.75" y="-892.38" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- planning_change_cases&#45;&gt;planning_publications -->
+<g id="edge5" class="edge">
+<title>planning_change_cases&#45;&gt;planning_publications</title>
+<path fill="none" stroke="black" d="M497.33,-848.14C544.09,-870.6 601.16,-898.02 646.6,-919.85"/>
+<polygon fill="black" stroke="black" points="644.8,-922.87 655.33,-924.05 647.84,-916.56 644.8,-922.87"/>
+<text xml:space="preserve" text-anchor="middle" x="586.38" y="-915.99" font-family="Noto Sans JP" font-size="8.00">publication_id→publication_id</text>
+</g>
+<!-- planning_scopes -->
+<g id="node24" class="node">
+<title>planning_scopes</title>
+<polygon fill="none" stroke="black" points="1448.25,-843.75 1448.25,-940.25 1588.25,-940.25 1588.25,-843.75 1448.25,-843.75"/>
+<polygon fill="#e8eef7" stroke="none" points="1449.25,-923.5 1449.25,-939.25 1587.25,-939.25 1587.25,-923.5 1449.25,-923.5"/>
+<text xml:space="preserve" text-anchor="start" x="1481.88" y="-928.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_scopes</text>
+<text xml:space="preserve" text-anchor="start" x="1452.25" y="-912.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="1532.5" y="-913" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="1452.25" y="-897.25" font-family="Noto Sans JP" font-size="9.00">input_revision</text>
+<text xml:space="preserve" text-anchor="start" x="1532.5" y="-897.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="1452.25" y="-881.5" font-family="Noto Sans JP" font-size="9.00">data_revision</text>
+<text xml:space="preserve" text-anchor="start" x="1532.5" y="-881.5" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="1452.25" y="-865.75" font-family="Noto Sans JP" font-size="9.00">source_fingerprint</text>
+<text xml:space="preserve" text-anchor="start" x="1532.5" y="-865.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="1452.25" y="-850" font-family="Noto Sans JP" font-size="9.00">display_name</text>
+<text xml:space="preserve" text-anchor="start" x="1532.5" y="-850" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+</g>
+<!-- planning_change_cases&#45;&gt;planning_scopes -->
+<g id="edge6" class="edge">
+<title>planning_change_cases&#45;&gt;planning_scopes</title>
+<path fill="none" stroke="black" d="M497.25,-806C560.76,-806 648.69,-806 726,-806 726,-806 726,-806 1264.25,-806 1321.52,-806 1382.38,-826 1430.06,-846.7"/>
+<polygon fill="black" stroke="black" points="1428.39,-849.79 1438.95,-850.65 1431.23,-843.4 1428.39,-849.79"/>
+<text xml:space="preserve" text-anchor="middle" x="983.5" y="-808.9" font-family="Noto Sans JP" font-size="8.00">scope_id→scope_id</text>
+</g>
+<!-- planning_change_events -->
+<g id="node11" class="node">
+<title>planning_change_events</title>
+<polygon fill="none" stroke="black" points="42.38,-1019.88 42.38,-1132.12 159.88,-1132.12 159.88,-1019.88 42.38,-1019.88"/>
+<polygon fill="#e8eef7" stroke="none" points="43.38,-1115.38 43.38,-1131.12 158.88,-1131.12 158.88,-1115.38 43.38,-1115.38"/>
+<text xml:space="preserve" text-anchor="start" x="47.5" y="-1120.58" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_change_events</text>
+<text xml:space="preserve" text-anchor="start" x="46.38" y="-1104.83" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">event_id</text>
+<text xml:space="preserve" text-anchor="start" x="104.12" y="-1104.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="46.38" y="-1089.12" font-family="Noto Sans JP" font-size="9.00">case_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="104.12" y="-1089.12" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="46.38" y="-1073.38" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="104.12" y="-1073.38" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="46.38" y="-1057.62" font-family="Noto Sans JP" font-size="9.00">actor</text>
+<text xml:space="preserve" text-anchor="start" x="104.12" y="-1057.62" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="46.38" y="-1041.88" font-family="Noto Sans JP" font-size="9.00">evidence</text>
+<text xml:space="preserve" text-anchor="start" x="104.12" y="-1041.88" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="46.38" y="-1026.12" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="104.12" y="-1026.12" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- planning_change_events&#45;&gt;planning_change_cases -->
+<g id="edge7" class="edge">
+<title>planning_change_events&#45;&gt;planning_change_cases</title>
+<path fill="none" stroke="black" d="M167.61,-1022.83C173.94,-1017.52 180.24,-1012.18 186.25,-1007 227.98,-970.98 273.19,-930.25 311.8,-894.93"/>
+<polygon fill="black" stroke="black" points="313.81,-897.83 318.82,-888.5 309.08,-892.67 313.81,-897.83"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-994.01" font-family="Noto Sans JP" font-size="8.00">case_id→case_id</text>
+</g>
+<!-- planning_drafts -->
+<g id="node12" class="node">
+<title>planning_drafts</title>
+<polygon fill="none" stroke="black" points="918,-1231.25 918,-1390.75 1049,-1390.75 1049,-1231.25 918,-1231.25"/>
+<polygon fill="#e8eef7" stroke="none" points="919,-1374 919,-1389.75 1048,-1389.75 1048,-1374 919,-1374"/>
+<text xml:space="preserve" text-anchor="start" x="950.12" y="-1379.2" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_drafts</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1363.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">draft_id</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1363.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1347.75" font-family="Noto Sans JP" font-size="9.00">input_hash (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1347.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1332" font-family="Noto Sans JP" font-size="9.00">version</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1332" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1316.25" font-family="Noto Sans JP" font-size="9.00">proposal</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1316.25" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1300.5" font-family="Noto Sans JP" font-size="9.00">validation</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1300.5" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1284.75" font-family="Noto Sans JP" font-size="9.00">reviewed_hash</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1284.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1269" font-family="Noto Sans JP" font-size="9.00">reviewed_by</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1269" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1253.25" font-family="Noto Sans JP" font-size="9.00">created_by</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1253.25" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-1237.5" font-family="Noto Sans JP" font-size="9.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-1237.5" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+</g>
+<!-- planning_inputs -->
+<g id="node15" class="node">
+<title>planning_inputs</title>
+<polygon fill="none" stroke="black" points="1201.5,-969 1201.5,-1097 1325,-1097 1325,-969 1201.5,-969"/>
+<polygon fill="#e8eef7" stroke="none" points="1202.5,-1080.25 1202.5,-1096 1324,-1096 1324,-1080.25 1202.5,-1080.25"/>
+<text xml:space="preserve" text-anchor="start" x="1229.5" y="-1085.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_inputs</text>
+<text xml:space="preserve" text-anchor="start" x="1205.5" y="-1069.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">input_hash</text>
+<text xml:space="preserve" text-anchor="start" x="1269.25" y="-1069.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="1205.5" y="-1054" font-family="Noto Sans JP" font-size="9.00">scope_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="1269.25" y="-1054" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="1205.5" y="-1038.25" font-family="Noto Sans JP" font-size="9.00">input_revision</text>
+<text xml:space="preserve" text-anchor="start" x="1269.25" y="-1038.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="1205.5" y="-1022.5" font-family="Noto Sans JP" font-size="9.00">data_revision</text>
+<text xml:space="preserve" text-anchor="start" x="1269.25" y="-1022.5" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="1205.5" y="-1006.75" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="1269.25" y="-1006.75" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="1205.5" y="-991" font-family="Noto Sans JP" font-size="9.00">created_by</text>
+<text xml:space="preserve" text-anchor="start" x="1269.25" y="-991" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="1205.5" y="-975.25" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="1269.25" y="-975.25" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- planning_drafts&#45;&gt;planning_inputs -->
+<g id="edge8" class="edge">
+<title>planning_drafts&#45;&gt;planning_inputs</title>
+<path fill="none" stroke="black" d="M1056.75,-1238.68C1096.68,-1198.72 1146.25,-1149.11 1186.69,-1108.62"/>
+<polygon fill="black" stroke="black" points="1188.99,-1111.27 1193.59,-1101.73 1184.04,-1106.33 1188.99,-1111.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1132.38" y="-1207.98" font-family="Noto Sans JP" font-size="8.00">input_hash→input_hash</text>
+</g>
+<!-- planning_heads -->
+<g id="node13" class="node">
+<title>planning_heads</title>
+<polygon fill="none" stroke="black" points="337.12,-943.5 337.12,-1008.5 480.12,-1008.5 480.12,-943.5 337.12,-943.5"/>
+<polygon fill="#e8eef7" stroke="none" points="338.12,-991.75 338.12,-1007.5 479.12,-1007.5 479.12,-991.75 338.12,-991.75"/>
+<text xml:space="preserve" text-anchor="start" x="374.88" y="-996.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_heads</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-981.2" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">key</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-981.25" font-family="Noto Sans JP" font-size="9.00">varchar_384</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-965.5" font-family="Noto Sans JP" font-size="9.00">version</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-965.5" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-949.75" font-family="Noto Sans JP" font-size="9.00">publication_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-949.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+</g>
+<!-- planning_heads&#45;&gt;planning_publications -->
+<g id="edge9" class="edge">
+<title>planning_heads&#45;&gt;planning_publications</title>
+<path fill="none" stroke="black" d="M487.83,-971.55C535.77,-968.82 597.01,-965.34 645.39,-962.59"/>
+<polygon fill="black" stroke="black" points="645.47,-966.09 655.25,-962.03 645.07,-959.1 645.47,-966.09"/>
+<text xml:space="preserve" text-anchor="middle" x="586.38" y="-971.51" font-family="Noto Sans JP" font-size="8.00">publication_id→publication_id</text>
+</g>
+<!-- planning_input_heads -->
+<g id="node14" class="node">
+<title>planning_input_heads</title>
+<polygon fill="none" stroke="black" points="918,-859.5 918,-924.5 1049,-924.5 1049,-859.5 918,-859.5"/>
+<polygon fill="#e8eef7" stroke="none" points="919,-907.75 919,-923.5 1048,-923.5 1048,-907.75 919,-907.75"/>
+<text xml:space="preserve" text-anchor="start" x="936.62" y="-912.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_input_heads</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-897.2" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">key</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-897.25" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-881.5" font-family="Noto Sans JP" font-size="9.00">scope_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-881.5" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="922" y="-865.75" font-family="Noto Sans JP" font-size="9.00">input_hash (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="993.25" y="-865.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+</g>
+<!-- planning_input_heads&#45;&gt;planning_inputs -->
+<g id="edge10" class="edge">
+<title>planning_input_heads&#45;&gt;planning_inputs</title>
+<path fill="none" stroke="black" d="M1056.39,-928.49C1095.28,-948.24 1143.38,-972.66 1183.31,-992.92"/>
+<polygon fill="black" stroke="black" points="1181.68,-996.03 1192.19,-997.43 1184.85,-989.78 1181.68,-996.03"/>
+<text xml:space="preserve" text-anchor="middle" x="1132.38" y="-990.29" font-family="Noto Sans JP" font-size="8.00">input_hash→input_hash</text>
+</g>
+<!-- planning_input_heads&#45;&gt;planning_scopes -->
+<g id="edge11" class="edge">
+<title>planning_input_heads&#45;&gt;planning_scopes</title>
+<path fill="none" stroke="black" d="M1056.9,-892C1153.57,-892 1324.66,-892 1428.83,-892"/>
+<polygon fill="black" stroke="black" points="1428.74,-895.5 1438.74,-892 1428.74,-888.5 1428.74,-895.5"/>
+<text xml:space="preserve" text-anchor="middle" x="1263.25" y="-894.9" font-family="Noto Sans JP" font-size="8.00">scope_id→scope_id</text>
+</g>
+<!-- planning_inputs&#45;&gt;planning_scopes -->
+<g id="edge12" class="edge">
+<title>planning_inputs&#45;&gt;planning_scopes</title>
+<path fill="none" stroke="black" d="M1332.72,-994.84C1362.82,-978.07 1398.52,-958.17 1430.47,-940.36"/>
+<polygon fill="black" stroke="black" points="1431.9,-943.57 1438.93,-935.65 1428.49,-937.46 1431.9,-943.57"/>
+<text xml:space="preserve" text-anchor="middle" x="1386.62" y="-986.27" font-family="Noto Sans JP" font-size="8.00">scope_id→scope_id</text>
+</g>
+<!-- planning_jobs -->
+<g id="node16" class="node">
+<title>planning_jobs</title>
+<polygon fill="none" stroke="black" points="903.75,-951 903.75,-1205 1063.25,-1205 1063.25,-951 903.75,-951"/>
+<polygon fill="#e8eef7" stroke="none" points="904.75,-1188.25 904.75,-1204 1062.25,-1204 1062.25,-1188.25 904.75,-1188.25"/>
+<text xml:space="preserve" text-anchor="start" x="953.88" y="-1193.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_jobs</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1177.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">job_id</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1177.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1162" font-family="Noto Sans JP" font-size="9.00">input_hash (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1162" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1146.25" font-family="Noto Sans JP" font-size="9.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1146.25" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1130.5" font-family="Noto Sans JP" font-size="9.00">requested_by</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1130.5" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1114.75" font-family="Noto Sans JP" font-size="9.00">request_key</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1114.75" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1099" font-family="Noto Sans JP" font-size="9.00">budget_seconds</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1099" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1083.25" font-family="Noto Sans JP" font-size="9.00">attempts</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1083.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1067.5" font-family="Noto Sans JP" font-size="9.00">claimed_at</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1067.5" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1051.75" font-family="Noto Sans JP" font-size="9.00">completed_at</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1051.75" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1036" font-family="Noto Sans JP" font-size="9.00">persisted_observed_at</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1036" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1020.25" font-family="Noto Sans JP" font-size="9.00">stage_seconds</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1020.25" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-1004.5" font-family="Noto Sans JP" font-size="9.00">lease_token</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-1004.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-988.75" font-family="Noto Sans JP" font-size="9.00">lease_until</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-988.75" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-973" font-family="Noto Sans JP" font-size="9.00">result</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-973" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="907.75" y="-957.25" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="1007.5" y="-957.25" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- planning_jobs&#45;&gt;planning_inputs -->
+<g id="edge13" class="edge">
+<title>planning_jobs&#45;&gt;planning_inputs</title>
+<path fill="none" stroke="black" d="M1071.24,-1063.95C1106.86,-1058.18 1147.83,-1051.54 1182.67,-1045.89"/>
+<polygon fill="black" stroke="black" points="1182.95,-1049.39 1192.26,-1044.34 1181.83,-1042.48 1182.95,-1049.39"/>
+<text xml:space="preserve" text-anchor="middle" x="1132.38" y="-1063.75" font-family="Noto Sans JP" font-size="8.00">input_hash→input_hash</text>
+</g>
+<!-- planning_leave_balances -->
+<g id="node17" class="node">
+<title>planning_leave_balances</title>
+<polygon fill="none" stroke="black" points="668.62,-1056.12 668.62,-1199.88 785.38,-1199.88 785.38,-1056.12 668.62,-1056.12"/>
+<polygon fill="#e8eef7" stroke="none" points="669.62,-1183.12 669.62,-1198.88 784.38,-1198.88 784.38,-1183.12 669.62,-1183.12"/>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1188.33" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_leave_balances</text>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1172.58" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">grant_id</text>
+<text xml:space="preserve" text-anchor="start" x="729.62" y="-1172.62" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1156.88" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="729.62" y="-1156.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1141.12" font-family="Noto Sans JP" font-size="9.00">employer_id</text>
+<text xml:space="preserve" text-anchor="start" x="729.62" y="-1141.12" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1125.38" font-family="Noto Sans JP" font-size="9.00">amount</text>
+<text xml:space="preserve" text-anchor="start" x="729.62" y="-1125.38" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1109.62" font-family="Noto Sans JP" font-size="9.00">consumed</text>
+<text xml:space="preserve" text-anchor="start" x="729.62" y="-1109.62" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1093.88" font-family="Noto Sans JP" font-size="9.00">reserved</text>
+<text xml:space="preserve" text-anchor="start" x="729.62" y="-1093.88" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1078.12" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="729.62" y="-1078.12" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="672.62" y="-1062.38" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="729.62" y="-1062.38" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+<!-- planning_leave_events -->
+<g id="node18" class="node">
+<title>planning_leave_events</title>
+<polygon fill="none" stroke="black" points="337.12,-1035 337.12,-1163 480.12,-1163 480.12,-1035 337.12,-1035"/>
+<polygon fill="#e8eef7" stroke="none" points="338.12,-1146.25 338.12,-1162 479.12,-1162 479.12,-1146.25 338.12,-1146.25"/>
+<text xml:space="preserve" text-anchor="start" x="359.12" y="-1151.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_leave_events</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-1135.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">event_id</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-1135.75" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-1120" font-family="Noto Sans JP" font-size="9.00">grant_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-1120" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-1104.25" font-family="Noto Sans JP" font-size="9.00">publication_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-1104.25" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-1088.5" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-1088.5" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-1072.75" font-family="Noto Sans JP" font-size="9.00">amount</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-1072.75" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-1057" font-family="Noto Sans JP" font-size="9.00">actor</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-1057" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="341.12" y="-1041.25" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="424.38" y="-1041.25" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- planning_leave_events&#45;&gt;planning_leave_balances -->
+<g id="edge14" class="edge">
+<title>planning_leave_events&#45;&gt;planning_leave_balances</title>
+<path fill="none" stroke="black" d="M487.83,-1106.17C537.15,-1110.69 600.53,-1116.5 649.52,-1120.99"/>
+<polygon fill="black" stroke="black" points="648.9,-1124.45 659.18,-1121.88 649.54,-1117.48 648.9,-1124.45"/>
+<text xml:space="preserve" text-anchor="middle" x="586.38" y="-1122.33" font-family="Noto Sans JP" font-size="8.00">grant_id→grant_id</text>
+</g>
+<!-- planning_leave_events&#45;&gt;planning_publications -->
+<g id="edge15" class="edge">
+<title>planning_leave_events&#45;&gt;planning_publications</title>
+<path fill="none" stroke="black" d="M487.83,-1064.15C536.07,-1042.64 597.79,-1015.14 646.31,-993.52"/>
+<polygon fill="black" stroke="black" points="647.67,-996.74 655.38,-989.47 644.82,-990.35 647.67,-996.74"/>
+<text xml:space="preserve" text-anchor="middle" x="586.38" y="-1044.03" font-family="Noto Sans JP" font-size="8.00">publication_id→publication_id</text>
+</g>
+<!-- planning_notification_reads -->
+<g id="node19" class="node">
+<title>planning_notification_reads</title>
+<polygon fill="none" stroke="black" points="37.88,-1158.62 37.88,-1239.38 164.38,-1239.38 164.38,-1158.62 37.88,-1158.62"/>
+<polygon fill="#e8eef7" stroke="none" points="38.88,-1222.62 38.88,-1238.38 163.38,-1238.38 163.38,-1222.62 38.88,-1222.62"/>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1227.83" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_notification_reads</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1212.08" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">key</text>
+<text xml:space="preserve" text-anchor="start" x="105.62" y="-1212.12" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1196.38" font-family="Noto Sans JP" font-size="9.00">event_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="105.62" y="-1196.38" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1180.62" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="105.62" y="-1180.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1164.88" font-family="Noto Sans JP" font-size="9.00">read_at</text>
+<text xml:space="preserve" text-anchor="start" x="105.62" y="-1164.88" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- planning_outbox -->
+<g id="node20" class="node">
+<title>planning_outbox</title>
+<polygon fill="none" stroke="black" points="350.25,-1189 350.25,-1317 467,-1317 467,-1189 350.25,-1189"/>
+<polygon fill="#e8eef7" stroke="none" points="351.25,-1300.25 351.25,-1316 466,-1316 466,-1300.25 351.25,-1300.25"/>
+<text xml:space="preserve" text-anchor="start" x="373.38" y="-1305.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_outbox</text>
+<text xml:space="preserve" text-anchor="start" x="354.25" y="-1289.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">event_id</text>
+<text xml:space="preserve" text-anchor="start" x="411.25" y="-1289.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="354.25" y="-1274" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="411.25" y="-1274" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="354.25" y="-1258.25" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="411.25" y="-1258.25" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="354.25" y="-1242.5" font-family="Noto Sans JP" font-size="9.00">actor</text>
+<text xml:space="preserve" text-anchor="start" x="411.25" y="-1242.5" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="354.25" y="-1226.75" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="411.25" y="-1226.75" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="354.25" y="-1211" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="411.25" y="-1211" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="354.25" y="-1195.25" font-family="Noto Sans JP" font-size="9.00">delivered_at</text>
+<text xml:space="preserve" text-anchor="start" x="411.25" y="-1195.25" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- planning_notification_reads&#45;&gt;planning_outbox -->
+<g id="edge16" class="edge">
+<title>planning_notification_reads&#45;&gt;planning_outbox</title>
+<path fill="none" stroke="black" d="M172.21,-1211.39C219.69,-1219.78 282.41,-1230.87 331.17,-1239.49"/>
+<polygon fill="black" stroke="black" points="330.36,-1242.9 340.81,-1241.19 331.57,-1236 330.36,-1242.9"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-1233.74" font-family="Noto Sans JP" font-size="8.00">event_id→event_id</text>
+</g>
+<!-- planning_publications&#45;&gt;planning_drafts -->
+<g id="edge17" class="edge">
+<title>planning_publications&#45;&gt;planning_drafts</title>
+<path fill="none" stroke="black" d="M790.82,-1033.49C793.12,-1036.67 795.35,-1039.85 797.5,-1043 847.75,-1116.69 843.12,-1145.98 895.75,-1218 898.07,-1221.17 900.48,-1224.35 902.97,-1227.52"/>
+<polygon fill="black" stroke="black" points="900.19,-1229.66 909.2,-1235.25 905.64,-1225.26 900.19,-1229.66"/>
+<text xml:space="preserve" text-anchor="middle" x="846.62" y="-1192.93" font-family="Noto Sans JP" font-size="8.00">draft_id→draft_id</text>
+</g>
+<!-- planning_publications&#45;&gt;planning_scopes -->
+<g id="edge18" class="edge">
+<title>planning_publications&#45;&gt;planning_scopes</title>
+<path fill="none" stroke="black" d="M797.18,-899.02C825.78,-878.33 860.47,-857.62 895.75,-847 993.05,-817.72 1282.22,-855.64 1429.27,-877.91"/>
+<polygon fill="black" stroke="black" points="1428.56,-881.34 1438.97,-879.39 1429.61,-874.42 1428.56,-881.34"/>
+<text xml:space="preserve" text-anchor="middle" x="1132.38" y="-848.5" font-family="Noto Sans JP" font-size="8.00">scope_id→scope_id</text>
+</g>
+<!-- planning_receipts -->
+<g id="node22" class="node">
+<title>planning_receipts</title>
+<polygon fill="none" stroke="black" points="46.88,-1265.5 46.88,-1330.5 155.38,-1330.5 155.38,-1265.5 46.88,-1265.5"/>
+<polygon fill="#e8eef7" stroke="none" points="47.88,-1313.75 47.88,-1329.5 154.38,-1329.5 154.38,-1313.75 47.88,-1313.75"/>
+<text xml:space="preserve" text-anchor="start" x="62.88" y="-1318.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_receipts</text>
+<text xml:space="preserve" text-anchor="start" x="50.88" y="-1303.2" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">receipt_id</text>
+<text xml:space="preserve" text-anchor="start" x="99.62" y="-1303.25" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="50.88" y="-1287.5" font-family="Noto Sans JP" font-size="9.00">fingerprint</text>
+<text xml:space="preserve" text-anchor="start" x="99.62" y="-1287.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="50.88" y="-1271.75" font-family="Noto Sans JP" font-size="9.00">response</text>
+<text xml:space="preserve" text-anchor="start" x="99.62" y="-1271.75" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+<!-- planning_requests -->
+<g id="node23" class="node">
+<title>planning_requests</title>
+<polygon fill="none" stroke="black" points="45.38,-1356.12 45.38,-1499.88 156.88,-1499.88 156.88,-1356.12 45.38,-1356.12"/>
+<polygon fill="#e8eef7" stroke="none" points="46.38,-1483.12 46.38,-1498.88 155.88,-1498.88 155.88,-1483.12 46.38,-1483.12"/>
+<text xml:space="preserve" text-anchor="start" x="61.38" y="-1488.33" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">planning_requests</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-1472.58" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">request_id</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-1472.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-1456.88" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-1456.88" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-1441.12" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-1441.12" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-1425.38" font-family="Noto Sans JP" font-size="9.00">version</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-1425.38" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-1409.62" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-1409.62" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-1393.88" font-family="Noto Sans JP" font-size="9.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-1393.88" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-1378.12" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-1378.12" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="49.38" y="-1362.38" font-family="Noto Sans JP" font-size="9.00">decision</text>
+<text xml:space="preserve" text-anchor="start" x="101.12" y="-1362.38" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+<!-- revoked_sessions -->
+<g id="node25" class="node">
+<title>revoked_sessions</title>
+<polygon fill="none" stroke="black" points="45,-1526.38 45,-1575.62 157.25,-1575.62 157.25,-1526.38 45,-1526.38"/>
+<polygon fill="#e8eef7" stroke="none" points="46,-1558.88 46,-1574.62 156.25,-1574.62 156.25,-1558.88 46,-1558.88"/>
+<text xml:space="preserve" text-anchor="start" x="61.38" y="-1564.08" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">revoked_sessions</text>
+<text xml:space="preserve" text-anchor="start" x="49" y="-1548.33" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">session_id</text>
+<text xml:space="preserve" text-anchor="start" x="101.5" y="-1548.38" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="49" y="-1532.62" font-family="Noto Sans JP" font-size="9.00">revoked_at</text>
+<text xml:space="preserve" text-anchor="start" x="101.5" y="-1532.62" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- staff_lifecycle_cases -->
+<g id="node26" class="node">
+<title>staff_lifecycle_cases</title>
+<polygon fill="none" stroke="black" points="1201.88,-1212.62 1201.88,-1419.38 1324.62,-1419.38 1324.62,-1212.62 1201.88,-1212.62"/>
+<polygon fill="#e8eef7" stroke="none" points="1202.88,-1402.62 1202.88,-1418.38 1323.62,-1418.38 1323.62,-1402.62 1202.88,-1402.62"/>
+<text xml:space="preserve" text-anchor="start" x="1217.12" y="-1407.83" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">staff_lifecycle_cases</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1392.08" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">case_id</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1392.12" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1376.38" font-family="Noto Sans JP" font-size="9.00">scope_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1376.38" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1360.62" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1360.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1344.88" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1344.88" font-family="Noto Sans JP" font-size="9.00">varchar_24</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1329.12" font-family="Noto Sans JP" font-size="9.00">effective_date</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1329.12" font-family="Noto Sans JP" font-size="9.00">date</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1313.38" font-family="Noto Sans JP" font-size="9.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1313.38" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1297.62" font-family="Noto Sans JP" font-size="9.00">version</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1297.62" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1281.88" font-family="Noto Sans JP" font-size="9.00">tasks</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1281.88" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1266.12" font-family="Noto Sans JP" font-size="9.00">evidence</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1266.12" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1250.38" font-family="Noto Sans JP" font-size="9.00">created_by</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1250.38" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1234.62" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1234.62" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="1205.88" y="-1218.88" font-family="Noto Sans JP" font-size="9.00">updated_at</text>
+<text xml:space="preserve" text-anchor="start" x="1268.88" y="-1218.88" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- staff_lifecycle_cases&#45;&gt;planning_scopes -->
+<g id="edge20" class="edge">
+<title>staff_lifecycle_cases&#45;&gt;planning_scopes</title>
+<path fill="none" stroke="black" d="M1328.26,-1208.73C1376.39,-1128.06 1440.65,-1020.37 1480.47,-953.63"/>
+<polygon fill="black" stroke="black" points="1483.27,-955.77 1485.39,-945.39 1477.26,-952.19 1483.27,-955.77"/>
+<text xml:space="preserve" text-anchor="middle" x="1386.62" y="-1169.65" font-family="Noto Sans JP" font-size="8.00">scope_id→scope_id</text>
+</g>
+<!-- staff_lifecycle_events -->
+<g id="node27" class="node">
+<title>staff_lifecycle_events</title>
+<polygon fill="none" stroke="black" points="924.75,-1417 924.75,-1545 1042.25,-1545 1042.25,-1417 924.75,-1417"/>
+<polygon fill="#e8eef7" stroke="none" points="925.75,-1528.25 925.75,-1544 1041.25,-1544 1041.25,-1528.25 925.75,-1528.25"/>
+<text xml:space="preserve" text-anchor="start" x="935.88" y="-1533.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">staff_lifecycle_events</text>
+<text xml:space="preserve" text-anchor="start" x="928.75" y="-1517.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">event_id</text>
+<text xml:space="preserve" text-anchor="start" x="986.5" y="-1517.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="928.75" y="-1502" font-family="Noto Sans JP" font-size="9.00">case_id (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="986.5" y="-1502" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="928.75" y="-1486.25" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="986.5" y="-1486.25" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="928.75" y="-1470.5" font-family="Noto Sans JP" font-size="9.00">task_key</text>
+<text xml:space="preserve" text-anchor="start" x="986.5" y="-1470.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="928.75" y="-1454.75" font-family="Noto Sans JP" font-size="9.00">actor</text>
+<text xml:space="preserve" text-anchor="start" x="986.5" y="-1454.75" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="928.75" y="-1439" font-family="Noto Sans JP" font-size="9.00">evidence</text>
+<text xml:space="preserve" text-anchor="start" x="986.5" y="-1439" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="928.75" y="-1423.25" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="986.5" y="-1423.25" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- staff_lifecycle_events&#45;&gt;staff_lifecycle_cases -->
+<g id="edge21" class="edge">
+<title>staff_lifecycle_events&#45;&gt;staff_lifecycle_cases</title>
+<path fill="none" stroke="black" d="M1049.97,-1442.11C1090.29,-1418.15 1142.2,-1387.32 1184.59,-1362.13"/>
+<polygon fill="black" stroke="black" points="1186.21,-1365.25 1193.02,-1357.13 1182.63,-1359.23 1186.21,-1365.25"/>
+<text xml:space="preserve" text-anchor="middle" x="1132.38" y="-1421.03" font-family="Noto Sans JP" font-size="8.00">case_id→case_id</text>
+</g>
+<!-- compliance_entities -->
+<g id="node28" class="node">
+<title>compliance_entities</title>
+<polygon fill="none" stroke="black" points="354,-1627.12 354,-1770.88 463.25,-1770.88 463.25,-1627.12 354,-1627.12"/>
+<polygon fill="#e8eef7" stroke="none" points="355,-1754.12 355,-1769.88 462.25,-1769.88 462.25,-1754.12 355,-1754.12"/>
+<text xml:space="preserve" text-anchor="start" x="365.5" y="-1759.33" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">compliance_entities</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-1743.58" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">key</text>
+<text xml:space="preserve" text-anchor="start" x="407.5" y="-1743.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-1727.88" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="407.5" y="-1727.88" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-1712.12" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="407.5" y="-1712.12" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-1696.38" font-family="Noto Sans JP" font-size="9.00">entity_id</text>
+<text xml:space="preserve" text-anchor="start" x="407.5" y="-1696.38" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-1680.62" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="407.5" y="-1680.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-1664.88" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="407.5" y="-1664.88" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-1649.12" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="407.5" y="-1649.12" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="358" y="-1633.38" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="407.5" y="-1633.38" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- compliance_revisions -->
+<g id="node29" class="node">
+<title>compliance_revisions</title>
+<polygon fill="none" stroke="black" points="37.88,-1626.88 37.88,-1739.12 164.38,-1739.12 164.38,-1626.88 37.88,-1626.88"/>
+<polygon fill="#e8eef7" stroke="none" points="38.88,-1722.38 38.88,-1738.12 163.38,-1738.12 163.38,-1722.38 38.88,-1722.38"/>
+<text xml:space="preserve" text-anchor="start" x="53.88" y="-1727.58" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">compliance_revisions</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1711.83" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">key</text>
+<text xml:space="preserve" text-anchor="start" x="108.62" y="-1711.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1696.12" font-family="Noto Sans JP" font-size="9.00">entity_key (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="108.62" y="-1696.12" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1680.38" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="108.62" y="-1680.38" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1664.62" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="108.62" y="-1664.62" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1648.88" font-family="Noto Sans JP" font-size="9.00">actor</text>
+<text xml:space="preserve" text-anchor="start" x="108.62" y="-1648.88" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="41.88" y="-1633.12" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="108.62" y="-1633.12" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- compliance_revisions&#45;&gt;compliance_entities -->
+<g id="edge1" class="edge">
+<title>compliance_revisions&#45;&gt;compliance_entities</title>
+<path fill="none" stroke="black" d="M172.21,-1686.67C220.91,-1689.22 285.66,-1692.61 334.92,-1695.19"/>
+<polygon fill="black" stroke="black" points="334.46,-1698.67 344.63,-1695.7 334.82,-1691.68 334.46,-1698.67"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-1695.33" font-family="Noto Sans JP" font-size="8.00">entity_key→key</text>
+</g>
+<!-- control_commits -->
+<g id="node30" class="node">
+<title>control_commits</title>
+<polygon fill="none" stroke="black" points="24.75,-1764.75 24.75,-1861.25 177.5,-1861.25 177.5,-1764.75 24.75,-1764.75"/>
+<polygon fill="#e8eef7" stroke="none" points="25.75,-1844.5 25.75,-1860.25 176.5,-1860.25 176.5,-1844.5 25.75,-1844.5"/>
+<text xml:space="preserve" text-anchor="start" x="64.75" y="-1849.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">control_commits</text>
+<text xml:space="preserve" text-anchor="start" x="28.75" y="-1833.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">operation_id</text>
+<text xml:space="preserve" text-anchor="start" x="121.75" y="-1834" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="28.75" y="-1818.25" font-family="Noto Sans JP" font-size="9.00">source_id</text>
+<text xml:space="preserve" text-anchor="start" x="121.75" y="-1818.25" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="28.75" y="-1802.5" font-family="Noto Sans JP" font-size="9.00">expected_generation</text>
+<text xml:space="preserve" text-anchor="start" x="121.75" y="-1802.5" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="28.75" y="-1786.75" font-family="Noto Sans JP" font-size="9.00">manifest_hash</text>
+<text xml:space="preserve" text-anchor="start" x="121.75" y="-1786.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="28.75" y="-1771" font-family="Noto Sans JP" font-size="9.00">receipt_hash</text>
+<text xml:space="preserve" text-anchor="start" x="121.75" y="-1771" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+</g>
+<!-- copy_erasures -->
+<g id="node31" class="node">
+<title>copy_erasures</title>
+<polygon fill="none" stroke="black" points="47.62,-1887 47.62,-2015 154.62,-2015 154.62,-1887 47.62,-1887"/>
+<polygon fill="#e8eef7" stroke="none" points="48.62,-1998.25 48.62,-2014 153.62,-2014 153.62,-1998.25 48.62,-1998.25"/>
+<text xml:space="preserve" text-anchor="start" x="68.5" y="-2003.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">copy_erasures</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-1987.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">plan_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-1987.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-1972" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-1972" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-1956.25" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-1956.25" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-1940.5" font-family="Noto Sans JP" font-size="9.00">fingerprint</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-1940.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-1924.75" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-1924.75" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-1909" font-family="Noto Sans JP" font-size="9.00">state</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-1909" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-1893.25" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-1893.25" font-family="Noto Sans JP" font-size="9.00">integer</text>
+</g>
+<!-- copy_subjects -->
+<g id="node32" class="node">
+<title>copy_subjects</title>
+<polygon fill="none" stroke="black" points="44.25,-2041.38 44.25,-2090.62 158,-2090.62 158,-2041.38 44.25,-2041.38"/>
+<polygon fill="#e8eef7" stroke="none" points="45.25,-2073.88 45.25,-2089.62 157,-2089.62 157,-2073.88 45.25,-2073.88"/>
+<text xml:space="preserve" text-anchor="start" x="69.62" y="-2079.07" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">copy_subjects</text>
+<text xml:space="preserve" text-anchor="start" x="48.25" y="-2063.32" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">copy_id</text>
+<text xml:space="preserve" text-anchor="start" x="82" y="-2063.32" font-family="Noto Sans JP" font-size="9.00"> (FK)</text>
+<text xml:space="preserve" text-anchor="start" x="107.5" y="-2063.38" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="48.25" y="-2047.58" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="107.5" y="-2047.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+</g>
+<!-- managed_copies -->
+<g id="node37" class="node">
+<title>managed_copies</title>
+<polygon fill="none" stroke="black" points="346.5,-1962.62 346.5,-2169.38 470.75,-2169.38 470.75,-1962.62 346.5,-1962.62"/>
+<polygon fill="#e8eef7" stroke="none" points="347.5,-2152.62 347.5,-2168.38 469.75,-2168.38 469.75,-2152.62 347.5,-2152.62"/>
+<text xml:space="preserve" text-anchor="start" x="371.88" y="-2157.82" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">managed_copies</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2142.07" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">copy_id</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2142.12" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2126.38" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2126.38" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2110.62" font-family="Noto Sans JP" font-size="9.00">category</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2110.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2094.88" font-family="Noto Sans JP" font-size="9.00">medium</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2094.88" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2079.12" font-family="Noto Sans JP" font-size="9.00">locator</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2079.12" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2063.38" font-family="Noto Sans JP" font-size="9.00">content_hash</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2063.38" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2047.62" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2047.62" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2031.88" font-family="Noto Sans JP" font-size="9.00">state</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2031.88" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2016.12" font-family="Noto Sans JP" font-size="9.00">subject_status</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2016.12" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-2000.38" font-family="Noto Sans JP" font-size="9.00">anchor</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-2000.38" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-1984.62" font-family="Noto Sans JP" font-size="9.00">anchor_at</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-1984.62" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="350.5" y="-1968.88" font-family="Noto Sans JP" font-size="9.00">evidence</text>
+<text xml:space="preserve" text-anchor="start" x="415" y="-1968.88" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+<!-- copy_subjects&#45;&gt;managed_copies -->
+<g id="edge2" class="edge">
+<title>copy_subjects&#45;&gt;managed_copies</title>
+<path fill="none" stroke="black" d="M165.8,-2066C212.78,-2066 277.05,-2066 327.52,-2066"/>
+<polygon fill="black" stroke="black" points="327.21,-2069.5 337.21,-2066 327.21,-2062.5 327.21,-2069.5"/>
+<text xml:space="preserve" text-anchor="middle" x="243.62" y="-2068.9" font-family="Noto Sans JP" font-size="8.00">copy_id→copy_id</text>
+</g>
+<!-- erased_subjects -->
+<g id="node33" class="node">
+<title>erased_subjects</title>
+<polygon fill="none" stroke="black" points="46.5,-2116.75 46.5,-2213.25 155.75,-2213.25 155.75,-2116.75 46.5,-2116.75"/>
+<polygon fill="#e8eef7" stroke="none" points="47.5,-2196.5 47.5,-2212.25 154.75,-2212.25 154.75,-2196.5 47.5,-2196.5"/>
+<text xml:space="preserve" text-anchor="start" x="65.12" y="-2201.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">erased_subjects</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2185.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">facility_id</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2186" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2170.2" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2170.25" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2154.5" font-family="Noto Sans JP" font-size="9.00">plan_id</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2154.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2138.75" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2138.75" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2123" font-family="Noto Sans JP" font-size="9.00">evidence</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2123" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+<!-- erasure_markers -->
+<g id="node34" class="node">
+<title>erasure_markers</title>
+<polygon fill="none" stroke="black" points="43.88,-2239 43.88,-2367 158.38,-2367 158.38,-2239 43.88,-2239"/>
+<polygon fill="#e8eef7" stroke="none" points="44.88,-2350.25 44.88,-2366 157.38,-2366 157.38,-2350.25 44.88,-2350.25"/>
+<text xml:space="preserve" text-anchor="start" x="63.25" y="-2355.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">erasure_markers</text>
+<text xml:space="preserve" text-anchor="start" x="47.88" y="-2339.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">marker_id</text>
+<text xml:space="preserve" text-anchor="start" x="102.62" y="-2339.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="47.88" y="-2324" font-family="Noto Sans JP" font-size="9.00">plan_id</text>
+<text xml:space="preserve" text-anchor="start" x="102.62" y="-2324" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="47.88" y="-2308.25" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="102.62" y="-2308.25" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="47.88" y="-2292.5" font-family="Noto Sans JP" font-size="9.00">table_name</text>
+<text xml:space="preserve" text-anchor="start" x="102.62" y="-2292.5" font-family="Noto Sans JP" font-size="9.00">varchar_128</text>
+<text xml:space="preserve" text-anchor="start" x="47.88" y="-2276.75" font-family="Noto Sans JP" font-size="9.00">object_key</text>
+<text xml:space="preserve" text-anchor="start" x="102.62" y="-2276.75" font-family="Noto Sans JP" font-size="9.00">varchar_384</text>
+<text xml:space="preserve" text-anchor="start" x="47.88" y="-2261" font-family="Noto Sans JP" font-size="9.00">prior_hash</text>
+<text xml:space="preserve" text-anchor="start" x="102.62" y="-2261" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="47.88" y="-2245.25" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="102.62" y="-2245.25" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- erasure_plans -->
+<g id="node35" class="node">
+<title>erasure_plans</title>
+<polygon fill="none" stroke="black" points="46.5,-2392.88 46.5,-2505.12 155.75,-2505.12 155.75,-2392.88 46.5,-2392.88"/>
+<polygon fill="#e8eef7" stroke="none" points="47.5,-2488.38 47.5,-2504.12 154.75,-2504.12 154.75,-2488.38 47.5,-2488.38"/>
+<text xml:space="preserve" text-anchor="start" x="70" y="-2493.57" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">erasure_plans</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2477.82" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">plan_id</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2477.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2462.12" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2462.12" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2446.38" font-family="Noto Sans JP" font-size="9.00">fingerprint</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2446.38" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2430.62" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2430.62" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2414.88" font-family="Noto Sans JP" font-size="9.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2414.88" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="50.5" y="-2399.12" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="100" y="-2399.12" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- legal_holds -->
+<g id="node36" class="node">
+<title>legal_holds</title>
+<polygon fill="none" stroke="black" points="47.62,-2530.88 47.62,-2643.12 154.62,-2643.12 154.62,-2530.88 47.62,-2530.88"/>
+<polygon fill="#e8eef7" stroke="none" points="48.62,-2626.38 48.62,-2642.12 153.62,-2642.12 153.62,-2626.38 48.62,-2626.38"/>
+<text xml:space="preserve" text-anchor="start" x="76.75" y="-2631.57" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">legal_holds</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2615.82" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">hold_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2615.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2600.12" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2600.12" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2584.38" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2584.38" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2568.62" font-family="Noto Sans JP" font-size="9.00">active</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2568.62" font-family="Noto Sans JP" font-size="9.00">boolean</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2552.88" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2552.88" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2537.12" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2537.12" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+<!-- preserved_archives -->
+<g id="node38" class="node">
+<title>preserved_archives</title>
+<polygon fill="none" stroke="black" points="39,-2668.88 39,-2781.12 163.25,-2781.12 163.25,-2668.88 39,-2668.88"/>
+<polygon fill="#e8eef7" stroke="none" points="40,-2764.38 40,-2780.12 162.25,-2780.12 162.25,-2764.38 40,-2764.38"/>
+<text xml:space="preserve" text-anchor="start" x="57.62" y="-2769.57" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">preserved_archives</text>
+<text xml:space="preserve" text-anchor="start" x="43" y="-2753.82" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">archive_id</text>
+<text xml:space="preserve" text-anchor="start" x="107.5" y="-2753.88" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="43" y="-2738.12" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="107.5" y="-2738.12" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="43" y="-2722.38" font-family="Noto Sans JP" font-size="9.00">source_digest</text>
+<text xml:space="preserve" text-anchor="start" x="107.5" y="-2722.38" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="43" y="-2706.62" font-family="Noto Sans JP" font-size="9.00">payload_hash</text>
+<text xml:space="preserve" text-anchor="start" x="107.5" y="-2706.62" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="43" y="-2690.88" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="107.5" y="-2690.88" font-family="Noto Sans JP" font-size="9.00">json</text>
+<text xml:space="preserve" text-anchor="start" x="43" y="-2675.12" font-family="Noto Sans JP" font-size="9.00">created_at</text>
+<text xml:space="preserve" text-anchor="start" x="107.5" y="-2675.12" font-family="Noto Sans JP" font-size="9.00">datetime</text>
+</g>
+<!-- privacy_cases -->
+<g id="node39" class="node">
+<title>privacy_cases</title>
+<polygon fill="none" stroke="black" points="47.62,-2807 47.62,-2935 154.62,-2935 154.62,-2807 47.62,-2807"/>
+<polygon fill="#e8eef7" stroke="none" points="48.62,-2918.25 48.62,-2934 153.62,-2934 153.62,-2918.25 48.62,-2918.25"/>
+<text xml:space="preserve" text-anchor="start" x="69.25" y="-2923.45" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">privacy_cases</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2907.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">case_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2907.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2892" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2892" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2876.25" font-family="Noto Sans JP" font-size="9.00">person_id</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2876.25" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2860.5" font-family="Noto Sans JP" font-size="9.00">kind</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2860.5" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2844.75" font-family="Noto Sans JP" font-size="9.00">status</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2844.75" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2829" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2829" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="51.62" y="-2813.25" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="98.88" y="-2813.25" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+<!-- restore_gates -->
+<g id="node40" class="node">
+<title>restore_gates</title>
+<polygon fill="none" stroke="black" points="24,-2961.5 24,-3026.5 178.25,-3026.5 178.25,-2961.5 24,-2961.5"/>
+<polygon fill="#e8eef7" stroke="none" points="25,-3009.75 25,-3025.5 177.25,-3025.5 177.25,-3009.75 25,-3009.75"/>
+<text xml:space="preserve" text-anchor="start" x="70.75" y="-3014.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">restore_gates</text>
+<text xml:space="preserve" text-anchor="start" x="28" y="-2999.2" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">gate_id</text>
+<text xml:space="preserve" text-anchor="start" x="127.75" y="-2999.25" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="28" y="-2983.5" font-family="Noto Sans JP" font-size="9.00">state</text>
+<text xml:space="preserve" text-anchor="start" x="127.75" y="-2983.5" font-family="Noto Sans JP" font-size="9.00">varchar_32</text>
+<text xml:space="preserve" text-anchor="start" x="28" y="-2967.75" font-family="Noto Sans JP" font-size="9.00">marker_manifest_hash</text>
+<text xml:space="preserve" text-anchor="start" x="127.75" y="-2967.75" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+</g>
+<!-- retention_rules -->
+<g id="node41" class="node">
+<title>retention_rules</title>
+<polygon fill="none" stroke="black" points="49.5,-3052.75 49.5,-3149.25 152.75,-3149.25 152.75,-3052.75 49.5,-3052.75"/>
+<polygon fill="#e8eef7" stroke="none" points="50.5,-3132.5 50.5,-3148.25 151.75,-3148.25 151.75,-3132.5 50.5,-3132.5"/>
+<text xml:space="preserve" text-anchor="start" x="68.5" y="-3137.7" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">retention_rules</text>
+<text xml:space="preserve" text-anchor="start" x="53.5" y="-3121.95" font-family="Noto Sans JP" font-weight="bold" font-size="9.00">key</text>
+<text xml:space="preserve" text-anchor="start" x="97" y="-3122" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="53.5" y="-3106.25" font-family="Noto Sans JP" font-size="9.00">scope_id</text>
+<text xml:space="preserve" text-anchor="start" x="97" y="-3106.25" font-family="Noto Sans JP" font-size="9.00">varchar_256</text>
+<text xml:space="preserve" text-anchor="start" x="53.5" y="-3090.5" font-family="Noto Sans JP" font-size="9.00">category</text>
+<text xml:space="preserve" text-anchor="start" x="97" y="-3090.5" font-family="Noto Sans JP" font-size="9.00">varchar_64</text>
+<text xml:space="preserve" text-anchor="start" x="53.5" y="-3074.75" font-family="Noto Sans JP" font-size="9.00">revision</text>
+<text xml:space="preserve" text-anchor="start" x="97" y="-3074.75" font-family="Noto Sans JP" font-size="9.00">integer</text>
+<text xml:space="preserve" text-anchor="start" x="53.5" y="-3059" font-family="Noto Sans JP" font-size="9.00">payload</text>
+<text xml:space="preserve" text-anchor="start" x="97" y="-3059" font-family="Noto Sans JP" font-size="9.00">json</text>
+</g>
+</g>
+</svg>

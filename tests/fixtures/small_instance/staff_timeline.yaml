@@ -1,0 +1,31 @@
+timeline:
+  - person_id: alice
+    from: 2025-01-01
+    to: null
+    profile_id: night_full
+    status: ACTIVE
+  - person_id: dave
+    from: 2025-01-01
+    to: null
+    profile_id: night_full
+    status: ACTIVE
+  - person_id: frank
+    from: 2025-01-01
+    to: null
+    profile_id: night_full_late
+    status: ACTIVE
+  - person_id: bob
+    from: 2025-01-01
+    to: null
+    profile_id: day_full
+    status: ACTIVE
+  - person_id: erika
+    from: 2025-01-01
+    to: null
+    profile_id: part_time_day
+    status: ACTIVE
+  - person_id: claire
+    from: 2025-01-01
+    to: null
+    profile_id: assistant
+    status: ACTIVE

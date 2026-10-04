@@ -1,0 +1,22 @@
+# staff_people.yaml の合成人物に対する公開デモである。
+timeline:
+  - person_id: demo-pharmacist-01
+    from: 2025-01-01
+    to: null
+    profile_id: night_full
+    status: ACTIVE
+  - person_id: demo-pharmacist-03
+    from: 2025-01-01
+    to: null
+    profile_id: night_full
+    status: ACTIVE
+  - person_id: demo-pharmacist-04
+    from: 2025-01-01
+    to: null
+    profile_id: night_full
+    status: ACTIVE
+  - person_id: demo-pharmacist-02
+    from: 2025-01-01
+    to: null
+    profile_id: day_full
+    status: ACTIVE

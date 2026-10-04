@@ -1,0 +1,257 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+/lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+config/secrets.yaml
+config/local_*.yaml
+*.db
+*.sqlite
+logs/
+tmp/
+.pre-commit-config.yaml.backup
+*.bak
+shift_scheduler_old.py.bak
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/.next*/
+frontend/playwright-report/
+frontend/test-results/
+
+# Local TLS certificates
+certs/*.pem
+certs/*.crt
+certs/*.key
+
+# Isolated verification tools and evidence caches
+tools/node24/
+*.tsbuildinfo
+
+# --- 2026-09-24: local evidence, binaries and toolchains kept out of version control ---
+# Portable Node toolchains (large binaries); reinstall locally.
+tools/
+frontend/.env.local
+# Binary databases, dumps and browser traces produced by isolated audits.
+audit/**/*.sqlite
+audit/**/*.pgdump
+audit/**/*.zip
+audit/**/*.trace
+audit/**/*.network
+# Owned PITR volumes/commands and independent control-service state of audit runs.
+audit/**/physical/
+audit/**/authority/
+# Audit text files larger than 5 MB (kept locally, not versioned).
+audit/acceptance-2026-09-23-r1/browser-linux-r3/results.json
+audit/continuation-2026-09-22/browser-linux-r3/results.json
+audit/continuation-2026-09-22/browser-linux-r4/results.json
+audit/full-acceptance-2026-09-23-r1/browser-r2/results.json
+audit/implementation-2026-09-23/browser-linux-r1/results.json
+audit/implementation-2026-09-23/browser-linux-r2/results.json
+audit/integrated-acceptance-2026-09-23-r1/evaluation/long-workflow-trial1.json
+audit/integrated-acceptance-2026-09-23-r1/evaluation/long-workflow-trial2.json
+audit/integrated-acceptance-2026-09-23-r1/evaluation/long-workflow-trial3.json
+audit/integrated-acceptance-2026-09-23-r1/evaluation/long-workflow-trial4.json
+audit/integrated-acceptance-2026-09-23-r1/evaluation/long-workflow-trial5.json
+audit/integrated-controls-2026-09-23-r1/browser-final-r3/results.json
+audit/integrated-controls-2026-09-23-r1/browser-final-r4/results.json
+audit/integrated-controls-2026-09-23-r1/browser-final-r5/results.json
+audit/integrated-controls-2026-09-23-r1/browser-final-r6/results.json
+audit/pitr-canonical-controls-2026-09-23-r1/events.jsonl
+audit/pitr-canonical-controls-2026-09-23-r1/result.json
+audit/pitr-canonical-controls-2026-09-23-r2/events.jsonl
+audit/pitr-canonical-controls-2026-09-23-r2/result.json
+audit/pitr-coupled-2026-09-23-r1/long-v6-r1.json
+audit/shared-workflows-2026-09-23-r1/browser-linux-r2/results.json
+audit/shared-workflows-2026-09-23-r1/browser-linux-r3/results.json
+audit/shared-workflows-2026-09-23-r1/browser-linux-r5/results.json
+audit/storage-closure-2026-09-23-r1/browser-linux-pg-r3/results.json
+audit/storage-closure-2026-09-23-r1/browser-linux-r1/results.json
+audit/storage-closure-2026-09-23-r1/browser-linux-r2/results.json
+audit/subject-erasure-deferred-2026-09-24-r10/events.jsonl
+audit/subject-erasure-deferred-2026-09-24-r10/result.json
+audit/subject-erasure-deferred-2026-09-24-r8/events.jsonl
+audit/subject-erasure-deferred-2026-09-24-r8/result.json
+audit/subject-erasure-reviewed-2026-09-23-r1/events.jsonl
+audit/subject-erasure-reviewed-2026-09-23-r1/result.json
+audit/subject-erasure-reviewed-2026-09-23-r2/events.jsonl
+audit/subject-erasure-reviewed-2026-09-23-r2/result.json
+audit/subject-erasure-reviewed-2026-09-23-r3/events.jsonl
+audit/subject-erasure-reviewed-2026-09-23-r3/result.json
+audit/subject-erasure-reviewed-2026-09-24-r4/events.jsonl
+audit/subject-erasure-reviewed-2026-09-24-r4/result.json
+audit/subject-erasure-reviewed-2026-09-24-r5/events.jsonl
+audit/subject-erasure-reviewed-2026-09-24-r5/result.json
+audit/subject-erasure-reviewed-2026-09-24-r6/result.json
+audit/subject-erasure-reviewed-2026-09-24-r7/events.jsonl
+audit/subject-erasure-reviewed-2026-09-24-r7/result.json
+audit/subject-erasure-reviewed-2026-09-24-r9/events.jsonl
+audit/subject-erasure-reviewed-2026-09-24-r9/result.json
+# Audit logs that contain isolated test database credentials (kept locally).
+audit/continuation-2026-09-22/copy-backfill-r1.txt
+audit/execution-closure-2026-09-23-r2/benchmark/postgres-r1.txt
+audit/execution-closure-2026-09-23-r2/storage/postgres-r1.txt
+audit/integrated-acceptance-2026-09-23-r1/api-r3.txt
+audit/integrated-acceptance-2026-09-23-r1/storage/control-network-first.txt
+audit/remediation-2026-09-22/postgres-initial.txt
+audit/resumed-acceptance-2026-09-23-r1/metadata-review-r1.txt
+audit/storage-closure-2026-09-23-r1/account-pg-r1.txt
+audit/storage-closure-2026-09-23-r1/shared-pg-r1.txt
+# Screenshots and media from audit browser runs (kept locally); referenced diagrams stay versioned.
+audit/**/*.png
+audit/**/*.jpeg
+audit/**/*.jpg
+audit/**/*.webm
+!audit/pitr-canonical-integration-2026-09-23-r1/recovery-flow.png
+!audit/implementation-2026-09-21/planning-browser.png
+
+# --- 2026-09-28: design system rendering and visual audit (docs/design-system/README.md) ---
+# Storybook static builds go outside the repository; never publish one.
+frontend/storybook-static/
+# Local visual-audit output (evidence runs write to audit/visual-*/; PNGs there are ignored above).
+frontend/tests/visual/.output/

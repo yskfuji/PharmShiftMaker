@@ -1,0 +1,61 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "23 17 * * 2"
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full reachable history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Install checksum-verified gitleaks
+        run: bash scripts/install_gitleaks.sh "${RUNNER_TEMP}/gitleaks"
+      - name: Scan every reachable commit
+        run: >-
+          "${RUNNER_TEMP}/gitleaks/gitleaks" git --config=.gitleaks.toml
+          --redact --log-opts="--all"
+
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    name: Dependency review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
+        with:
+          fail-on-severity: moderate
+
+  codeql:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript-typescript]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@87ef0dc97def48aa960fbf026a2563ee9dbdb470 # v3
+        with:
+          languages: ${{ matrix.language }}
+      - name: Analyze
+        uses: github/codeql-action/analyze@87ef0dc97def48aa960fbf026a2563ee9dbdb470 # v3

@@ -1,0 +1,31 @@
+exclude: ^(audit/|devtools/release/canonical_licenses/|docs/release/THIRD_PARTY_LICENSES/texts/)
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        # Match the fail-closed public export limit (50 MB).
+        args: [--maxkb=50000]
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: debug-statements
+
+  - repo: https://github.com/psf/black
+    rev: 26.5.1
+    hooks:
+      - id: black
+        language_version: python3.12
+        pass_filenames: false
+        args: [src, scripts, tests, devtools]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.10
+    hooks:
+      - id: ruff
+        pass_filenames: false
+        args: [--fix, --exit-non-zero-on-fix, src, scripts, tests, devtools]

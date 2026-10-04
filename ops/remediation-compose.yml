@@ -1,0 +1,66 @@
+name: pharmshift-remediation-20260922
+services:
+  db:
+    image: postgres:16
+    cpus: 1.0
+    mem_limit: 2g
+    environment:
+      POSTGRES_USER: audit
+      POSTGRES_PASSWORD: isolated-test-only
+      POSTGRES_DB: pharmshift_audit_remediation
+    ports: ['127.0.0.1:55441:5432']
+    volumes: ['remediation_db:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL','pg_isready -U audit -d pharmshift_audit_remediation']
+      interval: 2s
+      retries: 30
+  api:
+    image: pharmshift-remediation:20260922
+    build: {context: '..', dockerfile: Dockerfile.completion}
+    cpus: 0.5
+    mem_limit: 512m
+    environment: &environment
+      DATABASE_URL: postgresql+psycopg://audit:isolated-test-only@db:5432/pharmshift_audit_remediation
+      SHIFT_SCHEDULER_DB_URL: postgresql+psycopg://audit:isolated-test-only@db:5432/pharmshift_audit_remediation
+      AUTH_MODE: mock
+      PHARMSHIFT_ENV: development
+      AUTH_JWT_SECRET: isolated-remediation-audit-not-for-production
+      API_CORS_ALLOW_ORIGINS: https://127.0.0.1:18513
+      FRONTEND_BASE_URL: https://127.0.0.1:18513
+      SHIFT_SCHEDULER_DATA_BACKEND: db
+      PYTHONPATH: /app/src:/app
+      PHARMSHIFT_MANAGED_STORAGE: /managed
+    volumes: ['remediation_files:/managed']
+    command: ['python','-m','scripts.remediation_server']
+    ports: ['127.0.0.1:18512:8000']
+    depends_on: {db: {condition: service_healthy}}
+    healthcheck:
+      test: ['CMD','python','-c',"import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 2s
+      retries: 30
+  worker:
+    image: pharmshift-remediation:20260922
+    cpus: 2.0
+    mem_limit: 4g
+    environment:
+      <<: *environment
+      PHARMSHIFT_SEARCH_WORKERS: '${PHARMSHIFT_SEARCH_WORKERS:-1}'
+    volumes: ['remediation_files:/managed']
+    command: ['python','-m','shift_scheduler.application.worker']
+    depends_on: {api: {condition: service_healthy}}
+  frontend:
+    image: pharmshift-remediation-frontend:20260922
+    build: {context: '..', dockerfile: Dockerfile.remediation-frontend}
+    cpus: 0.5
+    mem_limit: 1536m
+    ports: ['127.0.0.1:18513:3000']
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: https://127.0.0.1:18513/api
+      INTERNAL_API_BASE_URL: http://api:8000
+    volumes:
+      - '../certs/localhost-cert.pem:/tls/localhost-cert.pem:ro'
+      - '../certs/localhost-key.pem:/tls/localhost-key.pem:ro'
+    depends_on: {api: {condition: service_healthy}}
+volumes:
+  remediation_db:
+  remediation_files:

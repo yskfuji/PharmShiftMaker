@@ -1,0 +1,26 @@
+# staff_people.yaml の合成人物に対する公開サンプルである。
+requests:
+  - person_id: synthetic-pharmacist-01
+    date: 2025-02-06
+    kind: PUBLIC_HOLIDAY_REQUEST
+    order: 1
+  - person_id: synthetic-pharmacist-02
+    date: 2025-02-07
+    kind: PAID_LEAVE_REQUEST
+    order: 2
+  - person_id: synthetic-pharmacist-03
+    date: 2025-02-14
+    kind: PUBLIC_HOLIDAY_REQUEST
+    order: 3
+  - person_id: synthetic-pharmacist-05
+    date: 2025-02-10
+    kind: PAID_LEAVE_REQUEST
+    order: 4
+  - person_id: synthetic-pharmacist-12
+    date: 2025-02-24
+    kind: PAID_LEAVE_REQUEST
+    order: 5
+  - person_id: synthetic-pharmacist-19
+    date: 2025-02-13
+    kind: PUBLIC_HOLIDAY_REQUEST
+    order: 6

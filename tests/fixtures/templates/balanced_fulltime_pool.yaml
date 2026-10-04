@@ -1,0 +1,47 @@
+people:
+  - person_id: fairness_ft_1
+    name: Fairness FT 1
+    role: PHARMACIST
+  - person_id: fairness_ft_2
+    name: Fairness FT 2
+    role: PHARMACIST
+  - person_id: fairness_ft_3
+    name: Fairness FT 3
+    role: PHARMACIST
+  - person_id: fairness_ft_4
+    name: Fairness FT 4
+    role: PHARMACIST
+
+profiles:
+  - profile_id: fairness_fulltime_profile
+    name: フェアネス常勤
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: true
+    holiday_allowed: true
+    max_consecutive_working_days: 12
+
+timeline_entries:
+  - person_id: fairness_ft_1
+    profile_id: fairness_fulltime_profile
+    from: 2025-04-01
+    to: null
+    status: ACTIVE
+  - person_id: fairness_ft_2
+    profile_id: fairness_fulltime_profile
+    from: 2025-04-01
+    to: null
+    status: ACTIVE
+  - person_id: fairness_ft_3
+    profile_id: fairness_fulltime_profile
+    from: 2025-04-01
+    to: null
+    status: ACTIVE
+  - person_id: fairness_ft_4
+    profile_id: fairness_fulltime_profile
+    from: 2025-04-01
+    to: null
+    status: ACTIVE

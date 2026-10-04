@@ -1,0 +1,57 @@
+name: pharmshift-completion-20260922
+services:
+  db:
+    image: postgres:16
+    cpus: 1.0
+    mem_limit: 2g
+    environment:
+      POSTGRES_USER: audit
+      POSTGRES_PASSWORD: isolated-test-only
+      POSTGRES_DB: pharmshift_audit_completion
+    ports: ['127.0.0.1:55440:5432']
+    labels: {pharmshift.audit: '20260922'}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U audit -d pharmshift_audit_completion']
+      interval: 2s
+      retries: 30
+  api:
+    image: pharmshift-completion:20260922
+    cpus: 0.5
+    mem_limit: 512m
+    working_dir: /app
+    volumes:
+      - ../scripts:/app/scripts:ro
+      - ../tests:/app/tests:ro
+      - ../alembic:/app/alembic:ro
+      - ../audit/completion-2026-09-22:/evidence
+    environment: &environment
+      DATABASE_URL: postgresql+psycopg://audit:isolated-test-only@db:5432/pharmshift_audit_completion
+      SHIFT_SCHEDULER_DB_URL: postgresql+psycopg://audit:isolated-test-only@db:5432/pharmshift_audit_completion
+      AUTH_MODE: mock
+      PHARMSHIFT_ENV: development
+      AUTH_JWT_SECRET: isolated-completion-audit-not-for-production
+      API_CORS_ALLOW_ORIGINS: https://127.0.0.1:18501
+      PYTHONPATH: /app/src:/app
+    command: ['python','-m','scripts.completion_server']
+    ports: ['127.0.0.1:18502:8000']
+    healthcheck:
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 2s
+      retries: 30
+    depends_on: {db: {condition: service_healthy}}
+    labels: {pharmshift.audit: '20260922'}
+  worker:
+    image: pharmshift-completion:20260922
+    cpus: 2.0
+    mem_limit: 4g
+    working_dir: /app
+    volumes:
+      - ../scripts:/app/scripts:ro
+    environment:
+      <<: *environment
+      PHARMSHIFT_SEARCH_WORKERS: '${PHARMSHIFT_SEARCH_WORKERS:-1}'
+    command: ['python','-m','shift_scheduler.application.worker']
+    depends_on: {api: {condition: service_healthy}}
+    labels: {pharmshift.audit: '20260922'}
+# Frontend allocation reserved: 0.5 CPU / 1.5 GiB (total 4 CPU / 8 GiB).
+# API-to-persisted-draft measurements below exclude browser rendering; browser is measured separately.

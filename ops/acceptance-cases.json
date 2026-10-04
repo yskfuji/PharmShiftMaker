@@ -1,0 +1,608 @@
+{
+  "version": 1,
+  "scope": "Local synthetic application acceptance; facility acceptance is separate. No missing harness may be replaced with a passing diagnostic.",
+  "cases": [
+    {
+      "id": "orchestration",
+      "kind": "acceptance",
+      "requirements": [
+        "EXEC-01"
+      ],
+      "criterion": "Freeze/recovery/dependency/log integrity, no skipped-test acceptance",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_acceptance_orchestrator.py"
+      ],
+      "requires": [],
+      "environment": []
+    },
+    {
+      "id": "resume-journal",
+      "kind": "acceptance",
+      "requirements": [
+        "EXEC-02"
+      ],
+      "criterion": "Strict phase proofs; first failure preserved; same key/body recovery",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_benchmark_journal.py",
+        "tests/test_benchmark_runner.py",
+        "tests/test_benchmark_manifest.py"
+      ],
+      "requires": [
+        "orchestration"
+      ],
+      "environment": []
+    },
+    {
+      "id": "resume-public-api",
+      "kind": "acceptance",
+      "requirements": [
+        "EXEC-03"
+      ],
+      "criterion": "Real PostgreSQL: receipt response lost, move to newer input, restart and lookup; extra jobs zero, initial failure retained",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_job_recovery_api.py",
+        "tests/test_benchmark_recovery_api.py"
+      ],
+      "requires": [
+        "resume-journal"
+      ],
+      "environment": [
+        "isolated_postgres"
+      ]
+    },
+    {
+      "id": "storage-reconciliation-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03",
+        "S01"
+      ],
+      "criterion": "Observe unknown tables, missing registration/subject/hash/file differences; never substitute for full storage closure",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_storage_reconciliation.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres"
+      ]
+    },
+    {
+      "id": "storage-paths",
+      "kind": "acceptance",
+      "requirements": [
+        "D03",
+        "S01"
+      ],
+      "criterion": "Every production writer classified AND observed DB/file delta reconciled; unregistered paths detected",
+      "command": null,
+      "requires": [],
+      "environment": []
+    },
+    {
+      "id": "shared-types",
+      "kind": "acceptance",
+      "requirements": [
+        "D03"
+      ],
+      "criterion": "All specified shared types both erasure orders, concurrent erasure, hold, interruption, recreation protection",
+      "command": null,
+      "requires": [
+        "storage-paths"
+      ],
+      "environment": []
+    },
+    {
+      "id": "control-recovery",
+      "kind": "acceptance",
+      "requirements": [
+        "S01"
+      ],
+      "criterion": "App/control/witness commit evidence reconciled, unresolved blocks access; rollback and writer/key rotation verified",
+      "command": null,
+      "requires": [
+        "shared-types"
+      ],
+      "environment": []
+    },
+    {
+      "id": "workflow-operations",
+      "kind": "acceptance",
+      "requirements": [
+        "F07"
+      ],
+      "criterion": "Every dedicated role operation connected, no internal ID/version/schema hand entry; server authorization",
+      "command": null,
+      "requires": [],
+      "environment": []
+    },
+    {
+      "id": "workflow-conflict-retry",
+      "kind": "acceptance",
+      "requirements": [
+        "F07",
+        "S01"
+      ],
+      "criterion": "Every edit session three-way409, identical retry, altered payload newkey, all navigation unsaved protection",
+      "command": null,
+      "requires": [
+        "workflow-operations"
+      ],
+      "environment": []
+    },
+    {
+      "id": "coupled-bfs",
+      "kind": "acceptance",
+      "requirements": [
+        "Q01"
+      ],
+      "criterion": "Specified 2 people/departments/months/lots/versions model all reachable paths+edges real PG API; frontier zero",
+      "command": null,
+      "requires": [
+        "control-recovery",
+        "workflow-conflict-retry"
+      ],
+      "environment": []
+    },
+    {
+      "id": "coupled-25-month",
+      "kind": "acceptance",
+      "requirements": [
+        "F03",
+        "L02",
+        "L04",
+        "L06",
+        "Q01"
+      ],
+      "criterion": "One authoritative 25-month sequence all stipulated revisions/corrections/nonzero burden/shared erasure/backup expiry, independent integer/rational oracle",
+      "command": null,
+      "requires": [
+        "coupled-bfs"
+      ],
+      "environment": []
+    },
+    {
+      "id": "fault-matrix",
+      "kind": "acceptance",
+      "requirements": [
+        "S01",
+        "O06",
+        "Q01"
+      ],
+      "criterion": "Every stipulated commit/file/ACK/control/release fault; no loss/duplication/wrong-person erase/wrong release",
+      "command": null,
+      "requires": [
+        "coupled-25-month"
+      ],
+      "environment": []
+    },
+    {
+      "id": "complete-restore",
+      "kind": "acceptance",
+      "requirements": [
+        "D03",
+        "S01",
+        "O06"
+      ],
+      "criterion": "Empty isolated target DB+allfiles latestcontrols, generation recheck, recovered business event RPO<=24h, failure-to-release RTO<=6h",
+      "command": null,
+      "requires": [
+        "fault-matrix"
+      ],
+      "environment": []
+    },
+    {
+      "id": "visual-operations",
+      "kind": "acceptance",
+      "requirements": [
+        "F07",
+        "Q01"
+      ],
+      "criterion": "Every role operation/state 3 browsers x3widths; individual image review; zoom keyboard and Safari/VoiceOver separate",
+      "command": null,
+      "requires": [
+        "workflow-conflict-retry"
+      ],
+      "environment": []
+    },
+    {
+      "id": "linux-delivery",
+      "kind": "acceptance",
+      "requirements": [
+        "S04"
+      ],
+      "criterion": "Linux clean final build locked images/dependencies SBOM scans NOTICE signatures/provenance mixed migration and restore",
+      "command": null,
+      "requires": [
+        "complete-restore",
+        "visual-operations"
+      ],
+      "environment": []
+    },
+    {
+      "id": "resource-measurement",
+      "kind": "acceptance",
+      "requirements": [
+        "O06"
+      ],
+      "criterion": "All eight runtime services incl frontend/control/witness+DBs aggregate parentcgroup 4CPU8GiB SSD worker1 durability evidence",
+      "command": null,
+      "requires": [],
+      "environment": []
+    },
+    {
+      "id": "development-performance",
+      "kind": "diagnostic",
+      "requirements": [
+        "O06"
+      ],
+      "criterion": "Development-only inputs stage/control/DB latency measurements; no held-out reuse",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_environment",
+        "diagnose",
+        "--project",
+        "pharmshift-dev-execution-r2",
+        "--output",
+        "{run_dir}/development-diagnostic"
+      ],
+      "requires": [
+        "resume-public-api"
+      ],
+      "environment": []
+    },
+    {
+      "id": "calibration-1440",
+      "kind": "acceptance",
+      "requirements": [
+        "O06",
+        "F04"
+      ],
+      "criterion": "120 same base inputs x12 prespecified configs, independently feasible representative cases, first attempts retained",
+      "command": null,
+      "requires": [
+        "resource-measurement",
+        "linux-delivery",
+        "resume-public-api"
+      ],
+      "environment": []
+    },
+    {
+      "id": "freeze",
+      "kind": "acceptance",
+      "requirements": [
+        "O06",
+        "S04"
+      ],
+      "criterion": "Freeze code/frontend/images/dependencies/config/searchthreads/generator/resource proofs after predeclared selection",
+      "command": null,
+      "requires": [
+        "calibration-1440"
+      ],
+      "environment": []
+    },
+    {
+      "id": "heldout-1200",
+      "kind": "acceptance",
+      "requirements": [
+        "O06"
+      ],
+      "criterion": "12 strata x100 untouched cases; each nearest-rank p95<=30s receipt-to-committed validated draft; no failed/unknown/missing excluded",
+      "command": null,
+      "requires": [
+        "freeze"
+      ],
+      "environment": []
+    },
+    {
+      "id": "concurrent-load",
+      "kind": "acceptance",
+      "requirements": [
+        "O06"
+      ],
+      "criterion": "10 users+5generations receipt/read p95<=1s, missing/duplicate0, queue/stages/resources retained",
+      "command": null,
+      "requires": [
+        "freeze"
+      ],
+      "environment": []
+    },
+    {
+      "id": "audit-42",
+      "kind": "acceptance",
+      "requirements": [
+        "G04",
+        "L02",
+        "L04",
+        "L06",
+        "D03",
+        "F01",
+        "F02",
+        "F03",
+        "F04",
+        "F07",
+        "S01",
+        "S04",
+        "O06",
+        "Q01"
+      ],
+      "criterion": "Final code 42-item evidence-linked re-audit; unimplemented and separate facility acceptance remain distinct",
+      "command": null,
+      "requires": [
+        "heldout-1200",
+        "concurrent-load"
+      ],
+      "environment": []
+    },
+    {
+      "id": "storage-producers-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03",
+        "S01"
+      ],
+      "criterion": "Registered backup/archive/attendance producers and legacy boundary; not every restoration writer or all shared types",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_managed_capture_postgres.py",
+        "tests/test_managed_database_backup_postgres.py",
+        "tests/test_legacy_storage_boundary.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres",
+        "owned_native_pg_dump"
+      ]
+    },
+    {
+      "id": "shared-records-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03"
+      ],
+      "criterion": "Implemented actual request/leave/compliance/shared snapshots, both-person order and API stale holds; not all types and all concurrency",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_shared_administration_postgres.py",
+        "tests/test_shared_successive_postgres.py",
+        "tests/test_request_leave_preservation_postgres.py",
+        "tests/test_coupled_acceptance_copy_api.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres"
+      ]
+    },
+    {
+      "id": "dedicated-api-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "F07",
+        "L04"
+      ],
+      "criterion": "Employer/capability/demand selected-period routes; draft/edit/review/publication replay and actor boundary. Not all browser operations",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_administration_workflows.py",
+        "tests/test_planning_retry_api.py",
+        "tests/test_leave_combined_boundaries.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres"
+      ]
+    },
+    {
+      "id": "control-http-fault-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "S01",
+        "O06"
+      ],
+      "criterion": "Actual independent 3 PostgreSQL DBs and HTTP ACK loss, witnessed reconcile, writer/key rotation; not full canonical restore or all network faults",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_control_network_postgres.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_network_faults"
+      ]
+    },
+    {
+      "id": "storage-enospc-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03",
+        "O06"
+      ],
+      "criterion": "Actual dedicated bounded tmpfs ENOSPC on managed write and same intent retry; not host storage or every failure boundary",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_managed_tmpfs_postgres.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres",
+        "isolated_tmpfs_faults"
+      ]
+    },
+    {
+      "id": "coupled-api-projection-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "Q01"
+      ],
+      "criterion": "Specified model invariants plus bounded public/leave/hold/erasure API projection; not full enumerated-edge replay",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_coupled_acceptance_model.py",
+        "tests/test_coupled_acceptance_api.py",
+        "tests/test_coupled_erasure_faults.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres"
+      ]
+    },
+    {
+      "id": "publication-http-retry-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "F06",
+        "O03",
+        "Q01"
+      ],
+      "criterion": "Actual successful publication HTTP reply discarded; API restart and identical retry preserves one publication/leave reservation/notification. Not all fault points.",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_publication_network_fault_postgres.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres",
+        "isolated_network_faults"
+      ]
+    },
+    {
+      "id": "canonical-restore-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03",
+        "F03",
+        "O01",
+        "Q01"
+      ],
+      "criterion": "25-month accounting canonical tables and separate shared-erasure fixture in same owned PG DB: actual source outage, empty DB/files restore, compare all canonical hashes before release. 38 chronology events/all shared types/full fault matrix remain outside this diagnostic.",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.storage_closure_restore_trial",
+        "--output",
+        "{run_dir}/canonical-restore",
+        "--canonical-25-months"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres",
+        "isolated_full_restore",
+        "owned_native_pg_dump"
+      ]
+    },
+    {
+      "id": "reviewed-restore-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03",
+        "S01",
+        "O01"
+      ],
+      "criterion": "Fixed two-person synthetic producer review, standalone CLI full metadata, actual empty PostgreSQL/files restore through measured signed current-generation release. Not all shared types, not 25-month canonical, no business-event RPO acceptance.",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.storage_closure_restore_trial",
+        "--output",
+        "{run_dir}/reviewed-restore",
+        "--reviewed-small-fixture"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres",
+        "isolated_full_restore",
+        "owned_native_pg_dump"
+      ]
+    },
+    {
+      "id": "subject-control-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03",
+        "S01",
+        "F07"
+      ],
+      "criterion": "Approved stable-person control API: administrator scope, holds, CAS/retry, missing authority read/retry rejection, transaction rollback. Fake service transport in these tests; not full erasure or independent 3DB acceptance.",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_subject_controls_postgres.py",
+        "tests/test_subject_control_api.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres"
+      ]
+    },
+    {
+      "id": "pitr-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03",
+        "O01"
+      ],
+      "criterion": "Owned network-none PostgreSQL physical base + archived WAL target recovery and required-WAL missing rejection. Synthetic table only; not application restore, all files/controls or RPO acceptance.",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.owned_pitr_trial",
+        "--output",
+        "{run_dir}/owned-pitr"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_full_restore"
+      ]
+    },
+    {
+      "id": "same-canonical-pitr-diagnostic",
+      "kind": "diagnostic",
+      "requirements": [
+        "D03",
+        "L04",
+        "F03",
+        "O01",
+        "Q01"
+      ],
+      "criterion": "Same fixed 25-month app canonical, two physical bases, WAL target, real independent person control API sequence, full actual-table and managed-file comparison, strict HBA rejection and product release attempt. Residual/no-op erasure, release blockers, expiry, full fault/BFS/operation-state acceptance remain separate; never closes the 299-event acceptance row.",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.long_pitr_workflows",
+        "--subject-controls",
+        "--output",
+        "{run_dir}/same-canonical-pitr"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_full_restore"
+      ]
+    }
+  ]
+}
