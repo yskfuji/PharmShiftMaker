@@ -35,3 +35,22 @@ def test_interpolated_suffix_is_unresolved_instead_of_a_fabricated_path():
     assert any(row["expression"] == "/planning${query}" for row in graph.variables())
     assert graph._normalise("/missing") == "/missing"
     assert graph.dead([{"source": "counterexample", "path": "/missing"}])
+
+
+def test_next_link_object_pathnames_are_checked_as_static_edges():
+    dashboard = [
+        row
+        for row in graph.edges()
+        if row["source"].startswith("components/dashboard/LiveDashboard.tsx:")
+    ]
+    assert {row["path"] for row in dashboard} == {
+        "/planning",
+        "/planning/workflows/leave",
+    }
+    assert not any(
+        row["source"].startswith("components/dashboard/LiveDashboard.tsx:")
+        for row in graph.variables()
+    )
+    assert graph.dead(
+        [{"source": "counterexample", "path": "/missing-object-pathname"}]
+    )

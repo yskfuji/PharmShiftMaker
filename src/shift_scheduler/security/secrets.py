@@ -137,10 +137,10 @@ class SecretsResolver:
         logger.info("Fetching secrets from AWS Secrets Manager")
         try:
             response_raw = client.get_secret_value(SecretId=secret_id)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             raise SecretResolutionError(
                 "Failed to fetch secret from AWS Secrets Manager"
-            ) from exc
+            ) from None
 
         response = response_raw
         secret_string = response.get("SecretString")
@@ -178,7 +178,10 @@ class SecretsResolver:
         if namespace:
             headers["X-Vault-Namespace"] = namespace
         logger.info("Fetching secrets from Vault")
-        payload: Mapping[str, Any] = self._fetch_vault_json(url, headers)
+        try:
+            payload: Mapping[str, Any] = self._fetch_vault_json(url, headers)
+        except Exception:  # noqa: BLE001
+            raise SecretResolutionError("Failed to fetch secret from Vault") from None
         data_raw: Any = payload.get("data") or {}
         if not isinstance(data_raw, Mapping):
             raise SecretResolutionError("Vault response did not contain a data mapping")

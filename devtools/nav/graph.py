@@ -1,10 +1,11 @@
 """Static navigation graph of the frontend: every place that moves the user to another page.
 
-Sources scanned in frontend/src: href="..." / href={`...`} (links, <Link>), location.assign/
-replace, browserNavigation.replace/assign, redirect(...) in server pages, the proxy's
-sign-in redirect and the shared navigation list (lib/navigation.ts). Each target is
-matched against the app's route patterns (app/**/page.tsx); a target that matches no
-route is a dead link. Output: docs/architecture/navigation.md.
+Sources scanned in frontend/src: href="..." / href={`...`} / Next Link object pathname
+(links, <Link>), location.assign/replace, browserNavigation.replace/assign, redirect(...)
+in server pages, the proxy's sign-in redirect and the shared navigation list
+(lib/navigation.ts). Each target is matched against the app's route patterns
+(app/**/page.tsx); a target that matches no route is a dead link. Output:
+docs/architecture/navigation.md.
 
     python -m devtools.nav.graph [--write | --check]
 """
@@ -19,6 +20,10 @@ ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "frontend" / "src"
 OUT = ROOT / "docs" / "architecture" / "navigation.md"
 PATTERNS = [
+    (
+        "link",
+        re.compile(r"""href=\{\{\s*pathname:\s*["'`]([^"'`]+)["'`]"""),
+    ),
     ("link", re.compile(r"""href=\{?["'`]([^"'`]+)["'`]\}?""")),
     ("link", re.compile(r"""href:\s*["'`]([^"'`]+)["'`]""")),  # navigation lists
     (
@@ -32,7 +37,7 @@ PATTERNS = [
     ("proxy", re.compile(r"""new URL\(\s*["'`](/[^"'`]*)["'`]\s*,\s*request\.url""")),
 ]
 DYNAMIC_LOGIN = re.compile(r"loginPath\(")
-VARIABLE = re.compile(r"""href=\{(?![`"'])([^}]+)\}""")
+VARIABLE = re.compile(r"""href=\{(?![{`"'])([^}]+)\}""")
 
 
 def routes() -> list[tuple[str, re.Pattern[str]]]:

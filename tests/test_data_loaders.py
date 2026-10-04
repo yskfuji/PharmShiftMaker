@@ -191,3 +191,12 @@ penalty_weights:
     # unspecified fields should fall back to defaults
     assert weights.day_shift_fairness == PenaltyWeights().day_shift_fairness
     assert weights.holiday_request_base == 42
+
+
+@pytest.mark.parametrize(
+    "filename",
+    ("../staff_people.yaml", "arbitrary.yaml", "calendar_2025_13.yaml"),
+)
+def test_yaml_loader_rejects_unapproved_basename(tmp_path: Path, filename: str) -> None:
+    with pytest.raises(ValueError, match="Unsupported configuration filename"):
+        loaders._load_yaml(tmp_path, filename)

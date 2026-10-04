@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 from collections import defaultdict
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, fields
@@ -37,6 +38,19 @@ ENV_CONFIG_DIR_VAR = "SHIFT_SCHEDULER_CONFIG_DIR"
 YamlMapping = dict[str, Any]
 DATA_BACKEND = os.getenv("SHIFT_SCHEDULER_DATA_BACKEND", "yaml").strip().lower()
 USE_DB_BACKEND = DATA_BACKEND == "db"
+_FIXED_CONFIG_FILENAMES = frozenset(
+    {
+        "rules.yaml",
+        "shift_types.yaml",
+        "staff_leave_quotas.yaml",
+        "staff_people.yaml",
+        "staff_profiles.yaml",
+        "staff_timeline.yaml",
+    }
+)
+_MONTH_CONFIG_FILENAME = re.compile(
+    r"(?:calendar|holiday_requests)_[0-9]{4}_(?:0[1-9]|1[0-2])\.yaml\Z"
+)
 
 
 def is_db_backend() -> bool:
@@ -98,9 +112,15 @@ class LoadedConfig:
     penalty_weights: PenaltyWeights = PenaltyWeights()
 
 
-def _load_yaml(path: Path) -> YamlMapping:
-    # Callers append fixed configuration filenames (or integer-formatted
-    # year/month filenames) to the explicitly selected configuration root.
+def _load_yaml(root: Path, filename: str) -> YamlMapping:
+    if (
+        filename not in _FIXED_CONFIG_FILENAMES
+        and not _MONTH_CONFIG_FILENAME.fullmatch(filename)
+    ):
+        raise ValueError(f"Unsupported configuration filename: {filename!r}")
+    path = root / filename
+    # The root is an explicitly selected configuration capability, while the
+    # appended basename is restricted to the allowlist above.
     # codeql[py/path-injection]
     if not path.exists():
         raise FileNotFoundError(path)
@@ -169,7 +189,7 @@ def load_people(config_dir: Path | None = None) -> list[Person]:
         with _config_repo() as repo:
             return repo.list_people()
     config_path = _resolve_config_dir(config_dir) / "staff_people.yaml"
-    raw = _load_yaml(config_path)
+    raw = _load_yaml(config_path.parent, config_path.name)
     return [
         Person(
             person_id=item["person_id"],
@@ -185,7 +205,7 @@ def load_profiles(config_dir: Path | None = None) -> list[Profile]:
         with _config_repo() as repo:
             return repo.list_profiles()
     config_path = _resolve_config_dir(config_dir) / "staff_profiles.yaml"
-    raw = _load_yaml(config_path)
+    raw = _load_yaml(config_path.parent, config_path.name)
     return [
         Profile(
             profile_id=item["profile_id"],
@@ -219,7 +239,7 @@ def load_timeline_entries(config_dir: Path | None = None) -> list[TimelineEntry]
         with _config_repo() as repo:
             return repo.list_timeline_entries()
     config_path = _resolve_config_dir(config_dir) / "staff_timeline.yaml"
-    raw = _load_yaml(config_path)
+    raw = _load_yaml(config_path.parent, config_path.name)
     entries: list[TimelineEntry] = []
     for item in _get_sequence(raw, "timeline"):
         from_date = _parse_date(item["from"], "from")
@@ -238,7 +258,7 @@ def load_timeline_entries(config_dir: Path | None = None) -> list[TimelineEntry]
 
 def load_shift_types(config_dir: Path | None = None) -> list[ShiftType]:
     config_path = _resolve_config_dir(config_dir) / "shift_types.yaml"
-    raw = _load_yaml(config_path)
+    raw = _load_yaml(config_path.parent, config_path.name)
     shift_types: list[ShiftType] = []
     for item in _get_sequence(raw, "shift_types"):
         applicable_day_types = [
@@ -261,7 +281,7 @@ def load_day_infos(
 ) -> list[DayInfo]:
     filename = f"calendar_{year:04d}_{month:02d}.yaml"
     config_path = _resolve_config_dir(config_dir) / filename
-    raw = _load_yaml(config_path)
+    raw = _load_yaml(config_path.parent, config_path.name)
     return [
         DayInfo(
             day_date=_parse_date(item["date"], "date"),
@@ -280,7 +300,7 @@ def load_holiday_requests(
             return repo.list_holiday_requests(year, month)
     filename = f"holiday_requests_{year:04d}_{month:02d}.yaml"
     config_path = _resolve_config_dir(config_dir) / filename
-    raw = _load_yaml(config_path)
+    raw = _load_yaml(config_path.parent, config_path.name)
     requests: list[HolidayRequest] = []
     for item in _get_sequence(raw, "requests"):
         requests.append(
@@ -329,7 +349,7 @@ def load_penalty_weights(config_dir: Path | None = None) -> PenaltyWeights:
     config_path = _resolve_config_dir(config_dir) / "rules.yaml"
     if not config_path.exists():
         return PenaltyWeights()
-    raw = _load_yaml(config_path)
+    raw = _load_yaml(config_path.parent, config_path.name)
     section = _extract_penalty_section(raw)
     if section is None:
         return PenaltyWeights()
@@ -364,7 +384,7 @@ def _load_leave_quotas_from_yaml(config_path: Path) -> list[LeaveQuota]:
     file_path = config_path / "staff_leave_quotas.yaml"
     if not file_path.exists():
         return []
-    raw = _load_yaml(file_path)
+    raw = _load_yaml(file_path.parent, file_path.name)
     quotas: list[LeaveQuota] = []
     for item in _get_sequence(raw, "leave_quotas"):
         quotas.append(
@@ -414,7 +434,7 @@ def _read_yaml_holiday_requests(
     # codeql[py/path-injection]
     if not file_path.exists():
         return []
-    raw = _load_yaml(file_path)
+    raw = _load_yaml(file_path.parent, file_path.name)
     requests: list[HolidayRequest] = []
     for item in _get_sequence(raw, "requests"):
         requests.append(

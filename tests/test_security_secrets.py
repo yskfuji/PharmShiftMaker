@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import traceback
 from collections.abc import Mapping
 from typing import Any
 
@@ -53,8 +54,10 @@ def test_aws_provider_does_not_disclose_secret_identifier(
     )
     with caplog.at_level(logging.INFO), pytest.raises(SecretResolutionError) as raised:
         resolver.get("DATABASE_URL")
+    rendered = "".join(traceback.format_exception(raised.type, raised.value, raised.tb))
     assert resource_locator not in str(raised.value)
     assert resource_locator not in caplog.text
+    assert resource_locator not in rendered
 
 
 def test_vault_provider_supports_kv_v2(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -68,6 +71,26 @@ def test_vault_provider_supports_kv_v2(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("VAULT_SECRET_PATH", "kv/data/pharmshift")
     resolver = SecretsResolver(provider="vault", vault_fetcher=fake_fetch)
     assert resolver.require("AUTH_JWT_SECRET") == "super-secret"
+
+
+def test_vault_provider_does_not_disclose_request_details(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    resource_path = "kv/data/private-pharmshift"
+    access_token = "synthetic-vault-credential"
+
+    def failing_fetch(url: str, headers: dict[str, str]) -> Mapping[str, Any]:
+        raise RuntimeError(f"failed {url} using {headers['X-Vault-Token']}")
+
+    monkeypatch.setenv("VAULT_ADDR", "https://vault.internal")
+    monkeypatch.setenv("VAULT_TOKEN", access_token)
+    monkeypatch.setenv("VAULT_SECRET_PATH", resource_path)
+    resolver = SecretsResolver(provider="vault", vault_fetcher=failing_fetch)
+    with pytest.raises(SecretResolutionError) as raised:
+        resolver.get("AUTH_JWT_SECRET")
+    rendered = "".join(traceback.format_exception(raised.type, raised.value, raised.tb))
+    assert resource_path not in rendered
+    assert access_token not in rendered
 
 
 def test_require_raises_for_missing_secret(monkeypatch: pytest.MonkeyPatch) -> None:

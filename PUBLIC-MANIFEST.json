@@ -307,9 +307,9 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
-      "bytes": 8844,
+      "bytes": 8973,
       "path": "devtools/nav/graph.py",
-      "sha256": "dc93d08eb11792080b60063f3a3e552eaa0d3a7aae3e0acaca35678cab8da050"
+      "sha256": "311755c0a28b3fe8ca505a3c46b8fabfe86f71a5fbe72737460b0236d36f2958"
     },
     {
       "bytes": 10280,
@@ -487,9 +487,9 @@
       "sha256": "6fe1487bfc22bcbcff77c0181150040d168675d22f32f8201d18e8431d8d181a"
     },
     {
-      "bytes": 9015,
+      "bytes": 8911,
       "path": "docs/architecture/navigation.md",
-      "sha256": "d1994da4ca8b953f8e81cfdab43f0fba5004534553d4d162b7fe2d0d775e94ec"
+      "sha256": "1644033e87fa265ff74aa745e65bdff2b2485884454f1b46cf2de4e5f073b07b"
     },
     {
       "bytes": 9681,
@@ -8397,9 +8397,9 @@
       "sha256": "4dcfcaf38ab2060e69f6a4cce63ea4b6b9acd93b8a9d9ed47a1ddf6ef9b10481"
     },
     {
-      "bytes": 16475,
+      "bytes": 17278,
       "path": "src/shift_scheduler/data/loaders.py",
-      "sha256": "8716a0c660dea13315f929493a27f5c8c37c91b308eda02c57d5994fb71076e9"
+      "sha256": "24e6ff41ab4e773f74a5d17c4c9f31b11695a4d533531bf31abc3f8fab6f8c64"
     },
     {
       "bytes": 5779,
@@ -8642,9 +8642,9 @@
       "sha256": "970c5961b350e078b81f2c9bf56e3e6fd039d2da4e9ff6fdf6b7b47f1aca30d4"
     },
     {
-      "bytes": 8938,
+      "bytes": 9078,
       "path": "src/shift_scheduler/security/secrets.py",
-      "sha256": "d8e51746caa55751facfa26bd329ae563504ca3de586b84d9c1852905722815e"
+      "sha256": "e5ef7ad30a0dfe7d5683ca7488f742640cbb95da8373a612cfebf9575b3db3f1"
     },
     {
       "bytes": 122,
@@ -9042,9 +9042,9 @@
       "sha256": "dc5b57d5e3429e68a640186280389a4a076473f5b286c7e8778b850303e701ab"
     },
     {
-      "bytes": 6599,
+      "bytes": 6934,
       "path": "tests/test_data_loaders.py",
-      "sha256": "7e620b5ca521cdcfac3a3447cf480b9d6934daaede88e47f927c78e139372620"
+      "sha256": "0a12c7bf9e56e6d2e862d394c19de34876d4e2695a0715d30812ed5bd9379a7f"
     },
     {
       "bytes": 9956,
@@ -9342,9 +9342,9 @@
       "sha256": "c26769f3ee7b0f39486daacbaf83980bc91c13e35960fb4a5b3dc06344cd912e"
     },
     {
-      "bytes": 1357,
+      "bytes": 1932,
       "path": "tests/test_navigation_graph.py",
-      "sha256": "d5ce1945687cdd8c2b017c7513d6eb24156ad5178db97415b4d02dd76d353f0d"
+      "sha256": "f835bd2e33f4d94ae607334997eaa59dec2c6bde5af45a536744709beab0d7d7"
     },
     {
       "bytes": 755,
@@ -9512,9 +9512,9 @@
       "sha256": "4604adcb8703da760f67db090a93921617d2605abfe9dcb854527c38a35a1f7a"
     },
     {
-      "bytes": 2919,
+      "bytes": 3952,
       "path": "tests/test_security_secrets.py",
-      "sha256": "332b46406b4c73e526408468cf78035aa40e049375e08e05d84e2ccfcf0224f7"
+      "sha256": "133eec134b40416578847590dd29d6ac28a0a89b088a762c70a857d07027ce17"
     },
     {
       "bytes": 8223,
@@ -9729,5 +9729,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2",
-  "source_commit": "9fd3e33e1f690b58f17785f5054e344a3a8ea7a3"
+  "source_commit": "08ea492104c35e086ea8d93959234372a4376df6"
 }

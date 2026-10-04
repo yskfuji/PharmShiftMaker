@@ -52,8 +52,8 @@
 | `components/WorkflowIndex.tsx:33` | link | `/planning/workflows/${p}?scope=${encodeURIComponent(m.scope_id)}` | `/planning/workflows/[workflow]` |
 | `components/WorkflowIndex.tsx:40` | link | `/schedule` | `/schedule` |
 | `components/WorkflowIndex.tsx:41` | link | `/requests` | `/requests` |
-| `components/dashboard/LiveDashboard.tsx:66` | link | `/planning/workflows/leave?scope=${encodeURIComponent(scope)}&period=${period}` | `/planning/workflows/[workflow]` |
-| `components/dashboard/LiveDashboard.tsx:66` | link | `/planning?scope=${encodeURIComponent(scope)}&period=${period}` | `/planning` |
+| `components/dashboard/LiveDashboard.tsx:67` | link | `/planning` | `/planning` |
+| `components/dashboard/LiveDashboard.tsx:67` | link | `/planning/workflows/leave` | `/planning/workflows/[workflow]` |
 | `components/ideal/IdealWorkspace.tsx:110` | link | `/workspace/settings/notifications` | `/workspace/[screen]/[view]` |
 | `components/ideal/IdealWorkspace.tsx:117` | link | `/planning` | `/planning` |
 | `components/ideal/IdealWorkspace.tsx:118` | link | `/workspace/settings/appearance` | `/workspace/[screen]/[view]` |
