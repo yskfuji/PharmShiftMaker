@@ -18485,7 +18485,7 @@
     }
   ],
   "sources": {
-    "frontend/package-lock.json": "fa8ca10f982cf8e4edbdf543fdb2147b059274e31003709f912af1683c0b31d6",
+    "frontend/package-lock.json": "e8aa95852a7de859b0c2aa5aa2e2e0a4f6d0c589dab1b609846f2a5375658811",
     "requirements.lock": "f892a5b48ab78b8b5cfb4dde067b71a9b904ef6ae661484587621d1486524da8"
   },
   "unresolved": [],

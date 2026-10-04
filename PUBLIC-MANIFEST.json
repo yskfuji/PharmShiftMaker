@@ -357,9 +357,9 @@
       "sha256": "7d988eb9c8dbfef7b0e61ddd709a076e93c3c32c6bda40af4613cf4a23b5c016"
     },
     {
-      "bytes": 2826,
+      "bytes": 1936,
       "path": "devtools/release/node_license_audit.mjs",
-      "sha256": "272e6fa3790f703684ec3b5a126d83a1146364a27d7a31e2f1bd81626b5c0527"
+      "sha256": "d2a1a564e2975c4a7d2834e5299bf31e4f8bd10f5b5810c8073b7a792b131ab7"
     },
     {
       "bytes": 1827,
@@ -599,12 +599,12 @@
     {
       "bytes": 139056,
       "path": "docs/release/SBOM.cdx.json",
-      "sha256": "66565cec26e92fe14afafc329d3aa4b138e6df84a6608003ae173d19a4833bd3"
+      "sha256": "e78c98badd691d024551e852eb2efa11011c7f8c3dde1c3aa8dea3547b62d71a"
     },
     {
       "bytes": 663426,
       "path": "docs/release/THIRD_PARTY_LICENSES/manifest.json",
-      "sha256": "ee10502c4453dc26f825e570fabe8d4326d5077ab5698c2565614a14fc5fc13d"
+      "sha256": "50cd47d6e49397096b164aa1d18684900222ad487970babb956988f3f911c9b5"
     },
     {
       "bytes": 1080,
@@ -2452,9 +2452,9 @@
       "sha256": "8afcdecaccf4f290c86390d42d5e4a92fbd7b57f807ebe420364db2ffcc44ab4"
     },
     {
-      "bytes": 508802,
+      "bytes": 508826,
       "path": "frontend/package-lock.json",
-      "sha256": "fa8ca10f982cf8e4edbdf543fdb2147b059274e31003709f912af1683c0b31d6"
+      "sha256": "e8aa95852a7de859b0c2aa5aa2e2e0a4f6d0c589dab1b609846f2a5375658811"
     },
     {
       "bytes": 1933,
@@ -9729,5 +9729,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2",
-  "source_commit": "aacd420da153879e9b253a46e63be62998b89756"
+  "source_commit": "6905c405c89a17162bda0b35213f19cd09c27227"
 }

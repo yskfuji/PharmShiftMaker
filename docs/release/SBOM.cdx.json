@@ -5573,7 +5573,7 @@
     "properties": [
       {
         "name": "pharmshiftmaker:lockfiles-sha256",
-        "value": "4de1cb8ba97dc08f3d1f74e0a7bf00358b3b17c02418d653c59c000834be5c23"
+        "value": "ea81d349dbb8b925ebb4bbc1fe5a6cb5609d90c29f392e9a875bfa47852a942e"
       },
       {
         "name": "pharmshiftmaker:vulnerability-attestation",
@@ -5581,7 +5581,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:e312cf70-27db-535e-b380-2655b35fa323",
+  "serialNumber": "urn:uuid:a6e9efb6-ae32-5908-aae6-93529c53e24d",
   "specVersion": "1.5",
   "version": 1
 }
