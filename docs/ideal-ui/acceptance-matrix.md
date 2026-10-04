@@ -1,25 +1,31 @@
-# Acceptance matrix
+# 受入試験の基準一覧
 
-| Layer | Acceptance requirement | Automated evidence | Human/field evidence | v3 status |
+| 区分 | 合格基準 | 自動検査による検証記録 | 人による評価及び実運用環境における検証記録 | v3の状態 |
 |---|---|---|---|---|
-| Critical tasks | 0 critical mis-confirmations in 30 participants | API/workflow tests and browser scenarios | Moderated AB/BA study | Pending participants |
-| Completion | At least 9/10 independently complete each critical role task | U01–U27 reachability matrix | Moderated study | Pending participants |
-| Ease | Median SEQ ≥5/7 | Blank analysis workbook/protocol | Participant ratings | Pending participants |
-| Non-inferiority | Completion not down >1 person; median time not worse >15% | Prespecified analysis | Paired AB/BA observations | Pending participants |
-| Accessibility | WCAG 2.2 AA; keyboard, 200/400%, 320px, spacing, forced colors, focus, VO/NVDA | Jest plus 1,872 role-route axe/optical/reflow conditions | Manual zoom/forced-colors and assistive technology | Automated subset passed; VoiceOver/NVDA and target-platform manual sign-off pending |
-| Rendering | Chromium/Firefox/WebKit at 320/768/1440 and four themes | 156 role-route tests and 1,872 conditions passed; 150 route-state stories passed; 233-story/699-image gallery generated | Representative human optical review | Automated matrix passed; representative human review pending |
-| Existing behavior | Flag OFF retains the established product | 267/267 selected legacy cases, retry 0, failed/unexecuted 0, source/build drift 0 | Regression triage | Passed in the recorded synthetic environment |
-| Declared use cases | U01–U27 are complete browser journeys through real API/PostgreSQL | 243/243 first-attempt cases; disposable schema per engine/width; U25 performs actual synthetic erasure | Task-level validation | Passed in the recorded synthetic environment |
-| API safety | Scope authorization, expected version, idempotency, evidence, actor, four-eyes and self-lockout prevention | Python/API/PostgreSQL tests, adversarial cases and existing workflow E2E | Independent review and deployment-specific review | Automated gates passed; final release-candidate review pending |
-| Erasure | Every ORM table classified; deterministic residuals and no resurrection | Inventory/copy-graph tests and subject-erasure suite; physical PostgreSQL copy triggers and erased-subject barrier verified for all four workflow case/event tables | Privacy review | Automated gates passed |
-| Contracts | Public OpenAPI schemas match TypeScript | 31 models checked by `devtools/ideal_ui/check_contracts.py` | Diff review | Passed |
-| Data model | ORM and observed PostgreSQL agree | 41/41 business tables; expected migration table excluded from business count; semantic difference 0 | Generated diagram review | Automated observation passed; human diagram review pending |
-| Dependencies | Fixed runtime versions and no known audit findings at the recorded time | Node 24.21.0, Next 16.3.8, React 19.3, Playwright 1.56.1; registry-backed npm and Python audits found 0 known vulnerabilities | Operational patch process | Recorded dependency gate passed; continuous monitoring remains necessary |
-| Performance | p75 LCP≤2.5s, INP≤200ms, CLS≤0.1 | Production build only | Production-like field telemetry | Field gate pending |
-| Privacy | Synthetic data only in UI, recording and package | Public sample checks passed; package scan/checksum | Consent/retention review before real study | Exact public-export/package scan pending; real study pending |
+| 重大な課題 | 参加者30名において重大な誤確定が0件 | API及びワークフローの試験並びにブラウザーによるシナリオ | 進行役の立会いの下でのAB/BA評価 | 未完了（参加者による評価待ち） |
+| 完了 | 各役割の重大な課題の各々を、9/10以上が独力で完了 | U01〜U27の到達確認の試験群 | 進行役の立会いの下での評価 | 未完了（参加者による評価待ち） |
+| 容易さ | 主観的作業難易度（Single Ease Question：SEQ）の中央値が5/7以上 | 未記入の解析用ワークブック及び実施計画書 | 参加者による評定 | 未完了（参加者による評価待ち） |
+| 非劣性 | 完了者が1名を超えて減少しない。所要時間の中央値が15%を超えて悪化しない | 事前に定めた解析 | 対応のあるAB/BAの観測値 | 未完了（参加者による評価待ち） |
+| アクセシビリティ | WCAG 2.2 AA。キーボード、200/400%、320 px、文字間隔、強制色、フォーカス、VoiceOver/NVDA | Jest並びに役割と画面経路の組合せに関するaxe、視覚的検査及びリフローの1,872条件 | 手動による拡大及び強制色の確認並びに支援技術による確認 | 自動検査の対象範囲は合格。VoiceOver/NVDAによる確認及び対象環境における手動確認は未完了 |
+| 描画 | Chromium/Firefox/WebKit、320/768/1440及び4配色 | 役割と画面経路の組合せの試験156件及び1,872条件が合格。画面経路ごとの状態のストーリー150件が合格。ストーリー233件・画像699件のギャラリーを生成 | 代表画面に関する人による視覚的な確認 | 自動検査の試験群は合格。代表画面に関する人によるレビューは未完了 |
+| 構造的独立 | 新画面（開発名：認知中心UI v3）の全ての画面経路が、用途に即して作成した専用の画面であること。ラッパー、分岐又は名称を変更した部品を介して従来画面を表示しないこと。新画面の部品が従来のURLへリンクしないこと | 構造試験が`app/workspace`からのimportを解決し、記録した乖離を固定。25画面経路中6画面経路が従来の実装を組み込む。`ideal/screens`の9モジュール及び互換用の再エクスポート2件が到達可能。4部品が従来のURLへリンク（`verification.md`を参照） | レビュー担当者による、v3より前の部品との比較。再作成した各画面経路の設計レビュー | **未達成**。未完了として記録。画面経路は再作成していない |
+| 既存の動作 | 機能フラグ無効時における従来の製品の維持 | 選定した従来の試験ケース267/267件、再試行0件、失敗・未実行0件、ソース・ビルドの不一致0件 | 回帰試験結果の切り分け | 記録した合成データ環境において合格 |
+| 宣言した業務シナリオ | U01〜U27が、実API及びPostgreSQLを経由する、ブラウザーによる業務シナリオ全体の試験であること | 初回実行で243/243件。ブラウザーエンジン及び画面幅別に一時的なスキーマを使用。U25は合成データを実際に消去 | 課題単位の妥当性確認 | 記録した合成データ環境において合格 |
+| APIの安全性 | 施設・部署の範囲による認可、期待する版、冪等性、証跡、操作主体、別担当者による承認（four-eyes）及び自己締め出しの防止 | Python・API・PostgreSQLの試験、攻撃を想定した異常系の試験ケース及び既存ワークフローのE2E | 第三者的レビュー及び配備先別のレビュー | 自動検査は合格。最終のリリース候補のレビューは未完了 |
+| 消去 | ORMの全テーブルを分類済み。残存データが決定的に定まり、消去済みデータが復活しないこと | テーブル一覧（inventory）及び複製関係グラフ（copy graph）の試験並びに個人データの消去の試験群。ワークフローのケース及びイベントの全4テーブルについて、PostgreSQLの物理的な複製トリガー及び消去済み本人に対する遮断（erased-subject barrier）を検証済み | プライバシーのレビュー | 自動検査は合格 |
+| 契約 | 公開のOpenAPIスキーマとTypeScriptとの一致 | `devtools/ideal_ui/check_contracts.py`により31モデルを検査 | 差分のレビュー | 合格 |
+| データモデル | ORMと観測したPostgreSQLとの一致 | 業務テーブル41/41件。想定どおり存在する移行管理用のテーブルは、業務テーブルの件数から除外。意味上の差異0件 | 生成した図のレビュー | 自動検査による観測は合格。人による図のレビューは未完了 |
+| 依存関係 | 実行環境の版を固定し、記録時点において監査による既知の指摘がないこと | Node 24.21.0、Next 16.3.8、React 19.3、Playwright 1.56.1。レジストリを参照したnpm及びPythonの監査において、既知の脆弱性は0件 | 運用上の修正適用手順 | 記録した依存関係の検査は合格。継続的な監視を引き続き要する |
+| 性能 | 75パーセンタイルでLCP≤2.5 s、INP≤200 ms、CLS≤0.1 | 本番ビルドのみ | 実運用に相当する環境における実測値 | 実運用環境における判定は未完了 |
+| プライバシー | UI、録画・記録及びパッケージに含めるのは合成データのみ | 公開サンプルの検査は合格。パッケージの走査及びチェックサム | 実際の評価に先立つ、同意及び保存期間のレビュー | 公開用出力そのもの及びパッケージの走査は未完了。実際の評価は未完了 |
 
-“Pending” is not a pass. The production-adoption gate remains closed until the
-human, assistive-technology and field-performance rows pass. Source-code
-publication is a separate gate: it requires the automated checks, final
-independent release review and exact public-export audit, while retaining
-`IDEAL_UI` OFF by default.
+「未完了」は合格ではない。人による評価、支援技術による評価及び実運用環境における性能の各行が合格するまで、本番採用の判定基準は満たされない。一方、ソースコードの公開は別個の判定基準によるものとし、当該判定基準においては、自動検査、リリースに関する最終の第三者的レビュー及び公開用出力そのものの監査を要件とする。併せて、`IDEAL_UI`の既定値は無効（OFF）のまま据え置く。
+
+## 合格基準の統計的な限界
+
+人による評価の合格基準は、少数例に基づく形成的評価の基準であり、基準を満たした場合であっても、次の不確かさが残る。
+
+- 30名において重大な誤確定が0件であった場合でも、参加者単位の真の発生割合の95%信頼区間（Wilson法）は0〜11.4%である。
+- 役割別に10名中9名が独力で完了した場合、完了割合の95%信頼区間（Wilson法）は59.6〜98.2%である。10名全員が完了した場合は72.2〜100%である。
+- 非劣性の基準（完了者が1名を超えて減少しない、所要時間の中央値が15%を超えて悪化しない）は、検出力を算定していない記述的な許容基準であり、統計的な非劣性の検証ではない。
+- 自動試験の合格件数は、無作為に抽出した標本ではないことから、故障率又は信頼性の推定値として解釈しない。

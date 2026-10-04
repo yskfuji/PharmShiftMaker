@@ -1,45 +1,45 @@
 # Fixtures Overview (Shift Scheduler)
 
-このディレクトリは Phase3/4 の DoD で利用する **小規模インスタンス** を収めています。
-`pytest tests/test_solver_small_instance.py` で読み込まれる YAML は、以下のコンセプトを固定し、ハード制約の回帰テストを簡単に増やせるようにしています。
+本ディレクトリには、Phase3/4の完了の定義（Definition of Done：DoD）で利用する**小規模インスタンス**を格納する。
+`pytest tests/test_solver_small_instance.py` が読み込むYAMLは、以下のコンセプトを固定する。これにより、ハード制約の回帰テストの追加を容易にしている。
 
 ## `small_instance/`
 
 | ファイル | 役割 | 規模 |
 | --- | --- | --- |
-| `people.yaml` | 6 名（常勤 4, パート 2）の職員を定義 | 6 人 |
-| `profiles.yaml` | 夜勤可否・週末可否などの勤務プロファイル | 4 プロファイル |
-| `timeline.yaml` | 1 週間分 (2025-02-03〜2025-02-09) の在籍状況 | 6 エントリ |
-| `calendar.yaml` | 7 日間の曜日・祝日フラグ | 7 日 |
-| `shift_types.yaml` | 日勤/夕診/夜勤/当直などの必要人数 | 12 シフト |
-| `holiday_requests.yaml` | 公休/有給の希望データ（優先度付き） | 9 件 |
+| `people.yaml` | 6名（常勤4、パート2）の職員を定義 | 6人 |
+| `profiles.yaml` | 夜勤可否・週末可否等の勤務プロファイル | 4プロファイル |
+| `timeline.yaml` | 1週間分（2025-02-03〜2025-02-09）の在籍状況 | 6エントリ |
+| `calendar.yaml` | 7日間の曜日・祝日フラグ | 7日 |
+| `shift_types.yaml` | 日勤/夕診/夜勤/当直等の必要人数 | 12シフト |
+| `holiday_requests.yaml` | 公休/有給の希望データ（優先度付き） | 9件 |
 
 ### 使い方ガイド
-- **原則 7 日間**：3〜7 日程度の horizon を保ち、CP-SAT モデルの状態を最小化します。
-- **差分は追加ファイルで管理**：別ケースを作るときは `small_instance_weekend.yaml` など suffix を付け、`tests/test_solver_small_instance.py` から明示的にロードします。
-- **命名規則**：人 ID / プロファイル ID / シフト ID は snake_case で統一し、他のフィクスチャでも再利用しやすくします。
+- **原則7日間**：3〜7日程度の計画期間（horizon）を維持し、CP-SATモデルの状態を最小化する。
+- **差分は追加ファイルで管理**：別個のケースを作成する場合は、`small_instance_weekend.yaml` のように接尾辞を付し、`tests/test_solver_small_instance.py` から明示的に読み込む。
+- **命名規則**：人ID / プロファイルID / シフトIDはsnake_caseに統一し、他のフィクスチャにおける再利用を容易にする。
 
 ## Property-based / Regression 指針
 
-Phase3 のハード制約回帰を増やすときは、以下のルールに従ってフィクスチャを設計してください。
+Phase3のハード制約の回帰テストを追加する場合は、以下のルールに従ってフィクスチャを設計すること。
 
-1. **1 つの物理ルールにつき 1 ケース**
-   - 例：祝日種別の追加テスト、連勤上限の境界値テストなど。
-   - ケースごとに YAML と Pytest をセットで追加し、テスト名にルール名を含める。
+1. **1つの物理ルールにつき1ケース**
+   - 例：祝日種別の追加テスト、連勤上限の境界値テスト等。
+   - 各ケースにつきYAMLとPytestを組で追加し、テスト名にルール名を含める。
 2. **期待値はコメントで明示**
-   - `holiday_requests.yaml` などで、どの ID が採用されるべきか `# expect off` のようなコメントを残す。
-3. **Property-based テスト候補**
-   - 連勤上限：`hypothesis` の `data()` を使って 3〜7 日のランダムパターンを生成し、`max_consecutive_working_days` を越えないことを確認。
-   - 祝日上限：曜日フラグをランダムに変えても `holiday_limits` を超えないことを検証。
-   - 既存例：`tests/test_solver_properties.py` では weekend 制約と連勤上限を Hypothesis で検証しているので、追加ケースの雛形として利用可能。
+   - `holiday_requests.yaml` 等においては、いずれのIDの採用を期待するかを、`# expect off` のようなコメントとして記載する。
+3. **Property-basedテスト候補**
+   - 連勤上限：`hypothesis` の `data()` を用いて3〜7日のランダムパターンを生成し、`max_consecutive_working_days` を超過しないことを確認する。
+   - 祝日上限：曜日フラグをランダムに変更しても `holiday_limits` を超過しないことを検証する。
+   - 既存例：`tests/test_solver_properties.py` は、週末制約と連勤上限をHypothesisで検証しており、追加ケースのひな形として利用できる。
 4. **テンプレート**
-   - `tests/fixtures/templates/` に YAML スニペットをまとめ、`tests/utils/fixture_factory.py` の `build_config_from_templates()` で merge して利用します。追加したテンプレートはこの README とテンプレート側の README の両方に記載し、テストコードから 1 件以上参照すること。
+   - `tests/fixtures/templates/` にYAMLスニペットを集約し、`tests/utils/fixture_factory.py` の `build_config_from_templates()` によりマージして利用する。追加したテンプレートは、本READMEとテンプレート側のREADMEの双方に記載し、テストコードから1件以上参照すること。
 
-この README はフィクスチャを追加・更新するたびにメンテナンスし、AI / 人間どちらでも意図を即座に把握できるようにします。
+本READMEは、フィクスチャを追加・更新する都度保守する。AIと人間のいずれが参照しても、意図を直ちに把握できる状態を維持する。
 
 ## テンプレートカタログ
 
 | テンプレート | 用途 | 参照テスト |
 | --- | --- | --- |
-| `baseline_staff.yaml` | 週末禁止スタッフを含むミックス構成。週末・連勤 property テストの土台。 | `tests/test_solver_properties.py::test_weekend_ineligible_staff_are_never_assigned_on_weekends` |
-| `balanced_fulltime_pool.yaml` | 日勤フェアネスのみを観察する常勤 4 名セット。大規模フェアネス property に利用。 | `tests/test_solver_properties.py::test_day_shift_fairness_scales_with_randomized_horizon` |
+| `baseline_staff.yaml` | 週末禁止スタッフを含む混成の構成。週末・連勤のpropertyテストの基盤。 | `tests/test_solver_properties.py::test_weekend_ineligible_staff_are_never_assigned_on_weekends` |
+| `balanced_fulltime_pool.yaml` | 日勤フェアネスのみを観察する常勤4名セット。大規模フェアネスのpropertyテストに利用。 | `tests/test_solver_properties.py::test_day_shift_fairness_scales_with_randomized_horizon` |

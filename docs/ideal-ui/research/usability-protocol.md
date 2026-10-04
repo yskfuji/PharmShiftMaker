@@ -1,24 +1,17 @@
-# Controlled usability evaluation protocol
+# ユーザビリティ対照評価の実施計画書
 
-Recruit 30 consenting participants: 10 administrators, 10 department leaders
-and 10 pharmacists. Within each role assign five to AB and five to BA order.
-Use equivalent months and different synthetic staff data in the two conditions.
-The facilitator may clarify the task wording but may not teach the interface.
+同意を得た参加者30名を募集し、内訳は、管理者10名、責任者10名及び薬剤師10名とする。各役割内において、5名をABの順序に、5名をBAの順序に割り当てる。両条件においては同等の月を用い、架空の職員（合成データ）は条件別に異なるものを用いる。進行役は、課題の文言を説明してもよいが、画面の操作方法を教示してはならない。
 
-Record one row per participant, condition and task in
-`participant-results-template.csv`. “Independent success” excludes facilitator
-intervention. Mark a critical error when a participant confirms publication,
-leave, swap, account-linking or erasure for the wrong subject/version/scope.
-Capture elapsed time only for successful attempts; preserve timeout separately.
+`participant-results-template.csv`には、参加者、条件及び課題の組合せ別に1行を記録する。「独力での成功」には、進行役が介入した場合を含めない。参加者が、誤った対象者、版又は施設・部署の範囲に対して、公開、休暇、交換、アカウントの紐付け又は消去を確定した場合は、重大な誤確定として記録する。所要時間は、成功した試行に限り記録する。時間切れは、別途記録して保持する。
 
-After each task capture SEQ (1–7). After each condition capture NASA-TLX and
-VisAWI-S according to their scoring instructions. Do not merge aesthetics and
-usability into one score. Record device, assistive technology, experience and
-order, but exclude directly identifying information from the analysis file.
+各課題の後に、主観的作業難易度（Single Ease Question：SEQ、1〜7）を記録する。各条件の後に、NASA-TLX及びVisAWI-Sを、各々の採点手順に従って記録する。美観とユーザビリティとを、単一の得点に統合しないこと。機器、支援技術、経験及び順序を記録する。ただし、個人を直接識別できる情報は、解析用ファイルに含めないこと。
 
-The pre-registered pass rules are those in `acceptance-matrix.md`. Report Wilson
-95% intervals for proportions, participant-paired bootstrap 95% intervals for
-continuous differences, effect sizes and AB/BA order strata. If confirmatory
-hypothesis tests are added, list the family before inspection and apply Holm's
-step-down correction. Ten people per role is formative evidence, not population
-proof.
+事前に登録した合格基準は、`acceptance-matrix.md`に記載したとおりである。割合についてはWilson法の95%信頼区間を、連続量の差については参加者内で対応付けたブートストラップ法による95%信頼区間を報告し、併せて、効果量及びAB/BAの順序による層別の結果を報告する。検証的な仮説検定を追加する場合は、データを参照する前に検定の族を列挙し、Holmのステップダウン法による補正を適用する。役割別に10名という規模は、形成的評価の根拠であって、母集団に関する証明ではない。
+
+## 統計解析上の留意点
+
+- 本評価は役割別に10名の形成的評価であり、母集団に関する結論を与えるものではない。
+- 割合にはWilson法の95%信頼区間を付す。30名において0件の場合の上限は11.4%、10名中9名の場合の区間は59.6〜98.2%である。
+- 対の数が10程度の場合、ブートストラップ法による信頼区間の被覆確率は名目値を下回る傾向があることから、区間は参考値として取り扱う。
+- 非劣性の基準は記述的な許容基準である。統計的な非劣性を検証する場合は、非劣性マージン、検出力及び必要例数を、データを参照する前に定める。
+- `analyze_study.py`は、役割・課題・条件別の完了割合にWilson法の区間を付し、連続量については、役割及び課題を併合した対応差の平均に対するパーセンタイル法のブートストラップ区間を出力する。重大な誤確定の区間、中央値に基づく合格判定及び参加者単位の再標本化は出力しないため、別途算出する。
