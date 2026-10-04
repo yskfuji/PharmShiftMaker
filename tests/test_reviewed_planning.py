@@ -1,8 +1,7 @@
 """Independent positive/negative controls for reviewed publication and interval plans."""
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from itertools import product
-from zoneinfo import ZoneInfo
 
 import pytest
 from sqlalchemy import create_engine, select
@@ -16,110 +15,12 @@ from shift_scheduler.db.planning_models import (
     PlanningPublication,
 )
 from shift_scheduler.domain.planning import (
-    Capability,
-    ContractRevision,
-    Demand,
-    Duty,
-    Evidence,
     Interval,
-    Person,
     Proposal,
-    SolverSnapshot,
 )
 from shift_scheduler.optimizer.planning import solve
 from shift_scheduler.validation.planning import validate
-
-JST = ZoneInfo("Asia/Tokyo")
-
-
-def snapshot(n=2, days=2):
-    start = datetime(2026, 1, 5, tzinfo=JST)
-    end = start + timedelta(days=days)
-    evidence = Evidence(
-        reference="synthetic-confirmed-test-only",
-        status="verified",
-        verified_by="test-oracle",
-    )
-    people = tuple(Person(person_id=f"p{i}", name=f"Person {i}") for i in range(n))
-    contracts = tuple(
-        ContractRevision(
-            revision_id=f"c{i}",
-            relationship_id=f"e{i}",
-            person_id=p.person_id,
-            employer_id="hospital",
-            facility_id="hospital",
-            department_id="pharmacy",
-            start=start - timedelta(days=400),
-            end=end + timedelta(days=400),
-            evidence=evidence,
-            regime_evidence=evidence,
-            external_work_confirmed=True,
-            period_max_seconds=days * 4 * 3600,
-            contractual_week_seconds=20 * 3600,
-            rest_seconds=11 * 3600,
-        )
-        for i, p in enumerate(people)
-    )
-    capabilities = tuple(
-        Capability(
-            person_id=p.person_id,
-            task="dispensing",
-            location="main",
-            start=start - timedelta(days=400),
-            end=end + timedelta(days=400),
-            evidence=evidence,
-        )
-        for p in people
-    )
-    duties, demands = [], []
-    for day in range(days):
-        a = start + timedelta(days=day, hours=9)
-        b = a + timedelta(hours=4)
-        span = Interval(start=a, end=b)
-        demands.append(
-            Demand(
-                demand_id=f"d{day}",
-                start=a,
-                end=b,
-                task="dispensing",
-                location="main",
-                minimum=1,
-                target=1,
-                evidence=evidence,
-            )
-        )
-        for i, p in enumerate(people):
-            duties.append(
-                Duty(
-                    duty_id=f"p{i}d{day}",
-                    person_id=p.person_id,
-                    relationship_id=f"e{i}",
-                    kind="DAY",
-                    location="main",
-                    task="dispensing",
-                    start=a,
-                    end=b,
-                    work=(span,),
-                )
-            )
-    return SolverSnapshot(
-        facility_id="hospital",
-        department_id="pharmacy",
-        lookahead_days=0,
-        period=Interval(start=start, end=end),
-        context=Interval(
-            start=start - timedelta(days=400), end=end + timedelta(days=14)
-        ),
-        rule_revision="general-test-v1",
-        policy_evidence=evidence,
-        history_complete=True,
-        candidate_catalog_complete=True,
-        people=people,
-        contracts=contracts,
-        capabilities=capabilities,
-        candidates=tuple(duties),
-        demands=tuple(demands),
-    )
+from tests.fixtures.reviewed_planning import reviewed_planning_snapshot as snapshot
 
 
 @pytest.fixture

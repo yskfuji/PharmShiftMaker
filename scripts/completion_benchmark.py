@@ -7,7 +7,7 @@ from __future__ import annotations
 import random
 from datetime import timedelta
 
-from tests.test_reviewed_planning import snapshot
+from tests.fixtures.reviewed_planning import reviewed_planning_snapshot as snapshot
 
 from shift_scheduler.domain.compliance import SolverSnapshotV2
 

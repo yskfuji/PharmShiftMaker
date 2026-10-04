@@ -16,8 +16,8 @@ from alembic.config import Config
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker
+from tests.fixtures.reviewed_planning import reviewed_planning_snapshot as snapshot
 from tests.test_planning_lifecycle import publish
-from tests.test_reviewed_planning import snapshot
 
 
 def main():

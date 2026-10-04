@@ -23,7 +23,7 @@ from shift_scheduler.domain.copies import DatabaseCopyReview
 from shift_scheduler.domain.planning import Evidence, content_hash
 
 EXPECTED = Path(__file__).with_name("small_restore_fixture_expected.json")
-EXPECTED_SHA256 = "5b07c6d8e23fb4c3876f2a3f55a201d60fe0fee79de9f31955883d49fa9bbf10"
+EXPECTED_SHA256 = "567f6cd2cde6388fe7851cc12b92ed660772f51dae8aefb1c7c772a7d98fec18"
 SCOPE = "hospital/pharmacy"
 EVIDENCE = Evidence(
     reference="fixed-synthetic-small-restore-producer-review-v1",

@@ -1,6 +1,6 @@
 {
   "format": "synthetic-small-restore-expectations-v1",
-  "source": "tests/test_reviewed_planning.py:snapshot(2,1), reviewed fixed two-person one-day fixture; not values inferred from database registry",
+  "source": "tests/fixtures/reviewed_planning.py:reviewed_planning_snapshot(2,1), reviewed fixed two-person one-day fixture; not values inferred from database registry",
   "scope": "hospital/pharmacy",
   "inputs": [
     {

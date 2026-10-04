@@ -1,5 +1,5 @@
 {
-  "file_count": 1946,
+  "file_count": 1948,
   "files": [
     {
       "bytes": 279,
@@ -2497,9 +2497,9 @@
       "sha256": "b67f26c94301fb50f29e3f2ab34282812137ac3fef00e9aaca66e34e72a662b8"
     },
     {
-      "bytes": 1304,
+      "bytes": 1785,
       "path": "frontend/playwright.planning.config.ts",
-      "sha256": "32a6e49a5a0be1d7eea1b9aacd2dbc8ce4e7a0ee5d46e42f0728d34544385e95"
+      "sha256": "ca2aee1e70e2028ea6549d468dc5cae009d0f25959ee1c34321cee6aee074af1"
     },
     {
       "bytes": 1153,
@@ -3917,9 +3917,9 @@
       "sha256": "b0db53ecc10763a412b91d1165b6c07e04b73ffcad5714eadf49d67df9bb3c64"
     },
     {
-      "bytes": 2787,
+      "bytes": 2855,
       "path": "frontend/tests/planning-e2e/publication.spec.ts",
-      "sha256": "ecc3d4447050b848f057c6ed10288e27406b9587d63b3f7ab3ccbfaee0bfb0ad"
+      "sha256": "cc4765f25b78df86038c68807ea50afc86123739deb6cc18b22ac985d9766516"
     },
     {
       "bytes": 5659,
@@ -7572,9 +7572,9 @@
       "sha256": "04c8b17a5993ee78c46e964681b0147022c25059802ff81d40968ba043b7d63f"
     },
     {
-      "bytes": 4766,
+      "bytes": 4800,
       "path": "scripts/audit_restore.py",
-      "sha256": "ffa35dce8282bf57a103ef36bc951426b12f3ef5f111c7098e8022c15115a962"
+      "sha256": "7dc718acab405fa0c5571bd4a53272aa1edeef468c1275e1afd5211c68f24f53"
     },
     {
       "bytes": 5700,
@@ -7612,9 +7612,9 @@
       "sha256": "a1f4838b2e580f56ee1520691d2c771f4d11f23b6480139e547094d77411b3b2"
     },
     {
-      "bytes": 8803,
+      "bytes": 8837,
       "path": "scripts/completion_benchmark.py",
-      "sha256": "0d3804ddf61cd0de90ec98360e258b26ca1cff8ad84f7eb6a83fdf4d97aa71d5"
+      "sha256": "4639c000eafa25e82e91bce6388f17264ece412ea73a54a8a8fcf365b21cc744"
     },
     {
       "bytes": 7063,
@@ -7802,9 +7802,9 @@
       "sha256": "2d8ce336554fe6be9b27f8f74851217890fed89d01961581f7abd9a0f360c09b"
     },
     {
-      "bytes": 3012,
+      "bytes": 3554,
       "path": "scripts/planning_test_server.py",
-      "sha256": "e1e4bada5b037ed23231b0bf56e48b998314bbe24d2fcfc47f73f1070d14c3ab"
+      "sha256": "a15ba7d8a05db10de40de940bd6721353948d878edcbf6c8ec6e689be8f9c94b"
     },
     {
       "bytes": 2342,
@@ -7924,12 +7924,12 @@
     {
       "bytes": 12070,
       "path": "scripts/small_restore_fixture.py",
-      "sha256": "e7e6aafff7f6a214d05f1c36ed25bc8d5581ba7da3dbc551feea2ac468ddc28c"
+      "sha256": "8350ae0807030c4686a0323cd404d7795ca055b29f0b88221e415e52d2c56a57"
     },
     {
-      "bytes": 15263,
+      "bytes": 15286,
       "path": "scripts/small_restore_fixture_expected.json",
-      "sha256": "5b07c6d8e23fb4c3876f2a3f55a201d60fe0fee79de9f31955883d49fa9bbf10"
+      "sha256": "567f6cd2cde6388fe7851cc12b92ed660772f51dae8aefb1c7c772a7d98fec18"
     },
     {
       "bytes": 1032,
@@ -7962,9 +7962,9 @@
       "sha256": "1ea4763b30ad9e51b1ac2084b7f237d4896a8510a25af5cd48d62a9c97814c74"
     },
     {
-      "bytes": 2468,
+      "bytes": 2502,
       "path": "scripts/verify_clean_install.py",
-      "sha256": "9a0e9d8210e39ac44d6fa16f527f83c555f0917987a36185ee6b8fadf223aaaf"
+      "sha256": "3a3f8c819f29f0e5ec696d32fd5698a0e0264b4038a3e80ba0970b672f5e1b14"
     },
     {
       "bytes": 388,
@@ -8717,6 +8717,11 @@
       "sha256": "b2151bd4ac5ad798059e080af89b59d2205cb419a6c488f6a5cd116e4506357e"
     },
     {
+      "bytes": 3423,
+      "path": "tests/fixtures/reviewed_planning.py",
+      "sha256": "708d45e8df9b3822c9abc35d77698a2aba5842d7ee759c44bb829210e8f5a7e0"
+    },
+    {
       "bytes": 489,
       "path": "tests/fixtures/small_instance/calendar_2025_02.yaml",
       "sha256": "58022578ff0d713f62e0b2174d49c2437c6ed71da29303912644576779d02fb1"
@@ -9427,6 +9432,11 @@
       "sha256": "2c8f1f99f6eba4069df9fec56ce823687ed620464d3b2b8c779901e09aa66c26"
     },
     {
+      "bytes": 699,
+      "path": "tests/test_planning_test_server.py",
+      "sha256": "82f756b2842377a5456bb3a594039d5bea75a217754ea20e2a8c2b3ebe26ba4d"
+    },
+    {
       "bytes": 5365,
       "path": "tests/test_privacy_workflow.py",
       "sha256": "31d8748fb687d9730382f4ac4de29a418af01c0eb492407367149bab1128f69c"
@@ -9497,9 +9507,9 @@
       "sha256": "e4dee7b152e5b4322ee1dec74109f4e6d0bc450a7dfb6975ca2bbf1d349d8f25"
     },
     {
-      "bytes": 12706,
+      "bytes": 9796,
       "path": "tests/test_reviewed_planning.py",
-      "sha256": "24e1d38ef6ad71df9e9e78196f43f957ece4a3684f3a1162cd6aa9d803ce0dae"
+      "sha256": "2d38a1276c2e6d62ee339f0756283d2d83efb68b7d48123003e779c084876ac7"
     },
     {
       "bytes": 4050,
@@ -9734,5 +9744,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2",
-  "source_commit": "cf96da5511de26a57126730f45033a09a266d2ed"
+  "source_commit": "2c4d1fff42f8b39ef3680a2179a48ae5ea33461b"
 }

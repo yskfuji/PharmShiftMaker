@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 
 test('generate, review identical draft, publish, reload and reject cross-scope access',async({page})=>{
+  const backendPort=process.env.E2E_BACKEND_PORT??'18500';
   await page.goto('/login');
   await page.getByLabel('ユーザーID').fill('admin');
   await page.getByLabel('パスワード').fill('pass-admin');
@@ -28,7 +29,7 @@ test('generate, review identical draft, publish, reload and reject cross-scope a
   await expect(page.getByRole('button',{name:'確認した案を公開'})).toBeEnabled();
   await page.getByRole('button',{name:'確認した案を公開'}).click();
   await expect(page.locator('summary').filter({hasText:'公開版 3'})).toBeVisible();
-  const response=await page.request.get('https://127.0.0.1:18500/planning/publications?scope_id=other%2Fpharmacy');
+  const response=await page.request.get(`https://127.0.0.1:${backendPort}/planning/publications?scope_id=other%2Fpharmacy`);
   expect(response.status()).toBe(403);
   await page.setViewportSize({width:640,height:800});
   await page.getByRole('heading',{name:'勤務表・計画'}).focus();

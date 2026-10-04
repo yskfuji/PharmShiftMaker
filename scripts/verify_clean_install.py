@@ -9,7 +9,7 @@ import tempfile
 import venv
 from pathlib import Path
 
-from tests.test_reviewed_planning import snapshot
+from tests.fixtures.reviewed_planning import reviewed_planning_snapshot as snapshot
 
 
 def main():
