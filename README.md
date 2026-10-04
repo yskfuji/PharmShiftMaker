@@ -9,7 +9,7 @@ PharmShiftMakerは、病院薬剤部の勤務計画、当日の変更、休暇�
 - FastAPI、PostgreSQL及びNext.jsによる業務機能と、合成データ用の試験環境を収録している。
 - `src/shift_scheduler/config`及び`ops/attendance_mapping.example.yaml`の人物は、ID・表示名とも公開試験用の合成データである。導入時は、導入機関が管理する情報へ置き換える。
 - 認知中心UI v3は `IDEAL_UI=1` のときだけ `/workspace` で有効になる。既定値はOFFであり、既存画面を維持する。
-- 新workspaceの従来画面からの独立は未完了である。25子画面のうち6画面（申請の「休暇」「兼業・外部勤務」、職員の「契約・資格」、ガバナンスの「実績照合」「個人情報」、設定の「フレックス」）は、従来画面の実装を名称だけ変えて新しい外殻の中に表示している。また、新workspaceで表示する部品の一部に、従来URLへのリンクが残る。検査の方法と結果は[検証記録](docs/ideal-ui/verification.md)の「Structural independence from the established screens」に記す。
+- 新workspaceの従来画面からの独立は未完了である。25子画面のうち6画面（申請の「休暇」「兼業・外部勤務」、職員の「契約・資格」、ガバナンスの「実績照合」「個人情報」、設定の「フレックス」）は、従来画面の実装を名称だけ変えて新しい外殻の中に表示している。また、25子画面のうち23画面を一つのClient Componentが振り分けており、画面構成の実装は用途別の`features/workspace`ではなく`ideal/screens`に残る。新workspaceで表示する部品の一部には、従来URLへのリンクも残る。検査の方法、結果及び完了条件は[検証記録](docs/ideal-ui/verification.md)の「Structural independence from the established screens」に記す。
 - 27業務系列、認可、版競合、冪等再送、人物消去及び復旧境界の自動試験を収録している。試験結果は、記録された合成条件についての確認に限られる。
 - 30名の利用者評価、VoiceOver/NVDA実機評価及び実運用相当の75パーセンタイル性能測定は未完了である。「使いやすい」「WCAG適合」「本番利用可能」又は「安全性を証明済み」とは扱わない。
 

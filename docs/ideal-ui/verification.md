@@ -86,21 +86,63 @@ Findings:
   `WorkflowNavigation` is reached only from the established `/planning` screen.
 - Thirty of the 33 component files under `features/workspace` are Client
   Components, and the route content is selected inside a Client Component. The
-  route pages and the shell are Server Components.
+  route pages and the shell are Server Components. A Server Component shell alone
+  does not make the route bodies Server Components.
 - The primary navigation has no link back to the established screens, and all 25
   routes are referenced from U01–U27 in `usecases.json`.
 
-`tests/test_workspace_v3_structure.py` records the six embedded routes and the
-four linking components exactly. It fails if either set grows or shrinks, and it
-requires the README to state the gap while the record is non-empty. It does not
+Transitive dependencies, resolved from `frontend/src/app/workspace` through
+relative and `@/` imports (84 modules):
+
+- Nine screen modules under `ideal/screens` are reached: `HomeScreen`,
+  `ScheduleScreen`, `shared`, and under `live/` `IntegratedFeatureView`,
+  `LiveAdminScreens`, `LiveCaseScreens`, `LivePlan`, `NewCaseForm` and `cases`.
+  Screen composition is therefore still owned by `ideal/screens`, not by
+  `features/workspace/<purpose>`. Seven `features/workspace/<purpose>/index.ts`
+  files re-export an `ideal/screens` screen under a purpose name.
+- All routes other than home and schedule are selected by one Client Component,
+  `IntegratedFeatureView`, rather than by a view and a read boundary per route.
+- Two compatibility re-exports at established paths are reached:
+  `components/ContextLink` and `components/PublicationExport`.
+- `components/ideal/IdealWorkspace`, the earlier monolithic workspace, is not
+  reached. `/preview` and `/showcase` still render it; they are v1/v2 showcase
+  routes and are not evidence for v3.
+- The shared link component accepts `/dashboard`, `/planning` and `/settings` as
+  destinations. That allowance is not a basis for workspace navigation.
+- Storybook and the routes reach the same screen modules; there is no
+  synthetic-only screen. Not everything under `ideal/` is an established screen:
+  its API client, contracts, types, providers and state conversion are neutral
+  shared code and are not counted above.
+
+`tests/test_workspace_v3_structure.py` records each of these sets exactly: the
+six embedded routes, the four linking components, the nine screen modules, the
+two reachable re-exports, the seven renaming index files, the four `section`
+values and the two earlier showcase routes. It fails if a set grows or shrinks,
+fails if the workspace reaches `IdealWorkspace` or if Storybook and the routes
+stop sharing screens, and requires the README to state the gap while a record is
+non-empty. It resolves imports rather than matching names, but it does not
 measure similarity, so it cannot detect a further rename of the same code; the
 comparison above has to be repeated by a reviewer. The U01–U27 journeys and the
 optical matrix above were recorded against these same screens: they show that
 the routes work, not that the routes are purpose-built.
 
-The six routes have not been rebuilt. Rebuilding them is separate work and is
-required before the workspace may be described as independent of the
-established screens.
+Nothing has been rebuilt. The workspace may be described as independent of the
+established screens only when all of the following hold:
+
+- no transitive dependency from the workspace on an established screen
+  implementation, and no business navigation from it to an established URL;
+- each of the 25 routes has its own view and its own data-read boundary, with no
+  route-wide switch and no form serving several purposes;
+- Storybook and the real-API screens use the same views and differ only in the
+  data adapter;
+- with `IDEAL_UI` OFF the established URLs and screens are retained, and with it
+  ON nothing falls back to an established screen;
+- U01–U27 pass as complete journeys through the real API and an isolated
+  PostgreSQL, and the flag-OFF regression, authorization, conflict, idempotency,
+  erasure, role-route and optical checks pass without retry;
+- the ER, state, screen/API and sequence diagrams regenerate from the
+  implementation, and routes, roles, states, transitions and test identifiers
+  are generated from `usecases.json` rather than edited by hand.
 
 ## Pending evaluations
 
