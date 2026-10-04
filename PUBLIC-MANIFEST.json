@@ -357,9 +357,9 @@
       "sha256": "7d988eb9c8dbfef7b0e61ddd709a076e93c3c32c6bda40af4613cf4a23b5c016"
     },
     {
-      "bytes": 1936,
+      "bytes": 2826,
       "path": "devtools/release/node_license_audit.mjs",
-      "sha256": "d2a1a564e2975c4a7d2834e5299bf31e4f8bd10f5b5810c8073b7a792b131ab7"
+      "sha256": "272e6fa3790f703684ec3b5a126d83a1146364a27d7a31e2f1bd81626b5c0527"
     },
     {
       "bytes": 1827,
@@ -9729,5 +9729,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2",
-  "source_commit": "dab7bb4ad35b26b94eee5091db011cc17c9f2e0b"
+  "source_commit": "aacd420da153879e9b253a46e63be62998b89756"
 }

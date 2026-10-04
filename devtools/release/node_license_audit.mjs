@@ -7,6 +7,25 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const frontend = path.join(root, "frontend");
 const lock = JSON.parse(fs.readFileSync(path.join(frontend, "package-lock.json"), "utf8"));
+const verifiedManifest = JSON.parse(
+  fs.readFileSync(path.join(root, "docs/release/THIRD_PARTY_LICENSES/manifest.json"), "utf8"),
+);
+const verifiedDistributionLicenses = new Map(
+  (verifiedManifest.packages ?? [])
+    .filter(
+      (item) =>
+        item.ecosystem === "npm" &&
+        item.installed === true &&
+        item.license_text_basis === "installed distribution" &&
+        item.license &&
+        Array.isArray(item.license_files) &&
+        item.license_files.length > 0,
+    )
+    .map((item) => [
+      `${item.location}\0${item.name}\0${item.version}`,
+      String(item.license),
+    ]),
+);
 const packages = [];
 const unresolved = [];
 
@@ -18,8 +37,14 @@ for (const [location, value] of Object.entries(lock.packages ?? {})) {
     const installed = JSON.parse(fs.readFileSync(path.join(frontend, location, "package.json"), "utf8"));
     license = installed.license ?? installed.licenses ?? license;
   } catch {
-    // Platform-specific optional packages may not be installed. Their lockfile
-    // declaration is still audited.
+    // Platform-specific optional packages may not be installed on this runner.
+  }
+  const unavailableOnRunner =
+    value.optional === true &&
+    Array.isArray(value.os) &&
+    !value.os.includes(process.platform);
+  if (!license && unavailableOnRunner) {
+    license = verifiedDistributionLicenses.get(`${location}\0${name}\0${value.version}`);
   }
   if (Array.isArray(license)) license = license.map((item) => item.type ?? item).join(" OR ");
   if (!license || /^(unknown|noassertion)$/i.test(String(license))) {
@@ -31,7 +56,7 @@ for (const [location, value] of Object.entries(lock.packages ?? {})) {
 
 const report = {
   format: "PharmShiftMaker npm license audit v1",
-  source: "frontend/package-lock.json plus installed package metadata",
+  source: "frontend/package-lock.json, installed package metadata, and exact verified-distribution manifest matches",
   package_count: packages.length,
   unresolved_count: unresolved.length,
   licenses: Object.fromEntries(Object.entries(packages.reduce((all, item) => {
