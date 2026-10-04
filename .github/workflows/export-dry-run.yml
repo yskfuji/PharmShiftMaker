@@ -32,15 +32,15 @@ jobs:
           set -euo pipefail
           ERROR_FILE="${RUNNER_TEMP}/export-error.txt"
           OUTPUT_DIR="${RUNNER_TEMP}/export-ci"
-          if python scripts/export_schedule.py \
+          set +e
+          python scripts/export_schedule.py \
             --year 2025 \
             --month 2 \
             --generate \
             --output-dir "${OUTPUT_DIR}" \
-            2>"${ERROR_FILE}"; then
-            echo "::error::The CLI unexpectedly bypassed review and publication"
-            exit 1
-          fi
+            2>"${ERROR_FILE}"
+          EXPORT_STATUS=$?
+          set -e
+          test "${EXPORT_STATUS}" -eq 1
           grep -F '生成・確認・公開を勤務表画面で完了してから出力してください。CLIから公開を迂回できません。' "${ERROR_FILE}"
-          test ! -e "${OUTPUT_DIR}/schedule_2025_02.json"
-          test ! -e "${OUTPUT_DIR}/schedule_2025_02.csv"
+          test ! -e "${OUTPUT_DIR}"
