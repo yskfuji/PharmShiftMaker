@@ -27,22 +27,20 @@ jobs:
           python -m pip install --require-hashes -r requirements.lock
           python -m pip install --no-deps -e .
 
-      - name: Run export_schedule dry-run
-        env:
-          SHIFT_SCHEDULER_CONFIG_DIR: ${{ github.workspace }}/ops/demo_config
+      - name: Verify that the CLI cannot bypass review and publication
         run: |
           set -euo pipefail
-          uvicorn shift_scheduler.api.main:app --host 127.0.0.1 --port 8000 --log-level warning &
-          SERVER_PID=$!
-          trap 'kill ${SERVER_PID} && wait ${SERVER_PID} 2>/dev/null || true' EXIT
-          sleep 5
-          python scripts/export_schedule.py \
-            --base-url http://127.0.0.1:8000 \
-            --username leader \
-            --password pass-lead \
+          ERROR_FILE="${RUNNER_TEMP}/export-error.txt"
+          OUTPUT_DIR="${RUNNER_TEMP}/export-ci"
+          if python scripts/export_schedule.py \
             --year 2025 \
             --month 2 \
             --generate \
-            --output-dir export-ci
-          test -f export-ci/schedule_2025_02.json
-          test -f export-ci/schedule_2025_02.csv
+            --output-dir "${OUTPUT_DIR}" \
+            2>"${ERROR_FILE}"; then
+            echo "::error::The CLI unexpectedly bypassed review and publication"
+            exit 1
+          fi
+          grep -F '生成・確認・公開を勤務表画面で完了してから出力してください。CLIから公開を迂回できません。' "${ERROR_FILE}"
+          test ! -e "${OUTPUT_DIR}/schedule_2025_02.json"
+          test ! -e "${OUTPUT_DIR}/schedule_2025_02.csv"

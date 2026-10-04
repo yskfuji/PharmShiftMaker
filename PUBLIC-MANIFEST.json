@@ -42,9 +42,9 @@
       "sha256": "5695e0a076bfdcfe3c6cf0ca057c0a1a04d81cde87241a6b6823f8aa69fa395c"
     },
     {
-      "bytes": 1405,
+      "bytes": 1454,
       "path": ".github/workflows/export-dry-run.yml",
-      "sha256": "960d6ab635198665c7e239e820d2674bd95a0f3231f119b3f7db4ca7753e2af4"
+      "sha256": "65190670e2d3696c0418e67b410469ae23bc79389f7adac7f0db67f301b9ffa4"
     },
     {
       "bytes": 1771,
@@ -9729,5 +9729,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2",
-  "source_commit": "ff5a17907a15054b78d255eca521bb6668e03e04"
+  "source_commit": "47404927595e15d7628f1f454ed1389d5af3b031"
 }
