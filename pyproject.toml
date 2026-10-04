@@ -34,7 +34,7 @@ dependencies = [
     "python-multipart==0.0.32",
     "httpx>=0.26.0",
     "itsdangerous>=2.1.2",
-    "PyJWT[crypto]==2.15.0",
+    "PyJWT[crypto]==2.15.1",
     "sqlalchemy>=2.0.29",
     "psycopg[binary]>=3.1.18",
     "alembic>=1.17.2",
