@@ -853,40 +853,6 @@
       },
       "handler_status": "UNVERIFIED"
     },
-    "scripts/backup_pipeline.py:pg_environment:9ccb38332e01ff908f19a0d0cf78a4ea894aa41ac3a56d6f44502184376dcaa4": {
-      "path": "scripts/backup_pipeline.py",
-      "symbol": "pg_environment",
-      "line": 144,
-      "expression_hash": "9ccb38332e01ff908f19a0d0cf78a4ea894aa41ac3a56d6f44502184376dcaa4",
-      "call": "tempfile.TemporaryDirectory",
-      "status": "UNVERIFIED",
-      "policy": "secret-private-temporary-directory-no-argv-password",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "9ccb38332e01ff908f19a0d0cf78a4ea894aa41ac3a56d6f44502184376dcaa4",
-        "basis": "source_expression_and_enclosing_function_review",
-        "reason": "Dedicated service-database credential temporary file inside private TemporaryDirectory; no roster/person payload is serialized. This is security material, not a managed personal-data artifact; credential lifecycle controls still apply."
-      },
-      "handler_status": "UNVERIFIED",
-      "security_material": true
-    },
-    "scripts/backup_pipeline.py:pg_environment:f9fed07c03f206d9306cfeb4bcf49554c9232c9af0766d21b4ce14c092b1bd64": {
-      "path": "scripts/backup_pipeline.py",
-      "symbol": "pg_environment",
-      "line": 150,
-      "expression_hash": "f9fed07c03f206d9306cfeb4bcf49554c9232c9af0766d21b4ce14c092b1bd64",
-      "call": "password_file.write_text",
-      "status": "UNVERIFIED",
-      "policy": "secret-private-temporary-directory-no-argv-password",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "f9fed07c03f206d9306cfeb4bcf49554c9232c9af0766d21b4ce14c092b1bd64",
-        "basis": "source_expression_and_enclosing_function_review",
-        "reason": "Dedicated service-database credential temporary file inside private TemporaryDirectory; no roster/person payload is serialized. This is security material, not a managed personal-data artifact; credential lifecycle controls still apply."
-      },
-      "handler_status": "UNVERIFIED",
-      "security_material": true
-    },
     "scripts/benchmark_journal.py:Journal.__init__:ad3e46870245871e506e9ab692da9da9edae862d8a6bdf2aff837f7e343d31e4": {
       "path": "scripts/benchmark_journal.py",
       "symbol": "Journal.__init__",
@@ -1367,17 +1333,17 @@
       },
       "handler_status": "UNVERIFIED"
     },
-    "scripts/planning_test_server.py:main:a2a52a70b123b81c0026730f8d67d9e17a8da62375e25ff7b58ca8ceba1a588e": {
+    "scripts/planning_test_server.py:main:ff6d093c9f193e67c634de253a46da3edf548b539c8be802d0b3c23b707c2d98": {
       "path": "scripts/planning_test_server.py",
       "symbol": "main",
-      "line": 60,
-      "expression_hash": "a2a52a70b123b81c0026730f8d67d9e17a8da62375e25ff7b58ca8ceba1a588e",
+      "line": 73,
+      "expression_hash": "ff6d093c9f193e67c634de253a46da3edf548b539c8be802d0b3c23b707c2d98",
       "call": "subprocess.Popen",
       "status": "UNVERIFIED",
       "policy": "人物参照・保存規則・実操作後照合への接続が未確認",
       "classification": "ISOLATED_EVALUATION",
       "classification_evidence": {
-        "expression_hash": "a2a52a70b123b81c0026730f8d67d9e17a8da62375e25ff7b58ca8ceba1a588e",
+        "expression_hash": "ff6d093c9f193e67c634de253a46da3edf548b539c8be802d0b3c23b707c2d98",
         "reason": "Offline development/audit entrypoint: planning_test_server. This class is a purpose boundary, not proof the input is synthetic or authorization to run on live data.",
         "basis": "source_expression_and_enclosing_function_review"
       },

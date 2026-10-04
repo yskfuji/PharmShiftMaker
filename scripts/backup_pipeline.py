@@ -24,7 +24,6 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 from uuid import uuid4
@@ -174,7 +173,7 @@ def run_pg_restore(db_url: str, dump_file: Path, pg_restore: str) -> None:
 
 @contextmanager
 def pg_environment(db_url: str):
-    """Keep database credentials out of argv, exceptions and process titles."""
+    """Keep database credentials out of argv, files, exceptions and process titles."""
     url = make_url(db_url)
     if url.get_backend_name() != "postgresql":
         raise ValueError("This backup path requires PostgreSQL")
@@ -203,32 +202,24 @@ def pg_environment(db_url: str):
     for key in ("sslmode", "sslrootcert", "sslcert", "sslkey"):
         if key in url.query:
             env["PG" + key.upper()] = str(url.query[key])
-    with tempfile.TemporaryDirectory(prefix="pharmshift-pgpass-") as directory:
-        password_file = Path(directory) / "pgpass"
-
-        def escape(value):
-            return str(value).replace("\\", "\\\\").replace(":", "\\:")
-
-        # libpq requires the password in pgpass format. The file lives in a
-        # mode-0700 temporary directory, is chmod 0600 before use, is never
-        # logged or passed in argv, and is removed when the context exits.
-        # codeql[py/clear-text-storage-sensitive-data]
-        password_file.write_text(
-            ":".join(
-                escape(value)
-                for value in (
-                    env["PGHOST"],
-                    env["PGPORT"],
-                    env["PGDATABASE"],
-                    env["PGUSER"],
-                    url.password or "",
-                )
-            )
-            + "\n"
-        )
-        password_file.chmod(0o600)
-        env["PGPASSFILE"] = str(password_file)
+    # libpq reads the password from the environment of the launched program, so
+    # nothing is written to disk and an abnormal exit leaves no credential file
+    # behind. This process's os.environ is not modified. The launched program
+    # and any process it starts inherit the value, and the same OS user and
+    # root can read it while they run. PostgreSQL discourages PGPASSWORD in
+    # favour of a password file because some systems expose a process
+    # environment to other users; this code assumes a host that does not and
+    # does not check for one.
+    # Without a password in the URL nothing is set here, and libpq may then
+    # consult the invoking OS user's own ~/.pgpass.
+    if url.password:
+        env["PGPASSWORD"] = url.password
+    try:
         yield env
+    finally:
+        # Drop the reference once the child has exited. Python cannot zero the
+        # string itself; this only prevents reuse of the mapping.
+        env.clear()
 
 
 def extract_tarball(

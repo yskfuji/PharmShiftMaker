@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-import stat
+import os
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -13,10 +14,12 @@ import shift_scheduler.data.holiday_request_store as holiday_store
 import shift_scheduler.data.schedule_store as schedule_store
 
 
-def test_pgpass_is_private_ephemeral_and_absent_from_process_environment(
-    monkeypatch: pytest.MonkeyPatch,
+def test_database_password_reaches_only_the_child_environment_and_no_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     password = "synthetic:p\\ass"
+    # Any temporary file the helper created would land in this empty directory.
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp_path))
     ambient_secrets = {
         "DATABASE_URL": "postgresql://app:ambient-secret@app.invalid/pharmshift",
         "SHIFT_SCHEDULER_DB_URL": "postgresql://legacy:legacy-secret@db.invalid/app",
@@ -38,27 +41,92 @@ def test_pgpass_is_private_ephemeral_and_absent_from_process_environment(
         database="synthetic-db",
     ).render_as_string(hide_password=False)
 
+    parent_before = dict(os.environ)
+
     with pg_environment(database_url) as environment:
-        password_file = Path(environment["PGPASSFILE"])
-        password_directory = password_file.parent
-        assert "PGPASSWORD" not in environment
-        assert ambient_secrets.keys().isdisjoint(environment)
+        # libpq takes the value verbatim: no pgpass escaping applies.
+        assert environment["PGPASSWORD"] == password
+        assert "PGPASSFILE" not in environment
+        assert (ambient_secrets.keys() - {"PGPASSWORD"}).isdisjoint(environment)
         assert environment["PHARMSHIFT_AUDIT_PG_CONTAINER"] == audit_container
         assert not any(
             secret in value
             for secret in ambient_secrets.values()
             for value in environment.values()
         )
-        assert password not in "\n".join(environment.values())
-        assert stat.S_IMODE(password_directory.stat().st_mode) == 0o700
-        assert stat.S_IMODE(password_file.stat().st_mode) == 0o600
-        assert password_file.read_text(encoding="utf-8") == (
-            "db.example.invalid:5432:synthetic-db:synthetic-user:"
-            "synthetic\\:p\\\\ass\n"
-        )
+        carriers = [key for key, value in environment.items() if password in value]
+        assert carriers == ["PGPASSWORD"]
+        assert environment["PGHOST"] == "db.example.invalid"
+        assert environment["PGPORT"] == "5432"
+        assert environment["PGDATABASE"] == "synthetic-db"
+        assert environment["PGUSER"] == "synthetic-user"
+        assert list(tmp_path.iterdir()) == []
+        assert dict(os.environ) == parent_before
 
-    assert not password_file.exists()
-    assert not password_directory.exists()
+    assert environment == {}
+    assert list(tmp_path.iterdir()) == []
+    assert dict(os.environ) == parent_before
+    assert password not in "\n".join(os.environ.values())
+
+
+@pytest.mark.parametrize("password", [None, ""])
+def test_database_url_without_password_inherits_no_ambient_libpq_environment(
+    monkeypatch: pytest.MonkeyPatch, password: str | None
+) -> None:
+    # Only environment inheritance is covered: libpq itself may still consult the
+    # invoking OS user's own ~/.pgpass when the URL carries no password.
+    ambient = {
+        "PGPASSWORD": "synthetic-pg-password",
+        "PGPASSFILE": "/nonexistent/synthetic-pgpass",
+        "PGSERVICE": "synthetic-service",
+        "PGSERVICEFILE": "/nonexistent/synthetic-service-file",
+        "PGSSLMODE": "disable",
+        "HOME": "/nonexistent/synthetic-home",
+    }
+    for key, value in ambient.items():
+        monkeypatch.setenv(key, value)
+    database_url = URL.create(
+        "postgresql+psycopg",
+        username="synthetic-user",
+        password=password,
+        host="db.example.invalid",
+        database="synthetic-db",
+    ).render_as_string(hide_password=False)
+
+    with pg_environment(database_url) as environment:
+        assert ambient.keys().isdisjoint(environment)
+        assert environment.keys() <= {
+            "PATH",
+            "LANG",
+            "LC_ALL",
+            "LC_CTYPE",
+            "TZ",
+            "SYSTEMROOT",
+            "PHARMSHIFT_AUDIT_PG_CONTAINER",
+            "PGHOST",
+            "PGPORT",
+            "PGDATABASE",
+            "PGUSER",
+        }
+
+
+def test_database_environment_is_emptied_when_the_program_fails() -> None:
+    database_url = URL.create(
+        "postgresql+psycopg",
+        username="synthetic-user",
+        password="synthetic-password",
+        host="db.example.invalid",
+        database="synthetic-db",
+    ).render_as_string(hide_password=False)
+    captured = {}
+
+    with pytest.raises(RuntimeError, match="synthetic program failure"):
+        with pg_environment(database_url) as environment:
+            captured["environment"] = environment
+            assert environment["PGPASSWORD"] == "synthetic-password"
+            raise RuntimeError("synthetic program failure")
+
+    assert captured["environment"] == {}
 
 
 def test_integer_periods_cannot_escape_legacy_storage_roots(
