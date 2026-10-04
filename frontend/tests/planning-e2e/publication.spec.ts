@@ -1,0 +1,38 @@
+import {test,expect} from '@playwright/test';
+
+test('generate, review identical draft, publish, reload and reject cross-scope access',async({page})=>{
+  await page.goto('/login');
+  await page.getByLabel('ユーザーID').fill('admin');
+  await page.getByLabel('パスワード').fill('pass-admin');
+  await page.getByRole('button',{name:'サインイン',exact:true}).click();
+  await page.waitForURL(url=>!url.pathname.startsWith('/login'));
+  await page.goto('/planning');
+  await expect(page.getByRole('heading',{name:'契約と適用期間'})).toBeVisible();
+  await page.getByRole('button',{name:'勤務案を生成',exact:true}).click();
+  await expect(page.getByRole('heading',{name:/勤務案の確認・編集/})).toBeVisible({timeout:40000});
+  await expect(page.getByRole('button',{name:'確認した案を公開'})).toBeDisabled();
+  await page.getByRole('button',{name:'内容を検証・確認'}).click();
+  await expect(page.getByRole('button',{name:'確認した案を公開'})).toBeEnabled();
+  await page.getByRole('button',{name:'確認した案を公開'}).click();
+  await expect(page.getByText('確認した案を公開しました。',{exact:true})).toBeVisible();
+  await page.reload();
+  await expect(page.locator('summary').filter({hasText:'公開版 1'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:/勤務案の確認・編集/})).toHaveCount(0);
+  await page.locator('summary').filter({hasText:'公開版 1'}).click();
+  await page.getByLabel('公開取消の理由・勤務変更の調整記録').fill('隔離試験：公開取消と再公開');
+  await page.getByRole('button',{name:'理由を記録して公開取消'}).click();
+  await expect(page.getByText('公開済みの勤務表はありません。',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'勤務案を生成',exact:true}).click();
+  await expect(page.getByRole('heading',{name:/勤務案の確認・編集/})).toBeVisible({timeout:40000});
+  await page.getByRole('button',{name:'内容を検証・確認'}).click();
+  await expect(page.getByRole('button',{name:'確認した案を公開'})).toBeEnabled();
+  await page.getByRole('button',{name:'確認した案を公開'}).click();
+  await expect(page.locator('summary').filter({hasText:'公開版 3'})).toBeVisible();
+  const response=await page.request.get('https://127.0.0.1:18500/planning/publications?scope_id=other%2Fpharmacy');
+  expect(response.status()).toBe(403);
+  await page.setViewportSize({width:640,height:800});
+  await page.getByRole('heading',{name:'勤務表・計画'}).focus();
+  await page.keyboard.press('Tab');
+  await expect(page.locator(':focus')).toHaveCount(1);
+  await page.screenshot({path:'../audit/implementation-2026-09-21/planning-browser.png',fullPage:true});
+});

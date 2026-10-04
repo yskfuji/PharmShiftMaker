@@ -1,0 +1,43 @@
+# Reference fields of the logical (JSON) entities and what they point to.
+# Read by devtools/er/logical.py. Every *_id / *_ids field of a SCHEMAS model must be
+# listed here, either with a target or as an identifier without one (the generator
+# refuses unknown fields, so a new reference is not silently left out).
+
+[targets]
+person_id = "person"
+employer_id = "employer"
+establishment_id = "establishment"
+agreement_id = "agreement"
+overtime_agreement_id = "agreement"
+annual_calendar_id = "annual_calendar"
+adoption_id = "flex_adoption"
+account_id = "leave_account"
+qualifying_grant_ids = "leave_account"
+policy_id = "leave_policy"
+event_id = "leave_record"
+related_event_id = "leave_record"
+review_id = "rule_review"
+employment_revision_id = "employment"
+employment_revision_ids = "employment"
+before_revision_id = "employment"
+after_revision_id = "employment"
+target_hash = "capability"
+# Physical tables (outside compliance_entities).
+planned_publication_id = "table:planning_publications"
+planned_duty_id = "payload:planning_publications.assignments"
+object_id = "leave_account|leave_record"
+
+[identifiers]
+# Grouping keys and external identifiers: meaningful strings with no record of their own.
+relationship_id = "groups the revisions of one employment or contract relationship"
+facility_id = "part of the planning scope (facility/department)"
+department_id = "part of the planning scope (facility/department)"
+grant_cycle_id = "groups the grants of one leave cycle"
+rule_id = "identifier of a statutory rule in the rule catalogue"
+external_event_id = "identifier in the HR source ledger (outside the application)"
+setting_id = "name of a planning scope workflow setting (one record per scope and name)"
+
+[extra]
+# Fields added by the version-3 variants that SCHEMAS selects at save time.
+employment = ["establishment_id"]
+agreement = ["establishment_id"]

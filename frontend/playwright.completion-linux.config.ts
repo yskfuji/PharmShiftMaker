@@ -1,0 +1,2 @@
+import {defineConfig,devices} from '@playwright/test';
+export default defineConfig({testDir:'./tests/completion-e2e',workers:1,timeout:60000,retries:0,reporter:[['list'],['json',{outputFile:'../audit/completion-2026-09-22/linux-browser-results.json'}]],use:{baseURL:'https://127.0.0.1:18501',ignoreHTTPSErrors:true,locale:'ja-JP',timezoneId:'Asia/Tokyo',trace:'retain-on-failure'},projects:[{name:'chromium-linux',use:{...devices['Desktop Chrome']}},{name:'firefox-linux',use:{...devices['Desktop Firefox']}},{name:'webkit-linux',use:{...devices['Desktop Safari']}}]});

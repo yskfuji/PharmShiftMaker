@@ -1,0 +1,72 @@
+{
+  "protocol": "synthetic-review-protocol-v1",
+  "registered_at": "2026-09-23",
+  "status": "synthetic_fixture_only",
+  "boundary": "Synthetic 25-month canonical evaluation only. Not the hospital's retention schedule, not a legal determination, and not an approval of real staff data. Values were fixed from category semantics before any reviewed 25-month run and must not be tuned to its outcome.",
+  "reviewer": {
+    "actor": "synthetic-protocol-reviewer",
+    "evidence_reference_prefix": "synthetic-review-protocol-v1",
+    "separate_from_observer": true
+  },
+  "retention_rules": [
+    {"category": "planning_history", "anchor": "last_activity", "retention_days": 365, "legal_minimum_days": 0,
+     "purpose": "Synthetic protocol: superseded scheduling drafts, jobs, inputs and receipts"},
+    {"category": "audit", "anchor": "last_activity", "retention_days": 365, "legal_minimum_days": 0,
+     "purpose": "Synthetic protocol: operational event outbox and notification reads"},
+    {"category": "compliance", "anchor": "last_activity", "retention_days": 1095, "legal_minimum_days": 0,
+     "purpose": "Synthetic protocol: working-time and leave records (placeholder, facility rule unconfirmed)"},
+    {"category": "identity", "anchor": "last_activity", "retention_days": 1825, "legal_minimum_days": 0,
+     "purpose": "Synthetic protocol: staff identity and membership records (placeholder, facility rule unconfirmed)"},
+    {"category": "privacy_cases", "anchor": "last_activity", "retention_days": 1825, "legal_minimum_days": 0,
+     "purpose": "Synthetic protocol: privacy request case records"}
+  ],
+  "retention_rule_common": {
+    "effective_from": "2026-01-01",
+    "effective_until": "2029-01-01",
+    "next_review": "2029-01-01",
+    "owner": "synthetic-protocol-officer"
+  },
+  "database_subject_review": {
+    "structured_keys": ["person_id", "person_ids"],
+    "typed_parent_relations": {
+      "input_hash": "planning_inputs.payload (not for planning_inputs itself)",
+      "draft_id": "planning_drafts -> planning_inputs.payload (not for planning_drafts itself)",
+      "entity_key": "compliance_entities.payload",
+      "event_id": "planning_outbox.payload (planning_notification_reads only)"
+    },
+    "approve_only_if": [
+      "source row exists and its jsonb sha256 equals the registered content hash",
+      "scope is the reviewed facility scope (never __unclassified__)",
+      "independently extracted structured subject set equals the registered subject set and contains the requested person",
+      "no known person identifier or registered name occurs in any unstructured string value"
+    ],
+    "reject_reasons": [
+      "source_missing_or_hash_changed",
+      "unclassified_scope",
+      "subject_set_mismatch",
+      "person_reference_in_unstructured_text"
+    ]
+  },
+  "shared_preservation_review": {
+    "approve_only_if": [
+      "subject review of the row is VERIFIED",
+      "no owner of the row is under an active legal hold",
+      "no other owner already has an approved erasure control (joint review is required instead)",
+      "projection adapter is partial-planning-history-v1 and its payload hash is the one reviewed",
+      "the projected payload retains no occurrence of the erased person's identifier or name"
+    ],
+    "reject_reasons": [
+      "owner_under_legal_hold",
+      "other_owner_already_controlled_joint_review_required",
+      "projection_unavailable",
+      "projection_retains_subject_reference"
+    ]
+  },
+  "joint_file_review": {
+    "approve_only_if": [
+      "the application exposes a joint-review context for the copy (all owners approved and controlled, no hold, retention expired)",
+      "the file on disk hashes to the context source hash",
+      "the reviewer read the whole shared text and records shared_text_reviewed"
+    ]
+  }
+}

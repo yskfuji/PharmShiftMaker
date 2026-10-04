@@ -1,0 +1,91 @@
+shift_types:
+  - shift_id: DAY_WEEKDAY
+    name: 日勤（平日）
+    category: DAY_SHIFT
+    required_count: 2
+    applicable_day_types: [WEEKDAY]
+  - shift_id: DAY_WEEKEND
+    name: 日勤（土曜・祝日）
+    category: DAY_SHIFT
+    required_count: 2
+    applicable_day_types: [SATURDAY, HOLIDAY]
+  - shift_id: DAY_SUNDAY
+    name: 日勤（日曜・年末年始）
+    category: DAY_SHIFT
+    required_count: 1
+    applicable_day_types: [SUNDAY, YEAR_END]
+  - shift_id: WARD_2A
+    name: 2A病棟
+    category: WARD
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: WARD_3B
+    name: 3B病棟
+    category: WARD
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: WARD_5A
+    name: 5A病棟
+    category: WARD
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: WARD_5B
+    name: 5B病棟
+    category: WARD
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: WARD_6A
+    name: 6A病棟
+    category: WARD
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: WARD_HCU
+    name: HCU
+    category: WARD
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: WARD_6B
+    name: 6B病棟
+    category: WARD
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: WARD_2AHCU_WEEKEND
+    name: 2AHCU（土・祝）
+    category: WARD
+    required_count: 1
+    applicable_day_types: [SATURDAY, HOLIDAY]
+  - shift_id: WARD_5A_WEEKEND
+    name: 5A（土・祝）
+    category: WARD
+    required_count: 1
+    applicable_day_types: [SATURDAY, HOLIDAY]
+  - shift_id: WARD_5B_WEEKEND
+    name: 5B（土・祝）
+    category: WARD
+    required_count: 1
+    applicable_day_types: [SATURDAY, HOLIDAY]
+  - shift_id: WARD_6A6B_WEEKEND
+    name: 6A6B（土・祝）
+    category: WARD
+    required_count: 1
+    applicable_day_types: [SATURDAY, HOLIDAY]
+  - shift_id: WARD_SUNDAY
+    name: 病棟（日曜・年末年始）
+    category: WARD
+    required_count: 1
+    applicable_day_types: [SUNDAY, YEAR_END]
+  - shift_id: EVENING
+    name: 夕診
+    category: EVENING
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: NIGHT
+    name: 夜勤
+    category: NIGHT_DUTY
+    required_count: 1
+    applicable_day_types: [WEEKDAY]
+  - shift_id: WEEKEND_ONCALL
+    name: 当直
+    category: ON_CALL
+    required_count: 1
+    applicable_day_types: [SATURDAY, HOLIDAY, SUNDAY, YEAR_END]

@@ -1,0 +1,528 @@
+{
+  "format": "synthetic-small-restore-expectations-v1",
+  "source": "tests/test_reviewed_planning.py:snapshot(2,1), reviewed fixed two-person one-day fixture; not values inferred from database registry",
+  "scope": "hospital/pharmacy",
+  "inputs": [
+    {
+      "schema_version": 1,
+      "source_revision": 0,
+      "facility_id": "hospital",
+      "department_id": "pharmacy",
+      "period": {
+        "start": "2026-01-05T00:00:00+09:00",
+        "end": "2026-01-06T00:00:00+09:00"
+      },
+      "context": {
+        "start": "2024-12-01T00:00:00+09:00",
+        "end": "2026-01-20T00:00:00+09:00"
+      },
+      "timezone": "Asia/Tokyo",
+      "rule_revision": "general-test-v1",
+      "policy_evidence": {
+        "reference": "synthetic-confirmed-test-only",
+        "status": "verified",
+        "verified_by": "test-oracle",
+        "valid_until": null
+      },
+      "unresolved_requests": [],
+      "history_complete": true,
+      "candidate_catalog_complete": true,
+      "week_start": 0,
+      "people": [
+        {
+          "person_id": "p0",
+          "name": "Person 0"
+        },
+        {
+          "person_id": "p1",
+          "name": "Person 1"
+        }
+      ],
+      "contracts": [
+        {
+          "start": "2024-12-01T00:00:00+09:00",
+          "end": "2027-02-10T00:00:00+09:00",
+          "revision_id": "c0",
+          "relationship_id": "e0",
+          "person_id": "p0",
+          "employer_id": "hospital",
+          "facility_id": "hospital",
+          "department_id": "pharmacy",
+          "engagement": "direct",
+          "fixed_term": false,
+          "time_category": "full_time",
+          "regime": "general",
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "regime_evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "dispatch_evidence": null,
+          "dispatch_tasks": [],
+          "external_work_confirmed": true,
+          "allowed_weekdays": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "allowed_kinds": [
+            "DAY"
+          ],
+          "period_min_seconds": 0,
+          "period_max_seconds": 14400,
+          "contractual_week_seconds": 72000,
+          "rest_seconds": 39600,
+          "max_consecutive_days": 6,
+          "overtime_agreement_id": null
+        },
+        {
+          "start": "2024-12-01T00:00:00+09:00",
+          "end": "2027-02-10T00:00:00+09:00",
+          "revision_id": "c1",
+          "relationship_id": "e1",
+          "person_id": "p1",
+          "employer_id": "hospital",
+          "facility_id": "hospital",
+          "department_id": "pharmacy",
+          "engagement": "direct",
+          "fixed_term": false,
+          "time_category": "full_time",
+          "regime": "general",
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "regime_evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "dispatch_evidence": null,
+          "dispatch_tasks": [],
+          "external_work_confirmed": true,
+          "allowed_weekdays": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "allowed_kinds": [
+            "DAY"
+          ],
+          "period_min_seconds": 0,
+          "period_max_seconds": 14400,
+          "contractual_week_seconds": 72000,
+          "rest_seconds": 39600,
+          "max_consecutive_days": 6,
+          "overtime_agreement_id": null
+        }
+      ],
+      "capabilities": [
+        {
+          "start": "2024-12-01T00:00:00+09:00",
+          "end": "2027-02-10T00:00:00+09:00",
+          "person_id": "p0",
+          "task": "dispensing",
+          "location": "main",
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "supervision_required": false,
+          "supervisor_capacity": 0
+        },
+        {
+          "start": "2024-12-01T00:00:00+09:00",
+          "end": "2027-02-10T00:00:00+09:00",
+          "person_id": "p1",
+          "task": "dispensing",
+          "location": "main",
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "supervision_required": false,
+          "supervisor_capacity": 0
+        }
+      ],
+      "candidates": [
+        {
+          "start": "2026-01-05T09:00:00+09:00",
+          "end": "2026-01-05T13:00:00+09:00",
+          "duty_id": "p0d0",
+          "person_id": "p0",
+          "relationship_id": "e0",
+          "kind": "DAY",
+          "location": "main",
+          "task": "dispensing",
+          "work": [
+            {
+              "start": "2026-01-05T09:00:00+09:00",
+              "end": "2026-01-05T13:00:00+09:00"
+            }
+          ],
+          "breaks": [],
+          "source": "candidate",
+          "fixed": false,
+          "statutory_holiday": false,
+          "external_employer_id": null
+        },
+        {
+          "start": "2026-01-05T09:00:00+09:00",
+          "end": "2026-01-05T13:00:00+09:00",
+          "duty_id": "p1d0",
+          "person_id": "p1",
+          "relationship_id": "e1",
+          "kind": "DAY",
+          "location": "main",
+          "task": "dispensing",
+          "work": [
+            {
+              "start": "2026-01-05T09:00:00+09:00",
+              "end": "2026-01-05T13:00:00+09:00"
+            }
+          ],
+          "breaks": [],
+          "source": "candidate",
+          "fixed": false,
+          "statutory_holiday": false,
+          "external_employer_id": null
+        }
+      ],
+      "history": [],
+      "demands": [
+        {
+          "start": "2026-01-05T09:00:00+09:00",
+          "end": "2026-01-05T13:00:00+09:00",
+          "demand_id": "d0",
+          "task": "dispensing",
+          "location": "main",
+          "minimum": 1,
+          "target": 1,
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          }
+        }
+      ],
+      "restrictions": [],
+      "grants": [],
+      "leaves": [],
+      "replaces_publication_id": null,
+      "reservation_credits": [],
+      "preferences": [],
+      "burden_history": [],
+      "overtime_agreements": [],
+      "previous_duty_ids": [],
+      "lookahead_days": 0,
+      "lookahead_demand_confirmed": false
+    },
+    {
+      "schema_version": 1,
+      "source_revision": 1,
+      "facility_id": "hospital",
+      "department_id": "pharmacy",
+      "period": {
+        "start": "2026-01-05T00:00:00+09:00",
+        "end": "2026-01-06T00:00:00+09:00"
+      },
+      "context": {
+        "start": "2024-12-01T00:00:00+09:00",
+        "end": "2026-01-20T00:00:00+09:00"
+      },
+      "timezone": "Asia/Tokyo",
+      "rule_revision": "general-test-v1",
+      "policy_evidence": {
+        "reference": "synthetic-confirmed-test-only",
+        "status": "verified",
+        "verified_by": "test-oracle",
+        "valid_until": null
+      },
+      "unresolved_requests": [],
+      "history_complete": true,
+      "candidate_catalog_complete": true,
+      "week_start": 0,
+      "people": [
+        {
+          "person_id": "p0",
+          "name": "Person 0"
+        },
+        {
+          "person_id": "p1",
+          "name": "Person 1"
+        }
+      ],
+      "contracts": [
+        {
+          "start": "2024-12-01T00:00:00+09:00",
+          "end": "2027-02-10T00:00:00+09:00",
+          "revision_id": "c0",
+          "relationship_id": "e0",
+          "person_id": "p0",
+          "employer_id": "hospital",
+          "facility_id": "hospital",
+          "department_id": "pharmacy",
+          "engagement": "direct",
+          "fixed_term": false,
+          "time_category": "full_time",
+          "regime": "general",
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "regime_evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "dispatch_evidence": null,
+          "dispatch_tasks": [],
+          "external_work_confirmed": true,
+          "allowed_weekdays": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "allowed_kinds": [
+            "DAY"
+          ],
+          "period_min_seconds": 0,
+          "period_max_seconds": 14400,
+          "contractual_week_seconds": 72000,
+          "rest_seconds": 39600,
+          "max_consecutive_days": 6,
+          "overtime_agreement_id": null
+        },
+        {
+          "start": "2024-12-01T00:00:00+09:00",
+          "end": "2027-02-10T00:00:00+09:00",
+          "revision_id": "c1",
+          "relationship_id": "e1",
+          "person_id": "p1",
+          "employer_id": "hospital",
+          "facility_id": "hospital",
+          "department_id": "pharmacy",
+          "engagement": "direct",
+          "fixed_term": false,
+          "time_category": "full_time",
+          "regime": "general",
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "regime_evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "dispatch_evidence": null,
+          "dispatch_tasks": [],
+          "external_work_confirmed": true,
+          "allowed_weekdays": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "allowed_kinds": [
+            "DAY"
+          ],
+          "period_min_seconds": 0,
+          "period_max_seconds": 14400,
+          "contractual_week_seconds": 72000,
+          "rest_seconds": 39600,
+          "max_consecutive_days": 6,
+          "overtime_agreement_id": null
+        }
+      ],
+      "capabilities": [
+        {
+          "start": "2024-12-01T00:00:00+09:00",
+          "end": "2027-02-10T00:00:00+09:00",
+          "person_id": "p0",
+          "task": "dispensing",
+          "location": "main",
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "supervision_required": false,
+          "supervisor_capacity": 0
+        },
+        {
+          "start": "2024-12-01T00:00:00+09:00",
+          "end": "2027-02-10T00:00:00+09:00",
+          "person_id": "p1",
+          "task": "dispensing",
+          "location": "main",
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          },
+          "supervision_required": false,
+          "supervisor_capacity": 0
+        }
+      ],
+      "candidates": [
+        {
+          "start": "2026-01-05T09:00:00+09:00",
+          "end": "2026-01-05T13:00:00+09:00",
+          "duty_id": "p0d0",
+          "person_id": "p0",
+          "relationship_id": "e0",
+          "kind": "DAY",
+          "location": "main",
+          "task": "dispensing",
+          "work": [
+            {
+              "start": "2026-01-05T09:00:00+09:00",
+              "end": "2026-01-05T13:00:00+09:00"
+            }
+          ],
+          "breaks": [],
+          "source": "candidate",
+          "fixed": false,
+          "statutory_holiday": false,
+          "external_employer_id": null
+        },
+        {
+          "start": "2026-01-05T09:00:00+09:00",
+          "end": "2026-01-05T13:00:00+09:00",
+          "duty_id": "p1d0",
+          "person_id": "p1",
+          "relationship_id": "e1",
+          "kind": "DAY",
+          "location": "main",
+          "task": "dispensing",
+          "work": [
+            {
+              "start": "2026-01-05T09:00:00+09:00",
+              "end": "2026-01-05T13:00:00+09:00"
+            }
+          ],
+          "breaks": [],
+          "source": "candidate",
+          "fixed": false,
+          "statutory_holiday": false,
+          "external_employer_id": null
+        }
+      ],
+      "history": [],
+      "demands": [
+        {
+          "start": "2026-01-05T09:00:00+09:00",
+          "end": "2026-01-05T13:00:00+09:00",
+          "demand_id": "d0",
+          "task": "dispensing",
+          "location": "main",
+          "minimum": 1,
+          "target": 1,
+          "evidence": {
+            "reference": "synthetic-confirmed-test-only",
+            "status": "verified",
+            "verified_by": "test-oracle",
+            "valid_until": null
+          }
+        }
+      ],
+      "restrictions": [],
+      "grants": [],
+      "leaves": [],
+      "replaces_publication_id": null,
+      "reservation_credits": [],
+      "preferences": [],
+      "burden_history": [],
+      "overtime_agreements": [],
+      "previous_duty_ids": [],
+      "lookahead_days": 0,
+      "lookahead_demand_confirmed": false
+    }
+  ],
+  "input_hashes": [
+    "7c7b0e7f994629ea6e200d1561039fcfd8192b3f97f6d080d8454d8f4508bbe6",
+    "2685c34f2c793103580f9445dd13e7e0e31a337f84e964498f2d49214a176beb"
+  ],
+  "people": [
+    "p0",
+    "p1"
+  ],
+  "operator_person": "restore-operator",
+  "memberships": [
+    {
+      "membership_id": "fixture-actor",
+      "issuer": "mock",
+      "subject": "fixture",
+      "person_id": "p0",
+      "scope_id": "hospital/pharmacy",
+      "role": "ADMIN",
+      "active": true
+    },
+    {
+      "membership_id": "restore-synthetic-admin",
+      "issuer": "mock",
+      "subject": "admin",
+      "person_id": "restore-operator",
+      "scope_id": "hospital/pharmacy",
+      "role": "ADMIN",
+      "active": true
+    },
+    {
+      "membership_id": "restore-synthetic-test",
+      "issuer": "mock",
+      "subject": "test",
+      "person_id": "restore-operator",
+      "scope_id": "hospital/pharmacy",
+      "role": "ADMIN",
+      "active": true
+    },
+    {
+      "membership_id": "restore-synthetic-officer",
+      "issuer": "mock",
+      "subject": "officer",
+      "person_id": "restore-operator",
+      "scope_id": "hospital/pharmacy",
+      "role": "ADMIN",
+      "active": true
+    }
+  ]
+}

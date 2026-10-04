@@ -1,0 +1,85 @@
+days:
+  - date: 2025-02-01
+    day_type: SATURDAY
+    is_business_day: true
+  - date: 2025-02-02
+    day_type: SUNDAY
+    is_business_day: true
+  - date: 2025-02-03
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-04
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-05
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-06
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-07
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-08
+    day_type: SATURDAY
+    is_business_day: true
+  - date: 2025-02-09
+    day_type: SUNDAY
+    is_business_day: true
+  - date: 2025-02-10
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-11
+    day_type: HOLIDAY
+    is_business_day: true
+  - date: 2025-02-12
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-13
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-14
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-15
+    day_type: SATURDAY
+    is_business_day: true
+  - date: 2025-02-16
+    day_type: SUNDAY
+    is_business_day: true
+  - date: 2025-02-17
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-18
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-19
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-20
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-21
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-22
+    day_type: SATURDAY
+    is_business_day: true
+  - date: 2025-02-23
+    day_type: SUNDAY
+    is_business_day: true
+  - date: 2025-02-24
+    day_type: HOLIDAY
+    is_business_day: true
+  - date: 2025-02-25
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-26
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-27
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-28
+    day_type: WEEKDAY
+    is_business_day: true

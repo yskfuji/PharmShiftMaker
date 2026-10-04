@@ -1,0 +1,628 @@
+{
+  "account_memberships": {
+    "columns": [
+      "active",
+      "created_at",
+      "created_by",
+      "deactivated_at",
+      "evidence",
+      "issuer",
+      "membership_id",
+      "person_id",
+      "revision",
+      "role",
+      "scope_id",
+      "subject"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "actual_work_events": {
+    "columns": [
+      "external_id",
+      "key",
+      "payload",
+      "revision",
+      "scope_id"
+    ],
+    "policy": "reviewed-single-body-with-account-partitions",
+    "adapter": "typed-subject-record",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true,
+    "boundary": "Single structured body owner plus resolved account roles; arbitrary joint body remains review-required"
+  },
+  "compliance_entities": {
+    "columns": [
+      "created_at",
+      "entity_id",
+      "key",
+      "kind",
+      "payload",
+      "person_id",
+      "revision",
+      "scope_id"
+    ],
+    "policy": "reviewed-single-body-with-account-partitions",
+    "adapter": "typed-subject-record",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true,
+    "boundary": "Single structured body owner plus resolved account roles; arbitrary joint body remains review-required"
+  },
+  "compliance_revisions": {
+    "columns": [
+      "actor",
+      "created_at",
+      "entity_key",
+      "key",
+      "payload",
+      "revision"
+    ],
+    "policy": "reviewed-single-body-with-account-partitions",
+    "adapter": "typed-subject-record",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true,
+    "boundary": "Single structured body owner plus resolved account roles; arbitrary joint body remains review-required"
+  },
+  "control_commits": {
+    "columns": [
+      "expected_generation",
+      "manifest_hash",
+      "operation_id",
+      "receipt_hash",
+      "source_id"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "Reconcile committed control operations without duplicating personal payload; deletion requires independent receipt retention review",
+    "retention_required": true
+  },
+  "copy_erasures": {
+    "columns": [
+      "fingerprint",
+      "payload",
+      "person_id",
+      "plan_id",
+      "revision",
+      "scope_id",
+      "state"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "copy_subjects": {
+    "columns": [
+      "copy_id",
+      "person_id"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "erased_subjects": {
+    "columns": [
+      "created_at",
+      "evidence",
+      "facility_id",
+      "person_id",
+      "plan_id"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "erasure_markers": {
+    "columns": [
+      "created_at",
+      "marker_id",
+      "object_key",
+      "plan_id",
+      "prior_hash",
+      "scope_id",
+      "table_name"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "erasure_plans": {
+    "columns": [
+      "created_at",
+      "fingerprint",
+      "payload",
+      "plan_id",
+      "scope_id",
+      "status"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "holiday_requests": {
+    "columns": [
+      "created_at",
+      "id",
+      "is_approved",
+      "kind",
+      "order",
+      "person_id",
+      "request_date",
+      "updated_at"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "leave_quotas": {
+    "columns": [
+      "created_at",
+      "id",
+      "leave_type",
+      "person_id",
+      "total_days",
+      "updated_at",
+      "year"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "legal_holds": {
+    "columns": [
+      "active",
+      "hold_id",
+      "payload",
+      "person_id",
+      "revision",
+      "scope_id"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "managed_copies": {
+    "columns": [
+      "anchor",
+      "anchor_at",
+      "category",
+      "content_hash",
+      "copy_id",
+      "evidence",
+      "locator",
+      "medium",
+      "revision",
+      "scope_id",
+      "state",
+      "subject_status"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "people": {
+    "columns": [
+      "created_at",
+      "name",
+      "person_id",
+      "role",
+      "updated_at"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_drafts": {
+    "columns": [
+      "created_by",
+      "draft_id",
+      "input_hash",
+      "proposal",
+      "reviewed_by",
+      "reviewed_hash",
+      "status",
+      "validation",
+      "version"
+    ],
+    "policy": "schema-projection",
+    "adapter": "planning-draft",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_change_cases": {
+    "columns": [
+      "affected_assignments",
+      "case_id",
+      "created_at",
+      "created_by",
+      "evidence",
+      "kind",
+      "proposed_assignments",
+      "publication_id",
+      "scope_id",
+      "status",
+      "updated_at",
+      "validation",
+      "version"
+    ],
+    "policy": "schema-projection",
+    "adapter": "schedule-change-case",
+    "purpose": "Retain non-erased participants' typed duties and case state; omit evidence prose, validation and source keys",
+    "retention_required": true,
+    "boundary": "Affected duties must match the immutable publication; retained duties are partitioned by person"
+  },
+  "planning_change_events": {
+    "columns": [
+      "actor",
+      "case_id",
+      "created_at",
+      "event_id",
+      "evidence",
+      "kind"
+    ],
+    "policy": "schema-projection",
+    "adapter": "schedule-change-event",
+    "purpose": "Retain minimal event state for non-erased case participants and resolved actors",
+    "retention_required": true,
+    "boundary": "Subjects come from the physically referenced change case; evidence prose and source keys are omitted"
+  },
+  "planning_heads": {
+    "columns": [
+      "key",
+      "publication_id",
+      "version"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_input_heads": {
+    "columns": [
+      "input_hash",
+      "key",
+      "scope_id"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_inputs": {
+    "columns": [
+      "created_at",
+      "created_by",
+      "data_revision",
+      "input_hash",
+      "input_revision",
+      "payload",
+      "scope_id"
+    ],
+    "policy": "schema-projection",
+    "adapter": "planning-input",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_jobs": {
+    "columns": [
+      "attempts",
+      "budget_seconds",
+      "claimed_at",
+      "completed_at",
+      "created_at",
+      "input_hash",
+      "job_id",
+      "lease_token",
+      "lease_until",
+      "persisted_observed_at",
+      "request_key",
+      "requested_by",
+      "result",
+      "stage_seconds",
+      "status"
+    ],
+    "policy": "schema-projection",
+    "adapter": "planning-job",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_leave_balances": {
+    "columns": [
+      "amount",
+      "consumed",
+      "employer_id",
+      "grant_id",
+      "payload",
+      "person_id",
+      "reserved",
+      "revision"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_leave_events": {
+    "columns": [
+      "actor",
+      "amount",
+      "created_at",
+      "event_id",
+      "grant_id",
+      "kind",
+      "publication_id"
+    ],
+    "policy": "reviewed-single-body-with-account-partitions",
+    "adapter": "typed-subject-record",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true,
+    "boundary": "Single structured body owner plus resolved account roles; arbitrary joint body remains review-required"
+  },
+  "planning_notification_reads": {
+    "columns": [
+      "event_id",
+      "key",
+      "person_id",
+      "read_at"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_outbox": {
+    "columns": [
+      "actor",
+      "created_at",
+      "delivered_at",
+      "event_id",
+      "kind",
+      "payload",
+      "scope_id"
+    ],
+    "policy": "schema-projection",
+    "adapter": "typed-event",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_publications": {
+    "columns": [
+      "created_at",
+      "draft_id",
+      "payload",
+      "period_key",
+      "publication_id",
+      "published_by",
+      "scope_id",
+      "version"
+    ],
+    "policy": "schema-projection",
+    "adapter": "planning-publication",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_receipts": {
+    "columns": [
+      "fingerprint",
+      "receipt_id",
+      "response"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "planning_requests": {
+    "columns": [
+      "decision",
+      "kind",
+      "payload",
+      "person_id",
+      "request_id",
+      "scope_id",
+      "status",
+      "version"
+    ],
+    "policy": "reviewed-single-body-with-account-partitions",
+    "adapter": "typed-subject-record",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true,
+    "boundary": "Single structured body owner plus resolved account roles; arbitrary joint body remains review-required"
+  },
+  "planning_scopes": {
+    "columns": [
+      "data_revision",
+      "display_name",
+      "input_revision",
+      "scope_id",
+      "source_fingerprint"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "preserved_archives": {
+    "columns": [
+      "archive_id",
+      "created_at",
+      "payload",
+      "payload_hash",
+      "scope_id",
+      "source_digest"
+    ],
+    "policy": "schema-projection",
+    "adapter": "partial-history",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "privacy_cases": {
+    "columns": [
+      "case_id",
+      "kind",
+      "payload",
+      "person_id",
+      "revision",
+      "scope_id",
+      "status"
+    ],
+    "policy": "reviewed-single-body-with-account-partitions",
+    "adapter": "typed-subject-record",
+    "purpose": "operational record and its documented retention",
+    "retention_required": true,
+    "boundary": "Single structured body owner plus resolved account roles; arbitrary joint body remains review-required"
+  },
+  "profiles": {
+    "columns": [
+      "allowed_weekdays",
+      "can_evening",
+      "can_night_duty",
+      "can_on_call",
+      "can_ward_alone",
+      "created_at",
+      "employment_type",
+      "evening_max",
+      "evening_min",
+      "holiday_allowed",
+      "max_consecutive_working_days",
+      "name",
+      "night_duty_max",
+      "night_duty_min",
+      "on_call_max",
+      "on_call_min",
+      "profile_id",
+      "updated_at",
+      "weekend_allowed"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "restore_gates": {
+    "columns": [
+      "gate_id",
+      "marker_manifest_hash",
+      "state"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "retention_rules": {
+    "columns": [
+      "category",
+      "key",
+      "payload",
+      "revision",
+      "scope_id"
+    ],
+    "policy": "retained-control",
+    "adapter": null,
+    "purpose": "integrity, retention and reintroduction prevention",
+    "retention_required": true
+  },
+  "revoked_sessions": {
+    "columns": [
+      "revoked_at",
+      "session_id"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "schedule_assignments": {
+    "columns": [
+      "assignment_date",
+      "id",
+      "person_id",
+      "schedule_id",
+      "shift_id"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "schedules": {
+    "columns": [
+      "created_at",
+      "id",
+      "month",
+      "updated_at",
+      "updated_by",
+      "version",
+      "year"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "staff_timeline": {
+    "columns": [
+      "created_at",
+      "from_date",
+      "id",
+      "person_id",
+      "profile_id",
+      "status",
+      "to_date",
+      "updated_at"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
+  },
+  "staff_lifecycle_cases": {
+    "columns": [
+      "case_id",
+      "created_at",
+      "created_by",
+      "effective_date",
+      "evidence",
+      "kind",
+      "person_id",
+      "scope_id",
+      "status",
+      "tasks",
+      "updated_at",
+      "version"
+    ],
+    "policy": "schema-projection",
+    "adapter": "staff-lifecycle-case",
+    "purpose": "Retain typed task status for the lifecycle subject and resolved actor separately",
+    "retention_required": true,
+    "boundary": "Task evidence prose and source keys are omitted; only allowlisted task state is preserved"
+  },
+  "staff_lifecycle_events": {
+    "columns": [
+      "actor",
+      "case_id",
+      "created_at",
+      "event_id",
+      "evidence",
+      "kind",
+      "task_key"
+    ],
+    "policy": "schema-projection",
+    "adapter": "staff-lifecycle-event",
+    "purpose": "Retain minimal event state for the lifecycle subject and resolved actor",
+    "retention_required": true,
+    "boundary": "Subject comes from the physically referenced lifecycle case; evidence prose and source keys are omitted"
+  }
+}

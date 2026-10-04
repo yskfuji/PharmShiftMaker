@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: pharmshift-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pharmshift
+      POSTGRES_PASSWORD: pharmshift
+      POSTGRES_DB: pharmshift
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pharmshift"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: pharmshift-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://pharmshift:pharmshift@postgres:5432/pharmshift
+      SHIFT_SCHEDULER_DB_URL: postgresql+psycopg://pharmshift:pharmshift@postgres:5432/pharmshift
+      SKIP_PIP_INSTALL: "1"
+      UVICORN_SSL_CERTFILE: /app/certs/localhost-cert.pem
+      UVICORN_SSL_KEYFILE: /app/certs/localhost-key.pem
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: ["python", "-m", "shift_scheduler.application.worker"]
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://pharmshift:pharmshift@postgres:5432/pharmshift
+      SHIFT_SCHEDULER_DB_URL: postgresql+psycopg://pharmshift:pharmshift@postgres:5432/pharmshift
+    volumes:
+      - .:/app
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: pharmshift-frontend
+    depends_on:
+      - backend
+    env_file: .env
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: https://backend:8000
+      NEXT_SSL_CERT_PATH: /app/certs/localhost-cert.pem
+      NEXT_SSL_KEY_PATH: /app/certs/localhost-key.pem
+      SKIP_NPM_INSTALL: "1"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

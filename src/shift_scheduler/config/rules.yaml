@@ -1,0 +1,27 @@
+rules:
+  night_duty:
+    max_per_person: 4
+    min_interval_days: 2
+  on_call:
+    max_per_person: 2
+  consecutive_working_days:
+    max: 6
+  holiday_requests:
+    max_per_person: 4
+    priority_weight: 10
+  penalties:
+    rejected_holiday_request: 100
+    consecutive_work_excess: 50
+
+penalty_weights:
+  night_fairness: 30
+  oncall_fairness: 24
+  evening_fairness: 24
+  day_shift_fairness: 12
+  consecutive_four: 6
+  consecutive_five: 10
+  consecutive_six: 16
+  holiday_request_base: 10
+  holiday_request_priority_bonus: 3
+  holiday_request_priority_span: 4
+  holiday_request_min_penalty: 2

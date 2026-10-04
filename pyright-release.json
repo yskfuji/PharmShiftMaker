@@ -1,0 +1,13 @@
+{
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "basic",
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "frontend",
+    "tools",
+    "**/node_modules",
+    "**/__pycache__"
+  ]
+}

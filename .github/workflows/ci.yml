@@ -1,0 +1,182 @@
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "24"
+
+jobs:
+  backend:
+    name: Backend lint & tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: audit
+          POSTGRES_PASSWORD: isolated-ci-only
+          POSTGRES_DB: pharmshift_audit
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U audit"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps -e .
+          python -m pip install black==26.5.1 ruff==0.16.10 mypy==2.4.0 pyright==1.1.414 pytest==9.1.1 pytest-cov==7.1.0 pytest-asyncio==1.4.0 hypothesis==6.168.3 types-pyyaml==6.0.12.20260906 types-python-dateutil==2.9.0.20260807
+
+      - name: Dependency audit and SBOM
+        run: |
+          python -m pip install pip-audit==2.10.1 cyclonedx-bom==7.4.0
+          pip-audit --requirement requirements.lock --format json --output python-audit.json
+          cyclonedx-py environment --output-file python-sbom.json
+          python -m devtools.release.python_license_audit --output python-licenses.json
+          python -m devtools.release.generate_sbom --check
+
+      - name: Ruff
+        run: ruff check src scripts tests devtools
+
+      - name: Black
+        run: black --check src scripts tests devtools
+
+      - name: Documentation links
+        run: python -m devtools.release.check_markdown_links
+
+      - name: mypy
+        run: mypy src
+
+      - name: pyright
+        run: pyright --project pyright-release.json --pythonpath "$(command -v python)"
+
+      - name: pytest
+        env:
+          PHARMSHIFT_TEST_PG_URL: postgresql+psycopg://audit:isolated-ci-only@localhost:5432/pharmshift_audit
+        run: python -m pytest
+
+  frontend:
+    name: Frontend lint & unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Dependency audit and SBOM
+        working-directory: frontend
+        run: |
+          npm audit --omit=dev --audit-level=moderate
+          npm audit --audit-level=high
+          npm sbom --sbom-format cyclonedx > frontend-sbom.json
+          node ../devtools/release/node_license_audit.mjs frontend-licenses.json
+
+      - name: Unit tests
+        working-directory: frontend
+        run: npm test -- --runInBand
+
+      - name: TypeScript
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+      - name: Production build
+        working-directory: frontend
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
+      - name: Storybook build
+        working-directory: frontend
+        env:
+          STORYBOOK_DISABLE_TELEMETRY: "1"
+        run: npm run build-storybook
+
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    needs:
+      - backend
+      - frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps -e .
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps
+
+      - name: Generate isolated TLS certificate
+        run: |
+          mkdir -p certs
+          openssl req -x509 -newkey rsa:2048 -nodes -keyout certs/localhost-key.pem -out certs/localhost-cert.pem -days 1 -subj '/CN=localhost'
+
+      - name: Run isolated publication browser test
+        env:
+          E2E_PYTHON: python
+          NEXT_DIST_DIR: .next-planning-audit
+          NEXT_PUBLIC_API_BASE_URL: https://127.0.0.1:18500
+          NEXT_PUBLIC_AUTH_STRATEGY: mock
+        working-directory: frontend
+        run: |
+          npm run build
+          npx playwright test --config playwright.planning.config.ts
+
+      - name: Preserve audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: isolated-browser-evidence
+          path: |
+            audit/implementation-2026-09-21/browser-results.json
+            frontend/test-results

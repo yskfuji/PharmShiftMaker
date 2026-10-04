@@ -1,0 +1,242 @@
+# Development diagnostic only: backend source is mounted; frontend image is historical.
+# Initialize new control/witness databases explicitly before starting services.
+# Always use a unique -p pharmshift-dev-<run-id>; no published database ports.
+services:
+  db:
+    image: postgres:16
+    cpus: 0.25
+    mem_limit: 512m
+    memswap_limit: 512m
+    labels:
+      pharmshift.synthetic-audit: 'true'
+    environment:
+      POSTGRES_USER: audit
+      POSTGRES_PASSWORD: isolated-development-only
+      POSTGRES_DB: pharmshift_audit_remediation
+    volumes:
+    - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U audit -d pharmshift_audit_remediation
+      interval: 2s
+      retries: 30
+  control-db:
+    image: postgres:16
+    cpus: 0.25
+    mem_limit: 512m
+    memswap_limit: 512m
+    labels:
+      pharmshift.synthetic-audit: 'true'
+    environment:
+      POSTGRES_USER: audit
+      POSTGRES_PASSWORD: isolated-development-only
+      POSTGRES_DB: pharmshift_control_development
+    volumes:
+    - control-db_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U audit -d pharmshift_control_development
+      interval: 2s
+      retries: 30
+  witness-db:
+    image: postgres:16
+    cpus: 0.25
+    mem_limit: 512m
+    memswap_limit: 512m
+    labels:
+      pharmshift.synthetic-audit: 'true'
+    environment:
+      POSTGRES_USER: audit
+      POSTGRES_PASSWORD: isolated-development-only
+      POSTGRES_DB: pharmshift_witness_development
+    volumes:
+    - witness-db_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U audit -d pharmshift_witness_development
+      interval: 2s
+      retries: 30
+  witness:
+    image: pharmshift-remediation:20260922
+    working_dir: /app
+    labels: &id001
+      pharmshift.synthetic-audit: 'true'
+    volumes: &id002
+    - ../src:/app/src:ro
+    - ../scripts:/app/scripts:ro
+    - ../alembic:/app/alembic:ro
+    - ../alembic.ini:/app/alembic.ini:ro
+    cpus: 0.125
+    mem_limit: 256m
+    memswap_limit: 256m
+    environment:
+      PHARMSHIFT_ENV: development
+      PYTHONPATH: /app/src:/app
+      PHARMSHIFT_WITNESS_DB_URL: postgresql+psycopg://audit:isolated-development-only@witness-db:5432/pharmshift_witness_development
+      PHARMSHIFT_WITNESS_PRIVATE_KEY: ${WITNESS_PRIVATE_KEY:?prepare secrets}
+      PHARMSHIFT_WITNESS_CLIENT: authority
+      PHARMSHIFT_WITNESS_TOKEN: ${WITNESS_TOKEN:?prepare secrets}
+    command:
+    - python
+    - -m
+    - uvicorn
+    - scripts.control_witness:build_app
+    - --factory
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8000'
+    depends_on:
+      witness-db:
+        condition: service_healthy
+  control:
+    image: pharmshift-remediation:20260922
+    working_dir: /app
+    labels: *id001
+    volumes: *id002
+    cpus: 0.125
+    mem_limit: 256m
+    memswap_limit: 256m
+    environment:
+      PHARMSHIFT_ENV: development
+      PYTHONPATH: /app/src:/app
+      PHARMSHIFT_DIAGNOSTIC_CONTROL_TIMING: "1"
+      PHARMSHIFT_AUTHORITY_DB_URL: postgresql+psycopg://audit:isolated-development-only@control-db:5432/pharmshift_control_development
+      PHARMSHIFT_AUTHORITY_PRIVATE_KEY: ${AUTHORITY_PRIVATE_KEY:?prepare secrets}
+      PHARMSHIFT_AUTHORITY_CREDENTIALS: ${AUTHORITY_CREDENTIALS:?prepare secrets}
+      PHARMSHIFT_WITNESS_URL: http://witness:8000
+      PHARMSHIFT_WITNESS_CLIENT: authority
+      PHARMSHIFT_WITNESS_TOKEN: ${WITNESS_TOKEN:?prepare secrets}
+      PHARMSHIFT_WITNESS_PUBLIC_KEY: ${WITNESS_PUBLIC_KEY:?prepare secrets}
+    command:
+    - python
+    - -m
+    - uvicorn
+    - scripts.control_authority:build_app
+    - --factory
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8000'
+    depends_on:
+      control-db:
+        condition: service_healthy
+      witness:
+        condition: service_started
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')
+      interval: 2s
+      retries: 30
+  api:
+    image: pharmshift-remediation:20260922
+    working_dir: /app
+    labels: *id001
+    volumes:
+    - ../src:/app/src:ro
+    - ../scripts:/app/scripts:ro
+    - ../alembic:/app/alembic:ro
+    - ../alembic.ini:/app/alembic.ini:ro
+    - managed:/managed
+    cpus: 0.5
+    mem_limit: 768m
+    memswap_limit: 768m
+    environment:
+      PHARMSHIFT_ENV: development
+      PYTHONPATH: /app/src:/app
+      DATABASE_URL: postgresql+psycopg://audit:isolated-development-only@db:5432/pharmshift_audit_remediation
+      SHIFT_SCHEDULER_DB_URL: postgresql+psycopg://audit:isolated-development-only@db:5432/pharmshift_audit_remediation
+      AUTH_MODE: mock
+      AUTH_JWT_SECRET: isolated-development-not-production-secret
+      SHIFT_SCHEDULER_DATA_BACKEND: db
+      PHARMSHIFT_MANAGED_STORAGE: /managed
+      API_CORS_ALLOW_ORIGINS: https://127.0.0.1:18513
+      FRONTEND_BASE_URL: https://127.0.0.1:18513
+      PHARMSHIFT_CONTROL_URL: http://control:8000
+      PHARMSHIFT_CONTROL_NODE: source
+      PHARMSHIFT_CONTROL_TOKEN: ${SOURCE_TOKEN:?prepare secrets}
+      PHARMSHIFT_CONTROL_PUBLIC_KEY: ${AUTHORITY_PUBLIC_KEY:?prepare secrets}
+    command:
+    - python
+    - -m
+    - scripts.remediation_server
+    ports:
+    - 127.0.0.1:18522:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      control:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')
+      interval: 2s
+      retries: 30
+  worker:
+    image: pharmshift-remediation:20260922
+    working_dir: /app
+    labels: *id001
+    volumes:
+    - ../src:/app/src:ro
+    - ../scripts:/app/scripts:ro
+    - ../alembic:/app/alembic:ro
+    - ../alembic.ini:/app/alembic.ini:ro
+    - managed:/managed
+    cpus: 2
+    mem_limit: 4g
+    memswap_limit: 4g
+    environment:
+      PHARMSHIFT_ENV: development
+      PYTHONPATH: /app/src:/app
+      DATABASE_URL: postgresql+psycopg://audit:isolated-development-only@db:5432/pharmshift_audit_remediation
+      SHIFT_SCHEDULER_DB_URL: postgresql+psycopg://audit:isolated-development-only@db:5432/pharmshift_audit_remediation
+      AUTH_MODE: mock
+      AUTH_JWT_SECRET: isolated-development-not-production-secret
+      SHIFT_SCHEDULER_DATA_BACKEND: db
+      PHARMSHIFT_MANAGED_STORAGE: /managed
+      API_CORS_ALLOW_ORIGINS: https://127.0.0.1:18513
+      FRONTEND_BASE_URL: https://127.0.0.1:18513
+      PHARMSHIFT_CONTROL_URL: http://control:8000
+      PHARMSHIFT_CONTROL_NODE: source
+      PHARMSHIFT_CONTROL_TOKEN: ${SOURCE_TOKEN:?prepare secrets}
+      PHARMSHIFT_CONTROL_PUBLIC_KEY: ${AUTHORITY_PUBLIC_KEY:?prepare secrets}
+      PHARMSHIFT_SEARCH_WORKERS: ${PHARMSHIFT_SEARCH_WORKERS:-1}
+    command:
+    - python
+    - -m
+    - shift_scheduler.application.worker
+    depends_on:
+      api:
+        condition: service_healthy
+  frontend:
+    image: pharmshift-remediation-frontend:20260922
+    cpus: 0.5
+    mem_limit: 1280m
+    memswap_limit: 1280m
+    labels:
+      pharmshift.synthetic-audit: 'true'
+    ports:
+    - 127.0.0.1:18513:3000
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: https://127.0.0.1:18513/api
+      INTERNAL_API_BASE_URL: http://api:8000
+    volumes:
+    - ../certs/localhost-cert.pem:/tls/localhost-cert.pem:ro
+    - ../certs/localhost-key.pem:/tls/localhost-key.pem:ro
+    depends_on:
+      api:
+        condition: service_healthy
+volumes:
+  db_data: {}
+  control-db_data: {}
+  witness-db_data: {}
+  managed: {}

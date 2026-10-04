@@ -1,0 +1,71 @@
+people:
+  - person_id: weekday_only
+    name: Weekday Only
+    role: PHARMACIST
+  - person_id: weekend_anchor
+    name: Weekend Anchor
+    role: PHARMACIST
+  - person_id: night_alpha
+    name: Night Alpha
+    role: PHARMACIST
+  - person_id: night_bravo
+    name: Night Bravo
+    role: PHARMACIST
+
+profiles:
+  - profile_id: weekday_only_profile
+    name: 平日専任
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: false
+    holiday_allowed: false
+    max_consecutive_working_days: 4
+  - profile_id: flex_fulltime_profile
+    name: 週末対応常勤
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: true
+    holiday_allowed: true
+    max_consecutive_working_days: 6
+  - profile_id: night_pair_profile
+    name: 夜勤要員
+    employment_type: FULL_TIME
+    can_night_duty: true
+    can_on_call: true
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: true
+    holiday_allowed: true
+    max_consecutive_working_days: 5
+    night_duty_min: 0
+    night_duty_max: 3
+    on_call_min: 0
+    on_call_max: 3
+
+timeline_entries:
+  - person_id: weekday_only
+    profile_id: weekday_only_profile
+    from: 2025-03-01
+    to: null
+    status: ACTIVE
+  - person_id: weekend_anchor
+    profile_id: flex_fulltime_profile
+    from: 2025-03-01
+    to: null
+    status: ACTIVE
+  - person_id: night_alpha
+    profile_id: night_pair_profile
+    from: 2025-03-01
+    to: null
+    status: ACTIVE
+  - person_id: night_bravo
+    profile_id: night_pair_profile
+    from: 2025-03-01
+    to: null
+    status: ACTIVE

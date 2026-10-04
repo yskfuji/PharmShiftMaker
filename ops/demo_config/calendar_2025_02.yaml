@@ -1,0 +1,22 @@
+days:
+  - date: 2025-02-03
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-04
+    day_type: HOLIDAY
+    is_business_day: true
+  - date: 2025-02-05
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-06
+    day_type: HOLIDAY
+    is_business_day: true
+  - date: 2025-02-07
+    day_type: WEEKDAY
+    is_business_day: true
+  - date: 2025-02-08
+    day_type: SATURDAY
+    is_business_day: false
+  - date: 2025-02-09
+    day_type: SUNDAY
+    is_business_day: false
