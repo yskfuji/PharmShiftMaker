@@ -1,6 +1,6 @@
 # 第三者ソフトウェアに関する表示
 
-PharmShiftMakerは、第三者のオープンソースソフトウェアを利用する。各ソフトウェアの著作権及び許諾条件については、それぞれの配布物に含まれるライセンス本文が優先する。
+PharmShiftMakerは、第三者のオープンソースソフトウェアを利用する。各ソフトウェアの著作権及び許諾条件については、各配布物に含まれるライセンス本文が優先する。
 
 主な直接依存関係は次のとおりである。
 
@@ -21,4 +21,4 @@ PharmShiftMakerは、第三者のオープンソースソフトウェアを利�
 | デザイントークン | デジタル庁デザインシステム | MIT |
 | 間接的なビルド・試験依存 | 各ロックファイルに記録された構成品 | MIT、ISC、Apache-2.0、BSD-2-Clause、BSD-3-Clause、MPL-2.0、LGPL-3.0-or-later、BlueOak-1.0.0、CC0-1.0、CC-BY-4.0、0BSD、MIT-0、Python-2.0等 |
 
-この表は読みやすさのための要約であり、間接的な依存関係を含む完全な一覧ではない。固定された依存関係は、`requirements.lock` と `frontend/package-lock.json` を参照すること。機械可読な一覧は、[CycloneDX SBOM](docs/release/SBOM.cdx.json)を参照すること。同梱した許諾文及び表示の対応は、[第三者ライセンスの目録（manifest）](docs/release/THIRD_PARTY_LICENSES/manifest.json)を参照すること。公開候補では、ロックファイルとインストール済み配布物のメタデータを照合する。SBOM又はライセンス検査で未確認の項目が残る場合は、公開候補を合格扱いにしない。
+上記の表は、可読性のための要約であり、間接的な依存関係を含む完全な一覧ではない。固定された依存関係については、`requirements.lock` 及び `frontend/package-lock.json` を参照すること。機械可読な一覧については、[CycloneDX SBOM](docs/release/SBOM.cdx.json)を参照すること。同梱した許諾文及び表示の対応については、[第三者ライセンスの目録（manifest）](docs/release/THIRD_PARTY_LICENSES/manifest.json)を参照すること。公開候補においては、ロックファイルとインストール済み配布物のメタデータとを照合し、SBOM又はライセンス検査において未確認の項目が残存する場合は、当該公開候補を合格として扱わない。
