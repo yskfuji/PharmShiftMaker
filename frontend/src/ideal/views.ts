@@ -22,11 +22,16 @@ export const workspaceViews = Object.fromEntries(
     .entries(),
 ) as Partial<Record<IdealScreen, WorkspaceView[]>>;
 
+/** The views of a screen of the contract. Own keys only: a URL segment such as
+ * "constructor" or "__proto__" is a key every object answers to, and names no screen. */
+const viewsOf = (screen: IdealScreen): WorkspaceView[] | undefined =>
+  Object.hasOwn(workspaceViews, screen) ? workspaceViews[screen] : undefined;
+
 export const defaultWorkspaceView = (screen: IdealScreen, role: IdealRole): string | undefined =>
-  workspaceViews[screen]?.find((view) => view.roles.includes(role))?.key;
+  viewsOf(screen)?.find((view) => view.roles.includes(role))?.key;
 
 export const isWorkspaceView = (screen: IdealScreen, view: string): boolean =>
-  Boolean(workspaceViews[screen]?.some((item) => item.key === view));
+  Boolean(viewsOf(screen)?.some((item) => item.key === view));
 
 export const workspaceRoute = (screen: IdealScreen, view = "index") =>
   WORKSPACE_ROUTES.find((route) => route.screen === screen && route.view === view);

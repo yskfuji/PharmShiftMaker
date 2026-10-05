@@ -1,6 +1,7 @@
 """Pure runner tests: no server, browser, schema or application data touched."""
 
 import os
+from pathlib import Path
 
 import pytest
 from scripts.dedicated_browser_acceptance import (
@@ -293,3 +294,158 @@ def test_ideal_ui_flags_are_never_inherited_from_the_shell():
     )
     assert not {"IDEAL_UI", "IDEAL_PREVIEW", "IDEAL_SHOWCASE"} & env.keys()
     assert env["PHARMSHIFT_E2E_PUBLICATION"] == "1"
+
+
+def test_synthetic_read_fault_is_listed_single_use_and_read_only() -> None:
+    from scripts.remediation_test_server import ReadFault
+
+    fault = ReadFault()
+    assert not fault.take("GET", "/planning/notifications")  # nothing armed
+    with pytest.raises(ValueError):
+        fault.arm("/planning/publications")  # only a listed read can be failed
+    fault.arm("/planning/notifications")
+    assert not fault.take("POST", "/planning/notifications")  # never a change
+    assert not fault.take("GET", "/planning/scopes")  # no other request is affected
+    assert fault.take("GET", "/planning/notifications")
+    assert not fault.take("GET", "/planning/notifications")  # once
+
+
+SERVER_SOURCE = Path(__file__).parents[1] / "scripts/remediation_test_server.py"
+BASE_LINKS = [
+    ("admin", "p0", "ADMIN"),
+    ("pharmacist", "p1", "PHARMACIST"),
+    ("leader", "p0", "LEADER"),
+]
+APPROVER_LINK = ("developer", "p-reviewer", "ADMIN")
+
+
+@pytest.mark.parametrize(
+    "environ",
+    [
+        {},
+        {"PHARMSHIFT_E2E_PUBLICATION": "1"},
+        {"PHARMSHIFT_E2E_ACTUAL": "1", "PHARMSHIFT_E2E_GRANT_SERIES": "1"},
+        {"PHARMSHIFT_E2E_EXPIRED_INPUT": "1", "PHARMSHIFT_E2E_PARTIAL_DAY_LEAVE": "1"},
+        {"PHARMSHIFT_E2E_INDEPENDENT_APPROVER": "0"},
+        {"PHARMSHIFT_E2E_INDEPENDENT_APPROVER": "true"},
+        {"PHARMSHIFT_E2E_DEEP": "0", "PHARMSHIFT_E2E_FLEX": ""},
+    ],
+)
+def test_default_fixture_has_exactly_the_three_account_links(environ) -> None:
+    from scripts.remediation_test_server import fixture_memberships
+
+    assert fixture_memberships(environ) == BASE_LINKS
+
+
+@pytest.mark.parametrize(
+    "flag",
+    [
+        "PHARMSHIFT_E2E_INDEPENDENT_APPROVER",
+        "PHARMSHIFT_E2E_DEEP",
+        "PHARMSHIFT_E2E_FLEX",
+    ],
+)
+def test_the_independent_approver_is_the_one_link_each_flag_adds(flag) -> None:
+    from scripts.remediation_test_server import fixture_memberships
+
+    # The same code path for all three: the three base links, then `developer`.
+    assert fixture_memberships({flag: "1"}) == [*BASE_LINKS, APPROVER_LINK]
+    assert fixture_memberships({flag: "1", "PHARMSHIFT_E2E_PUBLICATION": "1"}) == [
+        *BASE_LINKS,
+        APPROVER_LINK,
+    ]
+
+
+def test_the_independent_approver_flag_changes_nothing_but_the_membership() -> None:
+    import scripts.remediation_test_server as server
+
+    only = {"PHARMSHIFT_E2E_INDEPENDENT_APPROVER": "1"}
+    # None of the fixture's other switches reads it: no historical adoptions, no
+    # superseded inputs.
+    assert server.seed_historical_flex_adoptions(only) is False
+    assert server.seed_expired_input(only) is False
+    # In the source it is named once, in the list of flags that add the approver, and that
+    # list is read by fixture_memberships alone.
+    source = SERVER_SOURCE.read_text(encoding="utf-8")
+    assert source.count("PHARMSHIFT_E2E_INDEPENDENT_APPROVER") == 1
+    assert source.count("INDEPENDENT_APPROVER_FLAGS") == 2
+    assert source.count("fixture_memberships(") == 2  # its definition and the one seed
+    # The formal runner asks for it for the flag-on entry spec, and for no other spec.
+    assert FIXTURES["ideal-workspace.spec.ts"] == {
+        "PHARMSHIFT_E2E_PUBLICATION": "1",
+        "PHARMSHIFT_E2E_INDEPENDENT_APPROVER": "1",
+    }
+    assert [
+        name
+        for name, fixture in FIXTURES.items()
+        if "PHARMSHIFT_E2E_INDEPENDENT_APPROVER" in fixture
+    ] == ["ideal-workspace.spec.ts"]
+
+
+@pytest.mark.parametrize(
+    "environ",
+    [
+        {},
+        {"AUTH_MODE": "mock"},
+        {"PHARMSHIFT_ENV": "development"},
+        {"AUTH_MODE": "oidc", "PHARMSHIFT_ENV": "development"},
+        {"AUTH_MODE": "mock", "PHARMSHIFT_ENV": "production"},
+    ],
+)
+def test_deep_e2e_hooks_are_refused_outside_the_synthetic_mock_server(
+    environ, monkeypatch
+) -> None:
+    import scripts.remediation_test_server as server
+
+    from shift_scheduler.api.main import app
+    from shift_scheduler.application import subject_controls
+    from shift_scheduler.control import transaction
+
+    for name in ("AUTH_MODE", "PHARMSHIFT_ENV", "PHARMSHIFT_E2E_OBSERVATION_TIME"):
+        monkeypatch.delenv(name, raising=False)
+    for name, value in environ.items():
+        monkeypatch.setenv(name, value)
+    monkeypatch.setenv("PHARMSHIFT_E2E_DEEP", "1")
+    before = (
+        [getattr(route, "path", None) for route in app.routes],
+        list(app.user_middleware),
+        subject_controls.configured_client,
+        transaction.configured_client,
+    )
+    with pytest.raises(RuntimeError, match="deep E2E hooks"):
+        server.synthetic_app()
+    # Refused before anything was registered or replaced.
+    assert (
+        [getattr(route, "path", None) for route in app.routes],
+        list(app.user_middleware),
+        subject_controls.configured_client,
+        transaction.configured_client,
+    ) == before
+    assert not any(str(path).startswith("/__e2e") for path in before[0])
+    # Without the deep flag the factory adds nothing and needs no guard.
+    monkeypatch.delenv("PHARMSHIFT_E2E_DEEP")
+    assert server.synthetic_app() is app
+    assert [getattr(route, "path", None) for route in app.routes] == before[0]
+
+
+def test_synthetic_fixture_guard_accepts_only_mock_development() -> None:
+    from scripts.remediation_test_server import require_synthetic_fixture
+
+    require_synthetic_fixture(
+        {"AUTH_MODE": "mock", "PHARMSHIFT_ENV": "development"}, "x"
+    )
+    for environ in (
+        {},
+        {"AUTH_MODE": "mock", "PHARMSHIFT_ENV": "staging"},
+        {"AUTH_MODE": "jwt", "PHARMSHIFT_ENV": "development"},
+    ):
+        with pytest.raises(RuntimeError, match="only in synthetic mock fixtures"):
+            require_synthetic_fixture(environ, "x")
+    # The fixed clock and the deep hooks are both behind it, and the guard of the deep
+    # hooks comes before the first replacement.
+    source = SERVER_SOURCE.read_text(encoding="utf-8")
+    factory = source.split("def synthetic_app()", 1)[1].split("\nclass ReadFault", 1)[0]
+    assert factory.count("require_synthetic_fixture(") == 2
+    deep = factory.split('os.environ.get("PHARMSHIFT_E2E_DEEP") == "1"', 1)[1]
+    assert deep.index("require_synthetic_fixture(") < deep.index("configured_client")
+    assert deep.index("require_synthetic_fixture(") < deep.index("add_api_route")

@@ -35,7 +35,12 @@ FIXTURES = {
     "publication-artifacts.spec.ts": {"PHARMSHIFT_E2E_PUBLICATION": "1"},
     "grant-series.spec.ts": {"PHARMSHIFT_E2E_GRANT_SERIES": "1"},
     "flex-adoption.spec.ts": {"PHARMSHIFT_E2E_FLEX": "1"},
-    "ideal-workspace.spec.ts": {"PHARMSHIFT_E2E_PUBLICATION": "1"},
+    # The flag-on chain has the leader recommend and `developer` approve: the fixture
+    # needs that independent approver and nothing else of the deep or flex fixtures.
+    "ideal-workspace.spec.ts": {
+        "PHARMSHIFT_E2E_PUBLICATION": "1",
+        "PHARMSHIFT_E2E_INDEPENDENT_APPROVER": "1",
+    },
 }
 PROJECTS = {"chromium-linux", "firefox-linux", "webkit-linux"}
 

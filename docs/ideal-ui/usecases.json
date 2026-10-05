@@ -702,7 +702,8 @@
       "route": "/workspace/requests/leave",
       "transitions": [
         "/workspace/schedule",
-        "/workspace/operations/cases"
+        "/workspace/operations/cases",
+        "/workspace/plan/input"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-leave",
       "apis": [
@@ -713,7 +714,14 @@
         "GET /planning/compliance/workflow-context",
         "GET /planning/compliance/leave-report",
         "POST /planning/compliance/leave-events",
-        "POST /planning/compliance/grant-amendments"
+        "POST /planning/compliance/grant-amendments",
+        "POST /planning/requests/{request_id}/withdraw",
+        "POST /planning/compliance/leave-requests",
+        "GET /planning/compliance/records",
+        "POST /planning/compliance/leave-amendments",
+        "GET /planning/compliance/grant-assessments/context",
+        "POST /planning/compliance/grant-assessments",
+        "POST /planning/compliance/records/{kind}"
       ],
       "entities": [
         "planning_requests",
@@ -748,12 +756,16 @@
         "/workspace/people/directory",
         "/workspace/people/memberships",
         "/workspace/people/lifecycle",
-        "/workspace/people/contracts"
+        "/workspace/people/contracts",
+        "/workspace/plan/input",
+        "/workspace/settings/flextime",
+        "/workspace/governance/audit"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--people-contracts",
       "apis": [
         "GET /planning/compliance/workflow-context",
-        "POST /planning/compliance/records/{kind}"
+        "POST /planning/compliance/records/{kind}",
+        "GET /planning/compliance/rule-impact/{review_id}"
       ],
       "entities": [
         "compliance_entities",
@@ -820,7 +832,9 @@
         "/workspace/settings/appearance",
         "/workspace/settings/notifications",
         "/workspace/settings/absence-consent",
-        "/workspace/settings/flextime"
+        "/workspace/settings/flextime",
+        "/workspace/people/contracts",
+        "/workspace/governance/audit"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--settings-flextime",
       "apis": [
@@ -868,7 +882,8 @@
         "/workspace/governance/audit",
         "/workspace/governance/actuals",
         "/workspace/governance/privacy",
-        "/workspace/governance/recovery"
+        "/workspace/governance/recovery",
+        "/workspace/plan/input"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-actuals",
       "apis": [
@@ -907,7 +922,8 @@
       "route": "/workspace/requests/outside",
       "transitions": [
         "/workspace/schedule",
-        "/workspace/operations/cases"
+        "/workspace/operations/cases",
+        "/workspace/governance/audit"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-outside",
       "apis": [
@@ -948,18 +964,34 @@
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-privacy",
       "apis": [
+        "GET /planning/compliance/privacy",
         "POST /planning/compliance/privacy/requests",
         "POST /planning/compliance/privacy/cases/{case_id}",
+        "POST /planning/compliance/retention-rules",
+        "POST /planning/compliance/holds",
         "GET /planning/compliance/subject-controls/{person_id}",
         "POST /planning/compliance/subject-controls/{person_id}",
         "POST /planning/compliance/subject-controls/{person_id}/plans",
-        "POST /planning/compliance/subject-controls/{person_id}/execute"
+        "POST /planning/compliance/subject-controls/{person_id}/execute",
+        "GET /planning/compliance/copies/{copy_id}/joint-review",
+        "POST /planning/compliance/copies/{copy_id}/joint-review",
+        "GET /planning/compliance/copies/account-backfill",
+        "POST /planning/compliance/copies/account-backfill",
+        "GET /planning/compliance/copies",
+        "POST /planning/compliance/copies/{operation}",
+        "GET /planning/compliance/copies/{copy_id}/projection"
       ],
       "entities": [
         "privacy_cases",
+        "retention_rules",
+        "legal_holds",
         "compliance_entities",
         "compliance_revisions",
         "erased_subjects",
+        "managed_copies",
+        "copy_subjects",
+        "copy_erasures",
+        "preserved_archives",
         "planning_receipts"
       ],
       "states": [
@@ -970,8 +1002,15 @@
         "residual"
       ],
       "audit_events": [
-        "privacy.requested",
-        "erasure.executed"
+        "privacy.request",
+        "privacy.decision",
+        "retention.rule",
+        "privacy.hold",
+        "copy.preview",
+        "copy.erasure_queued",
+        "copy.external_confirmed",
+        "copy.preservation_review",
+        "copy.register"
       ],
       "e2e": "ideal-u25-privacy-erasure",
       "deep_e2e": "ideal-deep-u25-privacy-erasure"
@@ -1059,6 +1098,94 @@
       ],
       "e2e": "ideal-u27-advanced-planning",
       "deep_e2e": "ideal-deep-u27-advanced-planning"
+    },
+    {
+      "id": "U28",
+      "title": "半日・時間単位の年休請求",
+      "screen": "requests",
+      "view": "leave",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/requests/leave",
+      "transitions": [
+        "/workspace/schedule",
+        "/workspace/operations/cases",
+        "/workspace/plan/input"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-leave",
+      "apis": [
+        "GET /planning/requests",
+        "GET /planning/compliance/records",
+        "GET /planning/compliance/leave-report",
+        "POST /planning/compliance/leave-requests",
+        "POST /planning/requests/{request_id}/decision"
+      ],
+      "entities": [
+        "planning_requests",
+        "compliance_entities"
+      ],
+      "states": [
+        "ready",
+        "pending",
+        "approved",
+        "validation",
+        "unknown"
+      ],
+      "audit_events": [
+        "leave.request",
+        "request.decision"
+      ],
+      "e2e": "ideal-u28-partial-day-leave",
+      "deep_e2e": "ideal-deep-u28-partial-day-leave"
+    },
+    {
+      "id": "U29",
+      "title": "保存期限を過ぎた旧勤務入力の消去",
+      "screen": "governance",
+      "view": "privacy",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/governance/privacy",
+      "transitions": [
+        "/workspace/governance/audit",
+        "/workspace/governance/actuals",
+        "/workspace/governance/privacy",
+        "/workspace/governance/recovery"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-privacy",
+      "apis": [
+        "GET /planning/compliance/privacy",
+        "GET /planning/compliance/erasure-candidates",
+        "POST /planning/compliance/erasure-preview",
+        "POST /planning/compliance/erasure-execute"
+      ],
+      "entities": [
+        "planning_inputs",
+        "planning_input_heads",
+        "retention_rules",
+        "legal_holds",
+        "erasure_plans",
+        "erasure_markers",
+        "planning_outbox",
+        "planning_receipts"
+      ],
+      "states": [
+        "ready",
+        "blocked",
+        "executed",
+        "conflict",
+        "unknown"
+      ],
+      "audit_events": [
+        "erasure.preview",
+        "erasure.executed"
+      ],
+      "e2e": "ideal-u29-expired-input-erasure",
+      "deep_e2e": "ideal-deep-u29-expired-input-erasure"
     }
   ]
 }

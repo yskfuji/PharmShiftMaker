@@ -6,11 +6,35 @@ from shift_scheduler.api.main import app
 ROOT = Path(__file__).parents[1]
 
 
-def test_all_27_ideal_use_cases_have_complete_traceability() -> None:
+# The use cases of the contract: exactly these, in this order. A use case added to or
+# removed from docs/ideal-ui/usecases.json changes this list in the same commit.
+USE_CASE_IDS = [f"U{number:02d}" for number in range(1, 30)]
+
+
+def use_case_id_faults(rows: list[dict]) -> list[str]:
+    """The ids are exactly U01..U29: none missing, none added, none twice, in order."""
+    ids = [row["id"] for row in rows]
+    found = [f"missing: {item}" for item in USE_CASE_IDS if item not in ids]
+    found += [
+        f"not a use case of the contract: {item}"
+        for item in ids
+        if item not in USE_CASE_IDS
+    ]
+    found += sorted({f"twice: {item}" for item in ids if ids.count(item) > 1})
+    if not found and ids != USE_CASE_IDS:
+        found.append("out of order")
+    return found
+
+
+def test_all_ideal_use_cases_have_complete_traceability() -> None:
     document = json.loads((ROOT / "docs/ideal-ui/usecases.json").read_text())
     rows = document["use_cases"]
-    assert [row["id"] for row in rows] == [f"U{number:02d}" for number in range(1, 28)]
-    assert len({row["e2e"] for row in rows}) == 27
+    assert use_case_id_faults(rows) == []
+    assert [row["id"] for row in rows] == USE_CASE_IDS
+    assert len(rows) == len(USE_CASE_IDS) == 29
+    # No journey name is used twice.
+    assert len({row["e2e"] for row in rows}) == len(rows)
+    assert len({row["deep_e2e"] for row in rows}) == len(rows)
     required = {
         "id",
         "title",
@@ -43,6 +67,20 @@ def test_all_27_ideal_use_cases_have_complete_traceability() -> None:
         assert row["deep_e2e"].startswith("ideal-deep-")
 
 
+def test_the_use_case_ids_are_exactly_u01_to_u29() -> None:
+    rows = json.loads((ROOT / "docs/ideal-ui/usecases.json").read_text())["use_cases"]
+    # Deleting the last use case, or any other, is a fault; so is a gap, a repeat, an
+    # addition or another order.
+    assert use_case_id_faults(rows[:-1]) == ["missing: U29"]
+    assert use_case_id_faults(rows[:13] + rows[14:]) == ["missing: U14"]
+    assert use_case_id_faults(rows + [rows[-1]]) == ["twice: U29"]
+    assert use_case_id_faults(rows + [{**rows[-1], "id": "U30"}]) == [
+        "not a use case of the contract: U30"
+    ]
+    assert use_case_id_faults([rows[1], rows[0], *rows[2:]]) == ["out of order"]
+    assert use_case_id_faults([]) == [f"missing: {item}" for item in USE_CASE_IDS]
+
+
 def test_workspace_route_contract_is_the_runtime_source() -> None:
     document = json.loads((ROOT / "docs/ideal-ui/usecases.json").read_text())
     routes = document["workspace_routes"]
@@ -55,15 +93,23 @@ def test_workspace_route_contract_is_the_runtime_source() -> None:
     for use_case in document["use_cases"]:
         assert use_case["route"] in by_route
         assert set(use_case["roles"]) <= set(by_route[use_case["route"]]["roles"])
+    workspace = ROOT / "frontend/src/features/workspace"
     views = (ROOT / "frontend/src/ideal/views.ts").read_text()
-    model = (ROOT / "frontend/src/ideal/api/toModel.ts").read_text()
-    shell = (
-        ROOT / "frontend/src/features/workspace/shell/WorkspaceShell.tsx"
-    ).read_text()
+    shell = (workspace / "shell/WorkspaceShell.tsx").read_text()
+    registry = (workspace / "shell/routes.ts").read_text()
+    link = (workspace / "shell/WorkspaceLink.tsx").read_text()
     assert "WORKSPACE_ROUTES" in views
     assert 'key: "input"' not in views
-    assert "WORKSPACE_NAV" in model
     assert "WORKSPACE_NAV" in shell
+    # One definition per generated route key, and links only to generated route paths.
+    assert "satisfies { [K in WorkspaceRouteKey]: AnyRouteDefinition }" in registry
+    assert "WORKSPACE_ROUTE_KEYS" in registry
+    assert "R extends WorkspaceRoutePath" in link
+    for key in (f'{row["screen"]}/{row["view"]}' for row in routes):
+        assert f'"{key}":' in registry, key
+    # The v1/v2 compatibility showcase (/preview, /showcase) follows the same contract.
+    model = (ROOT / "frontend/src/ideal/api/toModel.ts").read_text()
+    assert "WORKSPACE_NAV" in model
     assert "const API_NAV: Record" not in model
 
 

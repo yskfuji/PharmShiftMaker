@@ -1,10 +1,10 @@
 "use client";
 
-import ActualReconciliation from "@/features/workspace/governance/ActualReconciliation";
-import ComplianceWorkspace from "@/features/workspace/shared/ComplianceWorkspace";
-import FlexTimeSettings from "@/features/workspace/settings/FlexTimeSettings";
-import LeaveRequestWorkspace from "@/features/workspace/requests/LeaveRequestWorkspace";
-import { PlanningDraftView, PlanningInputView, PlanningPublicationsView } from "@/features/workspace/planning/PlanningRouteViews";
+import ActualReconciliation from "@/components/ActualWorkflow";
+import ComplianceWorkspace from "@/components/CompliancePanel";
+import FlexTimeSettings from "@/components/FlexAdoptionSettings";
+import LeaveRequestWorkspace from "@/components/PlanningRequests";
+import { PlanningDraftView, PlanningInputView, PlanningPublicationsView } from "@/ideal/screens/live/PlanningRouteViews";
 import ThemeToggle from "@/components/ThemeToggle";
 import type { LiveApi } from "../../live/context";
 import { useResource } from "../../live/useResource";

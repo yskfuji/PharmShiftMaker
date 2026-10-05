@@ -9,8 +9,8 @@ PharmShiftMakerは、病院薬剤部の勤務計画、当日の変更、休暇�
 - FastAPI、PostgreSQL及びNext.jsによる業務機能と、合成データ用の試験環境を収録している。
 - `src/shift_scheduler/config`及び`ops/attendance_mapping.example.yaml`の人物は、ID・表示名とも公開試験用の合成データである。導入時は、導入機関が管理する情報へ置き換える。
 - 認知中心UI v3は `IDEAL_UI=1` のときだけ `/workspace` で有効になる。既定値はOFFであり、既存画面を維持する。
-- 新workspaceの従来画面からの独立は未完了である。25子画面のうち6画面（申請の「休暇」「兼業・外部勤務」、職員の「契約・資格」、ガバナンスの「実績照合」「個人情報」、設定の「フレックス」）は、従来画面の実装を名称だけ変えて新しい外殻の中に表示している。また、25子画面のうち23画面を一つのClient Componentが振り分けており、画面構成の実装は用途別の`features/workspace`ではなく`ideal/screens`に残る。新workspaceで表示する部品の一部には、従来URLへのリンクも残る。検査の方法、結果及び完了条件は[検証記録](docs/ideal-ui/verification.md)の「Structural independence from the established screens」に記す。
-- 27業務系列、認可、版競合、冪等再送、人物消去及び復旧境界の自動試験を収録している。試験結果は、記録された合成条件についての確認に限られる。
+- 新workspace（`/workspace`）の25子画面は、それぞれ専用のルート定義（サーバー側の読取り境界と画面）を`frontend/src/features/workspace`の下に持つ。全ての子画面が自分でAPIを読むわけではない。`settings/appearance`は何も読まず、`plan/publications`と`settings/notifications`は、必須コンテキストが読んだ内容を表示する。構造試験（`tests/test_workspace_v3_structure.py`）は、新workspaceが従来画面の実装を推移的にimportした場合、従来URLへリンクした場合、又は複数用途を兼ねる従来フォームを表示した場合に失敗する。`/preview` と `/showcase` はv1/v2の互換ショーケースであり、v3の証跡には含めない。構造試験は、名称を変えた複製を検出できない。作り直した画面と従来部品との比較（行単位及びトークン列）は、[検証記録](docs/ideal-ui/verification.md)の「Structural independence from the established screens」に記してある。作り直した構成でのブラウザ検証（3回の正式実行の経過、未確認の範囲及び既知の限界）と独立レビューの結果は、同じ検証記録に記してある。
+- 29業務系列、認可、版競合、冪等再送、人物消去及び復旧境界の自動試験を収録している。試験結果は、記録された合成条件についての確認に限られる。
 - 30名の利用者評価、VoiceOver/NVDA実機評価及び実運用相当の75パーセンタイル性能測定は未完了である。「使いやすい」「WCAG適合」「本番利用可能」又は「安全性を証明済み」とは扱わない。
 
 ## 主要な画面
@@ -92,7 +92,7 @@ npm run build-storybook
 
 - [責務と読み順](docs/repository-map.md)
 - [認知中心UI v3](docs/ideal-ui/README.md)
-- [27業務系列の契約](docs/ideal-ui/usecases.json)
+- [29業務系列の契約](docs/ideal-ui/usecases.json)
 - [ER図・状態図・画面/API対応図](docs/architecture/er/)
 - [導入・運用機関の責務](docs/legal/operator-responsibilities.md)
 - [利用上の注意](docs/legal/usage-notes.md)

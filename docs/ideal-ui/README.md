@@ -27,7 +27,7 @@ npm run storybook
 
 ## 構造上の公開条件
 
-認証後の8入口と25子画面は、本番候補と同じ用途別部品を使用する。共通シェル並びに認証、施設・部署、対象期間、公開版及び主要集計の初期読取りはServer Componentで処理する。現在、変更操作と操作後の用途別再読取りはClient Componentであり、全ての業務別読取りをServer Componentへ移したとは扱わない。`usecases.json`をU01〜U27の機械可読な正本とし、TypeScriptのルート契約、ページ遷移図及びテキスト代替付きの系列図を生成する。本番の既定画面に採用するには`research/usability-protocol.md`の評価を別途完了する必要があり、本書は利用者又は支援技術による評価結果を主張しない。
+認証後の8入口と25子画面は、本番候補と同じ用途別部品を使用する。各子画面は、専用のルート定義（サーバー側の読取り境界と画面）を持つ。必須コンテキスト（認証、施設・部署、対象期間、公開版及び通知）と子画面ごとの業務データは、Server Componentがサーバー側で読み取る。変更操作はClient Componentが行い、変更後はサーバーが同じ経路を読み直す。`settings/appearance`は何も読まず、`plan/publications`と`settings/notifications`は必須コンテキストが読んだ内容を表示する。`usecases.json`をU01〜U29の機械可読な正本とし、TypeScriptのルート契約、ページ遷移図及びテキスト代替付きの系列図を生成する。本番の既定画面に採用するには`research/usability-protocol.md`の評価を別途完了する必要があり、本書は利用者又は支援技術による評価結果を主張しない。
 
 ## 検証資料
 
@@ -39,7 +39,7 @@ npm run storybook
   transition tables in `src/shift_scheduler/application/ideal_workflows.py`, each with a text table.
 - `docs/architecture/er/workflow-states.md`: publication and existing workflow states.
 - `docs/architecture/er/ia-map.md`: screens, API calls and contracts.
-- `docs/architecture/er/usecase-sequences.md`: all 27 series as Mermaid and text alternatives.
+- `docs/architecture/er/usecase-sequences.md`: all 29 series as Mermaid and text alternatives.
 - `docs/architecture/er/workspace-transitions.mmd` and `.md`: page-to-page routes and text alternative.
 - `v3-design-rationale.md`: cognitive/visual decisions, evidence and counterevidence.
 - `evidence.md`: evidence, counterevidence and bounded conclusions.

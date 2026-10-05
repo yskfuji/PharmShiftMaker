@@ -1,4 +1,4 @@
-"""Run mutation-level U01-U27 journeys in disposable PostgreSQL schemas.
+"""Run the mutation-level journey of every use case in disposable PostgreSQL schemas.
 
 One invocation is used per browser/width case, so every variant gets a disposable
 schema owned and dropped by the remediation server. The runner
@@ -283,6 +283,17 @@ def main() -> int:
                     # correctly fail the final current-ledger revalidation.
                     "PHARMSHIFT_E2E_FLEX": "1" if row["id"] == "U22" else "0",
                     "PHARMSHIFT_E2E_ACTUAL": "1" if row["id"] == "U23" else "0",
+                    # Leave rules that allow half days and hours exist only for
+                    # the journey that claims them; every other journey keeps the
+                    # rules that allow whole days only.
+                    "PHARMSHIFT_E2E_PARTIAL_DAY_LEAVE": (
+                        "1" if row["id"] == "U28" else "0"
+                    ),
+                    # Superseded planning inputs (one past its retention) exist only
+                    # for the journey that erases one.
+                    "PHARMSHIFT_E2E_EXPIRED_INPUT": (
+                        "1" if row["id"] == "U29" else "0"
+                    ),
                     "PHARMSHIFT_E2E_DEEP": "1",
                     # The U27 cancellation assertion needs an observable QUEUED
                     # interval.  This fixture-only delay starts the real worker

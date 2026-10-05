@@ -1,35 +1,32 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ApiWorkspaceProvider from "@/ideal/providers/ApiWorkspaceProvider";
-import WorkspaceContent from "@/features/workspace/shell/WorkspaceContent";
-import WorkspaceShell from "@/features/workspace/shell/WorkspaceShell";
-import { screenMeta } from "@/ideal/screens/shared";
+import WorkspaceRoutePage, { type WorkspaceSearch } from "@/features/workspace/shell/WorkspaceRoutePage";
+import { screenMeta } from "@/ideal/ui/atoms";
 import type { IdealScreen } from "@/ideal/types";
-import { loadInitialWorkspace } from "@/ideal/api/serverInitial";
 import { idealUiEnabled } from "@/lib/featureFlags";
 
 const screens = Object.keys(screenMeta) as IdealScreen[];
 
 // The ideal UI as the production entry, only with IDEAL_UI=1 (read per request from the
 // server environment; off, this route does not exist). Sign-in is enforced by the proxy
-// (/workspace is protected) and every read and change by the API.
+// (/workspace is protected) and every read and change by the API. The route itself (its
+// context, its role check, its own read and its view) is rendered by WorkspaceRoutePage;
+// which view a screen opens without one depends on the viewer's role and is decided there.
 export const dynamic = "force-dynamic";
 
 export default async function WorkspacePage({ params, searchParams }: {
   params: Promise<{ screen: string }>;
-  searchParams: Promise<{ scope?: string; period?: string; publication?: string; case?: string; person?: string }>;
+  searchParams: Promise<WorkspaceSearch>;
 }) {
   if (!idealUiEnabled()) notFound();
   const { screen } = await params;
   if (!screens.includes(screen as IdealScreen)) notFound();
-  const { scope, period, publication, case: caseId, person } = await searchParams;
-  const initial = await loadInitialWorkspace(scope, screen as IdealScreen, { period, publicationId: publication, caseId, personId: person });
-  return <WorkspaceShell initial={initial} screen={screen as IdealScreen} routeContext={{ case: initial.selectedCaseId ?? undefined, person: initial.selectedPersonId ?? undefined }}>
-    <ApiWorkspaceProvider scopeId={scope} period={initial.requestedPeriod} publicationId={initial.selectedPublicationId ?? undefined} caseId={initial.selectedCaseId ?? undefined} personId={initial.selectedPersonId ?? undefined} rosterPurpose={screen === "people"} initial={initial}><WorkspaceContent screen={screen as IdealScreen} /></ApiWorkspaceProvider>
-  </WorkspaceShell>;
+  return <WorkspaceRoutePage screen={screen as IdealScreen} search={await searchParams} />;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ screen: string }> }): Promise<Metadata> {
   const { screen } = await params;
-  return { title: screenMeta[screen as IdealScreen]?.label ?? "見つかりません" };
+  // The same list as the page: a segment such as "constructor" is no screen, although every
+  // object answers to that key.
+  return { title: screens.includes(screen as IdealScreen) ? screenMeta[screen as IdealScreen].label : "見つかりません" };
 }

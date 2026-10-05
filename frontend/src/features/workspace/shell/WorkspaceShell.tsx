@@ -3,32 +3,32 @@ import Link from "next/link";
 import { ChevronRight, Menu } from "lucide-react";
 import { roleLabels } from "@/ideal/data";
 import { WORKSPACE_NAV } from "@/features/workspace/generated/usecaseRoutes";
-import type { InitialWorkspacePayload } from "@/ideal/providers/initial";
-import { screenMeta } from "@/ideal/screens/shared";
-import type { IdealRole, IdealScreen } from "@/ideal/types";
+import type { PublicationRead } from "@/ideal/api/contracts";
+import { screenMeta } from "@/ideal/ui/atoms";
+import type { IdealRole, IdealScreen, PlanningScopeSummary, WorkspaceNotification } from "@/ideal/types";
 import { defaultWorkspaceView, workspaceViews } from "@/ideal/views";
 import WorkspaceContextSummary from "./WorkspaceContextSummary";
+import { workspaceHrefWithContext } from "./workspaceHref";
 import WorkspaceUserMenu from "./WorkspaceUserMenu";
 
+/** What the frame shows: who is signed in, their scopes, the scope, period and publication
+ * the URL selects, and their notifications. The route's context provides it. */
+export type ShellInitial = {
+  viewerName: string;
+  scopes: PlanningScopeSummary[];
+  scope: PlanningScopeSummary | null;
+  publications: PublicationRead[];
+  selectedPublicationId: string | null;
+  requestedPeriod: string;
+  notifications: WorkspaceNotification[];
+};
+
 type Props = {
-  initial: InitialWorkspacePayload;
+  initial: ShellInitial;
   screen: IdealScreen;
   view?: string;
   routeContext?: { publication?: string; case?: string; person?: string };
   children: ReactNode;
-};
-
-export const workspaceHrefWithContext = (path: string, context: { scope?: string; period?: string; publication?: string; case?: string; person?: string }) => {
-  const query = new URLSearchParams();
-  const privacyPurpose = path === "/workspace/governance/privacy";
-  if (context.scope && /^[A-Za-z0-9._:/-]{1,256}$/.test(context.scope)) query.set("scope", context.scope);
-  if (context.period && /^\d{4}-\d{2}$/.test(context.period)) query.set("period", context.period);
-  for (const key of ["publication", "case", "person"] as const) {
-    if (privacyPurpose && (key === "publication" || key === "case")) continue;
-    const value = context[key];
-    if (value && /^[A-Za-z0-9._:-]{1,256}$/.test(value)) query.set(key, value);
-  }
-  return `${path}${query.size ? `?${query}` : ""}`;
 };
 
 /**

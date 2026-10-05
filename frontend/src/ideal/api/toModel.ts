@@ -47,7 +47,7 @@ export function toWorkspaceModel(input: {
   const calendarMatchesPublication = !publication || calendar?.publication?.publication_id === publication.publication_id;
   const duties = [...((calendarMatchesPublication ? calendar?.assignments : publication?.assignments) ?? publication?.assignments ?? []) as unknown as PublishedDuty[]];
   duties.sort((a, b) => a.start.localeCompare(b.start));
-  const nameOf = (id: string) => names[id] ?? (id === scope.person_id ? "あなた" : id);
+  const nameOf = (id: string) => (Object.hasOwn(names, id) ? names[id] : null) ?? (id === scope.person_id ? "あなた" : id);
   const own = duties.filter((d) => d.person_id === scope.person_id);
   const next = own.find((d) => new Date(d.end).getTime() > now.getTime()) ?? null;
   const today = parts(now);

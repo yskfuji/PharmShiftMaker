@@ -435,7 +435,8 @@ export const USE_CASE_ROUTES = [
     ],
     "transitions": [
       "/workspace/schedule",
-      "/workspace/operations/cases"
+      "/workspace/operations/cases",
+      "/workspace/plan/input"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--requests-leave",
     "e2eId": "ideal-u19-leave"
@@ -457,7 +458,10 @@ export const USE_CASE_ROUTES = [
       "/workspace/people/directory",
       "/workspace/people/memberships",
       "/workspace/people/lifecycle",
-      "/workspace/people/contracts"
+      "/workspace/people/contracts",
+      "/workspace/plan/input",
+      "/workspace/settings/flextime",
+      "/workspace/governance/audit"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--people-contracts",
     "e2eId": "ideal-u20-contracts"
@@ -504,7 +508,9 @@ export const USE_CASE_ROUTES = [
       "/workspace/settings/appearance",
       "/workspace/settings/notifications",
       "/workspace/settings/absence-consent",
-      "/workspace/settings/flextime"
+      "/workspace/settings/flextime",
+      "/workspace/people/contracts",
+      "/workspace/governance/audit"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--settings-flextime",
     "e2eId": "ideal-u22-flextime"
@@ -528,7 +534,8 @@ export const USE_CASE_ROUTES = [
       "/workspace/governance/audit",
       "/workspace/governance/actuals",
       "/workspace/governance/privacy",
-      "/workspace/governance/recovery"
+      "/workspace/governance/recovery",
+      "/workspace/plan/input"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--governance-actuals",
     "e2eId": "ideal-u23-actuals"
@@ -551,7 +558,8 @@ export const USE_CASE_ROUTES = [
     ],
     "transitions": [
       "/workspace/schedule",
-      "/workspace/operations/cases"
+      "/workspace/operations/cases",
+      "/workspace/governance/audit"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--requests-outside",
     "e2eId": "ideal-u24-outside"
@@ -630,6 +638,55 @@ export const USE_CASE_ROUTES = [
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--plan-drafts",
     "e2eId": "ideal-u27-advanced-planning"
+  },
+  {
+    "id": "U28",
+    "screen": "requests",
+    "view": "leave",
+    "route": "/workspace/requests/leave",
+    "roles": [
+      "ADMIN",
+      "LEADER",
+      "PHARMACIST"
+    ],
+    "states": [
+      "ready",
+      "pending",
+      "approved",
+      "validation",
+      "unknown"
+    ],
+    "transitions": [
+      "/workspace/schedule",
+      "/workspace/operations/cases",
+      "/workspace/plan/input"
+    ],
+    "storybookId": "ideal-ui-v3-cognitive-workspace--requests-leave",
+    "e2eId": "ideal-u28-partial-day-leave"
+  },
+  {
+    "id": "U29",
+    "screen": "governance",
+    "view": "privacy",
+    "route": "/workspace/governance/privacy",
+    "roles": [
+      "ADMIN"
+    ],
+    "states": [
+      "ready",
+      "blocked",
+      "executed",
+      "conflict",
+      "unknown"
+    ],
+    "transitions": [
+      "/workspace/governance/audit",
+      "/workspace/governance/actuals",
+      "/workspace/governance/privacy",
+      "/workspace/governance/recovery"
+    ],
+    "storybookId": "ideal-ui-v3-cognitive-workspace--governance-privacy",
+    "e2eId": "ideal-u29-expired-input-erasure"
   }
 ] as const;
 
@@ -1009,6 +1066,37 @@ export const WORKSPACE_NAV = {
     "settings"
   ]
 } as const;
+
+export const WORKSPACE_ROUTE_KEYS = [
+  "home/index",
+  "schedule/index",
+  "plan/input",
+  "plan/generate",
+  "plan/compare",
+  "plan/drafts",
+  "plan/publications",
+  "operations/today",
+  "operations/cases",
+  "requests/mine",
+  "requests/leave",
+  "requests/swap",
+  "requests/outside",
+  "people/directory",
+  "people/memberships",
+  "people/lifecycle",
+  "people/contracts",
+  "governance/audit",
+  "governance/actuals",
+  "governance/privacy",
+  "governance/recovery",
+  "settings/appearance",
+  "settings/notifications",
+  "settings/absence-consent",
+  "settings/flextime"
+] as const;
+
+export type WorkspaceRouteKey = typeof WORKSPACE_ROUTE_KEYS[number];
+export type WorkspaceRoutePath = typeof WORKSPACE_ROUTES[number]["route"];
 
 export const WORKSPACE_STORY_ROUTES = [
   {

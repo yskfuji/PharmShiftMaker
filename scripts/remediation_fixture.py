@@ -1,12 +1,127 @@
 """Explicit synthetic V3 fixture shared by local UI and API evaluations."""
 
+from datetime import datetime, timedelta
+
+from tests.fixtures.reviewed_planning import reviewed_planning_snapshot
 from tests.test_catalogue_v3 import data
 
 from shift_scheduler.domain.candidate_generation import generate_catalogue
 from shift_scheduler.domain.compliance import parse_snapshot
 
+SCOPE = "hospital/pharmacy"
+# The rule the erasure journey (U29) erases under: one day after the period's end,
+# verified, and in force for as long as this synthetic fixture is used.
+RETENTION_TRIAL_RULE = {
+    "category": "planning_history",
+    "purpose": "synthetic browser erasure of superseded planning inputs",
+    "anchor": "period_end",
+    "retention_days": 1,
+    "legal_minimum_days": 0,
+    "effective_from": "2015-01-01",
+    "effective_until": "2099-01-01",
+    "evidence": {
+        "reference": "isolated E2E approval",
+        "status": "verified",
+        "verified_by": "synthetic-reviewer",
+    },
+    "owner": "synthetic-reviewer",
+    "next_review": "2098-12-31",
+}
 
-def snapshot(*, with_grant_series=False):
+
+def _weeks_later(snapshot, weeks):
+    """The same snapshot with every instant `weeks` weeks later (earlier when negative)."""
+    delta = timedelta(weeks=weeks)
+
+    def move(value):
+        if isinstance(value, dict):
+            return {key: move(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [move(item) for item in value]
+        if isinstance(value, str) and value[4:5] == "-" and value[10:11] == "T":
+            return (datetime.fromisoformat(value) + delta).isoformat()
+        return value
+
+    return type(snapshot).model_validate(move(snapshot.model_dump(mode="json")))
+
+
+def retention_trial_inputs():
+    """Superseded inputs for the erasure journey, each with the version replacing it.
+
+    In order: a period ten years past (its retention has passed) and its newer
+    version, then a period ten years ahead (its retention has not) and its newer
+    version. Only the older version of each pair can ever be erased; the newer one
+    stays the current input of its period.
+    """
+    base = reviewed_planning_snapshot(1, 1)
+    inputs = []
+    for weeks in (-520, 520):
+        older = _weeks_later(base, weeks)
+        inputs += [older, older.model_copy(update={"source_revision": 1})]
+    return inputs
+
+
+def seed_planning_dependents(session, snapshot):
+    """Plan once with a registered input; return (job_id, draft_id).
+
+    The real path of a generation: a job is queued, claimed and finished with the
+    solver's result, which creates the draft and the events of both. Nothing is
+    published, so the input stays erasable once it is superseded and its retention has
+    passed: a publication would be the current one of its period.
+    """
+    from shift_scheduler.application import planning
+    from shift_scheduler.optimizer.planning import solve
+
+    job = planning.enqueue(
+        session, snapshot.input_hash, SCOPE, "fixture", "retention-trial-generation", 5
+    )
+    session.flush()
+    claimed = planning.claim_job(session)
+    if claimed is None or claimed[0] != job.job_id:
+        raise RuntimeError("The retention trial's job was not the one claimed")
+    job_id, token, data, budget = claimed
+    draft_id = planning.finish_job(session, job_id, token, solve(data, budget))
+    if draft_id is None:
+        raise RuntimeError("The retention trial's generation produced no draft")
+    session.flush()
+    return job_id, draft_id
+
+
+def seed_retention_trial(session):
+    """Register the trial inputs and their rule; return the scope's input revision.
+
+    Called before the fixture's own input is registered, so that input stays the
+    newest of the scope. The first input (the one past its retention) also gets a
+    finished generation job and the draft it produced, so that erasing it has
+    dependent rows to erase.
+    """
+    from shift_scheduler.application.planning import register_input
+    from shift_scheduler.db.compliance_models import RetentionRule
+
+    revision = 0
+    for position, snapshot in enumerate(retention_trial_inputs()):
+        revision = register_input(session, snapshot, "fixture", revision)[
+            "input_revision"
+        ]
+        if position == 0:
+            # While it is still the current version of its period: what planning with an
+            # input leaves behind. The journey erases these rows with the input.
+            seed_planning_dependents(session, snapshot)
+    session.add(
+        RetentionRule(
+            key="e2e-planning-history",
+            scope_id=SCOPE,
+            category="planning_history",
+            revision=1,
+            payload=RETENTION_TRIAL_RULE,
+        )
+    )
+    return revision
+
+
+def snapshot(*, with_grant_series=False, with_partial_day_leave=False):
+    """`with_partial_day_leave`: the leave rules also allow half days and hours (the
+    default rules allow whole days only)."""
     original = data()
     payload = original.model_dump(mode="json")
     payload["people"].append(
@@ -57,6 +172,11 @@ def snapshot(*, with_grant_series=False):
                 "hours_per_day": 4,
                 "hourly_year_start": "2026-01-01",
                 "evidence": payload["policy_evidence"],
+                **(
+                    {"hourly_enabled": True, "half_day_enabled": True}
+                    if with_partial_day_leave
+                    else {}
+                ),
             }
         )
         payload["ledger_recordings"].append(

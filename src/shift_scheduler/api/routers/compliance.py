@@ -460,6 +460,8 @@ def privacy_records(scope_id: Scope, session: DB, user: User) -> dict[str, Any]:
                 "revision": r.revision,
                 "status": r.status,
                 "payload": r.payload,
+                # The decision route admits administrators only (privacy_decision).
+                **privacy.decision_options(r.status, member.role == "ADMIN"),
             }
             for r in cases
             if member.role == "ADMIN" or r.person_id == member.person_id
@@ -605,6 +607,13 @@ def hold(request: Mutation, scope_id: Scope, session: DB, user: User) -> dict[st
     return once(session, scope_id, user.user_id, "hold", request, action)
 
 
+@router.get("/erasure-candidates", response_model=None)
+def erasure_candidates(scope_id: Scope, session: DB, user: User) -> dict[str, Any]:
+    """The scope's planning inputs with the server's answer on erasing each one."""
+    access(session, user, scope_id, admin=True, privacy_purpose=True)
+    return privacy.erasure_candidates(session, scope_id)
+
+
 @router.post("/erasure-preview")
 def erasure_preview(
     request: Mutation, scope_id: Scope, session: DB, user: User
@@ -615,7 +624,13 @@ def erasure_preview(
         row = privacy.preview(
             session, scope_id, request.payload["input_hash"], user.user_id
         )
-        return dict(plan_id=row.plan_id, fingerprint=row.fingerprint, **row.payload)
+        # `erasable` is not part of the plan: the fingerprint binds row.payload only.
+        return dict(
+            plan_id=row.plan_id,
+            fingerprint=row.fingerprint,
+            erasable=privacy.erasable(row.payload),
+            **row.payload,
+        )
 
     return once(session, scope_id, user.user_id, "erasure.preview", request, action)
 
@@ -764,6 +779,26 @@ def actual_event(
     return once(session, scope_id, user.user_id, "actual", request, action)
 
 
+def declaration_change_refusal(role: str, stored_status: str | None) -> str | None:
+    """Why this role may not correct or withdraw a declaration stored with this
+    status (None: it may, or nothing is stored yet). The listing and the route use
+    this one function.
+
+    Hours already confirmed stay in the combined count (Art. 38 is mandatory;
+    基発0901第3号 counts the hours as known). Only REVIEWED declarations are
+    counted, so any change by the person (resubmitting as SUBMITTED, then
+    withdrawing) would drop them; an administrator makes the correction, e.g. an
+    earlier end, and reviews it.
+    """
+    if role != "ADMIN" and stored_status == "REVIEWED":
+        return "照合済みの申告は本人では変更・取り下げできません。終了日などの訂正は管理者に依頼してください。"
+    return None
+
+
+def _action(refusal: str | None) -> dict[str, Any]:
+    return {"allowed": refusal is None, "refusal": refusal}
+
+
 @router.get("/declaration-context", response_model=None)
 def declaration_context(scope_id: Scope, session: DB, user: User) -> dict[str, Any]:
     """Self-service directory: no other person's employment or administrative records."""
@@ -795,7 +830,18 @@ def declaration_context(scope_id: Scope, session: DB, user: User) -> dict[str, A
             if e["employer_id"] in directory
         ],
         "declarations": [
-            {"entity_id": r.entity_id, "revision": r.revision, "payload": r.payload}
+            {
+                "entity_id": r.entity_id,
+                "revision": r.revision,
+                "payload": r.payload,
+                # What the declaration route answers this viewer for this stored
+                # version: the same function decides both.
+                "actions": {
+                    "change": _action(
+                        declaration_change_refusal(member.role, r.payload.get("status"))
+                    )
+                },
+            }
             for r in session.scalars(
                 select(ComplianceEntity).where(
                     ComplianceEntity.scope_id == scope_id,
@@ -815,7 +861,11 @@ def declaration_context(scope_id: Scope, session: DB, user: User) -> dict[str, A
 def workflow_context(
     scope_id: Scope, session: DB, user: User, input_hash: str | None = None
 ) -> dict[str, Any]:
-    from shift_scheduler.db.planning_models import ActualWorkEvent, PlanningPublication
+    from shift_scheduler.db.planning_models import (
+        ActualWorkEvent,
+        PlanningOutbox,
+        PlanningPublication,
+    )
 
     member = access(session, user, scope_id, write=True)
     payload = staged_payload(session, scope_id, input_hash)
@@ -829,6 +879,17 @@ def workflow_context(
                 include_input=False, include_context=False, include_url=False
             )
         ]
+    # A reconciliation note is recorded against one revision of an actual: the
+    # event actual_review emits names that revision's key.
+    reviewed = {
+        noted.get("event_id")
+        for noted in session.scalars(
+            select(PlanningOutbox.payload).where(
+                PlanningOutbox.scope_id == scope_id,
+                PlanningOutbox.kind == "actual.reviewed",
+            )
+        )
+    }
     latest = {}
     for row in session.scalars(
         select(ActualWorkEvent)
@@ -840,6 +901,8 @@ def workflow_context(
             "revision": row.revision,
             "event_id": row.key,
             "duty": row.payload,
+            # Whether a note exists for the revision listed here (the current one).
+            "reviewed": row.key in reviewed,
         }
     source_query = select(PlanningInput).where(PlanningInput.scope_id == scope_id)
     if input_hash is not None:
@@ -1367,8 +1430,10 @@ def copy_inventory(
     from shift_scheduler.application import copies
 
     access(session, user, scope_id, admin=True, privacy_purpose=True)
-    return copies.inventory(
-        session, scope_id, person_id, datetime.now(ZoneInfo("Asia/Tokyo"))
+    return copies.with_processing(
+        copies.inventory(
+            session, scope_id, person_id, datetime.now(ZoneInfo("Asia/Tokyo"))
+        )
     )
 
 
@@ -1633,20 +1698,11 @@ def outside_declaration(
                 ComplianceEntity.entity_id == item.declaration_id,
             )
         )
-        if (
-            member.role != "ADMIN"
-            and existing
-            and existing.payload.get("status") == "REVIEWED"
-        ):
-            # Hours already confirmed stay in the combined count (Art. 38 is
-            # mandatory; 基発0901第3号 counts the hours as known). Only REVIEWED
-            # declarations are counted, so any change by the person (resubmitting
-            # as SUBMITTED, then withdrawing) would drop them; an administrator
-            # makes the correction, e.g. an earlier end, and reviews it.
-            raise HTTPException(
-                422,
-                "照合済みの申告は本人では変更・取り下げできません。終了日などの訂正は管理者に依頼してください。",
-            )
+        refusal = declaration_change_refusal(
+            member.role, existing.payload.get("status") if existing else None
+        )
+        if refusal:
+            raise HTTPException(422, refusal)
         if item.status == "WITHDRAWN":
             if not existing or existing.person_id != item.person_id:
                 raise HTTPException(422, "取下げ対象の本人申告がありません。")
@@ -1837,19 +1893,28 @@ def flex_adoptions(scope_id: Scope, session: DB, user: User) -> dict[str, Any]:
         "flex_adoption": [],
         "flex_enrollment": [],
     }
-    for row in rows:
-        # A department administrator sees the department's own sites and people only.
-        if not can_manage and (
-            row.person_id not in people
+    # A department administrator sees the department's own sites and people only.
+    shown = [
+        row
+        for row in rows
+        if can_manage
+        or (
+            row.person_id in people
             if row.kind == "flex_enrollment"
-            else row.payload["establishment_id"] not in sites
-        ):
-            continue
+            else row.payload["establishment_id"] in sites
+        )
+    ]
+    # What this viewer may do with each record now, from the checks the steps use.
+    available = flex_adoption.available_actions(
+        session, scope_id, user.user_id, reason, shown
+    )
+    for row in shown:
         listed[row.kind].append(
             {
                 "entity_id": row.entity_id,
                 "revision": row.revision,
                 "payload": row.payload,
+                **available[row.key],
             }
         )
     return {

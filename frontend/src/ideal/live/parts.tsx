@@ -4,7 +4,7 @@ import { useId, useState, type Dispatch, type ReactNode, type SetStateAction } f
 import { problemFrom } from "../api/errors";
 import type { Evidence } from "../api/client";
 import type { ProblemModel } from "../model";
-import { LoadingState, ProblemState, StatusPill } from "../screens/shared";
+import { LoadingState, ProblemState, StatusPill } from "../ui/atoms";
 
 /** The reason and reference every change records (the server requires 3–500 characters). */
 export function EvidenceFields({ value, onChange, legend = "根拠" }: { value: Evidence; onChange: Dispatch<SetStateAction<Evidence>>; legend?: string }) {

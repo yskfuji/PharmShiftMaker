@@ -227,6 +227,40 @@ def request_case(
     return row
 
 
+# The only table of case transitions: decide_case enforces it and the privacy
+# listing shows it (`allowed_next`), so a screen never keeps a copy of its own.
+# Statuses without an entry (REJECTED, RELEASED) are terminal.
+TRANSITIONS: dict[str, tuple[str, ...]] = {
+    "REQUESTED": ("VERIFIED", "REJECTED"),
+    "VERIFIED": ("APPROVED", "REJECTED"),
+    "APPROVED": ("COMPLETED", "RELEASED"),
+    "COMPLETED": ("RELEASED",),
+}
+# Decisions that are refused without an implementation/result reference.
+RESULT_REFERENCE_REQUIRED = frozenset({"COMPLETED"})
+
+
+def next_statuses(status: str) -> tuple[str, ...]:
+    """The statuses a decision may move a case in `status` to (none when terminal)."""
+    return TRANSITIONS.get(status, ())
+
+
+def decision_options(status: str, may_decide: bool) -> dict[str, list[str]]:
+    """What the listing tells one viewer about the next decision of a case.
+
+    `allowed_next` is empty for a viewer who may not decide. The decision also needs
+    verified identity evidence and the current revision; those depend on the request
+    and are answered by decide_case itself.
+    """
+    allowed = list(next_statuses(status)) if may_decide else []
+    return {
+        "allowed_next": allowed,
+        "result_reference_required": [
+            target for target in allowed if target in RESULT_REFERENCE_REQUIRED
+        ],
+    }
+
+
 def decide_case(
     session: Session, case_id: str, scope: str, decision: PrivacyDecision, actor: str
 ) -> PrivacyCase:
@@ -236,17 +270,11 @@ def decide_case(
     row = session.get(PrivacyCase, case_id)
     if not row or row.scope_id != scope:
         raise LookupError("Privacy request not found")
-    transitions = {
-        "REQUESTED": {"VERIFIED", "REJECTED"},
-        "VERIFIED": {"APPROVED", "REJECTED"},
-        "APPROVED": {"COMPLETED", "RELEASED"},
-        "COMPLETED": {"RELEASED"},
-    }
-    if decision.status not in transitions.get(row.status, set()) or not verified(
+    if decision.status not in next_statuses(row.status) or not verified(
         decision.identity_evidence, datetime.now(UTC)
     ):
         raise ValueError("Decision requires verified identity and a valid transition")
-    if decision.status == "COMPLETED" and not decision.result_reference:
+    if decision.status in RESULT_REFERENCE_REQUIRED and not decision.result_reference:
         raise ValueError("Completion requires an implementation/result reference")
     result = session.execute(
         update(PrivacyCase)
@@ -444,6 +472,46 @@ def inventory(
     }
 
 
+def erasable(listing: dict[str, Any]) -> bool:
+    """Whether execute() erases an inventory: only when nothing blocks it.
+
+    The one statement of that rule. execute() enforces it; the preview and the
+    listing of candidates show it, so a screen never decides it from the blockers.
+    """
+    return not listing["blockers"]
+
+
+def erasure_candidates(
+    session: Session, scope: str, at: datetime | None = None
+) -> dict[str, Any]:
+    """Every planning input of the scope with what inventory() says about it now.
+
+    Superseded versions are listed too: only they can ever be erased, and no other
+    read names them. Nothing is recorded; a preview is what creates a plan.
+    """
+    now = at or datetime.now(UTC)
+    rows = session.scalars(
+        select(PlanningInput)
+        .where(PlanningInput.scope_id == scope)
+        .order_by(PlanningInput.input_revision.desc(), PlanningInput.input_hash)
+    ).all()
+    inputs = []
+    for row in rows:
+        listing = inventory(session, scope, row.input_hash, now)
+        inputs.append(
+            {
+                "input_hash": row.input_hash,
+                "input_revision": row.input_revision,
+                "period": row.payload["period"],
+                "registered_at": _json(row.created_at),
+                "erasable": erasable(listing),
+                "blockers": listing["blockers"],
+                "target_count": len(listing["targets"]),
+            }
+        )
+    return {"observed_at": now.isoformat(), "inputs": inputs}
+
+
 def _json(value: Any) -> Any:
     return value.isoformat() if isinstance(value, datetime) else value
 
@@ -510,7 +578,7 @@ def execute(
     current = inventory(
         session, scope, plan.payload["input_hash"], at or datetime.now(UTC)
     )
-    if current["blockers"] or content_hash(current) != fingerprint:
+    if not erasable(current) or content_hash(current) != fingerprint:
         raise Conflict("Erasure targets, rule or legal hold changed; preview again")
     models = {m.__tablename__: m for m in BUNDLE_MODELS}
     for target in current["targets"]:

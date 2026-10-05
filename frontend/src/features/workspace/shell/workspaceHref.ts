@@ -1,0 +1,65 @@
+// The one place a workspace URL is built. A destination is a route of the generated
+// contract (docs/ideal-ui/usecases.json), never a free URL, and what travels with it is
+// display context only: the server validates every selection again and decides the rest.
+import type { WorkspaceRoutePath } from "../generated/usecaseRoutes";
+
+/** What every workspace URL may carry. */
+export type WorkspaceLinkContext = { scope?: string; period?: string; publication?: string; case?: string; person?: string };
+/** What a planning URL may carry besides: the input version and the plans it names. */
+export type PlanSelection = { input?: string; draft?: readonly string[] };
+
+export type PlanRoutePath = Extract<WorkspaceRoutePath, `/workspace/plan/${string}`>;
+
+const CONTEXT_KEYS = ["scope", "period", "publication", "case", "person"] as const;
+// As the server reads them (planSelection.ts, workspaceSelection.ts): a letter or a digit
+// first, so a value is never "." or "..".
+const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$/;
+const PATTERN: Record<(typeof CONTEXT_KEYS)[number], RegExp> = {
+  scope: /^[A-Za-z0-9._:/-]{1,256}$/,
+  period: /^\d{4}-\d{2}$/,
+  publication: IDENTIFIER,
+  case: IDENTIFIER,
+  person: IDENTIFIER,
+};
+const PRIVACY_ROUTE: WorkspaceRoutePath = "/workspace/governance/privacy";
+const PLAN_ROUTES = "/workspace/plan/";
+
+/**
+ * The href of a workspace path with its context. A value that is not well-formed is left
+ * out, never passed on. `inherited` (the context of the URL on screen) fills only what the
+ * caller did not name: a value the caller named and that was refused is not replaced by
+ * another. The privacy-purpose route is never given a publication or a change case.
+ */
+export const workspaceHrefWithContext = (
+  path: string,
+  context: WorkspaceLinkContext & PlanSelection,
+  inherited: WorkspaceLinkContext = {},
+): string => {
+  const query = new URLSearchParams();
+  const privacyPurpose = path === PRIVACY_ROUTE;
+  const carried = (key: (typeof CONTEXT_KEYS)[number]) => !(privacyPurpose && (key === "publication" || key === "case"));
+  for (const key of CONTEXT_KEYS) {
+    const value = context[key];
+    if (carried(key) && value && PATTERN[key].test(value)) query.set(key, value);
+  }
+  for (const key of CONTEXT_KEYS) {
+    const value = inherited[key];
+    if (carried(key) && !context[key] && value && PATTERN[key].test(value)) query.set(key, value);
+  }
+  if (path.startsWith(PLAN_ROUTES)) {
+    if (context.input && IDENTIFIER.test(context.input)) query.set("input", context.input);
+    for (const draft of context.draft ?? []) if (IDENTIFIER.test(draft)) query.append("draft", draft);
+  }
+  return `${path}${query.size ? `?${query}` : ""}`;
+};
+
+/** The context a URL carries, as a link may inherit it. */
+export const contextOfQuery = (query: URLSearchParams): WorkspaceLinkContext =>
+  Object.fromEntries(CONTEXT_KEYS.flatMap((key) => {
+    const value = query.get(key);
+    return value ? [[key, value]] : [];
+  }));
+
+/** True on a workspace URL. Storybook and the tests render the same views elsewhere, and
+ * there a view stays where it is instead of opening another route. */
+export const onWorkspaceRoute = (pathname: string): boolean => pathname.startsWith("/workspace/");

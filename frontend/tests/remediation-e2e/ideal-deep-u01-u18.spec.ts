@@ -1,4 +1,4 @@
-import {expect, test, type Page, type TestInfo} from '@playwright/test';
+import {expect, test, type Page, type Request, type Route, type TestInfo} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {allOptical, textSpacing} from '../visual/lib/optical';
 
@@ -43,6 +43,59 @@ async function openWorkspace(page: Page, route: string, heading: string) {
   expect(response?.status()).toBe(200);
   await expect(page.getByRole('heading', {level: 1, name: heading, exact: true})).toBeVisible();
   await expect(page.getByRole('alert').filter({hasText: /権限|読み込めません/})).toHaveCount(0);
+}
+
+/**
+ * Holds the request with which a workspace route reads itself again after a change, so a
+ * journey can start a navigation while that read is certainly under way, and records where
+ * the browser goes from then on. Both ways of reading again are recognised (a Server
+ * Action, and a router refresh: an RSC read of the current address that is not a
+ * prefetch), so the check does not depend on which one the product uses.
+ *
+ * Why: Firefox and WebKit fail a page's pending requests as soon as a document navigation
+ * starts. A refresh that answers a failed request by navigating to the current address
+ * cancels that navigation and returns the user to the page they were leaving.
+ */
+async function holdRouteRefresh(page: Page) {
+  const leaving = new URL(page.url());
+  let started = () => {};
+  let release = () => {};
+  const inFlight = new Promise<void>((resolve) => { started = resolve; });
+  const released = new Promise<void>((resolve) => { release = resolve; });
+  const readsRouteAgain = (request: Request) => {
+    const url = new URL(request.url());
+    const headers = request.headers();
+    if (url.origin !== leaving.origin || url.pathname !== leaving.pathname) return false;
+    if (request.method() === 'POST') return 'next-action' in headers;
+    return request.method() === 'GET' && headers.rsc === '1' && !Object.keys(headers).some((name) => /^next-router-(segment-)?prefetch$/.test(name));
+  };
+  const handler = async (route: Route) => {
+    if (!readsRouteAgain(route.request())) return route.fallback();
+    started();
+    await released;
+    // The request may be gone together with the page that sent it.
+    await route.continue().catch(() => undefined);
+  };
+  const visited: string[] = [];
+  const onNavigated = (frame: {url(): string}) => { if (frame === page.mainFrame()) visited.push(frame.url()); };
+  const sameAddress = (url: URL) => url.origin === leaving.origin && url.pathname === leaving.pathname;
+  await page.route(sameAddress, handler);
+  page.on('framenavigated', onNavigated);
+  return {
+    /** Settles when the route has asked to be read again; the answer is withheld until `finish`. */
+    inFlight,
+    /** Lets the read go on, and checks that the browser went to the destination and nowhere else. */
+    finish: async (isDestination: (url: URL) => boolean) => {
+      release();
+      await page.unroute(sameAddress, handler);
+      // One more turn of the page, so a navigation started by the released read would show.
+      await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 250))));
+      page.off('framenavigated', onNavigated);
+      expect(visited.length, JSON.stringify(visited)).toBeGreaterThan(0);
+      for (const url of visited) expect(isDestination(new URL(url)), JSON.stringify(visited)).toBe(true);
+      expect(isDestination(new URL(page.url())), page.url()).toBe(true);
+    },
+  };
 }
 
 async function fillEvidence(scope: ReturnType<Page['locator']>, suffix = '') {
@@ -109,6 +162,11 @@ async function submitAbsenceWithoutReplacement(page: Page) {
   const form = await openNewRequest(page);
   await form.getByLabel('勤務').selectOption({index: 1});
   const noReplacement = form.getByRole('radio', {name: /代わりを指定しない/});
+  // The form says that it is checking the candidates, and its answer replaces that line
+  // with a longer one above this choice. A press that falls into that moment lands beside
+  // the choice, which has just moved. Wait, as a person would, until the form has answered.
+  await expect(noReplacement).toBeVisible();
+  await expect(form.getByText('候補を確認しています…')).toHaveCount(0);
   // WebKit can observe the controlled radio as checked between click dispatch and
   // Playwright's check() postcondition.  Verify the user-visible final state instead.
   await noReplacement.click();
@@ -177,19 +235,19 @@ matrix('ideal-deep-u04-stale-input', async (page, info, width) => {
   await signIn(page, 'admin');
   await openWorkspace(page, '/workspace/plan/input', '計画');
   await page.getByText('必要配置・資格要件を確認・編集', {exact: true}).click();
-  const form = page.getByRole('region', {name: '必要配置の専用操作'});
-  await form.getByLabel('編集する対象').selectOption('new');
-  await form.getByRole('combobox', {name: '配置する業務', exact: true}).selectOption({index: 1});
-  await form.getByRole('combobox', {name: '配置する場所', exact: true}).selectOption({index: 1});
-  await form.getByLabel('必須の配置人数').fill('1'); await form.getByLabel('希望する配置人数').fill('1');
-  await form.getByLabel('適用開始（日本時間）').fill('2026-01-05T09:00'); await form.getByLabel('適用終了（日本時間）').fill('2026-01-05T17:00');
-  const sourceReference = form.getByLabel('原本確認の資料名・参照先');
+  await page.getByText('必要配置を登録・変更する', {exact: true}).click();
+  await page.getByLabel('編集する対象').selectOption('new');
+  await page.getByRole('combobox', {name: '配置する業務', exact: true}).selectOption({index: 1});
+  await page.getByRole('combobox', {name: '配置する場所', exact: true}).selectOption({index: 1});
+  await page.getByLabel('必須の配置人数').fill('1'); await page.getByLabel('希望する配置人数').fill('1');
+  await page.getByLabel('適用開始（日本時間）').fill('2026-01-05T09:00'); await page.getByLabel('適用終了（日本時間）').fill('2026-01-05T17:00');
+  const sourceReference = page.getByLabel('原本確認の資料名・参照先');
   const sourceReferenceValue = `SYNTHETIC-U04-${info.project.name}-${width}`;
   await sourceReference.pressSequentially(sourceReferenceValue, {delay: 1});
   await expect(sourceReference).toHaveValue(sourceReferenceValue);
-  await form.getByLabel('原本確認の状態').selectOption('verified');
+  await page.getByLabel('原本確認の状態').selectOption('verified');
   await expect(sourceReference).toHaveValue(sourceReferenceValue);
-  const reviewer = form.getByLabel('原本確認の確認責任者');
+  const reviewer = page.getByLabel('原本確認の確認責任者');
   await expect(reviewer).toBeVisible();
   await reviewer.pressSequentially('synthetic-reviewer', {delay: 1});
   // WebKit can finish the controlled-field commit after fill() resolves. Moving
@@ -199,9 +257,13 @@ matrix('ideal-deep-u04-stale-input', async (page, info, width) => {
   await expect(reviewer).toHaveValue('synthetic-reviewer');
   await expect(sourceReference).toHaveValue(sourceReferenceValue);
   const stored = page.waitForResponse((item) => item.request().method() === 'POST' && /\/planning\/compliance\/records\/demand\?/.test(item.url()));
-  await form.getByRole('button', {name: 'この内容を保存・再送'}).click();
+  // The save is confirmed on its own surface before anything is sent.
+  await page.getByRole('button', {name: '保存内容を確認する'}).click();
+  const confirmation = page.locator('.ideal-confirm');
+  await expect(confirmation).toContainText(`原本確認の資料：（なし） → ${sourceReferenceValue}`);
+  await confirmation.getByRole('button', {name: 'この内容で保存する'}).click();
   expect((await stored).status()).toBe(200);
-  await expect(form.getByText(/記録を保存して再取得しました/)).toBeVisible();
+  await expect(page.getByText(/必要配置を第1版として保存しました/)).toBeVisible();
   await expect(page.getByText('再導出が必要', {exact: true})).toBeVisible();
   const derive = page.getByRole('heading', {name: '契約・資格から勤務候補を再導出'}).locator('..');
   await fillEvidence(derive, '-REDERIVE');
@@ -219,13 +281,27 @@ matrix('ideal-deep-u05-absence', async (page) => {
   await replacement.check();
   await fillEvidence(form, '-ABSENCE-COVER');
   const createdResponse = page.waitForResponse((item) => item.request().method() === 'POST' && /\/planning\/change-cases\?/.test(item.url()));
+  // A navigation that starts while the route is read again after a save wins, in every
+  // engine. First by address: the save is done, its read is under way, the journey leaves.
+  const readAfterCreate = await holdRouteRefresh(page);
   await form.getByRole('button', {name: '申請する'}).click();
   const created = await (await createdResponse).json();
   expect(created.status).toBe('READY');
+  await readAfterCreate.inFlight;
   await openWorkspace(page, `/workspace/operations/cases?case=${created.case_id}`, '当日運用');
+  await readAfterCreate.finish((url) => url.pathname === '/workspace/operations/cases' && url.searchParams.get('case') === created.case_id);
   const detail = page.locator('.ideal-v3-detail');
-  await detail.getByRole('button', {name: '別担当へ承認を依頼'}).click(); await fillEvidence(detail, '-RECOMMEND'); await detail.getByRole('button', {name: '別担当へ承認を依頼'}).click();
+  await detail.getByRole('button', {name: '別担当へ承認を依頼'}).click(); await fillEvidence(detail, '-RECOMMEND');
+  // Then through the page itself: the scope form of the shell is a document navigation.
+  const readAfterRecommend = await holdRouteRefresh(page);
+  await detail.getByRole('button', {name: '別担当へ承認を依頼'}).click();
   await expect(page.getByText('別担当の承認待ちにしました。', {exact: true})).toBeVisible();
+  await readAfterRecommend.inFlight;
+  const scopeChosen = (url: URL) => url.pathname === '/workspace/operations/cases' && url.searchParams.get('scope') === 'hospital/pharmacy' && !url.searchParams.has('case');
+  await page.locator('.ideal-v3-context form').getByRole('button', {name: '表示', exact: true}).click();
+  await page.waitForURL(scopeChosen, {timeout: 20_000});
+  await expect(page.getByRole('heading', {level: 1, name: '当日運用', exact: true})).toBeVisible();
+  await readAfterRecommend.finish(scopeChosen);
   await signOut(page); await signIn(page, 'reviewer');
   await openWorkspace(page, `/workspace/operations/cases?period=2026-01&case=${created.case_id}`, '当日運用');
   const decision = page.locator('.ideal-v3-detail');
@@ -364,17 +440,9 @@ matrix('ideal-deep-u13-audit', async (page) => {
   const text = await timeline.innerText(); expect(text).not.toMatch(/\bp\d+\b/); expect(text).not.toContain('合成職員・長い氏名');
 });
 
-matrix('ideal-deep-u14-failure-retry', async (page) => {
+matrix('ideal-deep-u14-failure-retry', async (page, info, width) => {
   await signIn(page, 'admin'); await openWorkspace(page, '/workspace/settings/absence-consent', '設定');
   const panel = sectionWithHeading(page, '代わりに入る人の同意'); await fillEvidence(panel, '-RETRY');
-  let notificationFailureArmed = false;
-  await page.route('**/planning/notifications?*', async (route) => {
-    if (notificationFailureArmed) {
-      notificationFailureArmed = false;
-      await route.fulfill({status: 503, contentType: 'application/json', body: JSON.stringify({detail: '合成の通知読取り障害'})});
-    }
-    else await route.continue();
-  });
   let attempts = 0; let first = '';
   await page.route('**/scope-settings/absence-consent?*', async (route) => {
     attempts += 1;
@@ -385,13 +453,72 @@ matrix('ideal-deep-u14-failure-retry', async (page) => {
       await route.abort('failed');
     } else {
       expect(route.request().postData()).toBe(first);
-      notificationFailureArmed = true;
+      // The workspace reads notifications on the server, so the browser cannot intercept that
+      // read. The synthetic API fails the next one once (deep-journey fixture only).
+      const armed = await page.request.post(`${API}/__e2e/fail-next-read`, {headers: {Origin: new URL(page.url()).origin}, data: {path: '/planning/notifications'}});
+      expect(armed.status()).toBe(200);
       await route.continue();
     }
   });
   await panel.getByRole('button', {name: '同意を求めるようにする'}).click(); await expect(panel.getByRole('alert')).toContainText(/反映されたかは不明|通信/);
   await panel.getByRole('button', {name: '同意を求めるようにする'}).click(); await expect(panel.getByRole('status')).toContainText('同意を求めるようにしました'); expect(attempts).toBe(2);
   await expect(page.getByRole('status').filter({hasText: '一部の情報を更新できませんでした'})).toContainText('通知（503）');
+  // The request that reads the route again gets no answer (it fails between the browser and
+  // the application). Nothing navigates and nothing is lost, and the page says that what it
+  // shows was not read again, without speaking of a save. That state is audited like the end
+  // of a journey.
+  const partial = page.getByRole('status').filter({hasText: '一部の情報を更新できませんでした'});
+  const stale = page.getByRole('alert').filter({hasText: '最新の内容を読み込めませんでした'});
+  const readAgain = page.getByRole('button', {name: '不足情報を再読込み'});
+  const consentPage = (url: URL) => url.pathname === '/workspace/settings/absence-consent';
+  // The reads of the route, in the order the browser sends them: the first and the third
+  // fail, the second is held and then answered.
+  let reads = 0;
+  let holding = () => {};
+  let release = () => {};
+  const held = new Promise<void>((resolve) => { holding = resolve; });
+  const released = new Promise<void>((resolve) => { release = resolve; });
+  const onRead = async (route: Route) => {
+    if (route.request().method() !== 'POST' || !('next-action' in route.request().headers())) return route.fallback();
+    reads += 1;
+    if (reads !== 2) return route.abort('failed');
+    holding();
+    await released;
+    await route.continue();
+  };
+  await expect(stale).toHaveCount(0);
+  await page.route(consentPage, onRead);
+  await readAgain.click();
+  await expect(stale).toBeInViewport();
+  await expect(stale).toContainText('保存できたかどうかを示すものではありません');
+  expect(reads).toBe(1);
+  await expect(stale.getByRole('button', {name: 'ページを再読込み'})).toBeVisible();
+  await expect(partial).toContainText('通知（503）');
+  expect(consentPage(new URL(page.url()))).toBe(true);
+  await finishAudit(page, info, 'ideal-deep-u14-unanswered-read', width);
+  // Two reads asked for one after the other. The application sends the second only when the
+  // first is answered, and shows the first answer only when the second has settled. The
+  // first is answered (the fault was one read, so nothing is missing any more) and the
+  // second fails: the read now on screen is not the one that was asked for last, and the
+  // page still says so.
+  await readAgain.click();
+  await held;
+  await readAgain.click();
+  expect(reads).toBe(2);
+  await expect(partial).toContainText('通知（503）');
+  release();
+  // The answer of the second read and the sending of the third take a round trip each.
+  await expect.poll(() => reads, {timeout: 15_000}).toBe(3);
+  await expect(partial).toHaveCount(0);
+  await expect(stale).toBeVisible();
+  await page.unroute(consentPage, onRead);
+  // Loading the document does not depend on the request that failed.
+  await stale.getByRole('button', {name: 'ページを再読込み'}).click();
+  await expect(stale).toHaveCount(0);
+  await expect(page.getByRole('heading', {level: 1, name: '設定', exact: true})).toBeVisible();
+  await expect(partial).toHaveCount(0);
+  await expect(stale).toHaveCount(0);
+  expect(reads).toBe(3);
   const conflict = await page.request.post(`${API}/planning/scope-settings/absence-consent${QUERY}`, {headers: {Origin: new URL(page.url()).origin}, data: {enabled: false, expected_version: 0, evidence: {reason: 'stale', reference: 'stale'}, idempotency_key: 'synthetic-stale-u14'}}); expect(conflict.status()).toBe(409);
   const invalid = await page.request.post(`${API}/planning/change-cases${QUERY}`, {headers: {Origin: new URL(page.url()).origin}, data: {}}); expect(invalid.status()).toBe(422);
   await signOut(page);
@@ -406,7 +533,27 @@ matrix('ideal-deep-u15-monthly-schedule', async (page, _info, width) => {
   // The responsive contract switches to the agenda through 1180px; assert the
   // representation the user actually receives instead of treating 768px as desktop.
   if (width <= 1180) await expect(page.getByRole('region', {name: '日別勤務予定'})).toBeVisible(); else await expect(page.getByRole('region', {name: '月間勤務表'})).toBeVisible();
-  await page.getByText('部署の公開版を出力', {exact: false}).click(); await expect(page.getByRole('region', {name: '公開版の登録済み出力'})).toBeVisible();
+  await page.getByText('部署の公開版を出力', {exact: false}).click();
+  const region = page.getByRole('region', {name: '公開版の登録済み出力'}); await expect(region).toBeVisible();
+  // The workspace's own export control against the real API. The response of the first
+  // hand-over is lost after the server answered: the same request is sent again, the server
+  // answers with the same transfer record, and only then is the file saved.
+  let sent = '', transfer = '', attempts = 0;
+  await page.route('**/planning/artifacts/*/download?*', async (route) => {
+    attempts++;
+    if (attempts === 1) { sent = route.request().postData()!; const first = await route.fetch(); expect(first.status()).toBe(200); transfer = first.headers()['x-transfer-id']; await route.abort('failed'); }
+    else { expect(route.request().postData()).toBe(sent); const again = await route.fetch(); expect(again.headers()['x-transfer-id']).toBe(transfer); await route.fulfill({response: again}); }
+  });
+  const save = region.getByRole('button', {name: 'この公開版を出力'});
+  await save.click(); await expect(region.getByRole('status')).toContainText('通信断');
+  const [json] = await Promise.all([page.waitForEvent('download'), save.click()]);
+  await expect(region.getByRole('status')).toContainText(transfer); expect(attempts).toBe(2);
+  expect(json.suggestedFilename()).toMatch(/^schedule-.+\.json$/);
+  await page.unroute('**/planning/artifacts/*/download?*');
+  await region.getByLabel('出力形式').selectOption('csv');
+  const [csv] = await Promise.all([page.waitForEvent('download'), save.click()]);
+  expect(csv.suggestedFilename()).toMatch(/^schedule-.+\.csv$/);
+  await expect(region.getByRole('status')).toContainText('受渡し記録');
 });
 
 matrix('ideal-deep-u16-daily-operations', async (page) => {

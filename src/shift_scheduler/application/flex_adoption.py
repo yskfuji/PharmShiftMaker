@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Callable
 from datetime import UTC, date, datetime, time
 from typing import Any
 
@@ -126,16 +127,135 @@ def _people(session: Session, account: str) -> set[str]:
     return people
 
 
+def _separation_problem(
+    session: Session,
+    registrant: str,
+    actor: str,
+    person: str | None = None,
+    people: Callable[[str], set[str]] | None = None,
+) -> str | None:
+    """Why this account may not confirm what `registrant` registered (None: it may).
+    `people` replaces the lookup of the persons behind an account (a listing asks
+    for the same accounts many times)."""
+    behind = people or (lambda account: _people(session, account))
+    mine = behind(actor)
+    if registrant == actor or mine & behind(registrant):
+        return "登録した管理者本人は確認できません。別の管理者が確認してください。"
+    if person is not None and person in mine:
+        return "自分自身の参加は確認できません。別の管理者が確認してください。"
+    return None
+
+
 def _separate(
     session: Session, registrant: str, actor: str, person: str | None = None
 ) -> None:
-    mine = _people(session, actor)
-    if registrant == actor or mine & _people(session, registrant):
-        raise Refused(
-            "登録した管理者本人は確認できません。別の管理者が確認してください。"
+    problem = _separation_problem(session, registrant, actor, person)
+    if problem:
+        raise Refused(problem)
+
+
+def _midnight(day: date) -> datetime:
+    return datetime.combine(day, time(), JST)
+
+
+def enrollment_starts(adoption: FlexAdoption, at: datetime) -> list[date]:
+    """The days on which a new enrolment may start: the settlement period starts
+    within the adoption that are still ahead at `at`."""
+    return sorted(
+        day
+        for day in settlement_starts(adoption)
+        if at < _midnight(day) and adoption.start <= _midnight(day) < adoption.end
+    )
+
+
+def end_dates(adoption: FlexAdoption, at: datetime) -> list[date]:
+    """The days on which a started adoption may end: the settlement period starts
+    after its own start that are still ahead at `at` and before its end."""
+    return sorted(
+        day
+        for day in settlement_starts(adoption)
+        if at < _midnight(day) < adoption.end and adoption.start < _midnight(day)
+    )
+
+
+def _confirm_blocking(adoption: FlexAdoption, at: datetime) -> list[str]:
+    """What stops the confirmation of an adoption, whoever confirms it."""
+    blocking = []
+    if adoption.status != "registered":
+        blocking.append("確認できるのは、登録済みで確認待ちの採用だけです。")
+    if adoption.start <= at:
+        blocking.append(
+            "開始日が過ぎています。将来の清算期間の初日から採用してください。"
         )
-    if person is not None and person in mine:
-        raise Refused("自分自身の参加は確認できません。別の管理者が確認してください。")
+    for name, evidence in (
+        ("就業規則の規定", adoption.work_rules_evidence),
+        ("労使協定", adoption.agreement_evidence),
+        *((("協定の届出", adoption.filing.evidence),) if adoption.filing else ()),
+    ):
+        if evidence.status != "verified":
+            blocking.append(f"{name}の根拠が確認済みではありません。")
+    if (
+        adoption.filing
+        and adoption.filing.filed_on > adoption.start.astimezone(service.JST).date()
+    ):
+        blocking.append("協定の届出日が開始日より後です。")
+    return blocking
+
+
+def _enrollment_confirm_problem(
+    enrollment: FlexEnrollment, adoption: FlexAdoption, at: datetime
+) -> str | None:
+    if enrollment.status != "registered" or adoption.status != "confirmed":
+        return "確認できるのは、確認済みの採用に属する確認待ちの参加だけです。"
+    if enrollment.start <= at:
+        return "参加の開始日が過ぎています。将来の清算期間の初日から参加してください。"
+    return None
+
+
+def _withdraw_problem(kind: str, payload: dict[str, Any], at: datetime) -> str | None:
+    if payload.get("status") == "withdrawn":
+        return "すでに取り下げられています。"
+    if (
+        payload.get("status") == "confirmed"
+        and datetime.fromisoformat(payload["start"]) <= at
+    ):
+        return (
+            "開始後は取り下げられません。採用は、将来の清算期間の初日で終了してください。"
+            "本人を外すときは、清算期間の初日から通常の雇用条件を登録してください。"
+            if kind == "flex_adoption"
+            else "開始後の参加は取り下げられません。本人を外すときは、清算期間の初日から通常の雇用条件を登録してください。"
+        )
+    return None
+
+
+def _withdrawn(
+    kind: str, payload: dict[str, Any], actor: str, at: datetime, reason: str
+) -> dict[str, Any]:
+    """The record as withdrawn by `actor`; ValueError when that is not a valid record
+    (an adoption already ended early cannot also be withdrawn)."""
+    model = FlexAdoption if kind == "flex_adoption" else FlexEnrollment
+    value = {
+        **payload,
+        "status": "withdrawn",
+        "decided_by": actor,
+        "decided_at": at.isoformat(),
+        "withdrawal_reason": reason,
+    }
+    return model.model_validate(value).model_dump(mode="json")
+
+
+def _end_problem(adoption: FlexAdoption, at: datetime) -> str | None:
+    if adoption.status != "confirmed" or adoption.end_reason is not None:
+        return "終了できるのは、確認済みで終了日を定めていない採用だけです。"
+    if adoption.start > at:
+        return "開始前の採用は、終了ではなく取り下げてください。"
+    return None
+
+
+def _enrollment_problem(adoption: FlexAdoption) -> str | None:
+    if adoption.status == "withdrawn":
+        return "取り下げた採用には参加を登録できません。"
+    return None
 
 
 def _open_spans(
@@ -172,16 +292,27 @@ def _registration(payload: dict[str, Any], actor: str) -> dict[str, Any]:
     }
 
 
-def _department(session: Session, scope: str) -> dict[str, Any]:
-    """The department's latest input with its administrative records applied."""
-    row = session.scalar(
+def _department_problem(row: PlanningInput | None) -> str | None:
+    if row is None:
+        return "部署の勤務計画の入力がありません。先に入力を登録してください。"
+    return None
+
+
+def _latest_input(session: Session, scope: str) -> PlanningInput | None:
+    return session.scalar(
         select(PlanningInput)
         .where(PlanningInput.scope_id == scope)
         .order_by(PlanningInput.input_revision.desc())
         .limit(1)
     )
-    if row is None:
-        raise Blocked("部署の勤務計画の入力がありません。先に入力を登録してください。")
+
+
+def _department(session: Session, scope: str) -> dict[str, Any]:
+    """The department's latest input with its administrative records applied."""
+    row = _latest_input(session, scope)
+    problem = _department_problem(row)
+    if row is None or problem:
+        raise Blocked(problem)
     return service.overlay(session, scope, row.payload)
 
 
@@ -225,17 +356,20 @@ def register_enrollment(
     adoption = FlexAdoption.model_validate(
         _row(session, scope, "flex_adoption", value.adoption_id).payload
     )
-    if value.start <= now():
+    at = now()
+    if value.start <= at:
         raise Blocked("参加は、将来の清算期間の初日から始めてください。")
     if value.person_id not in {
         p["person_id"] for p in _department(session, scope)["people"]
     }:
         raise Blocked("この部署の職員だけを参加者として登録できます。")
-    if adoption.status == "withdrawn":
-        raise Blocked("取り下げた採用には参加を登録できません。")
-    if not adoption.start <= value.start < adoption.end or value.start.astimezone(
-        service.JST
-    ).date() not in settlement_starts(adoption):
+    closed = _enrollment_problem(adoption)
+    if closed:
+        raise Blocked(closed)
+    # An enrolment starts at midnight Japan time (FlexEnrollment), so its day decides.
+    if value.start.astimezone(service.JST).date() not in enrollment_starts(
+        adoption, at
+    ):
         raise Blocked("参加の開始は、採用期間内の清算期間の初日にしてください。")
     if any(
         r.entity_id == value.enrollment_id
@@ -298,25 +432,7 @@ def impact(session: Session, scope: str, adoption_id: str) -> dict[str, Any]:
                         "start": duty["start"],
                     }
                 )
-    blocking = []
-    if adoption.status != "registered":
-        blocking.append("確認できるのは、登録済みで確認待ちの採用だけです。")
-    if adoption.start <= now():
-        blocking.append(
-            "開始日が過ぎています。将来の清算期間の初日から採用してください。"
-        )
-    for name, evidence in (
-        ("就業規則の規定", adoption.work_rules_evidence),
-        ("労使協定", adoption.agreement_evidence),
-        *((("協定の届出", adoption.filing.evidence),) if adoption.filing else ()),
-    ):
-        if evidence.status != "verified":
-            blocking.append(f"{name}の根拠が確認済みではありません。")
-    if (
-        adoption.filing
-        and adoption.filing.filed_on > adoption.start.astimezone(service.JST).date()
-    ):
-        blocking.append("協定の届出日が開始日より後です。")
+    blocking = _confirm_blocking(adoption, now())
     body = {
         "adoption_id": adoption_id,
         "status": adoption.status,
@@ -431,12 +547,9 @@ def confirm_enrollment(
     adoption = FlexAdoption.model_validate(
         _row(session, scope, "flex_adoption", enrollment.adoption_id).payload
     )
-    if enrollment.status != "registered" or adoption.status != "confirmed":
-        raise Blocked("確認できるのは、確認済みの採用に属する確認待ちの参加だけです。")
-    if enrollment.start <= now():
-        raise Blocked(
-            "参加の開始日が過ぎています。将来の清算期間の初日から参加してください。"
-        )
+    problem = _enrollment_confirm_problem(enrollment, adoption, now())
+    if problem:
+        raise Blocked(problem)
     value = {
         **row.payload,
         "status": "confirmed",
@@ -467,34 +580,17 @@ def withdraw(
     A confirmed record only before its start: a started settlement period is not
     undone afterwards (an adoption is ended at a later settlement period start
     instead). An unconfirmed record never took effect and can always be withdrawn."""
-    model = FlexAdoption if kind == "flex_adoption" else FlexEnrollment
     row = _row(session, scope, kind, identity)
     if row.revision != expected:
         raise Conflict("記録が更新されました。確認し直してください。")
-    if row.payload.get("status") == "withdrawn":
-        raise Blocked("すでに取り下げられています。")
-    if (
-        row.payload.get("status") == "confirmed"
-        and datetime.fromisoformat(row.payload["start"]) <= now()
-    ):
-        raise Blocked(
-            "開始後は取り下げられません。採用は、将来の清算期間の初日で終了してください。"
-            "本人を外すときは、清算期間の初日から通常の雇用条件を登録してください。"
-            if kind == "flex_adoption"
-            else "開始後の参加は取り下げられません。本人を外すときは、清算期間の初日から通常の雇用条件を登録してください。"
-        )
-    value = {
-        **row.payload,
-        "status": "withdrawn",
-        "decided_by": actor,
-        "decided_at": now().isoformat(),
-        "withdrawal_reason": reason,
-    }
+    problem = _withdraw_problem(kind, row.payload, now())
+    if problem:
+        raise Blocked(problem)
     saved = service.save_entity(
         session,
         scope,
         kind,
-        model.model_validate(value).model_dump(mode="json"),
+        _withdrawn(kind, row.payload, actor, now(), reason),
         expected,
         actor,
     )
@@ -516,16 +612,12 @@ def end_adoption(
     if row.revision != expected:
         raise Conflict("採用の記録が更新されました。確認し直してください。")
     adoption = FlexAdoption.model_validate(row.payload)
-    end = datetime.combine(end_on, time(), JST)
-    if adoption.status != "confirmed" or adoption.end_reason is not None:
-        raise Blocked("終了できるのは、確認済みで終了日を定めていない採用だけです。")
-    if adoption.start > now():
-        raise Blocked("開始前の採用は、終了ではなく取り下げてください。")
-    if not (
-        now() < end < adoption.end
-        and adoption.start < end
-        and end_on in settlement_starts(adoption)
-    ):
+    end = _midnight(end_on)
+    at = now()
+    problem = _end_problem(adoption, at)
+    if problem:
+        raise Blocked(problem)
+    if end_on not in end_dates(adoption, at):
         raise Blocked("終了日は、採用期間内の将来の清算期間の初日にしてください。")
     stamp = now().isoformat()
     value = {
@@ -572,6 +664,143 @@ def end_adoption(
         "end": end.isoformat(),
         "withdrawn_enrollments": sorted(withdrawn),
     }
+
+
+NO_ENROLLMENT_START = "参加を開始できる将来の清算期間の初日がありません。"
+NO_END_DATE = "終了日にできる将来の清算期間の初日がありません。"
+UNREADABLE = "記録の内容を確認できないため、この操作はできません。"
+NOT_WITHDRAWABLE = "この記録は、現在の状態では取り下げられません。"
+
+
+def _action(problem: str | None) -> dict[str, Any]:
+    return {"allowed": problem is None, "refusal": problem}
+
+
+def available_actions(
+    session: Session,
+    scope: str,
+    actor: str,
+    manage_refusal: str | None,
+    rows: list[ComplianceEntity],
+) -> dict[str, dict[str, Any]]:
+    """For each listed adoption and enrolment (by row key): what this account may do
+    now, and the days it may choose.
+
+    Every answer comes from the function the corresponding step itself calls
+    (_separation_problem, _confirm_blocking, _enrollment_confirm_problem,
+    _withdraw_problem, _withdrawn, _end_problem, _department_problem,
+    _enrollment_problem, enrollment_starts, end_dates), so the listing cannot drift
+    from what a step accepts. `refusal` is
+    the first reason in the order the step checks. `manage_refusal` is the reason
+    the account is not a facility administrator (None when it is): every step
+    refuses such an account first.
+
+    Not answered here, because it depends on the request: the revision and impact
+    the confirmer saw (409), the idempotency key (409), and for a new enrolment the
+    chosen person (a member of this department without an overlapping enrolment,
+    422) and a free identifier (409).
+    """
+    at = now()
+    known: dict[str, set[str]] = {}
+
+    def behind(account: str) -> set[str]:
+        if account not in known:
+            known[account] = _people(session, account)
+        return known[account]
+
+    def first(*problems: str | None) -> dict[str, Any]:
+        return _action(next((p for p in (manage_refusal, *problems) if p), None))
+
+    def withdrawal(row: ComplianceEntity) -> dict[str, Any]:
+        try:  # the record the step would save must itself be valid
+            _withdrawn(row.kind, row.payload, actor, at, "-")
+            invalid = None
+        except ValueError:
+            invalid = NOT_WITHDRAWABLE
+        return first(_withdraw_problem(row.kind, row.payload, at), invalid)
+
+    # A new enrolment needs the department's people (register_enrollment).
+    no_department = _department_problem(_latest_input(session, scope))
+    adoptions: dict[str, FlexAdoption] = {}
+    for row in _rows(session, scope, "flex_adoption"):
+        try:
+            adoptions[row.entity_id] = FlexAdoption.model_validate(row.payload)
+        except ValueError:  # the steps refuse a record they cannot read
+            continue
+    described: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if row.kind == "flex_adoption":
+            adoption = adoptions.get(row.entity_id)
+            if adoption is None:
+                described[row.key] = {
+                    "settlement_starts": {"participant_start": [], "end_on": []},
+                    "actions": {
+                        name: first(UNREADABLE)
+                        for name in ("confirm", "withdraw", "end", "add_participant")
+                    },
+                }
+                continue
+            starts = enrollment_starts(adoption, at)
+            ends = end_dates(adoption, at)
+            actions = {
+                "confirm": first(
+                    _separation_problem(
+                        session, adoption.created_by, actor, people=behind
+                    ),
+                    " ".join(_confirm_blocking(adoption, at)),
+                ),
+                "withdraw": withdrawal(row),
+                "end": first(_end_problem(adoption, at), None if ends else NO_END_DATE),
+                "add_participant": first(
+                    no_department,
+                    _enrollment_problem(adoption),
+                    None if starts else NO_ENROLLMENT_START,
+                ),
+            }
+            described[row.key] = {
+                # The days a step would accept from this account now (Japan time);
+                # empty whenever the step itself is not allowed.
+                "settlement_starts": {
+                    "participant_start": [
+                        day.isoformat()
+                        for day in starts
+                        if actions["add_participant"]["allowed"]
+                    ],
+                    "end_on": [
+                        day.isoformat() for day in ends if actions["end"]["allowed"]
+                    ],
+                },
+                "actions": actions,
+            }
+            continue
+        try:
+            enrollment = FlexEnrollment.model_validate(row.payload)
+        except ValueError:
+            described[row.key] = {
+                "actions": {name: first(UNREADABLE) for name in ("confirm", "withdraw")}
+            }
+            continue
+        owner = adoptions.get(enrollment.adoption_id)
+        described[row.key] = {
+            "actions": {
+                "confirm": first(
+                    _separation_problem(
+                        session,
+                        enrollment.created_by,
+                        actor,
+                        row.person_id,
+                        people=behind,
+                    ),
+                    (
+                        _enrollment_confirm_problem(enrollment, owner, at)
+                        if owner
+                        else UNREADABLE  # the step needs the adoption's record
+                    ),
+                ),
+                "withdraw": withdrawal(row),
+            }
+        }
+    return described
 
 
 def employment_flex_problem(

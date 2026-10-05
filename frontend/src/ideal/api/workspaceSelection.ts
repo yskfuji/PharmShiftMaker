@@ -9,24 +9,32 @@ export class WorkspaceSelectionError extends Error {
 }
 
 const PERIOD = /^\d{4}-(0[1-9]|1[0-2])$/;
-const PUBLICATION_ID = /^[A-Za-z0-9._:-]{1,256}$/;
+// An identifier of the URL (publication, case, person). The first character is a letter or
+// a digit, so a value is never "." or ".." (nor any run of dots): interpolated into a
+// request path, those would name another path. The backend does not restrict the characters
+// of a person_id, so an identifier that begins with "_", "-", "." or ":" cannot be selected
+// through the URL (a known limit, stated in docs/ideal-ui/verification.md).
+const PUBLICATION_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$/;
 
 type PersonInput = { snapshot: { people: { person_id: string; name: string }[] } };
 type PersonRecord = { kind: string; entity_id: string; payload: Record<string, unknown> };
 
 /** Merge newest-first planning inputs, then let the contract person record supply the current name. */
 export function scopePersonNames(inputs: PersonInput[], records: PersonRecord[]): Record<string, string> {
-  const names: Record<string, string> = {};
+  // Collected in a Map: an identifier is the API's text and may be `__proto__` or
+  // `constructor`, which must stay a key and never reach what objects inherit. The object
+  // returned has each identifier as its own property; read it with an own-key check.
+  const names = new Map<string, string>();
   for (const input of inputs) {
     for (const person of input.snapshot.people) {
-      if (!Object.hasOwn(names, person.person_id)) names[person.person_id] = person.name;
+      if (!names.has(person.person_id)) names.set(person.person_id, person.name);
     }
   }
   for (const record of records) {
     if (record.kind !== "person") continue;
-    names[record.entity_id] = typeof record.payload.name === "string" ? record.payload.name : record.entity_id;
+    names.set(record.entity_id, typeof record.payload.name === "string" ? record.payload.name : record.entity_id);
   }
-  return names;
+  return Object.fromEntries(names);
 }
 
 export function monthInTokyo(now: Date): string {
