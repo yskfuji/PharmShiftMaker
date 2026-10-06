@@ -1065,15 +1065,23 @@
       "version": "1.11.1"
     },
     {
-      "author": null,
+      "author": "toyobayashi",
       "ecosystem": "npm",
-      "installed": false,
+      "installed": true,
       "license": "MIT",
-      "license_files": [],
-      "license_text_basis": "not installed",
+      "license_files": [
+        {
+          "sha256": "2088f55c6731498410b20c95ebd345ed4a4a800bf74c0fba4d282fd2a021daaa",
+          "source": "LICENSE"
+        }
+      ],
+      "license_text_basis": "installed distribution",
       "location": "node_modules/@emnapi/runtime",
       "name": "@emnapi/runtime",
-      "repository": null,
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/toyobayashi/emnapi.git"
+      },
       "version": "1.11.3"
     },
     {
@@ -1816,7 +1824,7 @@
         "type": "git",
         "url": "git+https://github.com/lovell/sharp.git"
       },
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -1828,7 +1836,7 @@
       "location": "node_modules/@img/sharp-darwin-x64",
       "name": "@img/sharp-darwin-x64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -1840,7 +1848,7 @@
       "location": "node_modules/@img/sharp-freebsd-wasm32",
       "name": "@img/sharp-freebsd-wasm32",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": "Lovell Fuller <npm@lovell.info>",
@@ -1861,7 +1869,7 @@
         "type": "git",
         "url": "git+https://github.com/lovell/sharp-libvips.git"
       },
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1873,7 +1881,7 @@
       "location": "node_modules/@img/sharp-libvips-darwin-x64",
       "name": "@img/sharp-libvips-darwin-x64",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1885,7 +1893,7 @@
       "location": "node_modules/@img/sharp-libvips-linux-arm",
       "name": "@img/sharp-libvips-linux-arm",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1897,7 +1905,7 @@
       "location": "node_modules/@img/sharp-libvips-linux-arm64",
       "name": "@img/sharp-libvips-linux-arm64",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1909,7 +1917,7 @@
       "location": "node_modules/@img/sharp-libvips-linux-ppc64",
       "name": "@img/sharp-libvips-linux-ppc64",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1921,7 +1929,7 @@
       "location": "node_modules/@img/sharp-libvips-linux-riscv64",
       "name": "@img/sharp-libvips-linux-riscv64",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1933,7 +1941,7 @@
       "location": "node_modules/@img/sharp-libvips-linux-s390x",
       "name": "@img/sharp-libvips-linux-s390x",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1945,7 +1953,7 @@
       "location": "node_modules/@img/sharp-libvips-linux-x64",
       "name": "@img/sharp-libvips-linux-x64",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1957,7 +1965,7 @@
       "location": "node_modules/@img/sharp-libvips-linuxmusl-arm64",
       "name": "@img/sharp-libvips-linuxmusl-arm64",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1969,7 +1977,7 @@
       "location": "node_modules/@img/sharp-libvips-linuxmusl-x64",
       "name": "@img/sharp-libvips-linuxmusl-x64",
       "repository": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "author": null,
@@ -1981,7 +1989,7 @@
       "location": "node_modules/@img/sharp-linux-arm",
       "name": "@img/sharp-linux-arm",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -1993,7 +2001,7 @@
       "location": "node_modules/@img/sharp-linux-arm64",
       "name": "@img/sharp-linux-arm64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2005,7 +2013,7 @@
       "location": "node_modules/@img/sharp-linux-ppc64",
       "name": "@img/sharp-linux-ppc64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2017,7 +2025,7 @@
       "location": "node_modules/@img/sharp-linux-riscv64",
       "name": "@img/sharp-linux-riscv64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2029,7 +2037,7 @@
       "location": "node_modules/@img/sharp-linux-s390x",
       "name": "@img/sharp-linux-s390x",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2041,7 +2049,7 @@
       "location": "node_modules/@img/sharp-linux-x64",
       "name": "@img/sharp-linux-x64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2053,7 +2061,7 @@
       "location": "node_modules/@img/sharp-linuxmusl-arm64",
       "name": "@img/sharp-linuxmusl-arm64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2065,7 +2073,7 @@
       "location": "node_modules/@img/sharp-linuxmusl-x64",
       "name": "@img/sharp-linuxmusl-x64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": "Lovell Fuller <npm@lovell.info>",
@@ -2086,7 +2094,7 @@
         "type": "git",
         "url": "git+https://github.com/lovell/sharp.git"
       },
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2098,7 +2106,7 @@
       "location": "node_modules/@img/sharp-webcontainers-wasm32",
       "name": "@img/sharp-webcontainers-wasm32",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2110,7 +2118,7 @@
       "location": "node_modules/@img/sharp-win32-arm64",
       "name": "@img/sharp-win32-arm64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2122,7 +2130,7 @@
       "location": "node_modules/@img/sharp-win32-ia32",
       "name": "@img/sharp-win32-ia32",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": null,
@@ -2134,7 +2142,7 @@
       "location": "node_modules/@img/sharp-win32-x64",
       "name": "@img/sharp-win32-x64",
       "repository": null,
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": "Ben Coe <ben@npmjs.com>",
@@ -6623,7 +6631,7 @@
         "type": "git",
         "url": "git+https://github.com/istanbuljs/babel-plugin-istanbul.git"
       },
-      "version": "8.0.0"
+      "version": "8.0.2"
     },
     {
       "author": null,
@@ -15574,7 +15582,7 @@
         "type": "git",
         "url": "git+https://github.com/lovell/sharp.git"
       },
-      "version": "0.35.4"
+      "version": "0.35.5"
     },
     {
       "author": {
@@ -15814,7 +15822,7 @@
       "location": "node_modules/source-map-js",
       "name": "source-map-js",
       "repository": "7rulnik/source-map-js",
-      "version": "1.2.1"
+      "version": "1.2.2"
     },
     {
       "author": "Alexandru Marasteanu <hello@alexei.ro> (http://alexei.ro/)",
@@ -18485,7 +18493,7 @@
     }
   ],
   "sources": {
-    "frontend/package-lock.json": "e8aa95852a7de859b0c2aa5aa2e2e0a4f6d0c589dab1b609846f2a5375658811",
+    "frontend/package-lock.json": "c12e8512676576dc0d51ef78eb1208a690a3cc4d9444e918054e21d4e96b90f4",
     "requirements.lock": "f892a5b48ab78b8b5cfb4dde067b71a9b904ef6ae661484587621d1486524da8"
   },
   "unresolved": [],
