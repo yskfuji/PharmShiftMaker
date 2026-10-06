@@ -67,10 +67,10 @@ const NOTHING_YET: Record<string, (role: IdealRole) => string[]> = {
     : ["あなたの請求はありません。", "判断の記録はありません。"]),
   "home/index": (role) => role === "PHARMACIST"
     ? ["予定されている勤務はありません", "公開版 v12 にあなたの勤務はありません", "あなたに同意を求めている申請はありません。"]
-    : ["本日の予定勤務0件", "判断待ち0件", "最近変わったこと0件"],
+    : ["本日の予定勤務0件", "今日の勤務に関わるケース0件", "欠勤・交換の記録 0件"],
   "operations/cases": () => ["いま対応が必要なケースはありません。", "公開版 v12 に、申請できる勤務はありません。"],
   "operations/today": () => ["本日の予定勤務はありません。"],
-  "people/contracts": () => ["登録されている職員はいません。", "登録されている契約はありません。", "サーバーの検証で、編集中の記録に不整合は見つかっていません。"],
+  "people/contracts": () => ["登録されている職員はいません。", "登録されている契約はありません。", "システムによる検証で、編集中の記録に不整合は見つかっていません。"],
   "people/directory": () => ["表示できる職員はいません。"],
   "people/lifecycle": () => ["進行中の手続きはありません。"],
   "people/memberships": () => ["紐付けはありません。"],
@@ -89,10 +89,10 @@ const NOTHING_YET: Record<string, (role: IdealRole) => string[]> = {
 /** Routes that show one state or one setting and no list: there is no "nothing yet" for
  * them, and the same content is shown. The text proves the route itself is rendered. */
 const WITHOUT_A_LIST: Record<string, string> = {
-  "governance/recovery": "復旧後の照合",
+  "governance/recovery": "バックアップからの復元",
   "plan/generate": "同じ前提から3案を作成",
   "settings/absence-consent": "代わりに入る人の同意",
-  "settings/appearance": "外観と動き",
+  "settings/appearance": "配色",
 };
 
 test("every route of the registry says what it shows when there is nothing yet", () => {
@@ -135,9 +135,21 @@ test("a pharmacist is answered as the API answers one: own duties and own name o
   const publications = await pharmacist<Array<{ assignments: Duty[] }>>("/publications?scope_id=x");
   expect(publications[0].assignments.map((duty) => duty.person_id)).toEqual([own]);
   expect((await leader<Array<{ assignments: Duty[] }>>("/publications?scope_id=x"))[0].assignments).toHaveLength(2);
-  const calendar = await pharmacist<{ visibility: string; assignments: Duty[] }>("/schedule-calendar?scope_id=x");
-  expect([calendar.visibility, calendar.assignments.map((duty) => duty.person_id)]).toEqual(["self", [own]]);
-  expect((await leader<{ visibility: string; assignments: Duty[] }>("/schedule-calendar?scope_id=x")).visibility).toBe("department");
+  // The calendar: own duties, the changes among them, and no export of the department's publication.
+  type Calendar = { visibility: string; assignments: Duty[]; changes: unknown[]; can_export_department: boolean };
+  const calendar = await pharmacist<Calendar>("/schedule-calendar?scope_id=x");
+  expect([calendar.visibility, calendar.assignments.map((duty) => duty.person_id), calendar.changes, calendar.can_export_department]).toEqual(["self", [own], [], false]);
+  const whole = await leader<Calendar>("/schedule-calendar?scope_id=x");
+  expect([whole.visibility, whole.assignments.length, whole.changes.length, whole.can_export_department]).toEqual(["department", 2, 1, true]);
+  // Who changed the absence consent is for administrators only, and is an account, not a role.
+  type Settings = { absence_replacement_consent: { history: Array<{ actor: string }> | null } };
+  expect((await pharmacist<Settings>("/scope-settings?scope_id=x")).absence_replacement_consent.history).toBeNull();
+  expect((await leader<Settings>("/scope-settings?scope_id=x")).absence_replacement_consent.history).toBeNull();
+  expect((await syntheticRequest(false, "ADMIN")<Settings>("/scope-settings?scope_id=x")).absence_replacement_consent.history?.map((item) => item.actor)).toEqual(["synthetic-admin"]);
+  // The account links are the active ones unless the inactive ones are asked for.
+  type Link = { person_id: string; active: boolean };
+  expect((await leader<Link[]>("/memberships?scope_id=x&include_inactive=false")).map((link) => link.active)).toEqual([true, true, true]);
+  expect((await leader<Link[]>("/memberships?scope_id=x&include_inactive=true")).filter((link) => !link.active).map((link) => link.person_id)).toEqual(["synthetic-leader"]);
   const daily = await pharmacist<{ visibility: string; scheduled_assignments: Duty[] }>("/daily-operations?scope_id=x");
   expect([daily.visibility, daily.scheduled_assignments.map((duty) => duty.person_id)]).toEqual(["self", [own]]);
   const privacy = await pharmacist<{ people: Duty[] }>("/compliance/privacy?scope_id=x");
@@ -167,6 +179,8 @@ test("a pharmacist's schedule in the showcase names nobody else", async () => {
   const main = within(await screen.findByRole("main"));
   expect(await main.findByText(/自分の公開勤務 1件/)).toBeInTheDocument();
   expect(main.queryByText(/鈴木 悠斗|佐藤 美咲|synthetic-leader|相手の職員/)).toBeNull();
+  // The department's export is not offered to a pharmacist, as the API says.
+  expect(main.queryByText("部署の公開版を出力")).toBeNull();
   // With data the shell counts the one unread notification the routes are given.
   expect(screen.getAllByRole("link", { name: "通知 （未確認1件）" }).length).toBeGreaterThan(0);
 });

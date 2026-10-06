@@ -10,12 +10,22 @@ import { LiveProvider, liveFrom } from "../../../shell/WorkspaceRuntime";
 import CognitiveWorkspaceShowcase from "../../../showcase/CognitiveWorkspaceShowcase";
 import { syntheticContext } from "../../../showcase/synthetic/context";
 import type { RosterContext } from "../../api";
+import ImpactList from "../editors/ImpactList";
 import { rosterOf, type Roster } from "../model";
 import route from "../route";
 import * as B from "../__fixtures__/bodies";
 import * as F from "../__fixtures__/context";
+import { TYPED, shownTimes, unmarked } from "../../../shared/__fixtures__/typed";
 
 jest.mock("next/link", () => ({ __esModule: true, default: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => <a href={href} {...rest}>{children}</a> }));
+
+// The forms of this route are the largest of the workspace: one test fills up to forty
+// fields, each found by its label or role in the whole document, and takes one to two
+// seconds on an idle machine (the longest are "a new contract" and "a new flextime
+// employment"). On a machine busy with other runs that came close to Jest's five seconds
+// for one test, and three runs failed there. Nothing in these tests waits or retries: the
+// budget is the only thing that is widened.
+jest.setTimeout(30_000);
 
 beforeEach(() => { Object.defineProperty(global.crypto, "randomUUID", { configurable: true, value: jest.fn(() => F.UUID) }); });
 afterEach(() => jest.restoreAllMocks());
@@ -72,6 +82,7 @@ const gets = (calls: Call[]) => calls.filter((call) => call.method === "GET").ma
 const sent = (calls: Call[], index = 0) => { const { idempotency_key: key, ...body } = posts(calls)[index].body as Record<string, unknown>; expect(key).toEqual(expect.any(String)); return { path: posts(calls)[index].path.split("?")[0], body }; };
 const panel = (name: string) => screen.getByRole("heading", { level: 2, name }).closest("section")!;
 const rows = (name: string) => within(screen.getByRole("region", { name })).getAllByRole("row").slice(1).map((row) => row.textContent);
+const counts = (name: string) => Array.from(screen.getByLabelText(name).querySelectorAll(":scope > div")).map((line) => line.textContent);
 const stepItems = () => within(screen.getByRole("list", { name: "新しい職員を追加する手順" })).getAllByRole("listitem");
 /** Each step as its title and what it says of its record. */
 const steps = () => stepItems().map((item) => `${item.querySelector("strong")!.textContent}：${item.querySelector(".ideal-pill")!.textContent}`);
@@ -118,33 +129,45 @@ test("each staged value carries the revision of its saved record; a qualificatio
 test("first the current state, the next step and the history; no form is open and nothing is read", async () => {
   const { calls, view } = await mount();
   expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual(["記録の状態と次の操作", "現在の状態", "次の操作", "履歴"]);
-  expect(within(panel("現在の状態")).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(["サーバーの検証結果", "職員ごとの記録", "契約と適用期間", "施設の記録", "規則・協定・判断"]);
+  expect(within(panel("現在の状態")).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(["記録の検証結果", "職員ごとの記録", "契約と適用期間", "施設の記録", "規則・協定・判断"]);
   expect(within(panel("次の操作")).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(["新しい職員を追加する手順", "職員の記録を登録・改定する", "施設の記録を登録・変更する", "規則・協定・判断を登録・変更する"]);
-  expect(screen.getByText("サーバーの検証で不整合なし")).toBeInTheDocument();
-  expect(panel("現在の状態")).toHaveTextContent("サーバーの検証で、編集中の記録に不整合は見つかっていません。");
+  expect(screen.getByText("記録の検証：不整合なし")).toBeInTheDocument();
+  expect(panel("現在の状態")).toHaveTextContent("システムによる検証で、編集中の記録に不整合は見つかっていません。");
   // The contract overview: each contract with its regime and the state of each piece of evidence, as registered.
   expect(within(screen.getByRole("region", { name: "この部署の契約の一覧" })).getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual(["職員", "雇用", "勤務区分", "制度", "適用期間（日本時間）", "原本確認", "制度の根拠", "版"]);
   expect(rows("この部署の契約の一覧")).toEqual(["合成 一直接雇用常勤一般制2026-01-01 00:00 〜 2028-01-01 00:00確認済み未確認第2版"]);
   expect(rows("登録されている雇用主")).toEqual(["合成病院確認済み第1版", "合成診療所確認済み第1版"]);
   expect(rows("登録されている事業場")).toEqual(["合成病院2026-01-01 00:00 〜 2029-01-01 00:00確認済み第1版", "合成診療所2026-01-01 00:00 〜 2029-01-01 00:00確認済み第1版"]);
   // Names are shown; the identifiers stay available, folded away.
-  expect(within(screen.getByText("雇用主・事業場の識別情報").closest("details")!).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+  expect(Array.from(screen.getByText("雇用主・事業場の識別情報").closest("details")!.querySelectorAll(".ideal-v3-identifiers > div")).map((item) => item.textContent)).toEqual([
     "雇用主（合成病院）：hospital", "雇用主（合成診療所）：clinic", "事業場（合成病院の事業場（2026-01-01 00:00 〜 2029-01-01 00:00））：site1", "事業場（合成診療所の事業場（2026-01-01 00:00 〜 2029-01-01 00:00））：site2",
   ]);
   expect(screen.getByText("雇用主・事業場の識別情報").closest("details")!.open).toBe(false);
-  expect(rows("登録されている36協定")).toEqual(["合成病院の事業場（2026-01-01 00:00 〜 2029-01-01 00:00）2026-01-01 00:00 〜 2029-01-01 00:00ない確認済み第1版"]);
+  // A site is named by its employer; its own period is not repeated before the row's period.
+  expect(rows("登録されている36協定")).toEqual(["合成病院の事業場2026-01-01 00:00 〜 2029-01-01 00:00ない確認済み第1版"]);
   expect(rows("登録されている規則の適用確認")).toEqual(["r-2026 合成の条項2026-01-01 00:00 〜 2029-01-01 00:002026-04-01・2027-04-01記録あり確認済み第1版"]);
-  expect(rows("登録されている年間カレンダー")).toEqual(["合成病院の事業場（2026-01-01 00:00 〜 2029-01-01 00:00）2026-04-01 〜 2027-04-011日0件確認済み第1版"]);
+  expect(rows("登録されている年間カレンダー")).toEqual(["合成病院の事業場2026-04-01 〜 2027-04-011日0件確認済み第1版"]);
   for (const text of ["登録されている兼業の管理モデルはありません。", "登録されている公開判断はありません。", "登録されている制度切替の集計条件はありません。", "登録されている帰属の判断はありません。"]) expect(panel("現在の状態")).toHaveTextContent(text);
+  // Each group says how many records of each kind the server returned; the kinds without one are one list, not a heading each.
+  expect(counts("施設の記録の件数")).toEqual(["雇用主2件", "事業場2件", "兼業の管理モデル未登録"]);
+  expect(counts("規則・協定・判断の件数")).toEqual(["36協定1件", "規則の適用確認1件", "改定規則の公開判断未登録", "制度切替の集計条件未登録", "事業場間の時間外の帰属の判断未登録", "1年単位の変形労働時間制のカレンダー1件"]);
+  expect(within(screen.getByRole("list", { name: "施設の記録のうち未登録の項目" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["登録されている兼業の管理モデルはありません。"]);
+  expect(within(screen.getByRole("list", { name: "規則・協定・判断のうち未登録の項目" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["登録されている公開判断はありません。", "登録されている制度切替の集計条件はありません。", "登録されている帰属の判断はありません。"]);
+  expect(within(panel("現在の状態")).getAllByRole("heading", { level: 4 }).map((heading) => heading.textContent)).toEqual(["雇用主", "事業場", "未登録の項目", "36協定", "規則の適用確認", "1年単位の変形労働時間制のカレンダー", "未登録の項目"]);
+  // The tables of a group are in one reveal, closed at first; the contract overview is not in one.
+  expect(Array.from(panel("現在の状態").querySelectorAll("details > summary")).map((summary) => summary.textContent)).toEqual(["施設の記録を表で見る（4件）", "雇用主・事業場の識別情報", "規則・協定・判断を表で見る（3件）"]);
+  expect(Array.from(panel("現在の状態").querySelectorAll("details")).map((details) => details.open)).toEqual([false, false, false]);
+  expect(screen.getByRole("region", { name: "この部署の契約の一覧" }).closest("details")).toBeNull();
   // Nobody is chosen: the list of people, and what choosing one does.
   expect(within(screen.getByRole("list", { name: "職員一覧" })).getAllByRole("button").map((button) => [button.textContent, button.getAttribute("aria-pressed")])).toEqual([["合合成 一雇用関係 3件・契約 1件・資格 1件", "false"], ["合合成 二雇用関係 0件・契約 0件・資格 0件", "false"]]);
   expect(panel("現在の状態")).toHaveTextContent("職員を選ぶと、その職員の雇用関係・契約・資格を表示し、「次の操作」の手順と記録をその職員に絞ります。");
   // Fourteen tasks, one per record kind, all closed.
-  expect(Array.from(panel("次の操作").querySelectorAll("details > summary")).map((summary) => summary.textContent)).toEqual(Object.values(T));
+  expect(Array.from(panel("次の操作").querySelectorAll(".ideal-v3-task > details > summary")).map((summary) => summary.textContent)).toEqual(Object.values(T));
   for (const summary of Object.values(T)) expect(task(summary).open).toBe(false);
   expect(within(task(T.contract)).getByLabelText("編集する対象")).not.toBeVisible();
   // The history: the current versions, that earlier ones cannot be read here, and the audit history.
-  expect(panel("履歴")).toHaveTextContent("各記録の現在の版です。以前の版の内容は、APIが返さないため、この画面では表示できません。");
+  expect(panel("履歴")).toHaveTextContent("この画面に表示しているのは、各記録の現在の版です。いつ・どの役割が記録を変更したかは、この画面には表示されません。監査の履歴で確認できます。");
+  expect(panel("履歴")).toHaveTextContent("以前の版保存のたびに記録の版が1つ進み、以前の版は上書きされずにサーバーに残ります。以前の版の内容は、この画面には表示されません。");
   expect(panel("履歴")).toHaveTextContent("登録されている記録14件（最も新しい版は第2版）");
   expect(within(panel("履歴")).getByRole("link", { name: "監査の履歴を開く" })).toHaveAttribute("href", "/workspace/governance/audit");
   expect(rows("すべての記録の現在の版")).toHaveLength(14);
@@ -152,7 +175,8 @@ test("first the current state, the next step and the history; no form is open an
   // Every link stays inside the workspace; only the workspace's own class families are used.
   expect(Array.from(view.container.querySelectorAll("a")).map((link) => link.getAttribute("href")).sort()).toEqual(["/workspace/governance/audit", "/workspace/plan/input", "/workspace/plan/input"]);
   const classes = Array.from(view.container.querySelectorAll("[class]")).flatMap((element) => Array.from(element.classList));
-  expect(classes.filter((name) => !/^(ideal-|is-|lucide)/.test(name))).toEqual([]);
+  // `sr-only` is the one name outside the workspace's own (the colon read after an identifier's label).
+  expect(classes.filter((name) => !/^(ideal-|is-|lucide|sr-only$)/.test(name))).toEqual([]);
   expect(classes).not.toContain("ideal-v3-purpose");
   expect(calls).toEqual([]);
 });
@@ -162,17 +186,61 @@ test("an employer whose name is not registered is said so, and told apart from a
   expect(panel("現在の状態")).toHaveTextContent("名称を登録した雇用主はありません。");
   expect(rows("登録されている事業場").map((text) => text?.slice(0, 13))).toEqual(["名称未登録の雇用主（1）2", "名称未登録の雇用主（2）2"]);
   expect(rows("この部署の契約の一覧")[0]).not.toContain("hospital");
-  expect(within(screen.getByText("雇用主・事業場の識別情報").closest("details")!).getAllByRole("listitem").slice(0, 2).map((item) => item.textContent)).toEqual(["雇用主（名称未登録の雇用主（1））：hospital", "雇用主（名称未登録の雇用主（2））：clinic"]);
+  expect(Array.from(screen.getByText("雇用主・事業場の識別情報").closest("details")!.querySelectorAll(".ideal-v3-identifiers > div")).slice(0, 2).map((item) => item.textContent)).toEqual(["雇用主（名称未登録の雇用主（1））：hospital", "雇用主（名称未登録の雇用主（2））：clinic"]);
 });
 
 test("the server's staging issues are shown as it reports them", async () => {
   await mount(roster({ staging_valid: false, validation_issues: [{ location: ["accounting_transitions", 0], message: "Value error, Accounting transition requires adjacent revisions of the same relationship and site", type: "value_error" }] }));
-  expect(screen.getByText("サーバーの検証で不整合 1件")).toBeInTheDocument();
+  expect(screen.getByText("記録の検証：不整合 1件")).toBeInTheDocument();
   const alert = within(panel("現在の状態")).getByRole("alert");
   expect(alert).toHaveTextContent("編集中の記録に不整合があります");
   expect(within(alert).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["accounting_transitions / 0：Value error, Accounting transition requires adjacent revisions of the same relationship and site"]);
   // The records can still be corrected.
   expect(task(T.transition)).toBeInTheDocument();
+});
+
+test("the header leads to the server's result when it found something; the row under it goes to each section", async () => {
+  Element.prototype.scrollIntoView = jest.fn();
+  const invalid = await mount(roster({ staging_valid: false, validation_issues: [{ location: ["contracts", 0], message: "合成の不整合", type: "value_error" }] }));
+  fireEvent.click(screen.getByRole("button", { name: "検証結果を見る" }));
+  expect(screen.getByRole("heading", { level: 3, name: "記録の検証結果" })).toHaveFocus();
+  // The sections are reached by buttons of the page, never by links; each says what its section holds.
+  const sections = within(screen.getByRole("navigation", { name: "この画面の内容" }));
+  expect(sections.getAllByRole("button").map((button) => button.textContent)).toEqual(["現在の状態 職員2名（保存済み2名）・契約1件", "次の操作 新しい職員の手順・操作14件", "履歴 現在の版と監査の履歴"]);
+  expect(sections.queryAllByRole("link")).toEqual([]);
+  for (const name of ["現在の状態", "次の操作", "履歴"]) {
+    fireEvent.click(sections.getByRole("button", { name: new RegExp(`^${name} `) }));
+    expect(screen.getByRole("heading", { level: 2, name })).toHaveFocus();
+  }
+  expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(4);
+  // No label of the row is the text of a task's summary, which the journeys find by exact text.
+  for (const button of sections.getAllByRole("button")) expect(Object.values(T)).not.toContain(button.textContent);
+  invalid.view.unmount();
+  // Nothing found: there is no result to lead to.
+  await mount();
+  expect(screen.queryByRole("button", { name: "検証結果を見る" })).toBeNull();
+});
+
+test("a site is told from another site of the same employer by its period, and only then", async () => {
+  const second = { ...F.SITE, establishment_id: "site3", start: "2029-01-01T00:00:00+09:00", end: "2031-01-01T00:00:00+09:00" };
+  await mount(roster({ establishments: [F.SITE, F.SITE2, second], records: [...F.RECORDS, { kind: "establishment", key: "k-establishment-site3", entity_id: "site3", revision: 1, payload: second }] }));
+  expect(rows("登録されている36協定")).toEqual(["合成病院の事業場（2026-01-01 00:00 〜 2029-01-01 00:00）2026-01-01 00:00 〜 2029-01-01 00:00ない確認済み第1版"]);
+  choose(/合成 一/);
+  expect(rows("合成 一の雇用関係").map((text) => text?.slice(0, 13))).toEqual(["合成病院の事業場（2026", "合成病院の事業場（2026", "合成診療所の事業場2026"]);
+});
+
+test("every task says in one line what it records, beside its summary and not in it", async () => {
+  await mount();
+  const hints = Object.values(T).map((summary) => { const described = screen.getByText(summary, { selector: "summary" }).getAttribute("aria-describedby")!; return document.getElementById(described)!.textContent!; });
+  expect(new Set(hints).size).toBe(14);
+  for (const hint of hints) { expect(hint).toMatch(/記録します|登録します/); expect(Object.values(T)).not.toContain(hint); }
+  // The withdrawal or expiry of a qualification adds a record and removes none: an ordinary task, and its line says so.
+  const amendment = task(T.amendment).closest(".ideal-v3-task")!;
+  expect(amendment).toHaveClass("ideal-v3-task--routine");
+  expect(amendment).toHaveTextContent("取消・失効の日時と理由を記録します。元の資格の記録は残ります。");
+  expect(document.querySelectorAll(".ideal-v3-task--danger")).toHaveLength(0);
+  // The tasks of a group stand in one list each.
+  expect(Array.from(panel("次の操作").querySelectorAll(".ideal-v3-task-list")).map((list) => list.querySelectorAll(":scope > .ideal-v3-task").length)).toEqual([5, 3, 6]);
 });
 
 test("choosing a person shows their records and narrows the staff tasks to them", async () => {
@@ -194,9 +262,9 @@ test("choosing a person shows their records and narrows the staff tasks to them"
   press(T.contract, "入力を破棄する");
   choose(/合成 一/);
   expect(rows("合成 一の雇用関係")).toEqual([
-    "合成病院の事業場（2026-01-01 00:00 〜 2029-01-01 00:00）2026-01-01 00:00 〜 2026-07-01 00:00通常の労働時間制確認済み第1版",
-    "合成病院の事業場（2026-01-01 00:00 〜 2029-01-01 00:00）2026-07-01 00:00 〜 2028-01-01 00:00通常の労働時間制確認済み第1版",
-    "合成診療所の事業場（2026-01-01 00:00 〜 2029-01-01 00:00）2026-01-01 00:00 〜 2028-01-01 00:00通常の労働時間制確認済み第1版",
+    "合成病院の事業場2026-01-01 00:00 〜 2026-07-01 00:00通常の労働時間制確認済み第1版",
+    "合成病院の事業場2026-07-01 00:00 〜 2028-01-01 00:00通常の労働時間制確認済み第1版",
+    "合成診療所の事業場2026-01-01 00:00 〜 2028-01-01 00:00通常の労働時間制確認済み第1版",
   ]);
   expect(rows("合成 一の契約")).toEqual(["合成病院2026-01-01 00:00 〜 2028-01-01 00:00直接雇用・常勤一般制確認済み未確認第2版"]);
   expect(rows("合成 一の資格")).toEqual(["調剤（薬剤部）2026-01-01 00:00 〜 2028-01-01 00:00監督者は不要（監督できる人数 0名）確認済み第1版"]);
@@ -256,6 +324,20 @@ describe("the steps of adding a person", () => {
     await mount();
     // Nobody chosen: the steps of a person not registered yet.
     expect(panel("次の操作")).toHaveTextContent("まだ登録していない新しい職員の手順です。");
+    // One line before the list; how to use it is a reveal of background, closed. That a step
+    // and a task are one thing is seen, not explained: a start carries the arrow of a control
+    // that leads down the page, and the task it opens carries the step's number as its tag.
+    const lead = screen.getByRole("heading", { level: 3, name: "新しい職員を追加する手順" }).nextElementSibling!;
+    expect(lead).toHaveTextContent(/^まだ登録していない新しい職員の手順です。手順のボタンは、この下に並ぶ同じ番号の操作を、新しい記録の入力から開きます。$/);
+    const usage = screen.getByText("この手順の使い方").closest("details")!;
+    expect(usage.open).toBe(false);
+    expect(Array.from(usage.querySelectorAll("li")).map((item) => item.textContent)).toEqual([
+      "氏名を登録した後、「現在の状態」の職員一覧でその職員を選ぶと、その職員の記録の有無を表示します。", "記録は1件ずつ保存され、途中でやめても保存済みの分は残ります。", "記録が条件を満たすかどうかは、「現在の状態」の「記録の検証結果」で確認してください。",
+    ]);
+    expect(panel("次の操作")).not.toHaveTextContent("別の登録ではありません");
+    const tagOf = (summary: string) => task(summary).closest(".ideal-v3-task")!.querySelector(".ideal-v3-task__hint > .ideal-pill")?.textContent ?? null;
+    expect([T.person, T.employer, T.site, T.employment, T.contract, T.capability].map(tagOf)).toEqual(["手順1", "手順2", "手順2", "手順3", "手順4", "手順5"]);
+    expect(Object.values(T).filter((summary) => tagOf(summary) !== null)).toHaveLength(6);
     expect(steps()).toEqual([
       "1. 職員の氏名を登録する：記録なし", "2. 雇用主と事業場を用意する（施設で一度だけ）：記録あり", "3. 雇用関係を登録する：前の手順が先", "4. 契約を登録する：前の手順が先",
       "5. 担当できる業務（資格）を登録する：前の手順が先", "6. 計画の入力に反映する：計画の画面で行う",
@@ -263,7 +345,10 @@ describe("the steps of adding a person", () => {
     expect(stepItems()[2]).toHaveTextContent("先に職員の氏名を登録し、上で選んでください。");
     const list = within(screen.getByRole("list", { name: "新しい職員を追加する手順" }));
     expect(list.getAllByRole("button").map((button) => button.textContent)).toEqual(["氏名の登録を始める", "雇用主の登録を始める", "事業場の登録を始める"]);
+    for (const button of list.getAllByRole("button")) expect(button.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
     expect(list.getByRole("link", { name: "計画の「前提・取込」" })).toHaveAttribute("href", "/workspace/plan/input");
+    // The first step without a record is the thing to do next: its start is the one filled button.
+    expect(list.getAllByRole("button").filter((button) => button.classList.contains("ideal-button--primary")).map((button) => button.textContent)).toEqual(["氏名の登録を始める"]);
     // The step opens its task on a new record and moves focus to the task's content step.
     await act(async () => { fireEvent.click(list.getByRole("button", { name: "氏名の登録を始める" })); });
     expect(task(T.person).open).toBe(true);
@@ -277,6 +362,7 @@ describe("the steps of adding a person", () => {
     choose(/合成 二/);
     expect(panel("次の操作")).toHaveTextContent("合成 二さんについて、どの記録があるかを表示しています。");
     expect(list.getAllByRole("button").map((button) => button.textContent)).toEqual(["氏名の登録を始める", "雇用主の登録を始める", "事業場の登録を始める", "雇用関係の登録を始める", "資格の登録を始める"]);
+    expect(list.getAllByRole("button").filter((button) => button.classList.contains("ideal-button--primary")).map((button) => button.textContent)).toEqual(["雇用関係の登録を始める"]);
     await act(async () => { fireEvent.click(list.getByRole("button", { name: "雇用関係の登録を始める" })); });
     expect(task(T.employment).open).toBe(true);
     expect(field(T.employment, "対象職員")).toHaveValue("p2");
@@ -286,6 +372,7 @@ describe("the steps of adding a person", () => {
     // A person with every record: every step says that its record exists (not that it is valid).
     choose(/合成 一/);
     expect(steps().slice(0, 5).every((text) => text.endsWith("：記録あり"))).toBe(true);
+    expect(list.getAllByRole("button").filter((button) => button.classList.contains("ideal-button--primary"))).toEqual([]);
     await act(async () => { fireEvent.click(list.getByRole("button", { name: "契約の登録を始める" })); });
     expect(field(T.contract, "対象職員")).toHaveValue("p1");
     expect(within(task(T.contract)).getByRole("heading", { level: 4, name: "2. 契約の内容と根拠を入力する" })).toHaveFocus();
@@ -385,7 +472,7 @@ test.each(Object.entries(ENTRIES))("%s: confirmed with the four statements and s
   // Nothing is sent before the confirmation, which says the four things.
   expect(posts(calls)).toEqual([]);
   expect(within(surface(summary)).getByRole("heading", { level: 4, name: entry.target ? "3. 保存前の確認" : "2. 保存前の確認" })).toHaveFocus();
-  expect(within(surface(summary)).getAllByRole("term").map((term) => term.textContent)).toEqual(["変更内容", "作成される版", "通知", "競合・部分失敗"]);
+  expect(within(surface(summary)).getAllByRole("term").filter((term) => !term.closest(".ideal-v3-identifiers")).map((term) => term.textContent)).toEqual(["変更内容", "作成される版", "通知", "競合・部分失敗"]);
   expect(changes(summary)).toContain(entry.change);
   expect(line(summary, "作成される版")).toHaveTextContent(entry.version);
   expect(line(summary, "通知").querySelector("dd")).toHaveTextContent(NOTICE);
@@ -400,6 +487,21 @@ test.each(Object.entries(ENTRIES))("%s: confirmed with the four statements and s
   expect(within(done).getByRole("link", { name: "計画の「前提・取込」" })).toHaveAttribute("href", "/workspace/plan/input");
   expect(surface(summary)).toBeNull();
   expect(hasUnsavedChanges()).toBe(false);
+});
+
+test("what was typed into an editor is shown as typed in its confirmation, and marked as a person's words", async () => {
+  await mount(roster(), serve({ key: "k", revision: 7, kind: "x" }));
+  open(T.attribution);
+  set(T.attribution, "編集する対象", "new");
+  period(T.attribution); set(T.attribution, "判断の対象とする雇用主", "hospital"); set(T.attribution, "時間外を帰属させる順序", "time_order"); set(T.attribution, "判断の理由と根拠（人事・法務）", TYPED);
+  evidence(T.attribution); set(T.attribution, "原本確認の資料名・参照先", TYPED); set(T.attribution, "原本確認の確認責任者", TYPED);
+  await review(T.attribution);
+  expect(changes(T.attribution)).toEqual(expect.arrayContaining([`判断の理由と根拠：（なし） → ${TYPED}`, `原本確認の資料：（なし） → ${TYPED}`, `原本確認の確認責任者：（なし） → ${TYPED}`]));
+  expect(shownTimes(surface(T.attribution))).toBe(3);
+  expect(unmarked(document.body)).toEqual([]);
+  // The lines the product words itself (a date, a state named by a map) are not marked.
+  const marked = within(line(T.attribution, "変更内容")).getAllByRole("listitem").filter((item) => item.hasAttribute("data-verbatim")).map((item) => item.textContent!.split("：")[0]);
+  expect(marked).toEqual(["判断の理由と根拠", "原本確認の資料", "原本確認の確認責任者"]);
 });
 
 test("a qualification saved unchanged goes against its own version and creates none", async () => {
@@ -541,6 +643,16 @@ describe("what is lawful is the server's to say", () => {
 });
 
 describe("a rule decision is bound to the server's impact list", () => {
+  test("each identifier of the list says what it is the identifier of: an assessment's own and its grant's are two lines", () => {
+    const { container } = render(<ImpactList impact={{ review_id: "rev1", rule_id: "r-2026", source_sha256: "c".repeat(64), impact_hash: "9".repeat(64), impact_count: 3, publications: [],
+      grant_assessments: [{ assessment_id: "assess-1", account_id: "grant-1", rule_revision: "r-2025", as_of: "2026-01-01" }, { assessment_id: null, account_id: "grant-2", rule_revision: null, as_of: null }],
+      grant_records: [{ account_id: "grant-3", granted_on: "2026-02-01" }] }} />);
+    // An assessment without an identifier of its own has one line, and it is named as the grant's.
+    expect(Array.from(container.querySelectorAll(".ideal-v3-identifiers > div")).map((row) => [row.querySelector("dt")!.textContent, Array.from(row.querySelectorAll("dd code")).map((code) => code.textContent)])).toEqual([
+      ["付与照合：照合の識別子：", ["assess-1"]], ["付与照合：付与の識別子：", ["grant-1"]], ["付与照合：付与の識別子：", ["grant-2"]], ["付与原本：", ["grant-3"]],
+    ]);
+  });
+
   test("the list is read for the chosen review, read again at the confirmation, shown there and saved with the decision", async () => {
     let reads = 0;
     const later = { ...F.IMPACT, impact_count: 3, impact_hash: "9".repeat(64), grant_records: [...F.IMPACT.grant_records, { account_id: "g2", granted_on: "2026-02-01", revision: 1 }] };

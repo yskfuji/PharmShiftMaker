@@ -73,13 +73,13 @@ export default function DecideCase({ cases, people }: { cases: PrivacyCase[]; pe
       <label htmlFor={`${id}-target`}>判断する請求</label>
       <select id={`${id}-target`} className="ideal-input" value={chosen} disabled={Boolean(base)} onChange={(event) => choose(event.target.value)}>
         <option value="">選んでください</option>
-        {open.map((item) => <option key={item.case_id} value={item.case_id}>{caseLabel(item, people)}：{item.payload.reason}</option>)}
+        {open.map((item) => <option key={item.case_id} value={item.case_id} data-verbatim>{caseLabel(item, people)}：{item.payload.reason}</option>)}
       </select>
     </div>}
-    {closed.length > 0 && <ul className="ideal-note-list" aria-label="次の判断がない請求">{closed.map((item) => <li key={item.case_id}>{caseLabel(item, people)}：サーバーは次の判断を返していません。</li>)}</ul>}
+    {closed.length > 0 && <ul role="list" className="ideal-note-list" aria-label="次の判断がない請求">{closed.map((item) => <li key={item.case_id}>{caseLabel(item, people)}：サーバーは次の判断を返していません。</li>)}</ul>}
     {row && !base && <>
       <h3 className="ideal-v3-heading" {...steps.heading("content")}>2. 請求を確かめ、判断と根拠を入力する</h3>
-      <dl className="ideal-definition-list">{caseFacts(row, people).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.text}</dd></div>)}</dl>
+      <dl className="ideal-definition-list">{caseFacts(row, people).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd data-verbatim={fact.verbatim ? "" : undefined}>{fact.text}</dd></div>)}</dl>
       <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); setDone(null); send.clear(); setBase(row); }}>
         <label htmlFor={`${id}-status`}>次の判断</label>
         <select id={`${id}-status`} className="ideal-input" required value={entry.status} onChange={(event) => setEntry({ ...entry, status: event.target.value })}>
@@ -109,6 +109,7 @@ export default function DecideCase({ cases, people }: { cases: PrivacyCase[]; pe
       outcome={conflictOutcome(send.outcome, (current) => ({ currentRevision: current?.revision ?? null, rows: threeWayRows(facts(base), current && facts(current), proposed(base)) }))}
       busy={send.busy} confirmLabel="この判断を記録する"
       onConfirm={() => void save()} onBack={leave} onReviewed={reviewed}>
+      <p className="ideal-note">記録した判断は取り消せません。請求は判断のたびに次の状態へ進み、前の状態へ戻す判断はありません（次にできる判断は、一覧の「次にできる判断」に出ます）。</p>
       <p className="ideal-note">利用停止の請求を「実施承認」にすると、サーバーは同じ施設のすべての部署で、通常の勤務計画の読取りと操作を停止し、待機中・実行中の勤務表の生成を止めます（この個人情報の画面は引き続き使えます）。「利用停止を解除」を記録すると再開します。</p>
       {rebased && <p className="ideal-note" role="status">現在の第{base.revision}版に対する判断として確認し直します。請求の内容が変わっていないか確かめて、もう一度記録してください。</p>}
     </ConfirmSurface>}

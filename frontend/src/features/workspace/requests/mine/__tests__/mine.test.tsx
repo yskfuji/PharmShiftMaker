@@ -73,9 +73,17 @@ test("the showcase shows the viewer's cases, and the route's own words when ther
   const fetchSpy = jest.fn(() => { throw new Error("no network"); });
   global.fetch = fetchSpy as never;
   const shown = render(<CognitiveWorkspaceShowcase screen="requests" view="mine" role="PHARMACIST" />);
-  expect(await screen.findByRole("heading", { level: 2, name: "履歴と次の操作" })).toBeInTheDocument();
+  expect(await screen.findByRole("heading", { level: 2, name: "申請の状態と新しい申請" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "休暇の画面" })).toHaveAttribute("href", "/workspace/requests/leave");
   expect(within(screen.getByRole("list", { name: "ケース一覧" })).getAllByRole("button")).toHaveLength(2);
+  // A pharmacist is given no roster, so both cases are between 「あなた」 and 「相手の職員」: a
+  // row is told from the other by the viewer's own duties in it, and names nobody else.
+  const rows = within(screen.getByRole("list", { name: "ケース一覧" })).getAllByRole("button").map((item) => item.textContent);
+  expect(rows).toEqual([
+    "勤務交換 · 同意待ちあなたの勤務：外す 10月12日（月） 08:30–17:30／入る 10月12日（月） 10:30–19:30第2版",
+    "欠勤 · 承認待ちあなたの勤務：外す 10月12日（月） 08:30–17:30第3版",
+  ]);
+  expect(new Set(rows).size).toBe(2);
   // A pharmacist is given no roster: the other person is not named.
   expect(detail()).toHaveTextContent("入る相手の職員 · 10月12日（月） 08:30–17:30");
   expect(detail()).toHaveTextContent("同意 1 / 2");
@@ -86,6 +94,22 @@ test("the showcase shows the viewer's cases, and the route's own words when ther
   expect(await screen.findByText("いま対応が必要なケースはありません。")).toBeInTheDocument();
   expect(screen.getByRole("heading", { level: 2, name: "新しい申請" })).toBeInTheDocument();
   expect(fetchSpy).not.toHaveBeenCalled();
+});
+
+test("the first card says what the route is for, points to leave and leads to the new request", async () => {
+  Element.prototype.scrollIntoView = jest.fn();
+  await mount([mine]);
+  const intro = screen.getByRole("heading", { level: 2, name: "申請の状態と新しい申請" }).closest("section")!;
+  // The view's name is not repeated above the title.
+  expect(intro.querySelector(".ideal-eyebrow")).toBeNull();
+  expect(within(intro).getByRole("link", { name: "休暇の画面" })).toHaveClass("ideal-inline-link");
+  const task = screen.getByText("新しい欠勤・交換を申請", { selector: "summary" }).closest("details")!;
+  expect(task.parentElement).toHaveClass("ideal-v3-task--primary");
+  expect(document.getElementById(task.querySelector("summary")!.getAttribute("aria-describedby") ?? "")).toHaveTextContent("公開された自分の勤務を選び、欠勤か交換かと、その理由を申請します。");
+  expect(task.open).toBe(false);
+  fireEvent.click(within(intro).getByRole("button", { name: "新しく申請する" }));
+  expect(task.open).toBe(true);
+  expect(screen.getByText("新しい欠勤・交換を申請", { selector: "summary" })).toHaveFocus();
 });
 
 test("what is offered on a request follows its state and who the viewer is", () => {
@@ -103,18 +127,18 @@ test("a pharmacist sees every returned case; a planner only the ones about their
   document.body.innerHTML = "";
   await mount([mine, asked, others], undefined, "LEADER");
   // Only the exchange removes one of the leader's own duties.
-  expect(within(screen.getByRole("list", { name: "ケース一覧" })).getAllByRole("button").map((item) => item.textContent)).toEqual(["勤務交換 · AWAITING_CONSENT版 2 · 2026-10-14T08:30:00+09:00"]);
-  expect(detail()).toHaveTextContent("同意 0 / 1（高橋 葵）");
+  expect(within(screen.getByRole("list", { name: "ケース一覧" })).getAllByRole("button").map((item) => item.textContent)).toEqual(["勤務交換 · 同意待ち鈴木 悠斗、高橋 葵第2版 · 10月14日（水）08:30"]);
+  expect(detail()).toHaveTextContent("同意 0 / 1（まだ：高橋 葵）");
 });
 
 test("the case the URL names is shown; one that was not returned is never replaced silently", async () => {
   await mount([mine, asked], undefined, "PHARMACIST", { selectedCaseId: "c-asked" });
-  expect(detail()).toHaveTextContent("判断面 · ケース版 2");
+  expect(detail()).toHaveTextContent("選んだケースの内容（第2版）");
   document.body.innerHTML = "";
   await mount([mine, asked], undefined, "PHARMACIST", { selectedCaseId: "c-others" });
   expect(screen.getByRole("alert")).toHaveTextContent("指定されたケースを表示できません");
   fireEvent.click(screen.getByRole("button", { name: "一覧の先頭を開く" }));
-  expect(detail()).toHaveTextContent("判断面 · ケース版 1");
+  expect(detail()).toHaveTextContent("選んだケースの内容（第1版）");
 });
 
 test("a withdrawal is sent against the case version; an unknown outcome keeps its key", async () => {

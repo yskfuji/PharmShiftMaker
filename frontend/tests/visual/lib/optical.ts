@@ -17,6 +17,12 @@ import type { Page } from '@playwright/test';
  * stops are composited over the backdrop below, and the lowest ratio counts (a
  * conservative bound). Cases a check cannot judge (text over an image, text covered by
  * another element) are returned as `skipped`, never silently passed.
+ * One covering is not such a case: a cell of a table that lies under a `position: sticky`
+ * cell of the same table. A scrolled table moves its cells under its pinned row header (or
+ * pinned head row); that text is not shown, like text scrolled out of its region, and is
+ * not judged. Where a part of it still shows beside the pinned cell, that part is judged.
+ * Nothing else is excused: a pinned cell of another table, a sticky element that is not a
+ * cell, or any other overlay still makes the text `skipped`.
  * The functions passed to page.evaluate are self-contained (they run in the page).
  * WCAG 2 ratios are normative here; APCA is not used (not part of any Recommendation).
  */
@@ -96,7 +102,7 @@ const PAGE_HELPERS = `
   // Intersect a painted fragment with the viewport and every ancestor that clips
   // overflow. Unlike clamping an off-screen centre to an edge, this never samples
   // a coordinate where the text is not actually visible.
-  const visibleCentre = (rect, el) => {
+  const visibleBox = (rect, el) => {
     let left = Math.max(rect.left, 0), top = Math.max(rect.top, 0);
     let right = Math.min(rect.right, innerWidth), bottom = Math.min(rect.bottom, innerHeight);
     for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
@@ -107,8 +113,35 @@ const PAGE_HELPERS = `
       if (clipY) { const y = box.top + n.clientTop; top = Math.max(top, y); bottom = Math.min(bottom, y + n.clientHeight); }
       if (right - left <= 1 || bottom - top <= 1) return null;
     }
-    return right - left > 1 && bottom - top > 1 ? [(left + right) / 2, (top + bottom) / 2] : null;
+    return right - left > 1 && bottom - top > 1 ? [left, top, right, bottom] : null;
   };
+  const visibleCentre = (rect, el) => { const b = visibleBox(rect, el); return b ? [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2] : null; };
+  // The pinned cell that lies over 'el' at a point because the table was scrolled under it:
+  // the topmost element there is (in) a th/td with position: sticky, of the table 'el' is a
+  // cell of, and not el's own cell; the point is inside that cell's own box; and the table's
+  // own scroll region has been scrolled: the nearest thing the table is in that scrolls
+  // (overflow auto or scroll), or the page when nothing nearer does. The search stops there:
+  // the page being scrolled (this audit scrolls it to bring a text into view) does not move a
+  // table under the pinned cells of a region that was never scrolled. Content that sticks OUT
+  // of a pinned cell over its neighbour (a long name, a popover) is not the table scrolling
+  // under the cell: the point is then outside the cell's box, and an unscrolled table has
+  // nothing under its pinned cells at all. Neither is excused here, so the covered text is
+  // reported as skipped.
+  const pinnedOver = (x, y, el) => { const cell = el.closest('th, td'); const table = cell && cell.closest('table'); if (!table) return null;
+    const top = document.elementFromPoint(x, y); const pin = top && top.closest('th, td');
+    if (!(pin && pin !== cell && pin.closest('table') === table && getComputedStyle(pin).position === 'sticky')) return null;
+    const p = pin.getBoundingClientRect(); if (x < p.left || x > p.right || y < p.top || y > p.bottom) return null;
+    for (let n = table.parentElement; n && n.nodeType === 1; n = n.parentElement) { if (n.scrollLeft || n.scrollTop) return pin;
+      const cs = getComputedStyle(n); if (['auto','scroll'].includes(cs.overflowX) || ['auto','scroll'].includes(cs.overflowY)) break; }
+    return null; };
+  // Where a text fragment still shows beside a pinned cell that covers its centre: the
+  // centre of a strip of its visible box outside the pinned cell's box (the largest first)
+  // that no pinned cell covers, or undefined when there is none: no strip of more than a
+  // pixel is left, and the text is under the pinned cells.
+  const besidePinned = (rect, el, pin) => { const b = visibleBox(rect, el); if (!b) return undefined; const p = pin.getBoundingClientRect();
+    return [[b[0], b[1], Math.min(b[2], p.left), b[3]], [Math.max(b[0], p.right), b[1], b[2], b[3]], [b[0], b[1], b[2], Math.min(b[3], p.top)], [b[0], Math.max(b[1], p.bottom), b[2], b[3]]]
+      .filter((s) => s[2] - s[0] > 1 && s[3] - s[1] > 1).sort((a, c) => (c[2] - c[0]) * (c[3] - c[1]) - (a[2] - a[0]) * (a[3] - a[1]))
+      .map((s) => [(s[0] + s[2]) / 2, (s[1] + s[3]) / 2]).find((at) => !pinnedOver(at[0], at[1], el)); };
   const beside = (r) => [Math.max(r.left - 3, 0), Math.min(Math.max(r.top + r.height / 2, 0), innerHeight - 1)];
   const CONTROLS = 'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file]):not([type=color]):not([type=range]), select, textarea';
 `;
@@ -137,6 +170,11 @@ export async function textContrast(page: Page): Promise<Result> {
         sample = [...range.getClientRects()].map((next) => ({r: next, point: visibleCentre(next, el)})).find(({r: next,point: nextPoint}) => next.width > 1 && next.height > 1 && nextPoint);
         if (sample?.point) { r = sample.r; point = sample.point; bgs = backdropsAt(...point, el); }
       }
+      // Scrolled under a pinned cell of its own table: judged where a part of it still shows
+      // beside that cell, and not shown (so not judged) where none does.
+      if (bgs === undefined) { const pin = pinnedOver(...point, el);
+        if (pin) { const shown = besidePinned(r, el, pin); if (!shown) continue;
+          point = shown; bgs = backdropsAt(...point, el); } }
       if (bgs === null) { skipped.push({ check: 'text-contrast', ...item, detail: 'image behind the text' }); continue; }
       if (bgs === undefined) { const box = el.getBoundingClientRect(); const [x, y] = point;
         const outside = x < box.left || x > box.right || y < box.top || y > box.bottom;

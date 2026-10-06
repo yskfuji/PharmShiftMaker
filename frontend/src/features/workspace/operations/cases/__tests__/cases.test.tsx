@@ -4,6 +4,7 @@ import { createMutator } from "@/ideal/api/mutations";
 import type { IdealRole, ScheduleChangeCase } from "@/ideal/types";
 import { browserNavigation } from "@/lib/browserNavigation";
 import { PlanningError } from "@/lib/planningTransport";
+import { TYPED, shownTimes, unmarked } from "../../../shared/__fixtures__/typed";
 import { readRoute, type RouteContext } from "../../../shell/routeTypes";
 import { LiveProvider, liveFrom } from "../../../shell/WorkspaceRuntime";
 import CognitiveWorkspaceShowcase from "../../../showcase/CognitiveWorkspaceShowcase";
@@ -80,12 +81,36 @@ test("the showcase shows the open cases, and the route's own words when there ar
   const shown = render(<CognitiveWorkspaceShowcase screen="operations" view="cases" role="LEADER" />);
   const list = await screen.findByRole("list", { name: "ケース一覧" });
   expect(within(list).getAllByRole("button").map((item) => item.textContent)).toEqual([
-    "勤務交換 · AWAITING_CONSENT版 2 · 2026-10-12T08:30:00+09:00", "欠勤 · READY版 3 · 2026-10-12T08:30:00+09:00",
+    "勤務交換 · 同意待ち高橋 葵、鈴木 悠斗第2版 · 10月12日（月）08:30", "欠勤 · 承認待ち高橋 葵、佐藤 美咲第3版 · 10月12日（月）08:30",
   ]);
   // The first case is the one being decided; the leader is asked for their consent there.
-  expect(detail()).toHaveTextContent("判断面 · ケース版 2");
-  expect(detail()).toHaveTextContent("同意 1 / 2（高橋 葵、鈴木 悠斗）");
-  expect(within(detail()).getAllByRole("button").map((item) => item.textContent)).toEqual(["責任者として却下", "同意する", "同意しない", "取り下げる"]);
+  expect(detail()).toHaveTextContent("選んだケースの内容（第2版）");
+  // Who has consented and who has not yet are told apart by name.
+  expect(detail()).toHaveTextContent("同意 1 / 2（同意済み：高橋 葵／まだ：鈴木 悠斗）");
+  // Before the buttons: one line for each action the server offers, and no other.
+  expect(Array.from(detail().querySelectorAll(".ideal-v3-case-effects dt")).map((item) => item.textContent)).toEqual(["「同意する」", "「同意しない」", "「責任者として却下」", "「取り下げる」"]);
+  expect(detail()).not.toHaveTextContent("新しい公開版を作って公開します");
+  // What moves the case forward comes first; what ends it follows, in a group of its own.
+  expect(within(detail()).getAllByRole("button").map((item) => item.textContent)).toEqual(["同意する", "同意しない", "責任者として却下", "取り下げる"]);
+  expect(within(detail()).getByRole("button", { name: "同意する" }).closest(".ideal-v3-case-closing")).toBeNull();
+  expect(Array.from(detail().querySelectorAll(".ideal-v3-case-closing button")).map((item) => item.textContent)).toEqual(["同意しない", "責任者として却下", "取り下げる"]);
+  // The group is named and says in words that a case it ends cannot be reopened; its buttons
+  // are the destructive outline, and the one filled button is the one that moves the case on.
+  const closing = detail().querySelector<HTMLElement>(".ideal-v3-case-closing")!;
+  expect(closing.firstElementChild).toHaveTextContent("再開できませんこのケースを終える操作");
+  expect(closing.querySelector(".ideal-pill--danger")).toHaveTextContent("再開できません");
+  expect(within(closing).getAllByRole("button").map((item) => item.className)).toEqual(Array(3).fill("ideal-button ideal-button--danger"));
+  expect(within(detail()).getByRole("button", { name: "同意する" })).toHaveClass("ideal-button--primary");
+  // Opened, a verb that ends the case says so first, and the button that confirms it is the
+  // filled destructive one; a verb that moves the case on confirms with the primary button.
+  fireEvent.click(within(closing).getByRole("button", { name: "取り下げる" }));
+  expect(detail().querySelector(".ideal-v3-case-effect")).toHaveTextContent(/^再開できません。このケースを取り下げて終わりにします。/);
+  expect(within(detail()).getByRole("button", { name: "取り下げる" })).toHaveClass("ideal-button--danger", "is-final");
+  fireEvent.click(within(detail()).getByRole("button", { name: "やめる" }));
+  fireEvent.click(within(detail()).getByRole("button", { name: "同意する" }));
+  expect(within(detail()).getByRole("button", { name: "同意する" })).toHaveClass("ideal-button--primary");
+  expect(detail().querySelector(".ideal-v3-case-effect__final")).toBeNull();
+  fireEvent.click(within(detail()).getByRole("button", { name: "やめる" }));
   expect(within(panel("欠勤を記録して代わりを決める")).getByLabelText("勤務").querySelectorAll("option")).toHaveLength(3);
   shown.unmount();
   render(<CognitiveWorkspaceShowcase screen="operations" view="cases" role="LEADER" state="empty" />);
@@ -106,15 +131,42 @@ test("the verbs offered follow what the server says about the case", () => {
 test("only open cases are listed, and the case the URL names is the one decided", async () => {
   const { show } = await mount([ready, asking, approved], undefined, { selectedCaseId: "c-ask" });
   expect(within(screen.getByRole("list", { name: "ケース一覧" })).getAllByRole("button")).toHaveLength(2);
-  expect(screen.getByRole("button", { name: /勤務交換 · AWAITING_CONSENT/ })).toHaveAttribute("aria-pressed", "true");
-  expect(detail()).toHaveTextContent("判断面 · ケース版 2");
+  expect(screen.getByRole("button", { name: /勤務交換 · 同意待ち/ })).toHaveAttribute("aria-pressed", "true");
+  expect(detail()).toHaveTextContent("選んだケースの内容（第2版）");
   // Drawn from what the route reads next, not from a copy kept here.
   show([ready, { ...asking, version: 7 }]);
-  expect(detail()).toHaveTextContent("判断面 · ケース版 7");
-  fireEvent.click(screen.getByRole("button", { name: /欠勤 · READY/ }));
-  expect(detail()).toHaveTextContent("判断面 · ケース版 3");
+  expect(detail()).toHaveTextContent("選んだケースの内容（第7版）");
+  fireEvent.click(screen.getByRole("button", { name: /欠勤 · 承認待ち/ }));
+  expect(detail()).toHaveTextContent("選んだケースの内容（第3版）");
   expect(detail()).toHaveTextContent("外す高橋 葵 · 10月13日（火） 08:30–17:15");
   expect(detail()).toHaveTextContent("入る佐藤 美咲 · 10月13日（火） 08:30–17:15");
+});
+
+test("before a button is pressed the case says what each offered action does, and the opened action says it again", async () => {
+  await mount([independent]);
+  const effects = () => Array.from(detail().querySelectorAll(".ideal-v3-case-effects > div")).map((item) => [item.querySelector("dt")!.textContent, item.querySelector("dd")!.textContent]);
+  // One line per verb the server allows, in the order of the buttons; none for a verb that is not offered.
+  expect(effects().map(([name]) => name)).toEqual(["「承認して新しい公開版を作る」", "「責任者として却下」", "「取り下げる」"]);
+  expect(effects()[0][1]).toContain("いまの公開版は書き換えずに、この変更を入れた新しい公開版を作って公開します。");
+  expect(effects()[1][1]).toContain("終わったケースは再開できません。");
+  expect(effects()[2][1]).toContain("必要なら新しく申請します。");
+  expect(detail()).not.toHaveTextContent("あなたの同意を記録します。");
+  fireEvent.click(within(detail()).getByRole("button", { name: "取り下げる" }));
+  expect(detail().querySelector(".ideal-v3-case-effects")).toBeNull();
+  expect(detail().querySelector("form .ideal-v3-case-effect")).toHaveTextContent("このケースを取り下げて終わりにします。勤務表は変わりません。");
+});
+
+test("a duty whose date cannot be read stops what moves the case forward, and says why; ending the case stays possible", async () => {
+  const broken = { ...asking, affected_assignments: [{ ...(asking.affected_assignments[0] as object), start: "not-a-date" }] } as ScheduleChangeCase;
+  const { show } = await mount([broken], undefined, { selectedCaseId: "c-ask" });
+  expect(detail()).toHaveTextContent("このケースには、日時を読み取れない勤務があります。");
+  expect(within(detail()).getByRole("button", { name: "同意する" })).toBeDisabled();
+  expect(within(detail()).getByRole("button", { name: "同意しない" })).toBeEnabled();
+  expect(within(detail()).getByRole("button", { name: "取り下げる" })).toBeEnabled();
+  // Readable dates: nothing is held and nothing is said.
+  show([asking]);
+  expect(detail()).not.toHaveTextContent("日時を読み取れない勤務");
+  expect(within(detail()).getByRole("button", { name: "同意する" })).toBeEnabled();
 });
 
 test("a case the URL names is looked for only among the returned open cases", async () => {
@@ -125,7 +177,7 @@ test("a case the URL names is looked for only among the returned open cases", as
     expect(alert).toHaveTextContent("指定されたケースを表示できません");
     expect(screen.queryByRole("article")).toBeNull();
     fireEvent.click(within(alert).getByRole("button", { name: "一覧の先頭を開く" }));
-    expect(detail()).toHaveTextContent("判断面 · ケース版 3");
+    expect(detail()).toHaveTextContent("選んだケースの内容（第3版）");
     expect(view.calls).toEqual([]);
     document.body.innerHTML = "";
   }
@@ -139,7 +191,9 @@ test("a recommendation is sent against the case version; an unknown outcome keep
   });
   fireEvent.click(within(detail()).getByRole("button", { name: "別担当へ承認を依頼" }));
   expect(within(detail()).getByRole("button", { name: "別担当へ承認を依頼" })).toBeDisabled();
+  expect(within(detail()).getByRole("button", { name: "別担当へ承認を依頼" })).toHaveAccessibleDescription("理由と参照を3文字以上入力すると押せます。");
   fillEvidence(detail());
+  expect(within(detail()).getByRole("button", { name: "別担当へ承認を依頼" })).not.toHaveAttribute("aria-describedby");
   fireEvent.click(within(detail()).getByRole("button", { name: "別担当へ承認を依頼" }));
   expect(await within(detail()).findByRole("alert")).toHaveTextContent("結果を確認できません");
   expect(refresh).not.toHaveBeenCalled();
@@ -197,6 +251,28 @@ test("a case whose publication was replaced is refused here, and nothing is sent
   expect(refresh).not.toHaveBeenCalled();
 });
 
+test("the reason typed for a change to a case stays in its field: the confirmation, a conflict and the result repeat none of it", async () => {
+  // A journey types reasons that hold an enumeration value and the word 「API」. They are sent, and
+  // nothing on the route says them back as its own wording — before, during or after the change.
+  let attempts = 0;
+  const { calls } = await mount([ready], () => { if (++attempts === 1) throw new PlanningError(409, "Change case revision or status changed"); return { ...ready, status: "AWAITING_INDEPENDENT_APPROVAL", version: 4 }; });
+  fireEvent.click(within(detail()).getByRole("button", { name: "別担当へ承認を依頼" }));
+  fireEvent.change(within(detail()).getByLabelText(/^理由/), { target: { value: TYPED } });
+  fireEvent.change(within(detail()).getByLabelText(/^参照/), { target: { value: TYPED } });
+  expect(within(detail()).getByLabelText(/^理由/)).toHaveValue(TYPED);
+  expect(shownTimes(document.body)).toBe(0);
+  fireEvent.click(within(detail()).getByRole("button", { name: "別担当へ承認を依頼" }));
+  expect(await within(detail()).findByRole("alert")).toHaveTextContent("409");
+  expect(within(detail()).getByLabelText(/^理由/)).toHaveValue(TYPED);
+  expect(unmarked(document.body)).toEqual([]);
+  expect(shownTimes(document.body)).toBe(0);
+  fireEvent.click(within(detail()).getByRole("button", { name: "別担当へ承認を依頼" }));
+  expect(await screen.findByText("別担当の承認待ちにしました。")).toHaveAttribute("role", "status");
+  expect((calls[1].body as { evidence: unknown }).evidence).toEqual({ reason: TYPED, reference: TYPED });
+  expect(unmarked(document.body)).toEqual([]);
+  expect(shownTimes(document.body)).toBe(0);
+});
+
 test("a conflict is shown on the case, keeps the evidence, and the route is not read again", async () => {
   const { calls, refresh } = await mount([ready], () => { throw new PlanningError(409, "Change case revision or status changed"); });
   fireEvent.click(within(detail()).getByRole("button", { name: "責任者として却下" }));
@@ -221,7 +297,7 @@ test("an absence is recorded with a replacement the server validated, read on de
     return { ...ready, case_id: "c-new" };
   });
   const form = panel("欠勤を記録して代わりを決める");
-  expect(within(form).getByText("公開版 v12")).toBeInTheDocument();
+  expect(within(form).getByText("公開版 v12 の勤務から選ぶ")).toBeInTheDocument();
   // Every duty of the publication, named from the roster the server returned.
   expect(Array.from(within(form).getByLabelText("勤務").querySelectorAll("option")).map((item) => item.textContent)).toEqual([
     "選んでください", "高橋 葵 · 10月12日（月） 08:30–17:30 · 日勤", "鈴木 悠斗 · 10月12日（月） 10:30–19:30 · 遅番",
@@ -235,8 +311,12 @@ test("an absence is recorded with a replacement the server validated, read on de
   expect(choice.closest("label")).toHaveTextContent("検証を通過");
   expect(within(form).getByRole("radio", { name: /鈴木 悠斗/ }).closest("label")).toHaveTextContent("指摘あり 2件");
   expect(within(form).getByRole("button", { name: "申請する" })).toBeDisabled();
+  // What is still missing is said in the order of the form: the replacement, then the evidence.
+  expect(within(form).getByRole("button", { name: "申請する" })).toHaveAccessibleDescription("代わりの人を選ぶと押せます（指定しないことも選べます）。");
   fireEvent.click(choice);
+  expect(within(form).getByRole("button", { name: "申請する" })).toHaveAccessibleDescription("理由と参照を3文字以上入力すると押せます。");
   fillEvidence(form);
+  expect(within(form).getByRole("button", { name: "申請する" })).not.toHaveAttribute("aria-describedby");
   fireEvent.click(within(form).getByRole("button", { name: "申請する" }));
   expect(await within(form).findByRole("alert")).toHaveTextContent("結果を確認できません");
   expect(refresh).not.toHaveBeenCalled();

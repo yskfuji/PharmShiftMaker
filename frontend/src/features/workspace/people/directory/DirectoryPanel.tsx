@@ -13,6 +13,10 @@ export type DirectoryData = { memberships: MembershipRevision[]; records: Direct
 export default function DirectoryPanel({ memberships, records, cases }: DirectoryData) {
   const live = useLive();
   const [selected, setSelected] = useState<string | null>(live.selectedPersonId);
-  return <MembersSection active={memberships}>{(list) =>
+  return <MembersSection
+    active={memberships}
+    title="職員を探して詳細を見る"
+    inactiveHint="無効にした本人アカウントも含めます"
+  >{(list) =>
     <PeopleDirectory list={list} cases={cases} records={records} selected={selected} onSelect={setSelected} />}</MembersSection>;
 }

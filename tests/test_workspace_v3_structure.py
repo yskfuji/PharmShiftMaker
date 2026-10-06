@@ -36,9 +36,11 @@ What is outside its reach:
   and token runs for a reformatted copy), which docs/ideal-ui/verification.md records.
 """
 
+import functools
 import json
 import posixpath
 import re
+import sys
 from collections.abc import Callable, Iterable
 from pathlib import Path
 
@@ -599,6 +601,502 @@ def foreign_class_names(tree: Tree) -> list[str]:
     return found
 
 
+STYLES = ROOT / "frontend/src/app/globals.css"
+# The workspace's own stylesheets (scale, primitives, one file per purpose). The directory is
+# read when it exists; until it does, globals.css alone holds every rule.
+WORKSPACE_STYLES = SRC / "styles/workspace"
+
+# A class written as `prefix${value}`: every value the type allows needs a rule of its own,
+# except the one that is the base class's own look. `Tone` and `MetricTone` are read from
+# ideal/model.ts; the other two are the values their call sites can pass.
+MODEL = "ideal/model.ts"
+TEMPLATE_VARIANTS: dict[str, tuple[str | tuple[str, ...], frozenset[str]]] = {
+    # prefix: (the union in ideal/model.ts, or the values; values that need no rule)
+    "ideal-pill--": ("Tone", frozenset({"neutral"})),
+    "ideal-metric--": ("MetricTone", frozenset({"neutral"})),
+    # ScheduleModel.summary[].tone, and "warn" | "new" in the case list.
+    "ideal-dot--": (("good", "warn", "new"), frozenset()),
+    # TaskTone of shared/TaskDisclosure; a routine task is the wrapper as it is.
+    "ideal-v3-task--": (
+        ("primary", "routine", "info", "danger"),
+        frozenset({"routine"}),
+    ),
+}
+# Not the workspace's own: Tailwind's utility, the one foreign class the workspace may use.
+STYLED_ELSEWHERE = frozenset({"sr-only"})
+# Classes the workspace uses that no stylesheet has a rule for would render with the reset's
+# defaults (a cancel button as plain text, a field label as body text). Six were found when
+# this rule was written; each has its rule since the repair of the screens, so the list is
+# empty and stays empty: an entry that has a rule, or that nothing uses, is itself a fault.
+PENDING_STYLE: frozenset[str] = frozenset()
+
+
+def _workspace_stylesheets() -> list[Path]:
+    """Every .css file under styles/workspace, in its sub-directories too: a file put in a
+    folder of its own is still one of the workspace's stylesheets."""
+    return sorted(WORKSPACE_STYLES.rglob("*.css")) if WORKSPACE_STYLES.is_dir() else []
+
+
+def _stylesheets() -> str:
+    paths = [STYLES, *_workspace_stylesheets()]
+    return "\n".join(path.read_text(encoding="utf-8") for path in paths)
+
+
+def _strip_css_comments(text: str) -> str:
+    """The stylesheet without its comments. A comment mark inside a quoted string
+    (`content: "/*"`) is not one."""
+    out: list[str] = []
+    index, quote = 0, ""
+    while index < len(text):
+        char = text[index]
+        if quote:
+            out.append(char)
+            if char == "\\" and index + 1 < len(text):
+                out.append(text[index + 1])
+                index += 1
+            elif char == quote:
+                quote = ""
+        elif char in "\"'":
+            quote = char
+            out.append(char)
+        elif text.startswith("/*", index):
+            end = text.find("*/", index + 2)
+            index = len(text) if end < 0 else end + 1
+        else:
+            out.append(char)
+        index += 1
+    return "".join(out)
+
+
+@functools.lru_cache(maxsize=16)
+def _selector_text(css: str) -> str:
+    """Every selector of a stylesheet, one rule per line: what stands before a rule's block,
+    inside grouping at-rules as well. Comments, declarations (a `content` string, a value)
+    and the names of @keyframes are not selectors and are left out."""
+    found: list[str] = []
+
+    def collect(text: str) -> None:
+        for prelude, body in _css_blocks(text):
+            if body is None:
+                continue
+            if not prelude.startswith("@"):
+                found.append(prelude)
+            elif prelude.split(None, 1)[0].split("(")[0] in _GROUPING:
+                collect(body)
+
+    collect(_strip_css_comments(css))
+    return "\n".join(found)
+
+
+def _has_rule(css: str, token: str) -> bool:
+    """A class has a rule when a selector names it. The name in a comment
+    (`/* .ideal-x is styled by … */`) or in a declaration gives the element no look."""
+    return re.search(rf"\.{re.escape(token)}(?![\w-])", _selector_text(css)) is not None
+
+
+def _union(tree: Tree, name: str) -> tuple[str, ...]:
+    """The string literals of `export type <name> = "a" | "b";` in ideal/model.ts."""
+    declared = re.search(rf"export type {name} = ([^;]+);", tree.read(MODEL))
+    return tuple(re.findall(r'"([\w-]+)"', declared.group(1))) if declared else ()
+
+
+def unstyled_class_names(
+    tree: Tree,
+    css: str | None = None,
+    pending: frozenset[str] = PENDING_STYLE,
+) -> list[str]:
+    """Every class the workspace writes has a rule in globals.css or in a file of
+    styles/workspace: a class without one names a look and gives none, and the element is
+    left with the reset's defaults. A token written whole (ideal-*, is-*) needs a selector
+    that contains `.token`; a template prefix needs one for each declared value (see
+    TEMPLATE_VARIANTS), and a prefix that table does not know is a fault.
+
+    What it does not see: a class glued after an interpolation (`${a}is-compact`), which the
+    parser of class names cannot read, and whether a rule that exists is enough to make the
+    element look finished. tests/visual/lib/structure.ts judges the rendered result."""
+    css = _stylesheets() if css is None else css
+    used: dict[str, str] = {}
+    for name in sorted(_workspace_modules(tree)):
+        if name.startswith("components/") or not name.endswith(".tsx"):
+            continue
+        for token in sorted(_class_names(tree.read(name))):
+            used.setdefault(token, name)
+    found = []
+    for token, name in sorted(used.items()):
+        if token in STYLED_ELSEWHERE or token in pending:
+            continue
+        if not token.endswith("-"):
+            if not _has_rule(css, token):
+                found.append(f"{name}: {token} has no rule")
+            continue
+        if token not in TEMPLATE_VARIANTS:
+            found.append(f"{name}: {token}${{…}} has no declared variants")
+            continue
+        source, base = TEMPLATE_VARIANTS[token]
+        variants = _union(tree, source) if isinstance(source, str) else source
+        if not variants:
+            found.append(f"{name}: {token}${{…}}: {source} is not declared in {MODEL}")
+        for variant in variants:
+            if variant not in base and not _has_rule(css, f"{token}{variant}"):
+                found.append(f"{name}: {token}{variant} has no rule")
+    for token in sorted(pending):
+        if token not in used:
+            found.append(f"PENDING_STYLE: {token} is not used any more")
+        elif _has_rule(css, token):
+            found.append(f"PENDING_STYLE: {token} has a rule now")
+    return found
+
+
+_SCOPE = re.compile(
+    r"(?:(?::root(?:\[[^\]]*\]|:not\([^)]*\))*\s+)?\.ideal-v3-app(?![\w-])"
+    r"|(?:body|html):has\(\s*\.ideal-v3-app(?![\w-]))"
+)
+_GROUPING = ("@media", "@supports", "@layer", "@container")
+_TOKEN_ONLY = re.compile(r"font-size|border(?:-[a-z]+){0,2}-radius")
+# A size is a step of the scale and a radius is a radius token: the variable is one of these
+# families. A variable of any other name could hold a literal (`--s: 9px; font-size:
+# var(--s)`), and so could a variable of a family that a purpose file declares again, so the
+# families are declared in scale.css only (tokens.css, which is generated, declares the rest).
+_SIZE_FAMILIES = ("--ideal-v3-text-", "--font-size-")
+_RADIUS_FAMILIES = ("--radius-", "--ideal-v3-radius-")
+_VARIABLE = re.compile(r"var\((--[\w-]+)\)")
+SCALE_SHEET = "scale.css"
+INDEX_SHEET = "index.css"
+# `@import "./name.css"` (or url("./name.css")): a file of the same directory, nothing after it.
+_OWN_IMPORT = re.compile(r"""@import\s+(?:url\(\s*)?(["'])\./[\w-]+\.css\1\s*\)?""")
+
+
+def _token_value(name: str, value: str) -> bool:
+    """`value` of font-size or of a radius property is inherit, a variable of the property's
+    family or, for a radius, 50%."""
+    families = _SIZE_FAMILIES if name == "font-size" else _RADIUS_FAMILIES
+    parts = value.split()
+    return bool(parts) and all(
+        part == "inherit"
+        or (part == "50%" and name != "font-size")
+        or (
+            (variable := _VARIABLE.fullmatch(part)) is not None
+            and variable.group(1).startswith(families)
+        )
+        for part in parts
+    )
+
+
+def _skip_string(text: str, index: int) -> int:
+    """The index after the quoted string that starts at `index`."""
+    quote = text[index]
+    index += 1
+    while index < len(text) and text[index] != quote:
+        index += 2 if text[index] == "\\" else 1
+    return index + 1
+
+
+def _css_blocks(text: str) -> list[tuple[str, str | None]]:
+    """(prelude, body) of each top-level rule; a statement without a block has body None.
+    A brace or a semicolon inside a quoted string (`content: "}"`, `[title="{"]`) is text.
+    """
+    blocks: list[tuple[str, str | None]] = []
+    index = 0
+    while index < len(text):
+        stop = index
+        while stop < len(text) and text[stop] not in "{;}":
+            stop = _skip_string(text, stop) if text[stop] in "\"'" else stop + 1
+        stop = min(stop, len(text))
+        prelude = text[index:stop].strip()
+        if stop >= len(text) or text[stop] != "{":
+            if prelude:
+                blocks.append((prelude, None))
+            index = stop + 1
+            continue
+        depth, close = 1, stop + 1
+        while close < len(text) and depth:
+            if text[close] in "\"'":
+                close = _skip_string(text, close)
+                continue
+            depth += {"{": 1, "}": -1}.get(text[close], 0)
+            close += 1
+        blocks.append((prelude, text[stop + 1 : close - 1]))
+        index = close
+    return blocks
+
+
+def _split_selectors(prelude: str) -> list[str]:
+    """The selectors of a list: split at the commas that are outside parentheses, brackets
+    and quoted strings. (`[title=")"]` holds a parenthesis that closes nothing.)"""
+    parts: list[str] = []
+    depth, start, index = 0, 0, 0
+    while index < len(prelude):
+        char = prelude[index]
+        if char in "\"'":
+            index = _skip_string(prelude, index)
+            continue
+        if char in "([":
+            depth += 1
+        elif char in ")]":
+            depth -= 1
+        elif char == "," and depth <= 0:
+            parts.append(prelude[start:index].strip())
+            start = index + 1
+        index += 1
+    parts.append(prelude[start:].strip())
+    return parts
+
+
+def _leaves_the_frame(selector: str, scope_end: int) -> bool:
+    """True when the compound that names the frame is followed by a sibling combinator
+    (`.ideal-v3-app ~ .x`, `.ideal-v3-app:hover + *`): what such a selector matches stands
+    beside the frame, not in it. A sibling combinator further on relates two elements that
+    are both inside the frame."""
+    index = scope_end
+    depth = selector[:scope_end].count("(") - selector[:scope_end].count(")")
+    while index < len(selector):
+        char = selector[index]
+        if char in "\"'":
+            index = _skip_string(selector, index)
+            continue
+        if char in "([":
+            depth += 1
+        elif char in ")]":
+            depth -= 1
+        elif depth <= 0 and (char.isspace() or char in ">+~"):
+            break
+        index += 1
+    return selector[index:].lstrip()[:1] in ("+", "~")
+
+
+def css_scope_faults(text: str, name: str = "") -> list[str]:
+    """A stylesheet of styles/workspace cannot reach the established product or /preview and
+    /showcase, and takes its sizes from the scale. `name` is the file's path under
+    styles/workspace; it decides what only index.css and scale.css may hold.
+
+    Every selector starts with `.ideal-v3-app` (or `:root[…] .ideal-v3-app` for a theme,
+    or `body:has(.ideal-v3-app…)` / `html:has(.ideal-v3-app…)` for what must be set on the
+    document), and the compound that names the frame is not followed by a sibling
+    combinator. A class name that contains `v3` is not a scope: ideal/screens uses several.
+    `font-size` and every `border-radius` take `inherit`, a variable of their family
+    (`--ideal-v3-text-*`, `--font-size-*`; `--radius-*`, `--ideal-v3-radius-*`) or, for a
+    radius, `50%`, and `font` only `inherit`: a literal there, or a variable of another name
+    that could hold one, is a size outside the five-step scale. The variables of those
+    families are declared in scale.css only. `@import` is index.css's alone, and only of a
+    .css file of its own directory: anything else could bring in a stylesheet this reader
+    never sees. A nested rule and an at-rule other than @import, @charset, @media,
+    @supports, @layer, @container and @keyframes are faults, because this reader would not
+    see the selectors inside them.
+
+    Blind spots: a selector that starts in the frame and leaves it through `:has()` on the
+    document (`body:has(.ideal-v3-app) .x`) is allowed by design and is not judged further;
+    a variable of a family is trusted to hold a size of the scale because scale.css and the
+    generated tokens.css are its only authors (what scale.css itself declares is not
+    measured); `@keyframes` blocks and the values of other properties are not read."""
+    found: list[str] = []
+
+    def judge(css: str) -> None:
+        for prelude, body in _css_blocks(css):
+            if prelude.startswith("@"):
+                at_rule = prelude.split(None, 1)[0].split("(")[0]
+                if body is None:
+                    if at_rule == "@import":
+                        if name != INDEX_SHEET:
+                            found.append(f"@import outside {INDEX_SHEET}: {prelude}")
+                        elif not _OWN_IMPORT.fullmatch(prelude):
+                            found.append(
+                                f"@import of something other than a .css file of the same directory: {prelude}"
+                            )
+                    elif at_rule != "@charset":
+                        found.append(f"at-rule not allowed: {prelude}")
+                elif at_rule in _GROUPING:
+                    judge(body)
+                elif at_rule != "@keyframes":
+                    found.append(f"at-rule not allowed: {prelude}")
+                continue
+            if body is None:
+                found.append(f"not a rule: {prelude}")
+                continue
+            for selector in _split_selectors(prelude):
+                scope = _SCOPE.match(selector)
+                if not scope:
+                    found.append(f"selector outside the workspace: {selector}")
+                elif _leaves_the_frame(selector, scope.end()):
+                    found.append(
+                        f"selector outside the workspace (a sibling of the frame): {selector}"
+                    )
+            if _css_blocks(body) and any(
+                inner is not None for _, inner in _css_blocks(body)
+            ):
+                found.append(f"nested rule in: {prelude}")
+                continue
+            for declaration, _none in _css_blocks(body):
+                property_name, colon, value = declaration.partition(":")
+                property_name = property_name.strip().lower()
+                value = value.replace("!important", "").strip()
+                if not colon:
+                    continue
+                if property_name.startswith("--"):
+                    if name != SCALE_SHEET and property_name.startswith(
+                        _SIZE_FAMILIES + _RADIUS_FAMILIES
+                    ):
+                        found.append(
+                            f"{property_name} is a variable of the scale, declared outside {SCALE_SHEET} ({prelude})"
+                        )
+                    continue
+                literal = (property_name == "font" and value != "inherit") or (
+                    _TOKEN_ONLY.fullmatch(property_name) is not None
+                    and not _token_value(property_name, value)
+                )
+                if literal:
+                    found.append(f"{property_name}: {value} is not a token ({prelude})")
+
+    judge(_strip_css_comments(text))
+    return found
+
+
+# An import or re-export statement that is loaded at run time, with its keyword and its
+# clause: the default name, `{ A, B as C, type T }`, `* as N`. `import type …` and
+# `export type …` are left out by the look-ahead, a side-effect import (`import "./x.css"`)
+# has no clause and no name.
+_VALUE_STATEMENT = re.compile(
+    r"""\b(import|export)\s+(?!type\b)([\w$\s,{}*]+?)\s*from\s*["']([^"']+)["']"""
+)
+# The name of a component: Pascal case with a lower-case letter. `REVIEW_TASK`, `useLive`,
+# `labelOf` and `LABELS` are not one.
+_COMPONENT_NAME = re.compile(r"[A-Z][A-Za-z0-9]*[a-z][A-Za-z0-9]*")
+# What a client module exports by default, where it can be read: a named function or class,
+# a name (`export default labels;`, `export { labels as default }`), or a literal.
+_DEFAULT_EXPORT = re.compile(
+    r"""\bexport\s+default\s+(?:(?:async\s+)?function\b\s*\*?\s*(?P<function>[\w$]*)"""
+    r"""|class\b\s*(?P<class>[\w$]*)|(?P<name>[A-Za-z_$][\w$]*)\s*(?:;|$)|(?P<literal>[\[{"'`0-9]))"""
+    r"""|\bexport\s*\{[^}]*?\b(?P<alias>[\w$]+)\s+as\s+default\b""",
+    re.M,
+)
+
+
+def _imported_bindings(clause: str) -> list[tuple[str, str]]:
+    """(the name the other module exports it under, the local name) for each name a clause
+    takes: `default` for the default import, `*` for a namespace; type-only names are left
+    out."""
+    braces = re.search(r"\{([^}]*)\}", clause)
+    outside = re.sub(r"\{[^}]*\}", "", clause)
+    bindings: list[tuple[str, str]] = []
+    for part in outside.split(","):
+        words = part.split()
+        if words[:1] == ["*"]:
+            bindings.append(("*", words[-1]))
+        elif len(words) == 1 and re.fullmatch(r"[\w$]+", words[0]):
+            bindings.append(("default", words[0]))
+    for part in (braces.group(1) if braces else "").split(","):
+        words = part.split()
+        if words and words[0] != "type":
+            bindings.append((words[0], words[-1]))
+    return bindings
+
+
+def _imported_names(clause: str) -> list[str]:
+    """The names a clause takes from the other module, as that module exports them."""
+    return [exported for exported, _local in _imported_bindings(clause)]
+
+
+def _value_use(text: str, local: str) -> str | None:
+    """How `local` is used as a value and not rendered: a property read (`Labels.x`,
+    `<Menu.Item>`), a call (`Foo(…)`, a tagged template), an index, or `new`. None when it
+    is only rendered as a JSX tag, named in a type, or handed on as it is."""
+    name = re.escape(local)
+    use = re.search(
+        rf"(?<![\w$.<]){name}\s*(?:\.(?!\.)|\(|\[|`)|\bnew\s+{name}\b|<\s*{name}\s*\.",
+        text,
+    )
+    return use.group(0).strip() if use else None
+
+
+def _default_export_that_is_no_component(text: str) -> str | None:
+    """What a module exports by default when that can be read and is not a component: the
+    name of a function, a class or a value that is not a component's name, or `a literal`.
+    None for a component's name and for what cannot be read here (an anonymous function,
+    `memo(…)`, an arrow)."""
+    found = _DEFAULT_EXPORT.search(text)
+    if not found:
+        return None
+    if found.group("literal"):
+        return "a literal"
+    name = (
+        found.group("function")
+        or found.group("class")
+        or found.group("name")
+        or found.group("alias")
+    )
+    return name if name and not _COMPONENT_NAME.fullmatch(name) else None
+
+
+def client_values_read_by_server_modules(tree: Tree) -> list[str]:
+    """A module without "use client" takes nothing but components from a module with it, and
+    does nothing with them but render them.
+    In a React Server Components build every export of a client module is, on the server, a
+    reference to that module: a component can be rendered through it, but a constant, a
+    function or a hook read on the server is the reference and not the value (a task id
+    handed to a jump button is then not the string, although Jest and Storybook, which
+    load the real module, show it working). So in every module a workspace URL or the
+    showcase can load, under features/workspace and app/workspace, a run-time import or
+    re-export from a client module names components only: the default export, or a name in
+    Pascal case with a lower-case letter. What is imported under such a name is then used
+    as a component: a property read (`Labels.x`, `<Menu.Item>`), a call (`Foo(…)`), an index
+    or `new` on it is a value read through the reference, and a fault. A default export that
+    can be read to be something else (a function, class or value whose name is not a
+    component's, a literal) is a fault as well. A value both sides need lives in a module
+    without the directive (the route's model.ts).
+
+    Blind spots, stated so that nobody reads more into a green result:
+    - "Component" is judged by the exported name. A value named like a component that is
+      only handed on (`options={Labels}`, `[Labels]`) passes: handing a reference on is what
+      a server module may do with a component, and the two cannot be told apart here. A
+      component exported under another kind of name fails and has to be renamed.
+    - The default export is taken to be a component unless its declaration says otherwise:
+      an anonymous function, an arrow, `memo(…)`, `forwardRef(…)` and a name the module
+      imported from elsewhere are not read.
+    - A use is found in the module's text without its comments, not in its syntax tree: the
+      local name followed by `.`, `(`, `[` or a back-tick inside a string or in JSX text
+      would be reported, and a use through another name (`const L = Labels; L.x`) is not
+      seen. A re-export has no local name and is judged by the exported name alone.
+    - A namespace import (`* as N`) of a client module is always a fault, used or not.
+    - `require()` and `import()` are not read, and neither is what a client module itself
+      re-exports from a third module.
+    - A module without the directive that only client modules import is bundled for the
+      browser and would get the value; it is judged all the same, which is never wrong.
+    - Tests, stories and `__fixtures__` are not part of a route and are not judged.
+    """
+    found = []
+    for name in sorted(_workspace_modules(tree)):
+        if not name.startswith((f"{FEATURES}/", f"{WORKSPACE}/")):
+            continue
+        if not _is_source(name) or _uses_client(tree, name):
+            continue
+        text = _strip_comments(tree.read(name))
+        body = _VALUE_STATEMENT.sub("", text)
+        for keyword, clause, specifier in _VALUE_STATEMENT.findall(text):
+            target = tree.resolve(specifier, name)
+            if target is None or not _uses_client(tree, target):
+                continue
+            for taken, local in _imported_bindings(clause):
+                if taken != "default" and not _COMPONENT_NAME.fullmatch(taken):
+                    found.append(
+                        f"{name}: takes {taken} from the client module {target}"
+                    )
+                    continue
+                if taken == "default":
+                    other = _default_export_that_is_no_component(
+                        _strip_comments(tree.read(target))
+                    )
+                    if other:
+                        found.append(
+                            f"{name}: takes the default export of the client module {target}, which is not a component ({other})"
+                        )
+                        continue
+                use = _value_use(body, local) if keyword == "import" else None
+                if use:
+                    found.append(
+                        f"{name}: reads {local} of the client module {target} as a value ({use})"
+                    )
+    return found
+
+
 def forbidden_imports_under_features(tree: Tree) -> list[str]:
     """No file under features/workspace, tests included, imports an established component
     (other than the three allowed modules) or a screen under ideal/screens."""
@@ -692,16 +1190,61 @@ def document_faults(readme: str, verification: str) -> list[str]:
     return found
 
 
+_ROUTE_OF = re.compile(r'routeOf\(\s*"([a-z-]+/[a-z-]+)"\s*\)')
+
+
+def undeclared_route_links(
+    tree: Tree, use_cases: list[dict[str, object]] | None = None
+) -> list[str]:
+    """A link from one route to another is a transition the use-case contract declares.
+
+    Every `routeOf("screen/view")` in the directory of a route (not its tests) names where
+    the route can lead. The contract has no row per pair of routes: a use case names its own
+    route and the routes its flow passes through (`transitions`). A link is declared when
+    one use case names both ends, as its route or among its transitions. A link in a shared
+    part is not judged here (the part does not know which route shows it).
+    """
+    document = json.loads(USE_CASES.read_text(encoding="utf-8"))
+    rows = document["use_cases"] if use_cases is None else use_cases
+    flows = [{row["route"], *row["transitions"]} for row in rows]  # type: ignore[misc]
+    contract = _contract()
+    found = []
+    for key, source in sorted(contract.items()):
+        directory = _route_directory(key)
+        for name in sorted(tree.under(directory)):
+            if (
+                "/__tests__/" in name
+                or "/__fixtures__/" in name
+                or not _is_source(name)
+            ):
+                continue
+            for target_key in sorted(
+                set(_ROUTE_OF.findall(_strip_comments(tree.read(name))))
+            ):
+                target = contract.get(target_key)
+                if target is None or target == source:
+                    continue
+                if not any(source in flow and target in flow for flow in flows):
+                    found.append(
+                        f"{name}: the link from {source} to {target} is not a "
+                        "transition of any use case"
+                    )
+    return found
+
+
 RULES: dict[str, Callable[[Tree], list[str]]] = {
+    "undeclared_route_links": undeclared_route_links,
     "established_modules_reached": established_modules_reached,
     "established_links": established_links,
     "free_workspace_urls": free_workspace_urls,
     "route_definition_faults": route_definition_faults,
     "server_modules_reached_by_client_code": server_modules_reached_by_client_code,
     "server_action_faults": server_action_faults,
+    "client_values_read_by_server_modules": client_values_read_by_server_modules,
     "showcase_differences": showcase_differences,
     "cross_purpose_renders": cross_purpose_renders,
     "foreign_class_names": foreign_class_names,
+    "unstyled_class_names": unstyled_class_names,
     "forbidden_imports_under_features": forbidden_imports_under_features,
     "unreached_workspace_sources": unreached_workspace_sources,
     "compatibility_showcase_faults": compatibility_showcase_faults,
@@ -725,13 +1268,15 @@ def test_public_documents_state_what_is_enforced_and_no_longer_the_gap() -> None
 
 INPUT_VIEW = f"{FEATURES}/planning/input/InputView.tsx"
 INPUT_ROUTE = f"{FEATURES}/planning/input/route.ts"
-AUDIT_VIEW = f"{FEATURES}/governance/audit/AuditView.tsx"
+PRIVACY_VIEW = f"{FEATURES}/governance/privacy/PrivacyView.tsx"
 HOME_QUEUE = f"{FEATURES}/home/HomeQueue.tsx"
 SHOWCASE_ROUTE = f"{SHOWCASE}/ShowcaseRoute.tsx"
 VIEW_PAGE = f"{WORKSPACE}/[screen]/[view]/page.tsx"
 NOT_FOUND, ERROR = BOUNDARIES
 ROUTES = f"{SHELL}routes.ts"
 RUNTIME = f"{SHELL}WorkspaceRuntime.tsx"
+ACTUALS_VIEW = f"{FEATURES}/governance/actuals/ActualsView.tsx"
+ACTUALS_TASKS = f"{FEATURES}/governance/actuals/ActualTasks.tsx"
 ROUTE_PAGE = f"{SHELL}WorkspaceRoutePage.tsx"
 STACK = 'return <div className="ideal-stack">'
 RE_EXPORT = 'export { default } from "@/features/workspace/shared/ExportPublication";\n'
@@ -849,11 +1394,11 @@ MUTATIONS: list[tuple[str, str, Callable[[Tree], Tree], str]] = [
         "free_workspace_urls",
         "a view writes a /workspace URL instead of naming a route",
         lambda tree: tree.edited(
-            AUDIT_VIEW,
-            'routeOf("governance/privacy").route',
-            '"/workspace/governance/privacy"',
+            PRIVACY_VIEW,
+            'routeOf("governance/audit").route',
+            '"/workspace/governance/audit"',
         ),
-        AUDIT_VIEW,
+        PRIVACY_VIEW,
     ),
     (
         "route_definition_faults",
@@ -1160,6 +1705,101 @@ MUTATIONS: list[tuple[str, str, Callable[[Tree], Tree], str]] = [
         "a Client Component imports the Server Action",
     ),
     (
+        "client_values_read_by_server_modules",
+        "a server-rendered view reads a task id that a client module exports",
+        lambda tree: tree.edited(
+            ACTUALS_TASKS,
+            "export default function ActualTasks",
+            'export const REVIEW_ID = "actuals-task-review";\n'
+            "export default function ActualTasks",
+        ).edited(
+            ACTUALS_VIEW,
+            'import ActualTasks from "./ActualTasks";',
+            'import ActualTasks, { REVIEW_ID } from "./ActualTasks";',
+        ),
+        f"{ACTUALS_VIEW}: takes REVIEW_ID from the client module {ACTUALS_TASKS}",
+    ),
+    (
+        "client_values_read_by_server_modules",
+        "a server-rendered view calls a hook of a client module",
+        _import_into(
+            ACTUALS_VIEW,
+            'import { useLive as live } from "../../shell/WorkspaceRuntime";',
+        ),
+        f"takes useLive from the client module {RUNTIME}",
+    ),
+    (
+        "client_values_read_by_server_modules",
+        "a module without the directive passes a client module's value on",
+        _import_into(
+            f"{FEATURES}/governance/actuals/model.ts",
+            'export { REVIEW_ID } from "./ActualTasks";',
+        ),
+        f"takes REVIEW_ID from the client module {ACTUALS_TASKS}",
+    ),
+    (
+        "client_values_read_by_server_modules",
+        "a server-rendered view reads a property of what it imported as a component",
+        lambda tree: tree.edited(
+            ACTUALS_VIEW,
+            "export default function ActualsView",
+            "const REVIEW_ID = ActualTasks.reviewId;\nexport default function ActualsView",
+        ),
+        f"{ACTUALS_VIEW}: reads ActualTasks of the client module {ACTUALS_TASKS} as a value (ActualTasks.)",
+    ),
+    (
+        "client_values_read_by_server_modules",
+        "a server-rendered view calls what a client module exports under a component's name",
+        lambda tree: tree.edited(
+            ACTUALS_TASKS,
+            "export default function ActualTasks",
+            "export function TaskLabels() { return {}; }\n"
+            "export default function ActualTasks",
+        ).edited(
+            ACTUALS_VIEW,
+            'import ActualTasks from "./ActualTasks";',
+            'import ActualTasks, { TaskLabels as Labels } from "./ActualTasks";\n'
+            "const LABELS = Labels();",
+        ),
+        f"{ACTUALS_VIEW}: reads Labels of the client module {ACTUALS_TASKS} as a value (Labels()",
+    ),
+    (
+        "client_values_read_by_server_modules",
+        "a server-rendered view renders a member of a client module's export",
+        lambda tree: tree.edited(
+            ACTUALS_VIEW,
+            "export default function ActualsView",
+            "export const Part = () => <ActualTasks.Review />;\nexport default function ActualsView",
+        ),
+        f"{ACTUALS_VIEW}: reads ActualTasks of the client module {ACTUALS_TASKS} as a value (<ActualTasks.)",
+    ),
+    (
+        "client_values_read_by_server_modules",
+        "a client module's default export is a hook, and a server-rendered view takes it",
+        lambda tree: tree.edited(
+            ACTUALS_TASKS,
+            "export default function ActualTasks",
+            "export function ActualTasks",
+        )
+        .edited(
+            ACTUALS_TASKS,
+            '"use client";',
+            '"use client";\nexport default function useActualTasks() { return null; }',
+        )
+        .edited(
+            ACTUALS_VIEW,
+            'import ActualTasks from "./ActualTasks";',
+            'import Tasks, { ActualTasks } from "./ActualTasks";',
+        ),
+        f"{ACTUALS_VIEW}: takes the default export of the client module {ACTUALS_TASKS}, which is not a component (useActualTasks)",
+    ),
+    (
+        "client_values_read_by_server_modules",
+        "a server-rendered view takes a client module as a namespace",
+        _import_into(ACTUALS_VIEW, 'import * as tasks from "./ActualTasks";'),
+        f"{ACTUALS_VIEW}: takes * from the client module {ACTUALS_TASKS}",
+    ),
+    (
         "showcase_differences",
         "the showcase gets a screen of its own",
         lambda tree: _import_into(
@@ -1209,6 +1849,44 @@ MUTATIONS: list[tuple[str, str, Callable[[Tree], Tree], str]] = [
             INPUT_VIEW, STACK, 'return <div className="ideal-stack space-y-2">'
         ),
         "space-y-2",
+    ),
+    (
+        "unstyled_class_names",
+        "a view uses a class no stylesheet has a rule for",
+        lambda tree: tree.edited(
+            INPUT_VIEW,
+            STACK,
+            'return <div className="ideal-stack ideal-unruled-example">',
+        ),
+        f"{INPUT_VIEW}: ideal-unruled-example has no rule",
+    ),
+    (
+        "unstyled_class_names",
+        "an island marks a state with an is- class no stylesheet knows",
+        lambda tree: tree.edited(
+            HOME_QUEUE,
+            'className="ideal-link ideal-link--target"',
+            'className={`ideal-link ${ready ? "is-unruled" : ""}`}',
+        ),
+        f"{HOME_QUEUE}: is-unruled has no rule",
+    ),
+    (
+        "unstyled_class_names",
+        "a view builds a class from a prefix whose values nobody declared",
+        lambda tree: tree.edited(
+            INPUT_VIEW,
+            STACK,
+            "return <div className={`ideal-stack ideal-step--${step}`}>",
+        ),
+        f"{INPUT_VIEW}: ideal-step--${{…}} has no declared variants",
+    ),
+    (
+        "unstyled_class_names",
+        "the tone union gains a value that the pill has no rule for",
+        lambda tree: tree.edited(
+            MODEL, '| "danger" | "info";', '| "danger" | "info" | "urgent";'
+        ),
+        "ideal/ui/atoms.tsx: ideal-pill--urgent has no rule",
     ),
     (
         "forbidden_imports_under_features",
@@ -1261,6 +1939,16 @@ MUTATIONS: list[tuple[str, str, Callable[[Tree], Tree], str]] = [
         "the workspace's error page stops being a Client Component",
         lambda tree: tree.edited(ERROR, '"use client";', ""),
         "is not a Client Component",
+    ),
+    (
+        "undeclared_route_links",
+        "a route links to a route no use case of it passes through",
+        lambda tree: tree.edited(
+            f"{FEATURES}/planning/publications/PublicationsView.tsx",
+            'routeOf("settings/notifications")',
+            'routeOf("governance/recovery")',
+        ),
+        "the link from /workspace/plan/publications to /workspace/governance/recovery",
     ),
     (
         "re_exports_left_in_components",
@@ -1393,6 +2081,445 @@ def test_class_names_are_read_from_literals_templates_and_expressions() -> None:
     }
     assert _USE_CLIENT.match('// note\n/* more */\n"use client";\nimport x from "y";')
     assert not _USE_CLIENT.match('import x from "y";\nconst s = "use client";')
+
+
+def test_a_client_export_is_rendered_or_handed_on_and_never_read() -> None:
+    """Positive and negative strings for the two readers the rule gained."""
+    for text, use in (
+        ("const id = Labels.review;", "Labels."),
+        ("const all = Labels [0];", "Labels ["),
+        ("const view = Tasks({ a: 1 });", "Tasks("),
+        ("const made = new Tasks();", "new Tasks"),
+        ("const said = Tasks`x`;", "Tasks`"),
+        ("return <Tasks.Review />;", "<Tasks."),
+        ("return <p>{Labels.name}</p>;", "Labels."),
+    ):
+        local = "Labels" if "Labels" in text else "Tasks"
+        assert _value_use(text, local) == use, text
+    for text in (
+        "return <Tasks listing={listing} />;",
+        "return <Tasks>{children}</Tasks>;",
+        "type Props = ComponentProps<typeof Tasks>;",
+        "export default defineRoute({ key, View: Tasks });",
+        "const parts = [Tasks, Labels];",
+        "return <Frame icon={Tasks} {...Labels} />;",
+        "const other = model.Tasks(1) + AllTasks(2) + TasksList.x + $Tasks.y;",
+        "return <AllTasks.Item />;",
+    ):
+        assert _value_use(text, "Tasks") is None, text
+    for text, what in (
+        ("export default function useTasks() {}", "useTasks"),
+        ("export default async function load() {}", "load"),
+        ("export default class store {}", "store"),
+        ("const labels = {};\nexport default labels;", "labels"),
+        ("export default LABELS;", "LABELS"),
+        ('export default { review: "x" };', "a literal"),
+        ('export default "review";', "a literal"),
+        ("export default [1, 2];", "a literal"),
+        ("const labels = {};\nexport { labels as default };", "labels"),
+    ):
+        assert _default_export_that_is_no_component(text) == what, text
+    for text in (
+        "export default function Tasks() {}",
+        "export default class Tasks extends Component {}",
+        "function Tasks() {}\nexport default Tasks;",
+        "export { Tasks as default };",
+        # Not readable here: taken to be a component (a stated blind spot).
+        "export default function () {}",
+        "export default memo(Tasks);",
+        "export default () => null;",
+        "export const Tasks = 1;",
+    ):
+        assert _default_export_that_is_no_component(text) is None, text
+    assert _imported_bindings("Tasks, { A, B as C, type T, default as D }") == [
+        ("default", "Tasks"),
+        ("A", "A"),
+        ("B", "C"),
+        ("default", "D"),
+    ]
+    assert _imported_bindings("* as all") == [("*", "all")]
+    assert _imported_names("Tasks, { A, B as C, type T }") == ["default", "A", "B"]
+
+
+def test_a_template_class_needs_a_rule_for_each_declared_value() -> None:
+    css = _stylesheets()
+    assert _union(REAL, "Tone") == ("neutral", "good", "warn", "danger", "info")
+    assert _union(REAL, "MetricTone") == ("neutral", "good", "warn", "danger")
+    # The neutral tone is the base class's own look, so its absence is not a fault ...
+    without_neutral = re.sub(r"\.ideal-pill--neutral(?![\w-])", ".ideal-lost", css)
+    assert not _has_rule(without_neutral, "ideal-pill--neutral")
+    assert unstyled_class_names(REAL, without_neutral) == []
+    # ... and every other value is: a stylesheet that loses one is reported.
+    for token in ("ideal-pill--info", "ideal-metric--danger", "ideal-dot--new"):
+        assert _has_rule(css, token)
+        lost = re.sub(rf"\.{token}(?![\w-])", ".ideal-lost", css)
+        assert any(
+            fault.endswith(f"{token} has no rule")
+            for fault in unstyled_class_names(REAL, lost)
+        ), token
+    # A rule for a longer name is not a rule for the shorter one.
+    assert _has_rule(
+        ".ideal-case-summary__head { margin: 0 }", "ideal-case-summary__head"
+    )
+    assert not _has_rule(
+        ".ideal-case-summary__head { margin: 0 }", "ideal-case-summary"
+    )
+    assert not _has_rule(
+        ".ideal-button--danger-soft { margin: 0 }", "ideal-button--danger"
+    )
+
+
+def test_a_class_is_ruled_by_a_selector_and_by_nothing_else() -> None:
+    """A class named in a comment or in a declaration has no look: only a selector gives one."""
+    ruled = "@media (max-width: 520px) { @supports (display: grid) { .ideal-v3-app .ideal-v3-example > li { margin: 0; } } }"
+    assert _has_rule(ruled, "ideal-v3-example")
+    for unruled in (
+        "/* .ideal-v3-example is drawn by the browser */ .ideal-v3-app .ideal-note { margin: 0; }",
+        "/* .ideal-v3-example { margin: 0; } */",
+        '.ideal-v3-app .ideal-note::before { content: ".ideal-v3-example"; }',
+        ".ideal-v3-app .ideal-note { --ideal-v3-note: .ideal-v3-example; }",
+        "@keyframes ideal-v3-turn { from { rotate: 0deg; } } .ideal-v3-app .ideal-note { animation-name: ideal-v3-example; }",
+        '@import "./.ideal-v3-example.css";',
+    ):
+        assert not _has_rule(unruled, "ideal-v3-example"), unruled
+    # A brace in a string does not end the rule, and a comment mark in a string starts none.
+    quoted = '.ideal-v3-app .ideal-note::before { content: "}"; } .ideal-v3-app .ideal-v3-example { margin: 0; }'
+    assert _has_rule(quoted, "ideal-v3-example")
+    marked = '.ideal-v3-app .ideal-note::before { content: "/*"; } .ideal-v3-app .ideal-v3-example { margin: 0; } /* */'
+    assert _has_rule(marked, "ideal-v3-example")
+    # On the real tree: a class that loses its selector and keeps only a mention in a comment is reported.
+    css = _stylesheets()
+    token = "ideal-v3-scroll-cue"
+    assert _has_rule(css, token)
+    commented = (
+        re.sub(rf"\.{token}(?![\w-])", ".ideal-lost", css) + f"\n/* .{token} */\n"
+    )
+    assert any(
+        fault.endswith(f"{token} has no rule")
+        for fault in unstyled_class_names(REAL, commented)
+    )
+
+
+def test_the_pending_style_list_names_only_what_is_still_unstyled() -> None:
+    """The list is not a way around the rule: without it each entry is reported, an entry that
+    has gained a rule is reported, and so is one that nothing uses."""
+    css = _stylesheets()
+    unlisted = unstyled_class_names(REAL, css, frozenset())
+    assert sorted(fault.rsplit(": ", 1)[1] for fault in unlisted) == sorted(
+        f"{token} has no rule" for token in PENDING_STYLE
+    )
+    for token in sorted(PENDING_STYLE):
+        ruled = f"{css}\n.ideal-v3-app .{token} {{ margin: 0; }}\n"
+        assert unstyled_class_names(REAL, ruled) == [
+            f"PENDING_STYLE: {token} has a rule now"
+        ]
+    assert unstyled_class_names(
+        REAL, css, PENDING_STYLE | {"ideal-retired-example"}
+    ) == ["PENDING_STYLE: ideal-retired-example is not used any more"]
+
+
+SCOPED_STYLES = """
+/* A comment with a selector in it: .ideal-panel { font-size: 2rem } */
+.ideal-v3-app { --ideal-v3-on-teal: 255 255 255; --ideal-v3-measure: 48rem; }
+:root[data-theme="dark"] .ideal-v3-app { --ideal-v3-tint: .45; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ideal-v3-app { --ideal-v3-tint: .45; }
+}
+.ideal-v3-app .ideal-panel > h2, .ideal-v3-app .ideal-toolbar h2 {
+  font-size: var(--ideal-v3-text-lg); font-weight: var(--ideal-v3-weight-heading);
+}
+.ideal-v3-app :is(.ideal-table th, .ideal-table td) { min-width: 5em; font: inherit; }
+.ideal-v3-app .ideal-table-wrap { border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); }
+.ideal-v3-app .ideal-dot { border-radius: 50%; font-size: inherit; }
+.ideal-v3-app .ideal-v3-task { border-start-start-radius: var(--ideal-v3-radius-flat) !important; }
+.ideal-v3-app .ideal-note { font-size: var(--font-size-dense); }
+.ideal-v3-app .ideal-table-wrap + .ideal-v3-disclosure, .ideal-v3-app .ideal-note ~ .ideal-note { margin-top: 0; }
+.ideal-v3-app > .ideal-v3-main [title="a) b, c ~ d"], .ideal-v3-app:has(.ideal-detail) .ideal-note::before { content: "} ; { /* +"; }
+html:has(.ideal-v3-app .ideal-detail) { scroll-padding-bottom: 6rem; }
+body:has(.ideal-v3-app) { overflow-x: clip; }
+@media (max-width: 520px) { @supports (display: grid) { .ideal-v3-app .ideal-button { white-space: normal; min-width: 8em; } } }
+@keyframes ideal-v3-turn { from { rotate: 0deg; } to { rotate: 90deg; } }
+"""
+# What only two files may hold: the scale's own variables, and the imports of the others.
+SCALE_STYLES = """
+.ideal-v3-app { --ideal-v3-text-xs: .75rem; --ideal-v3-radius-flat: 0px; --ideal-v3-measure: 48rem; }
+:root[data-theme="dark"] .ideal-v3-app { --ideal-v3-tint: .45; }
+"""
+INDEX_STYLES = """
+@charset "utf-8";
+@import "./scale.css";
+@import './people-contracts.css';
+@import url("./shell.css");
+"""
+
+
+def test_a_workspace_stylesheet_is_scoped_to_the_workspace_and_sized_by_tokens() -> (
+    None
+):
+    assert css_scope_faults(SCOPED_STYLES) == []
+    assert css_scope_faults(SCOPED_STYLES, "people.css") == []
+    assert css_scope_faults(SCALE_STYLES, SCALE_SHEET) == []
+    assert css_scope_faults(INDEX_STYLES, INDEX_SHEET) == []
+    sheets = _workspace_stylesheets()  # none until the directory exists
+    for path in sheets:
+        name = path.relative_to(WORKSPACE_STYLES).as_posix()
+        assert css_scope_faults(path.read_text(encoding="utf-8"), name) == [], name
+    # The two files with a part of their own exist, at the top of the directory.
+    assert {INDEX_SHEET, SCALE_SHEET} <= {
+        path.relative_to(WORKSPACE_STYLES).as_posix() for path in sheets
+    }
+
+
+def test_a_stylesheet_in_a_sub_directory_is_read_like_the_others(
+    tmp_path, monkeypatch
+) -> None:
+    """A file in a folder under styles/workspace is one of the workspace's stylesheets: its
+    rules count for a class, and its selectors and sizes are judged. It is neither index.css
+    nor scale.css, whatever it is called."""
+    module = sys.modules[__name__]
+    monkeypatch.setattr(module, "WORKSPACE_STYLES", tmp_path)
+    (tmp_path / "parts").mkdir()
+    (tmp_path / "index.css").write_text('@import "./scale.css";\n', encoding="utf-8")
+    (tmp_path / "parts" / "index.css").write_text(
+        '@import "./deep.css";\n.ideal-panel { margin: 0; }\n', encoding="utf-8"
+    )
+    (tmp_path / "parts" / "scale.css").write_text(
+        ".ideal-v3-app .ideal-v3-deep-example { --ideal-v3-text-sm: 9px; }\n",
+        encoding="utf-8",
+    )
+    names = [path.relative_to(tmp_path).as_posix() for path in _workspace_stylesheets()]
+    assert names == ["index.css", "parts/index.css", "parts/scale.css"]
+    assert _has_rule(_stylesheets(), "ideal-v3-deep-example")
+    faults = {
+        name: css_scope_faults((tmp_path / name).read_text(encoding="utf-8"), name)
+        for name in names
+    }
+    assert faults["index.css"] == []
+    assert faults["parts/index.css"] == [
+        '@import outside index.css: @import "./deep.css"',
+        "selector outside the workspace: .ideal-panel",
+    ]
+    assert faults["parts/scale.css"] == [
+        "--ideal-v3-text-sm is a variable of the scale, declared outside scale.css (.ideal-v3-app .ideal-v3-deep-example)"
+    ]
+
+
+@pytest.mark.parametrize(
+    ("css", "name", "expected"),
+    [
+        # @import: index.css alone, and only a .css file beside it.
+        ('@import "./scale.css";', "primitives.css", "@import outside index.css"),
+        ('@import "./scale.css";', "", "@import outside index.css"),
+        ('@import "../globals.css";', INDEX_SHEET, "@import of something other than"),
+        ('@import "./parts/deep.css";', INDEX_SHEET, "@import of something other than"),
+        (
+            '@import "https://example.invalid/x.css";',
+            INDEX_SHEET,
+            "@import of something other than",
+        ),
+        (
+            '@import "./scale.css" screen;',
+            INDEX_SHEET,
+            "@import of something other than",
+        ),
+        ('@import "./scale.scss";', INDEX_SHEET, "@import of something other than"),
+        # A sibling of the frame is not in the frame.
+        (
+            ".ideal-v3-app ~ .ideal-panel { margin: 0; }",
+            "people.css",
+            "selector outside the workspace (a sibling of the frame): .ideal-v3-app ~ .ideal-panel",
+        ),
+        (
+            ".ideal-v3-app + * { margin: 0; }",
+            "people.css",
+            "selector outside the workspace (a sibling of the frame): .ideal-v3-app + *",
+        ),
+        (
+            ".ideal-v3-app~.ideal-panel { margin: 0; }",
+            "people.css",
+            "a sibling of the frame",
+        ),
+        (
+            ':root[data-theme="dark"] .ideal-v3-app:has(.ideal-detail, [title=")"]):hover + .ideal-panel { margin: 0; }',
+            "people.css",
+            "a sibling of the frame",
+        ),
+        (
+            ".ideal-v3-app .ideal-note, .ideal-v3-app ~ footer { margin: 0; }",
+            "people.css",
+            "(a sibling of the frame): .ideal-v3-app ~ footer",
+        ),
+        # A parenthesis in a quoted attribute closes nothing: the next selector is its own.
+        (
+            '.ideal-v3-app .ideal-note, .ideal-panel[title=")"] { margin: 0; }',
+            "people.css",
+            'selector outside the workspace: .ideal-panel[title=")"]',
+        ),
+        (
+            '.ideal-v3-app :is(.ideal-note, [title="("]), .ideal-done { margin: 0; }',
+            "people.css",
+            "selector outside the workspace: .ideal-done",
+        ),
+        # A brace in a string does not hide the rule after it.
+        (
+            '.ideal-v3-app .ideal-note::before { content: "}"; } .ideal-panel { margin: 0; }',
+            "people.css",
+            "selector outside the workspace: .ideal-panel",
+        ),
+        # A variable that is not of the property's family may hold a literal.
+        (
+            ".ideal-v3-app .ideal-note { --s: 9px; font-size: var(--s); }",
+            "people.css",
+            "font-size: var(--s) is not a token",
+        ),
+        (
+            ".ideal-v3-app .ideal-note { font-size: var(--radius-control); }",
+            "people.css",
+            "font-size: var(--radius-control) is not a token",
+        ),
+        (
+            ".ideal-v3-app .ideal-note { font-size: 50%; }",
+            "people.css",
+            "font-size: 50% is not a token",
+        ),
+        (
+            ".ideal-v3-app .ideal-table-wrap { border-radius: var(--ideal-v3-text-sm); }",
+            "people.css",
+            "border-radius: var(--ideal-v3-text-sm) is not a token",
+        ),
+        (
+            ".ideal-v3-app .ideal-table-wrap { border-radius: var(--space-2); }",
+            "people.css",
+            "border-radius: var(--space-2) is not a token",
+        ),
+        # ... and a variable of a family is declared by the scale only.
+        (
+            ".ideal-v3-app .ideal-note { --ideal-v3-text-sm: 9px; }",
+            "people.css",
+            "--ideal-v3-text-sm is a variable of the scale, declared outside scale.css",
+        ),
+        (
+            ".ideal-v3-app .ideal-note { --radius-control: 2px; }",
+            INDEX_SHEET,
+            "--radius-control is a variable of the scale, declared outside scale.css",
+        ),
+        (
+            ".ideal-v3-app .ideal-note { --font-size-dense: 9px; }",
+            "",
+            "--font-size-dense is a variable of the scale, declared outside scale.css",
+        ),
+    ],
+)
+def test_a_workspace_stylesheet_that_imports_leaves_the_frame_or_hides_a_size_is_a_fault(
+    css: str, name: str, expected: str
+) -> None:
+    """Each gap an independent review found in the rule, with the string that passed. The
+    sample without the addition has no fault under the same file name (the test above), so
+    the fault comes from the addition."""
+    base = INDEX_STYLES if name == INDEX_SHEET else SCOPED_STYLES
+    assert css_scope_faults(base, name) == []
+    faults = css_scope_faults(base + css, name)
+    assert len(faults) == 1 and expected in faults[0], faults
+
+
+@pytest.mark.parametrize(
+    ("css", "expected"),
+    [
+        # The established product and /preview, /showcase would be restyled.
+        (
+            ".ideal-panel h2 { font-weight: 700; }",
+            "selector outside the workspace: .ideal-panel h2",
+        ),
+        # A class with v3 in its name is not the scope: ideal/screens uses these.
+        (
+            ".ideal-v3-disclosure > summary { font-weight: 700; }",
+            "selector outside the workspace: .ideal-v3-disclosure > summary",
+        ),
+        (
+            ".ideal-v3-application .ideal-panel { margin: 0; }",
+            "selector outside the workspace",
+        ),
+        # One unscoped selector in a list is enough.
+        (
+            ".ideal-v3-app .ideal-note, .ideal-done { margin: 0; }",
+            "selector outside the workspace: .ideal-done",
+        ),
+        ("h2 { margin: 0; }", "selector outside the workspace: h2"),
+        (":root { --ideal-amber: 1 2 3; }", "selector outside the workspace: :root"),
+        (
+            '@media (max-width: 820px) { :root[data-theme="dark"] .ideal-panel { margin: 0; } }',
+            'selector outside the workspace: :root[data-theme="dark"] .ideal-panel',
+        ),
+        (
+            "body:has(.ideal-app) { margin: 0; }",
+            "selector outside the workspace: body:has(.ideal-app)",
+        ),
+        # Sizes outside the scale.
+        (
+            ".ideal-v3-app .ideal-note { font-size: .75rem; }",
+            "font-size: .75rem is not a token (.ideal-v3-app .ideal-note)",
+        ),
+        (
+            ".ideal-v3-app .ideal-note { font-size: var(--ideal-v3-text-sm, .8rem); }",
+            "font-size: var(--ideal-v3-text-sm, .8rem) is not a token",
+        ),
+        (
+            ".ideal-v3-app .ideal-table-wrap { border-radius: .6rem; }",
+            "border-radius: .6rem is not a token",
+        ),
+        (
+            ".ideal-v3-app .ideal-table-wrap { border-radius: var(--radius-control) 0; }",
+            "border-radius: var(--radius-control) 0 is not a token",
+        ),
+        (
+            ".ideal-v3-app .ideal-v3-task { border-top-left-radius: 4px !important; }",
+            "border-top-left-radius: 4px is not a token",
+        ),
+        (
+            ".ideal-v3-app .ideal-button { font: 700 1rem/1.4 sans-serif; }",
+            "font: 700 1rem/1.4 sans-serif is not a token",
+        ),
+        # What this reader cannot follow is refused rather than passed unread.
+        (
+            ".ideal-v3-app .ideal-panel { h2 { font-size: 2rem; } }",
+            "nested rule in: .ideal-v3-app .ideal-panel",
+        ),
+        ('@font-face { font-family: "Other"; }', "at-rule not allowed: @font-face"),
+        (
+            "@namespace svg url(http://www.w3.org/2000/svg);",
+            "at-rule not allowed: @namespace",
+        ),
+    ],
+)
+def test_a_workspace_stylesheet_out_of_scope_or_scale_is_a_fault(
+    css: str, expected: str
+) -> None:
+    faults = css_scope_faults(SCOPED_STYLES + css)
+    assert len(faults) == 1 and expected in faults[0], faults
+
+
+def test_workspace_stylesheets_are_picked_up_when_the_directory_exists(
+    tmp_path, monkeypatch
+) -> None:
+    """Without styles/workspace globals.css is all there is; with it, a rule in any of its
+    .css files counts (and nothing else in the directory does). The workspace's own classes
+    have their rules there: without the directory the real tree is reported."""
+    module = sys.modules[__name__]
+    assert WORKSPACE_STYLES == SRC / "styles/workspace"
+    assert unstyled_class_names(REAL) == []
+    monkeypatch.setattr(module, "WORKSPACE_STYLES", tmp_path / "absent")
+    assert _stylesheets() == STYLES.read_text(encoding="utf-8")
+    alone = unstyled_class_names(REAL)
+    assert any(fault.endswith("ideal-field-label has no rule") for fault in alone)
+    assert any(fault.endswith("ideal-button--danger has no rule") for fault in alone)
+    monkeypatch.setattr(module, "WORKSPACE_STYLES", tmp_path)
+    (tmp_path / "primitives.css").write_text(
+        ".ideal-v3-app .ideal-field-label { display: block; }\n", encoding="utf-8"
+    )
+    (tmp_path / "notes.txt").write_text(".ideal-button--danger { }", encoding="utf-8")
+    picked = unstyled_class_names(REAL)
+    assert not any(fault.endswith("ideal-field-label has no rule") for fault in picked)
+    assert any(fault.endswith("ideal-button--danger has no rule") for fault in picked)
 
 
 # --- the frame ------------------------------------------------------------------------
@@ -1533,7 +2660,11 @@ def test_wide_content_scrolls_in_its_own_region_and_never_widens_the_page() -> N
     than the screen. WebKit did, in two ways, and the two rules below answer them. They are
     written for the workspace only: .ideal-v3-app and .ideal-v3-content exist in the
     workspace's shell and nowhere else, while .ideal-v3-disclosure and .ideal-input are
-    also used by the v1/v2 screens and keep their rules."""
+    also used by the v1/v2 screens and keep their rules.
+
+    The region and the table are found as these exact tags, so neither may take a second
+    class: a table is given its frame, header fill and row header by rules scoped to the
+    workspace (styles/workspace), not by a variant class or a wrapping component."""
     region = re.compile(
         r'<div className="ideal-table-wrap" role="region" '
         r'aria-label=(?:"[^"]+"|\{[^}]+\}) tabIndex=\{0\}>\s*$'

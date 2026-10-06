@@ -63,11 +63,10 @@ test("the showcase shows the timeline, and the route's own words when nothing is
   expect(fetchSpy).not.toHaveBeenCalled();
 });
 
-test("the related governance routes are workspace links", async () => {
+test("the view is the timeline alone: the other governance routes are the shell's tabs and are not repeated", async () => {
   await mount(page([]), () => page([]));
-  expect(["個人情報を開く", "復旧を開く", "実績照合を開く"].map((name) => screen.getByRole("link", { name }).getAttribute("href")))
-    .toEqual(["/workspace/governance/privacy", "/workspace/governance/recovery", "/workspace/governance/actuals"]);
-  expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual(["個人情報", "復旧", "実績照合", "監査タイムライン"]);
+  expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual(["監査タイムライン"]);
+  expect(screen.queryAllByRole("link")).toEqual([]);
 });
 
 test("the first page is shown from the route's read, with no request from the browser", async () => {
@@ -75,6 +74,7 @@ test("the first page is shown from the route's read, with no request from the br
   const timeline = screen.getByRole("region", { name: "監査タイムライン" });
   expect(timeline).toHaveTextContent("欠勤同意設定を変更");
   expect(timeline).toHaveTextContent("管理記録 · 役割不明 · 関係した人 —");
+  expect(timeline).toHaveTextContent("記録種別 compliance.scope_setting");
   expect(within(timeline).queryByRole("button")).toBeNull();
   expect(calls).toEqual([]);
 });
@@ -108,9 +108,40 @@ test("an older page that cannot be read is reported in place and keeps what is s
   expect(timeline).toHaveTextContent("勤務表を公開");
 });
 
+test("the role that acted, the category and the version are shown in words, never as a code", async () => {
+  await mount(page([
+    entry("schedule.published", { actor_role: "LEADER", version: 12 }),
+    entry("change.approved", { actor_role: "PHARMACIST" }),
+    entry("membership.linked", { actor_role: "AUDITOR" as never, category: "billing" }),
+  ]), () => page([]));
+  const lines = within(screen.getByRole("region", { name: "監査タイムライン" })).getAllByRole("listitem").slice(0, 3).map((item) => item.querySelector("p")?.textContent);
+  expect(lines).toEqual([
+    "計画・公開 · 薬剤部責任者 · 関係した人 2名 · 第12版",
+    "欠勤・交換 · 薬剤師 · 関係した人 2名 · 第3版",
+    "未対応の値 · 未対応の値 · 関係した人 2名 · 第3版",
+  ]);
+  expect(screen.getByRole("region", { name: "監査タイムライン" })).not.toHaveTextContent(/LEADER|PHARMACIST|AUDITOR|billing/);
+});
+
 test("an event kind without its own wording is named by area and action", () => {
   expect(eventLabel("membership.linked")).toBe("本人アカウントを紐付け");
   expect(eventLabel("privacy.erased")).toBe("個人情報を消去");
-  expect(eventLabel("lifecycle.onboard.created")).toBe("入職・退職を記録");
-  expect(eventLabel("unknown.thing")).toBe("管理記録を記録");
+  expect(eventLabel("lifecycle.onboard.created")).toBe("入職の手続きを開始");
+  expect(eventLabel("compliance.thing")).toBe("管理記録を記録");
+  // An area this code does not know is not named as a record of another area.
+  expect(eventLabel("unknown.thing")).toBe("未対応の値");
+  expect(eventLabel("constructor.created")).toBe("未対応の値");
+  // A first part the server sorts into one of its areas has its own word (shared/labels.ts);
+  // one this code does not name is named by the area the server returned with the entry.
+  expect(eventLabel("erasure.executed", "privacy")).toBe("消去を記録");
+  expect(eventLabel("draft.created", "schedule")).toBe("勤務案を作成");
+  expect(eventLabel("leave.request", "request")).toBe("休暇を記録");
+  expect(eventLabel("actual.imported", "compliance")).toBe("勤務実績を取込");
+  expect(eventLabel("thing.done", "other")).toBe("その他");
+  // The kind's own wording and its own prefix come first; an unknown category changes nothing.
+  expect(eventLabel("schedule.published", "privacy")).toBe("勤務表を公開");
+  expect(eventLabel("privacy.erased", "nonsense")).toBe("個人情報を消去");
+  expect(eventLabel("unknown.thing", "nonsense")).toBe("未対応の値");
+  expect(eventLabel("unknown.thing", "constructor")).toBe("未対応の値");
+  expect(eventLabel("unknown.thing", null)).toBe("未対応の値");
 });

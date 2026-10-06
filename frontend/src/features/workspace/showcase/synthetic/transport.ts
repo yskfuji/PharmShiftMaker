@@ -39,11 +39,12 @@ export function syntheticRequest(empty = false, role: IdealRole = "LEADER"): Pla
   return async <T,>(path: string, method = "GET"): Promise<T> => {
     // A definite refusal: the showcase displays screens and changes nothing.
     if (method !== "GET") throw new PlanningError(422, "合成データの表示では変更を行いません。");
-    const pathname = `/planning${path}`.split("?")[0];
+    const [pathname, query = ""] = `/planning${path}`.split("?");
     const answer = workspaceV3Routes.find((route) =>
       typeof route.path === "string" ? route.path === pathname : route.path.test(pathname));
     if (!answer) throw new PlanningError(501, `合成の応答がありません: ${pathname}`);
-    const body = forRole(answer, role);
+    const whole = forRole(answer, role);
+    const body = answer.byQuery ? answer.byQuery(whole, new URLSearchParams(query)) : whole;
     return (empty ? emptied(body) : body) as T;
   };
 }

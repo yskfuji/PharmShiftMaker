@@ -124,15 +124,25 @@ test("a ledger or records read that fails is reported beside the rest; without t
 test("first the current state, the next step and the history; no form is open and nothing is read", async () => {
   const { calls } = await mount();
   expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual(["残高・申請の状態と次の操作", "現在の状態", "次の操作", "履歴"]);
-  expect(within(screen.getByRole("region", { name: "年休残高" })).getAllByRole("row").map((item) => item.textContent)).toEqual(["付与（本人／雇用主／付与日）利用可能付与の状態", "高橋 葵／合成病院／付与日 2026-01-019/2 日有効"]);
+  expect(within(screen.getByRole("region", { name: "年休残高" })).getAllByRole("row").map((item) => item.textContent)).toEqual(["付与された年休（職員／雇用主／付与日）いま使える日数有効・失効", "高橋 葵／合成病院／付与日 2026-01-019/2 日有効"]);
+  // The viewer's own figures stand first, as the server returned them; the verdict is a word in a pill whose tone is a fixed table of its code.
+  const headline = panel("現在の状態").querySelector(".ideal-v3-requests-headline")!;
+  expect(Array.from(headline.children).map((item) => [item.querySelector("dt")!.textContent, item.querySelector("dd strong")!.textContent])).toEqual([["いま使える年休（付与日 2026-01-01）", "9/2 日"], ["年5日の取得（期限 2027-01-01 の前日まで）", "1.5／5 日"]]);
+  expect(headline.querySelector(".ideal-pill")).toHaveTextContent("期限前・取得不足の見込み");
+  expect(headline.querySelector(".ideal-pill")).toHaveClass("ideal-pill--warn");
   expect(within(screen.getByRole("region", { name: "年5日の取得管理" })).getAllByRole("row")[1]).toHaveTextContent("高橋 葵／合成病院2026-01-01 〜 2027-01-011.5／5 日期限前・取得不足の見込み");
   // What the server reports, in its words; the status is given a label.
   expect(panel("現在の状態")).toHaveTextContent("サーバーの指摘（1件）未確認：Unverified external HR grant");
   expect(panel("現在の状態")).toHaveTextContent("サーバーは、残高または記録に人事との照合が必要と答えています。");
   expect(within(screen.getByRole("region", { name: "あなたの申請（取下げ済みを除く）" })).getAllByRole("row").slice(1).map((item) => item.textContent)).toEqual([
-    "あなた年次有給休暇2026-01-06 09:00 〜 2026-01-06 17:001日確認待ち—第1版", "あなた公休希望2026-01-10 09:00 〜 2026-01-10 17:00—確認済み調整記録 1第2版",
+    "あなた確認待ち年次有給休暇2026-01-06 09:00 〜 2026-01-06 17:001日—第1版", "あなた確認済み公休希望2026-01-10 09:00 〜 2026-01-10 17:00—調整記録 1第2版",
   ]);
-  expect(within(screen.getByRole("region", { name: "申請の一覧（現在の版）" })).getAllByRole("row")).toHaveLength(4);
+  // The history is placed by the state the server returned: nothing here is withdrawn, so nothing is listed as
+  // withdrawn. The one request of another person the fixture returns is listed apart, as it stands.
+  expect(screen.queryByRole("region", { name: "申請の一覧（現在の版）" })).toBeNull();
+  expect(screen.queryByRole("region", { name: "取り下げた申請（現在の版）" })).toBeNull();
+  expect(panel("履歴")).toHaveTextContent("取り下げた申請はありません。");
+  expect(within(screen.getByRole("region", { name: "そのほかの申請（現在の版）" })).getAllByRole("row").slice(1).map((item) => item.textContent)).toEqual(["相手の職員相談・判断を継続中年次有給休暇2026-01-08 13:00 〜 2026-01-08 15:002時間相談記録第2版"]);
   expect(screen.getByText("確認が済んでいない申請 2件")).toBeInTheDocument();
   for (const summary of [WISH, CLAIM, WITHDRAW, ASOF]) expect(task(summary).open).toBe(false);
   expect(within(task(CLAIM)).getByLabelText("年休付与台帳")).not.toBeVisible();
@@ -144,6 +154,68 @@ test("first the current state, the next step and the history; no form is open an
   expect(document.body.innerHTML).not.toMatch(/href="\/(planning|settings|dashboard)/);
   expect(document.body.innerHTML).not.toMatch(/class="[^"]*\b(ui-|workflow-|ideal-v3-purpose)/);
   expect(document.body).not.toHaveTextContent(/PENDING|APPROVED|REQUIRES_DISCUSSION|PAID_LEAVE|synthetic-pharmacist|at_risk/);
+});
+
+test("the header leads to the tasks; the tasks are grouped, toned and described where they are declared", async () => {
+  Element.prototype.scrollIntoView = jest.fn();
+  await mount(data(), serve(), "ADMIN");
+  const frame = (summary: string | RegExp) => task(summary).parentElement!;
+  // From the header to the two requests, and from its count to the confirmation.
+  fireEvent.click(screen.getByRole("button", { name: "公休を希望する" }));
+  expect(task(WISH).open).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "年休を請求する" }));
+  expect(screen.getByText(CLAIM, { selector: "summary" })).toHaveFocus();
+  fireEvent.click(screen.getByRole("button", { name: "確認する" }));
+  expect(task(REVIEW).open).toBe(true);
+  expect(task(WITHDRAW).open).toBe(false);
+  // The confirmation is what the route points a planner at; a lookup only shows something.
+  expect(frame(REVIEW)).toHaveClass("ideal-v3-task--primary");
+  for (const summary of [WISH, CLAIM]) expect(frame(summary)).toHaveClass("ideal-v3-task--routine");
+  // Withdrawing one's own request ends it: no operation takes the withdrawal back, so the task
+  // is one that cannot be undone and says so in words.
+  expect(frame(WITHDRAW)).toHaveClass("ideal-v3-task--danger");
+  expect(screen.getByText(WITHDRAW, { selector: "summary" })).toHaveAccessibleDescription(/^取り消せません/);
+  expect(frame(ASOF)).toHaveClass("ideal-v3-task--info");
+  // The ledger tasks keep their order, in two named groups; none is marked as one that cannot be undone.
+  const ledger = screen.getByRole("heading", { level: 3, name: "年休台帳の管理（管理者）" }).closest("section")!;
+  expect(within(ledger).getAllByRole("heading", { level: 4 }).map((heading) => heading.textContent)).toEqual(["照合・訂正・取消", "登録・変更"]);
+  expect(Array.from(ledger.querySelectorAll(".ideal-v3-task-list")).map((list) => Array.from(list.querySelectorAll("summary")).map((summary) => summary.textContent))).toEqual([
+    ["人事原本から通常・比例付与を照合する", "付与日数を訂正する", "取得・予約の記録を訂正する", "取得・予約の記録を取り消す"],
+    ["年休の付与原本を登録する", "年休の取得規則を登録・変更する", "年休の予約・取得・取消を記録する", "年5日の管理期間を登録・変更する", "人事原本の記録日時を登録する"],
+  ]);
+  expect(ledger.querySelector(".ideal-v3-task--danger")).toBeNull();
+  expect(document.querySelectorAll(".ideal-v3-task--danger")).toHaveLength(1);
+  // Every task says in one line what it does; the line describes its summary and is not part of it.
+  const summaries = Array.from(document.querySelectorAll(".ideal-v3-task > details > summary"));
+  expect(summaries).toHaveLength(14);
+  for (const summary of summaries) expect(document.getElementById(summary.getAttribute("aria-describedby") ?? "")).toHaveTextContent(/。$/);
+  // The two tables of the ledger are named apart, and the server's reports are set off together.
+  expect(within(panel("現在の状態")).getAllByRole("heading", { level: 4 }).map((heading) => heading.textContent)).toEqual(["付与ごとの残高", "年5日の取得義務", "サーバーの指摘（1件）"]);
+  expect(screen.getByText("サーバーは、残高または記録に人事との照合が必要と答えています。").parentElement).toBe(screen.getByRole("heading", { level: 4, name: "サーバーの指摘（1件）" }).closest(".ideal-v3-callout"));
+  // A planner's history is the department's list; the planner's own requests are part of it.
+  expect(within(screen.getByRole("region", { name: "申請の一覧（現在の版）" })).getAllByRole("row")).toHaveLength(4);
+  expect(screen.queryByRole("region", { name: "取り下げた申請（現在の版）" })).toBeNull();
+  document.body.innerHTML = "";
+  // A pharmacist is not led to a confirmation that is not theirs.
+  await mount();
+  expect(screen.getByRole("button", { name: "年休を請求する" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "確認する" })).toBeNull();
+});
+
+test("a pharmacist's history holds what the current state does not show: a request is listed once", async () => {
+  const withdrawn = request({ request_id: "r4", status: "CANCELLED", version: 2, payload: { start: "2026-01-03T09:00:00+09:00", end: "2026-01-03T17:00:00+09:00" }, kind: "PUBLIC_HOLIDAY_REQUEST" });
+  const { show } = await mount(data({ requests: [request(), wish, withdrawn] }));
+  const rows = (name: string) => within(screen.getByRole("region", { name })).getAllByRole("row").slice(1).map((item) => item.textContent);
+  expect(rows("あなたの申請（取下げ済みを除く）")).toHaveLength(2);
+  expect(rows("取り下げた申請（現在の版）")).toEqual(["あなた取下げ済み公休希望2026-01-03 09:00 〜 2026-01-03 17:00——第2版"]);
+  // Nothing withdrawn: the history says so and points to where the requests are.
+  show(data({ requests: [request(), wish] }));
+  expect(screen.queryByRole("region", { name: "取り下げた申請（現在の版）" })).toBeNull();
+  expect(panel("履歴")).toHaveTextContent("取り下げた申請はありません。取り下げていない申請は、上の「あなたの申請」にあります。");
+  // No request at all.
+  show(data({ requests: [] }));
+  expect(panel("履歴")).toHaveTextContent("申請の記録はありません。");
+  expect(panel("履歴")).not.toHaveTextContent("取り下げた申請はありません。");
 });
 
 test("the showcase shows each role what the API gives it, ready and empty", async () => {
@@ -166,7 +238,10 @@ test("the showcase shows each role what the API gives it, ready and empty", asyn
   const pharmacist = render(<CognitiveWorkspaceShowcase screen="requests" view="leave" role="PHARMACIST" />);
   expect(await screen.findByRole("region", { name: "年休残高" })).toHaveTextContent("高橋 葵／東都医療センター（架空）／付与日 2026-04-019 日有効");
   expect(within(screen.getByRole("region", { name: "年休残高" })).getAllByRole("row")).toHaveLength(2);
-  expect(within(screen.getByRole("region", { name: "申請の一覧（現在の版）" })).getAllByRole("row")).toHaveLength(4);
+  // The pharmacist's two requests that are not withdrawn stand under "now"; the withdrawn one is the history.
+  expect(within(screen.getByRole("region", { name: "あなたの申請（取下げ済みを除く）" })).getAllByRole("row")).toHaveLength(3);
+  expect(within(screen.getByRole("region", { name: "取り下げた申請（現在の版）" })).getAllByRole("row").slice(1).map((item) => item.textContent)).toEqual(["あなた取下げ済み公休希望2026-10-03 08:30 〜 2026-10-03 17:30——第2版"]);
+  expect(screen.queryByRole("region", { name: "申請の一覧（現在の版）" })).toBeNull();
   expect(screen.queryByText(/サーバーの指摘/)).toBeNull();
   expect(screen.queryByText(REVIEW)).toBeNull();
   // The pharmacist's synthetic rule allows hourly leave and no half days.
@@ -233,7 +308,7 @@ test("the claim form says what is checked when: the units come from the chosen r
   const notes = Array.from(task(CLAIM).querySelectorAll("form .ideal-note")).map((note) => note.textContent);
   expect(notes).toEqual([
     "選べる単位は、選んだ取得規則に登録されている設定（半日単位・時間単位を認めるか）によります。",
-    "請求の時点でサーバーが確かめるのは、入力の形式と、年休の付与があなた本人のものであることだけです。単位と数量が取得規則に合うか、残高と時間単位の年間上限に収まるかは、請求を確認して計画へ反映するときに、年休台帳と照合されます。請求の受付は、予約や取得の確定ではありません。",
+    "請求の時点で確かめられるのは、入力の形式と、年休の付与があなた本人のものであることだけです。単位と数量が取得規則に合うか、残高と時間単位の年間上限に収まるかは、請求を確認して計画へ反映するときに、年休台帳と照合されます。請求の受付は、予約や取得の確定ではありません。",
   ]);
   // Nothing on the form claims that the server accepts or refuses the claim against the rule when it is sent.
   expect(task(CLAIM)).not.toHaveTextContent("サーバーが判定します");

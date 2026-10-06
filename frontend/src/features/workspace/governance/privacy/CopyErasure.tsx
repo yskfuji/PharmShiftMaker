@@ -13,6 +13,7 @@ import InventoryList from "./InventoryList";
 import IrreversibleConfirm from "./IrreversibleConfirm";
 import { erasureLines, inventoryFacts, nameIn, splitTargets } from "./model";
 import PreservationReview from "./PreservationReview";
+import StepOutline from "./StepOutline";
 
 type PreviewBody = { expected_revision: 0; payload: { person_id: string } };
 type ExecuteBody = { expected_revision: number; payload: { plan_id: string; fingerprint: string } };
@@ -69,6 +70,8 @@ export default function CopyErasure({ people }: { people: Named[] }) {
 
   const lines = preview ? erasureLines(splitTargets(preview)) : null;
   return <div className="ideal-v3-record">
+    <StepOutline steps={["対象の職員を選ぶ", "確認版を作る（いまの残存を記録するだけです）", { step: "消去されるものと残る理由を確かめる", mark: "取り消せない記録を含むことがあります" }]} last="同意して、消去できる分を消去する"
+      more={["手順3で外部へ渡した保存物に「外部管理先の処理確認」を記録すると、その記録は取り消せません（その保存物は確認済みになり、記録し直せません）。", "手順3で記録する保全の判断は、記録し直せますが、取り下げる操作はありません。"]}>手順1〜3では、何も消去されません。消去されるのは、手順4で同意にチェックを入れ、赤いボタン「この確認版の消去可能分を実行する」を押したときだけです。消去した記録は復元できません。</StepOutline>
     <h3 className="ideal-v3-heading" {...steps.heading("target")}>1. 対象の職員を選ぶ</h3>
     <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); setDone(null); setNote(null); planning.clear(); setStage("plan"); }}>
       <label htmlFor={`${id}-person`}>コピーを確認する職員</label>
@@ -76,8 +79,13 @@ export default function CopyErasure({ people }: { people: Named[] }) {
         <option value="">選んでください</option>
         {people.map((item) => <option key={item.person_id} value={item.person_id}>{item.name}</option>)}
       </select>
-      <p className="ideal-note">バックアップ、外部コピー、未確認の記録の残存を区別して確認します。共有の記録は、他の職員の保全内容を確認してから元の版を消去します。管理ファイルは、ワーカーが保全の状態を確かめ直してから消去します。</p>
-      {stage === "idle" && <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">確認版の作成内容を確認する</button></div>}
+      <details className="ideal-v3-disclosure ideal-v3-disclosure--info"><summary>確認と消去のしくみ</summary>
+        <p className="ideal-note">バックアップ、外部コピー、未確認の記録の残存を区別して確認します。共有の記録は、他の職員の保全内容を確認してから元の版を消去します。管理ファイルの実物は、サーバーの裏側の処理（この画面では「ワーカー」と書きます）が、保全の状態を確かめ直してから消去します。</p>
+      </details>
+      {stage === "idle" && <>
+        <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">確認版の作成内容を確認する</button></div>
+        <p className="ideal-v3-governance-safe">このボタンでは、何も消去されません。確認版は、いま何が消去でき、何がなぜ残るかをサーバーに記録した一覧です。</p>
+      </>}
       {note && <p className="ideal-note" role="status">{note}</p>}
     </form>
     {stage === "plan" && <ConfirmSurface title="2. 確認版の作成前の確認"
@@ -100,6 +108,7 @@ export default function CopyErasure({ people }: { people: Named[] }) {
         <button type="button" className="ideal-button ideal-button--primary" onClick={() => { executing.clear(); setAttempt((count) => count + 1); setStage("execute"); }}>取り消せない操作の確認へ進む</button>
         <button type="button" className="ideal-button ideal-button--secondary" onClick={() => forgetPlan("この確認版は実行していません。")}>実行せずに確認版を破棄する</button>
       </div>
+      <p className="ideal-v3-governance-safe">「取り消せない操作の確認へ進む」を押しても、まだ何も消去されません。次の確認で、消去されるものと残るものを確かめてから実行します。</p>
     </>}
     {preview && lines && stage === "execute" && <IrreversibleConfirm key={attempt} title="4. 取り消せない操作の確認：消去可能分の実行"
       changes={lines.changes}

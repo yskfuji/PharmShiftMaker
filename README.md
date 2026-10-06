@@ -10,6 +10,8 @@ PharmShiftMakerは、病院薬剤部の勤務計画、当日の変更、休暇�
 - `src/shift_scheduler/config`及び`ops/attendance_mapping.example.yaml`の人物は、ID・表示名とも公開試験用の合成データである。導入時は、導入機関が管理する情報へ置き換える。
 - 認知中心UI v3は `IDEAL_UI=1` のときだけ `/workspace` で有効になる。既定値はOFFであり、既存画面を維持する。
 - 新workspace（`/workspace`）の25子画面は、それぞれ専用のルート定義（サーバー側の読取り境界と画面）を`frontend/src/features/workspace`の下に持つ。全ての子画面が自分でAPIを読むわけではない。`settings/appearance`は何も読まず、`plan/publications`と`settings/notifications`は、必須コンテキストが読んだ内容を表示する。構造試験（`tests/test_workspace_v3_structure.py`）は、新workspaceが従来画面の実装を推移的にimportした場合、従来URLへリンクした場合、又は複数用途を兼ねる従来フォームを表示した場合に失敗する。`/preview` と `/showcase` はv1/v2の互換ショーケースであり、v3の証跡には含めない。構造試験は、名称を変えた複製を検出できない。作り直した画面と従来部品との比較（行単位及びトークン列）は、[検証記録](docs/ideal-ui/verification.md)の「Structural independence from the established screens」に記してある。作り直した構成でのブラウザ検証（3回の正式実行の経過、未確認の範囲及び既知の限界）と独立レビューの結果は、同じ検証記録に記してある。
+- 2026-10-06に、製品の所有者が新workspaceの画面を見て、一部が装飾されていないように見えると指摘した。その時点の自動監査（コントラスト、フォーカス表示、操作対象の大きさ、320px幅でのあふれ、文字間隔及びaxe）は、これらの画面について指摘を出していなかった。これらの監査は、配置や見た目の仕上がりを判定しない。したがって、それ以前の記録にある「光学監査の検出0件」は、画面を目で見て確かめたことを意味しない。この指摘を受けて、25子画面の見た目と画面内の構成を修正し、同じ種類の欠陥を検出すると失敗する検査を追加した。ルートの追加及び削除、API並びに業務規則の変更は行っていない。修正後の画面写真を確認したのはAIのレビュー用エージェントであり、人による評価は記録していない。経過、検査の限界及び既知の限界は、検証記録の「Visual repair of the workspace and the fourth formal run」に記してある。
+- 修正後の最終ソースに対する第4回の正式実行（2026-10-07）では、29業務系列の261/261件、旗OFFの267/267件及びStorybookの各行列が合格した。一方、`npm audit`は不合格であった（重大度highの勧告が2件：`sharp`及び`source-map-js`）。lockfileは基点から変更していない。この2件は本記録の時点で未対応であり、依存の更新は別途扱う。
 - 29業務系列、認可、版競合、冪等再送、人物消去及び復旧境界の自動試験を収録している。試験結果は、記録された合成条件についての確認に限られる。
 - 30名の利用者評価、VoiceOver/NVDA実機評価及び実運用相当の75パーセンタイル性能測定は未完了である。「使いやすい」「WCAG適合」「本番利用可能」又は「安全性を証明済み」とは扱わない。
 
@@ -86,7 +88,7 @@ npm run build
 npm run build-storybook
 ```
 
-直近の検証記録は [docs/ideal-ui/verification.md](docs/ideal-ui/verification.md) にある。公開候補では、記録されたソースSHA-256と最終コミットが一致することを再確認する。過去の成功記録を変更後の合格として流用しない。
+直近の検証記録は [docs/ideal-ui/verification.md](docs/ideal-ui/verification.md) にある。直近の正式実行（第4回、2026-10-07）では、`npm audit`が不合格であった。公開候補では、記録されたソースSHA-256と最終コミットが一致することを再確認する。過去の成功記録を変更後の合格として流用しない。
 
 ## リポジトリ案内
 

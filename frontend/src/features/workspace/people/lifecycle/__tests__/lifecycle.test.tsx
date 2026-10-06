@@ -68,10 +68,18 @@ test("the showcase shows the cases, and the route's own words when there are non
   const fetchSpy = jest.fn(() => { throw new Error("no network"); });
   global.fetch = fetchSpy as never;
   const ready = render(<CognitiveWorkspaceShowcase screen="people" view="lifecycle" role="ADMIN" />);
-  expect(await screen.findByRole("progressbar", { name: "高橋 葵のタスク進捗" })).toHaveAttribute("aria-valuenow", "1");
-  expect(cards()).toHaveLength(1);
+  // The synthetic cases are what the server derives: a joining with one record missing, a leaving with one attestation open.
+  expect(await screen.findByRole("progressbar", { name: "高橋 葵のタスク進捗" })).toHaveAttribute("aria-valuenow", "3");
+  expect(screen.getByRole("progressbar", { name: "鈴木 悠斗のタスク進捗" })).toHaveAttribute("aria-valuenow", "1");
+  expect(cards()).toHaveLength(2);
   expect(cards()[0]).toHaveTextContent("入職 · 進行中");
-  expect(cards()[0]).toHaveTextContent("休暇残高の確認未完了");
+  // A task the server completed from a record has no time, and is not called unfinished.
+  expect(cards()[0]).toHaveTextContent("✓雇用契約の確認完了");
+  // How each open task comes to be done is said with its state: from a record, or by a person.
+  expect(cards()[0]).toHaveTextContent("資格の確認未完了（記録から自動で判定）対応する正本の登録・確定が必要です。");
+  expect(cards()[1]).toHaveTextContent("退職 · 進行中");
+  expect(cards()[1]).toHaveTextContent("休暇残高の確認未完了（担当者が確かめて記録）");
+  expect(within(cards()[1]).getByRole("button", { name: "確認を記録" })).toBeInTheDocument();
   ready.unmount();
   render(<CognitiveWorkspaceShowcase screen="people" view="lifecycle" role="ADMIN" state="empty" />);
   expect(await screen.findByText("進行中の手続きはありません。")).toBeInTheDocument();
@@ -84,11 +92,12 @@ test("a case shows its progress, and each open task the action the server allows
   const [offboard, onboard] = cards();
   expect(within(offboard).getByRole("progressbar", { name: "高橋 葵のタスク進捗" })).toHaveAttribute("aria-valuemax", "4");
   expect(offboard).toHaveTextContent("退職 · 進行中");
-  expect(offboard).toHaveTextContent("2026-10-31 · 版3");
+  expect(offboard).toHaveTextContent("発効日 2026-10-31 · 第3版");
   expect(offboard).toHaveTextContent("有効なアカウントが残っています。");
-  expect(within(offboard).getAllByRole("link", { name: "正本を開く" }).map((link) => link.getAttribute("href"))).toEqual([
-    "/workspace/people/memberships?scope=synthetic%2Fclinical-pharmacy&person=synthetic-pharmacist",
-    "/workspace/plan/input?scope=synthetic%2Fclinical-pharmacy&person=synthetic-pharmacist",
+  // A link says where it leads before it is followed.
+  expect(within(offboard).getAllByRole("link").map((link) => [link.textContent?.trim(), link.getAttribute("href")])).toEqual([
+    ["本人アカウントを開く", "/workspace/people/memberships?scope=synthetic%2Fclinical-pharmacy&person=synthetic-pharmacist"],
+    ["前提・取込を開く", "/workspace/plan/input?scope=synthetic%2Fclinical-pharmacy&person=synthetic-pharmacist"],
   ]);
   expect(within(offboard).getAllByRole("button", { name: "確認を記録" })).toHaveLength(1);
   expect(onboard).toHaveTextContent("入職 · すべて完了");
@@ -176,4 +185,16 @@ test("a conflict on confirming a task is shown in the card and keeps the evidenc
   expect(refresh).not.toHaveBeenCalled();
   fireEvent.click(within(card).getByRole("button", { name: "やめる" }));
   expect(within(card).queryByRole("group")).toBeNull();
+});
+
+test("only the state the server calls in progress is counted as in progress; an unknown state is named as unknown and counted as nothing", () => {
+  mount([lifecycle({ status: "ON_HOLD" })]);
+  const head = screen.getByRole("heading", { level: 2, name: "手続きの進み具合" }).closest(".ideal-panel__head")!;
+  expect(head.querySelector(".ideal-pill")).toHaveTextContent("未対応の値");
+  expect(head).not.toHaveTextContent("進行中");
+  expect(cards()[0].querySelector(".ideal-pill")).toHaveTextContent("退職 · 未対応の値");
+  expect(cards()[0].querySelector(".ideal-pill")).toHaveClass("ideal-pill--neutral");
+  document.body.innerHTML = "";
+  mount([lifecycle(), lifecycle({ case_id: "c2", status: "ON_HOLD" }), lifecycle({ case_id: "c3", status: "READY" })]);
+  expect(screen.getByRole("heading", { level: 2, name: "手続きの進み具合" }).closest(".ideal-panel__head")!.querySelector(".ideal-pill")).toHaveTextContent("進行中 1件");
 });

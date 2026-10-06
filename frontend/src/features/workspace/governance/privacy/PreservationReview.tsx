@@ -11,11 +11,13 @@ import { useLive } from "../../shell/WorkspaceRuntime";
 import { governanceApi, type Named, type PreservationBody, type PreservationReviewed, type Projection } from "../api";
 import { readProblem } from "./ApplyControl";
 import { nameIn } from "./model";
+import WhyDisabled from "../../shared/WhyDisabled";
+import Identifiers from "../../shared/Identifiers";
 
 /** The retained record as nested, labelled lines: every field and every value, nothing left out. */
 function Content({ value }: { value: unknown }): ReactNode {
   if (Array.isArray(value)) return value.length ? <ol className="ideal-note-list">{value.map((item, index) => <li className="ideal-note" key={index}><Content value={item} /></li>)}</ol> : "（なし）";
-  if (value && typeof value === "object") return <ul className="ideal-note-list">{Object.entries(value).map(([name, item]) => <li className="ideal-note" key={name}>{name}：<Content value={item} /></li>)}</ul>;
+  if (value && typeof value === "object") return <ul role="list" className="ideal-note-list">{Object.entries(value).map(([name, item]) => <li className="ideal-note" key={name}>{name}：<Content value={item} /></li>)}</ul>;
   return value === null || value === undefined || value === "" ? "（なし）" : String(value);
 }
 
@@ -64,19 +66,20 @@ export default function PreservationReview({ copyId, label, personId, people, on
           <div><dt>除去される内容</dt><dd>{Object.entries(projection.payload.removed_counts).filter(([, count]) => count > 0).map(([name, count]) => `${name}：${count}件`).join("、") || "なし"}</dd></div>
           <div><dt>保存する内容の項目</dt><dd>{Object.entries(projection.payload.retained).map(([name, value]) => `${name}${Array.isArray(value) ? `：${value.length}件` : ""}`).join("、") || "なし"}</dd></div>
         </dl>
-        <details className="ideal-v3-disclosure"><summary>再構成後に保存する全内容を確認する</summary>
+        <details className="ideal-v3-disclosure ideal-v3-disclosure--info"><summary>再構成後に保存する全内容を確認する</summary>
           <div role="region" aria-label="再構成後に保存する全内容" tabIndex={0}><Content value={projection.payload.retained} /></div>
         </details>
-        <details className="ideal-v3-disclosure"><summary>識別情報</summary><p className="ideal-note">原本の照合値 {projection.source_digest}／再構成後の照合値 {projection.payload_hash}</p></details>
+        <Identifiers items={[{ label: "原本の照合値", value: projection.source_digest }, { label: "再構成後の照合値", value: projection.payload_hash }]} />
         <label htmlFor={`${id}-reference`}>保全・消去判断の根拠</label>
         <input id={`${id}-reference`} className="ideal-input" required value={entry.reference} onChange={(event) => setEntry({ ...entry, reference: event.target.value })} />
         <label htmlFor={`${id}-reviewer`}>確認者</label>
         <input id={`${id}-reviewer`} className="ideal-input" required value={entry.reviewer} onChange={(event) => setEntry({ ...entry, reviewer: event.target.value })} />
         <CheckField label="他の職員の必要な情報が保持され、自由記述・共通情報にも消去対象者の情報が残らないことを、この内容で確認した" checked={entry.checked} onChange={(checked) => setEntry({ ...entry, checked })} />
-        <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={!entry.checked}>保全判断の内容を確認する</button></div>
+        <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={!entry.checked} aria-describedby={entry.checked ? undefined : `${id}-why`}>保全判断の内容を確認する</button></div>
+        <WhyDisabled id={`${id}-why`}>{!entry.checked && "上の確認にチェックを入れると押せます。"}</WhyDisabled>
       </form>}
       {projection && body && <ConfirmSurface title={`${label}の保全判断：記録前の確認`} level={4}
-        changes={[{ label: "保全判断", before: "（なし）", after: `${kept(projection)}の履歴を保全する内容を確認済みとして記録` }, { label: "保全・消去判断の根拠", before: "（なし）", after: body.payload.evidence.reference }, { label: "確認者", before: "（なし）", after: body.payload.evidence.verified_by ?? "" }]}
+        changes={[{ label: "保全判断", before: "（なし）", after: `${kept(projection)}の履歴を保全する内容を確認済みとして記録` }, { label: "保全・消去判断の根拠", before: "（なし）", after: body.payload.evidence.reference, verbatim: true }, { label: "確認者", before: "（なし）", after: body.payload.evidence.verified_by ?? "", verbatim: true }]}
         version={{ from: projection.revision, to: projection.revision + 1 }}
         notified="誰にも通知されません。保全判断の記録（保存物・操作者・時刻）は監査の履歴に残ります。"
         risk={`記録前の時点では検出されていません。記録時にサーバーが、この共有記録が第${projection.revision}版のままで内容が変わっていないこと、再構成した内容が読み込んだ時と同じであること、対象者一覧と根拠が確認済みであることを照合します。違っていれば記録せず、競合または拒否として知らせます。1件の判断だけを記録するため、一部だけが記録されることはありません。`}

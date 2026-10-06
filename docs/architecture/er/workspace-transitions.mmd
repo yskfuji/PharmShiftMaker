@@ -37,16 +37,20 @@ flowchart LR
   route_workspace_governance_privacy -->|"U25,U29"| route_workspace_governance_actuals
   route_workspace_governance_privacy -->|"U25,U29"| route_workspace_governance_audit
   route_workspace_governance_privacy -->|"U25,U29"| route_workspace_governance_recovery
+  route_workspace_governance_privacy -->|"U25"| route_workspace_people_directory
   route_workspace_governance_recovery -->|"U26"| route_workspace_governance_actuals
   route_workspace_governance_recovery -->|"U26"| route_workspace_governance_audit
   route_workspace_governance_recovery -->|"U26"| route_workspace_governance_privacy
   route_workspace_home -->|"U01,U14,U17"| route_workspace_operations_cases
+  route_workspace_home -->|"U01,U14,U17"| route_workspace_operations_today
+  route_workspace_home -->|"U01,U14,U17"| route_workspace_requests_leave
   route_workspace_home -->|"U01,U14,U17"| route_workspace_schedule
   route_workspace_operations_cases -->|"U05"| route_workspace_governance_audit
   route_workspace_operations_cases -->|"U05"| route_workspace_home
   route_workspace_operations_cases -->|"U05"| route_workspace_schedule
   route_workspace_operations_today -->|"U16"| route_workspace_governance_audit
   route_workspace_operations_today -->|"U16"| route_workspace_home
+  route_workspace_operations_today -->|"U16"| route_workspace_operations_cases
   route_workspace_operations_today -->|"U16"| route_workspace_schedule
   route_workspace_people_contracts -->|"U20"| route_workspace_governance_audit
   route_workspace_people_contracts -->|"U20"| route_workspace_people_directory
@@ -65,6 +69,7 @@ flowchart LR
   route_workspace_plan_compare -->|"U03"| route_workspace_plan_input
   route_workspace_plan_compare -->|"U03"| route_workspace_plan_publications
   route_workspace_plan_compare -->|"U03"| route_workspace_schedule
+  route_workspace_plan_compare -->|"U03"| route_workspace_settings_notifications
   route_workspace_plan_drafts -->|"U27"| route_workspace_plan_compare
   route_workspace_plan_drafts -->|"U27"| route_workspace_plan_generate
   route_workspace_plan_drafts -->|"U27"| route_workspace_plan_input
@@ -91,6 +96,7 @@ flowchart LR
   route_workspace_settings_absence_consent -->|"U08"| route_workspace_settings_appearance
   route_workspace_settings_absence_consent -->|"U08"| route_workspace_settings_flextime
   route_workspace_settings_absence_consent -->|"U08"| route_workspace_settings_notifications
+  route_workspace_settings_appearance -->|"U18"| route_workspace_schedule
   route_workspace_settings_appearance -->|"U18"| route_workspace_settings_absence_consent
   route_workspace_settings_appearance -->|"U18"| route_workspace_settings_flextime
   route_workspace_settings_appearance -->|"U18"| route_workspace_settings_notifications

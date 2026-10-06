@@ -5,9 +5,10 @@ import type { IdealRole, LifecycleCase, WorkspaceNotification } from "@/ideal/ty
  * planner. `own` names the lists of that answer the API gives a pharmacist only for their
  * own person (the answer's `visibility` is then "self"); see transport.ts. `byRole` gives
  * the answer of an endpoint whose content depends on the viewer in another way; `body` is
- * then what an administrator is given.
+ * then what an administrator is given. `byQuery` narrows an answer by what the request
+ * asked for, as the API does (the links without `include_inactive=true` are the active ones).
  */
-export type FetchRoute = { method?: string; path: string | RegExp; status?: number; body: unknown; own?: string[]; byRole?: (role: IdealRole, personId: string) => unknown };
+export type FetchRoute = { method?: string; path: string | RegExp; status?: number; body: unknown; own?: string[]; byRole?: (role: IdealRole, personId: string) => unknown; byQuery?: (body: unknown, query: URLSearchParams) => unknown };
 
 const period = { start: "2026-10-01T00:00:00+09:00", end: "2026-11-01T00:00:00+09:00" };
 const people = [
@@ -20,21 +21,47 @@ export const syntheticAssignments = [
   { duty_id: "synthetic-duty-2", person_id: "synthetic-leader", kind: "遅番", task: "調剤", location: "薬剤部", start: "2026-10-12T10:30:00+09:00", end: "2026-10-12T19:30:00+09:00" },
 ];
 const assignments = syntheticAssignments;
-export const syntheticPeople = people;
+// The names of the scope's roster: the people of the planning input, and one who has joined
+// and has no record in it yet (a name long enough to show what a narrow column does to it).
+export const syntheticPeople = [...people, { person_id: "synthetic-newcomer", name: "ヴァンデンバーグ 絵里香クリスティーナ" }];
+// One notification, as the API returns it: the kind is the recorded event's own, the
+// category its first part, and the time the moment publication 12 was made (see
+// `publicationSummary`). It has not been confirmed yet.
 export const syntheticNotifications: WorkspaceNotification[] = [
-  { event_id: "notice-1", category: "schedule", kind: "公開版が更新されました", publication_id: "synthetic-publication-12", version: 12, read: false, created_at: "2026-10-12T07:42:00+09:00" },
+  { event_id: "notice-1", category: "schedule", kind: "schedule.published", publication_id: "synthetic-publication-12", version: 12, read: false, created_at: "2026-10-08T07:42:00+09:00" },
 ];
-// One person joining: the contract is on record, the balance review is still to be attested.
+// Two cases, with the tasks and the states the server derives for each kind. A task the
+// server completes from a record (SYSTEM) carries no completion time, and while its record
+// is missing it says why it waits; only the attested task (ATTESTATION) can be completed here.
+const WAITS_FOR_RECORD = "対応する正本の登録・確定が必要です。";
+const systemTask = (key: string, complete: boolean): LifecycleCase["tasks"][number] => ({ key, source: "SYSTEM", status: complete ? "COMPLETED" : "NOT_STARTED", can_complete: false, completed_at: null, blocked_reason: complete ? null : WAITS_FOR_RECORD });
 const lifecycleCases: LifecycleCase[] = [{
+  // Joining: the contract, the account link and the duty candidates are on record; the qualification is not.
   case_id: "lifecycle-1", scope_id: "synthetic/clinical-pharmacy", person_id: "synthetic-pharmacist", kind: "ONBOARD", effective_date: "2026-10-01", status: "IN_PROGRESS", version: 2,
   evidence: {}, created_by: "synthetic-admin", created_at: "2026-10-01T08:30:00+09:00", updated_at: "2026-10-01T09:00:00+09:00",
+  tasks: [systemTask("contract", true), systemTask("qualification", false), systemTask("membership", true), systemTask("candidate_generation", true)],
+}, {
+  // Leaving: the account link is already inactive; the balance review is still to be attested.
+  case_id: "lifecycle-2", scope_id: "synthetic/clinical-pharmacy", person_id: "synthetic-leader", kind: "OFFBOARD", effective_date: "2026-10-31", status: "IN_PROGRESS", version: 1,
+  evidence: {}, created_by: "synthetic-admin", created_at: "2026-10-05T10:00:00+09:00", updated_at: "2026-10-05T10:00:00+09:00",
   tasks: [
-    { key: "contract", source: "SYSTEM", status: "COMPLETED", can_complete: false, completed_at: "2026-10-01T09:00:00+09:00", blocked_reason: null },
+    systemTask("contract_end", false), systemTask("candidate_exclusion", false),
     { key: "balance_review", source: "ATTESTATION", status: "NOT_STARTED", can_complete: true, completed_at: null, blocked_reason: null },
+    systemTask("membership_deactivation", true),
   ],
 }];
+// The account links: two active ones of the people at work, the active one of the person
+// who has joined (a long name and a long account), and the leader's, deactivated.
+const membership = (person: string, role: IdealRole, over: { subject?: string; active?: boolean; revision?: number } = {}) =>
+  ({ membership_id: `${person}-membership`, issuer: "mock", subject: person, person_id: person, scope_id: "synthetic/clinical-pharmacy", role, active: true, revision: 1, ...over });
+const memberships = [
+  membership("synthetic-admin", "ADMIN"),
+  membership("synthetic-pharmacist", "PHARMACIST"),
+  membership("synthetic-newcomer", "PHARMACIST", { subject: "synthetic-newcomer-erika-christina-vandenberg@example.invalid" }),
+  membership("synthetic-leader", "LEADER", { active: false, revision: 2 }),
+];
 const publication = { publication_id: "synthetic-publication-12", version: 12, period: `${period.start}|${period.end}`, input_hash: "synthetic-input-12", assignments, validation_status: "verified_at_publication" };
-const input = { input_hash: "synthetic-input-12", input_revision: 12, publication_version: 12, stale: false, snapshot: { schema_version: 3, period, people, contracts: [], candidates: assignments, leaves: [], employments: [], demands: [], facility_id: "synthetic", department_id: "clinical-pharmacy" } };
+const INPUT_HASH = "synthetic-input-12";
 // Two demands of the synthetic input: one saved twice as a record, one still only the input's value.
 const demands = [
   { demand_id: "synthetic-demand-1", task: "病棟", location: "本館", minimum: 1, target: 2, start: "2026-10-12T08:30:00+09:00", end: "2026-10-12T17:30:00+09:00", evidence: { reference: "合成配置表 2026-10", status: "verified", verified_by: "合成の確認責任者", valid_until: null } },
@@ -48,7 +75,7 @@ const actualOf = (index: number, external_id: string, revision: number, reviewed
   return { external_id, revision, event_id: `synthetic-actual-event-${index + 1}`, reviewed, duty: { ...duty, relationship_id: `synthetic-relationship-${index + 1}`, end, work, breaks: [], source: "actual" } };
 };
 const actuals = [actualOf(0, "synthetic-clock-1", 2, true, "2026-10-12T17:45:00+09:00"), actualOf(1, "synthetic-clock-2", 1, false, "2026-10-12T19:30:00+09:00")];
-const workflow = { input_hash: input.input_hash, role: "ADMIN", staging_valid: true, validation_issues: [], demands, people, contracts: [], employments: [], establishments: [], capabilities: [], duty_options: [{ kind: "日勤", task: "病棟", location: "本館" }, { kind: "遅番", task: "調剤", location: "薬剤部" }], records: [{ kind: "demand", key: "synthetic-demand-key-1", entity_id: "synthetic-demand-1", revision: 2, payload: demands[0] }], publications: [publication], actuals, can_correct_actuals: true };
+const workflow = { input_hash: INPUT_HASH, role: "ADMIN", staging_valid: true, validation_issues: [], demands, people, contracts: [], employments: [], establishments: [], capabilities: [], duty_options: [{ kind: "日勤", task: "病棟", location: "本館" }, { kind: "遅番", task: "調剤", location: "薬剤部" }], records: [{ kind: "demand", key: "synthetic-demand-key-1", entity_id: "synthetic-demand-1", revision: 2, payload: demands[0] }], publications: [publication], actuals, can_correct_actuals: true };
 
 const scopeId = "synthetic/clinical-pharmacy";
 const cover = { ...assignments[0], duty_id: "synthetic-duty-3", person_id: "synthetic-admin" };
@@ -65,7 +92,10 @@ const changeOptions = { publication_id: publication.publication_id, publication_
   { option_id: "synthetic-option-1", affected_assignment_ids: ["synthetic-duty-1"], proposed_assignment_ids: ["synthetic-duty-3"], counterpart: { person_id: "synthetic-admin", display_name: "佐藤 美咲" }, duty: { start: cover.start, end: cover.end, kind: cover.kind, task: cover.task, location: cover.location }, publishable: true, finding_count: 0 },
 ] };
 const publicationSummary = { publication_id: publication.publication_id, version: 12, period: publication.period, input_hash: publication.input_hash, created_at: "2026-10-08T07:42:00+09:00" };
-const stabilityDays = Array.from({ length: 14 }, (_, index) => ({ day: new Date(Date.UTC(2026, 9, 12 - index)).toISOString().slice(0, 10), change_count: index === 1 || index === 4 ? 1 : 0 }));
+// The fourteen days up to the synthetic day, oldest first as the API lists them. The change
+// events are those of the two cases above (one per version of a case): four on the day they
+// were made and the exchange was consented to, one on the day the absence became ready.
+const stabilityDays = Array.from({ length: 14 }, (_, index) => ({ day: new Date(Date.UTC(2026, 9, index - 1)).toISOString().slice(0, 10), change_count: index === 12 ? 4 : index === 13 ? 1 : 0 }));
 
 // Outside work: one declaration awaiting comparison, one compared (closed to its person by
 // the server) and one withdrawn. An administrator is given everyone's and may change all.
@@ -146,6 +176,11 @@ const roster = {
   capability_targets: rosterCapabilities.map((payload, index) => ({ target_hash: `synthetic-capability-hash-${index + 1}`, revision: 1, payload })), capability_amendments: [], management_models: [],
   agreements: [rosterAgreement], rule_reviews: [rosterReview], rule_decisions: [], accounting_transitions: [], site_attribution_decisions: [], annual_calendars: [],
 };
+// The input version on screen is current (`stale: false`): no record was saved after it was
+// made. So it holds what the records hold: the contracts, qualifications and employments of
+// the roster, and both demands (the first as its saved second revision). A snapshot with
+// fewer of them beside these records is a state the server reports as stale.
+const input = { input_hash: INPUT_HASH, input_revision: 12, publication_version: 12, stale: false, snapshot: { schema_version: 3, period, people, contracts: rosterContracts, capabilities: rosterCapabilities, candidates: assignments, leaves: [], employments: rosterEmployments, demands, facility_id: "synthetic", department_id: "clinical-pharmacy" } };
 // What the earlier rule revision decided within the review's interval: the one publication.
 const ruleImpact = { scope_id: scopeId, review_id: rosterReview.review_id, rule_id: rosterReview.rule_id, source_sha256: rosterReview.source_sha256, document_version: rosterReview.document_version, publications: [{ publication_id: publication.publication_id, period_key: publication.period, version: 12, rule_revision: "synthetic-rule-2025", period_known: true }], grant_assessments: [], grant_records: [], impact_count: 1, impact_hash: "b".repeat(64) };
 
@@ -218,27 +253,51 @@ const copyInventory = {
 };
 const subjectControl = { person_id: "synthetic-leader", revision: 0, state: "NOT_APPLIED", all_copies_erased: false, identity_boundary: "stable person ID only; unknown aliases require identity review", inventory: copyInventory, applicable_cases: [{ case_id: "synthetic-case-erase", revision: 3, reason: "退職に伴う消去の請求" }] };
 
+// The calendar as the API gives it: to a planner the department's duties and the right to
+// export them; to a pharmacist their own duties, the changes among those, and no export.
+const calendar = { scope_id: scopeId, requested_period: "2026-10", visibility: "department", publication: publicationSummary, previous_publication: { ...publicationSummary, publication_id: "synthetic-publication-11", version: 11, created_at: "2026-10-01T07:40:00+09:00" }, assignments, changes: [{ duty_id: "synthetic-duty-2", kind: "CHANGED" }], can_export_department: true, limitations: ["公開済みの勤務だけを表示します。"] };
+const calendarFor = (role: IdealRole, personId: string) => {
+  if (role !== "PHARMACIST") return calendar;
+  const own = calendar.assignments.filter((duty) => duty.person_id === personId);
+  return { ...calendar, visibility: "self", assignments: own, changes: calendar.changes.filter((change) => own.some((duty) => duty.duty_id === change.duty_id)), can_export_department: false };
+};
+// Who changed the setting and why is for administrators only; the account is the one that
+// signed in, as the server stores it (not a role).
+const consentHistory = [{ revision: 2, enabled: false, reason: "運用確認", reference: "SYNTHETIC-2", actor: "synthetic-admin", at: "2026-10-01T09:00:00+09:00" }];
+const scopeSettings = (role: IdealRole) => ({ scope_id: "synthetic/clinical-pharmacy", absence_replacement_consent: { enabled: false, revision: 2, history: role === "ADMIN" ? consentHistory : null } });
+
 export const workspaceV3Routes: FetchRoute[] = [
   { path: "/planning/change-cases/options", body: changeOptions },
   { path: "/planning/change-cases", body: changeCases },
-  { path: "/planning/schedule-calendar", own: ["assignments"], body: { scope_id: scopeId, requested_period: "2026-10", visibility: "department", publication: publicationSummary, previous_publication: { ...publicationSummary, publication_id: "synthetic-publication-11", version: 11, created_at: "2026-10-01T07:40:00+09:00" }, assignments, changes: [{ duty_id: "synthetic-duty-2", kind: "CHANGED" }], can_export_department: true, limitations: ["公開済みの勤務だけを表示します。"] } },
-  { path: "/planning/dashboard", body: { scope_id: scopeId, period: "2026-10", role: "LEADER", visibility: "department", observed_at: "2026-10-12T08:16:00+09:00", sources: [{ kind: "publication", id: publication.publication_id, version: 12 }], metrics: { pending_requests: { value: 2, state: "available", reason: null } } } },
-  { path: "/planning/schedule-stability", body: { scope_id: scopeId, observed_at: "2026-10-12T08:16:00+09:00", window_days: 14, publication_count: 2, change_event_count: 2, days: stabilityDays, meaning: "過去14日間に公開版へ加えられた変更の件数です。評価や順位付けには使いません。" } },
-  { path: "/planning/daily-operations", own: ["scheduled_assignments"], body: { scope_id: "synthetic/clinical-pharmacy", day: "2026-10-12", observed_at: "2026-10-12T08:16:00+09:00", visibility: "department", scheduled_assignments: assignments, scheduled_count: assignments.length, open_case_count: 0, absence_case_count: 0, coverage_finding_count: 0, undelivered_notification_count: 1, limitations: ["予定上の勤務であり、在席実績ではありません。"] } },
+  { path: "/planning/schedule-calendar", body: calendar, byRole: calendarFor },
+  { path: "/planning/dashboard", body: { scope_id: scopeId, period: "2026-10", role: "LEADER", visibility: "department", observed_at: "2026-10-12T08:16:00+09:00", sources: [{ kind: "publication", id: publication.publication_id, version: 12 }], metrics: { pending_requests: { value: leaveRequests.filter((row) => row.status === "PENDING").length, state: "available", reason: null } } } },
+  { path: "/planning/schedule-stability", body: { scope_id: scopeId, observed_at: "2026-10-12T08:16:00+09:00", window_days: 14, publication_count: 2, change_event_count: stabilityDays.reduce((sum, item) => sum + item.change_count, 0), days: stabilityDays, meaning: "直近14日間の公開回数と変更イベント件数です。健康・離職・法令適合の効果は示しません。" } },
+  { path: "/planning/daily-operations", own: ["scheduled_assignments"], body: { scope_id: "synthetic/clinical-pharmacy", day: "2026-10-12", observed_at: "2026-10-12T08:16:00+09:00", visibility: "department", scheduled_assignments: assignments, scheduled_count: assignments.length, open_case_count: changeCases.length, absence_case_count: changeCases.filter((item) => item.kind === "ABSENCE").length, coverage_finding_count: 0, undelivered_notification_count: 1, limitations: ["予定上の勤務であり、在席・出勤実績ではありません。", "配置注意は進行中ケースのサーバー検証結果だけを数えます。"] } },
   { path: "/planning/notifications", body: syntheticNotifications },
   { path: "/planning/inputs/latest", body: input },
   { path: /\/planning\/drafts\/synthetic-draft-[123]$/, body: { draft_id: "synthetic-draft-1", input_hash: input.input_hash, version: 1, review_hash: null, status: "DRAFT", proposal: { duty_ids: assignments.map((item) => item.duty_id), leave_ids: [] } } },
-  { path: "/planning/plan-comparison", body: { input_hash: input.input_hash, plans: [1, 2, 3].map((number) => ({ draft_id: `synthetic-draft-${number}`, findings: { violation: 0, unverified: 0, unsupported: 0 }, publishable: true, changes_from_previous: 10 + number, changes_from_publication: 10 + number, preference_cost: number, preferences_met: 9 + number, preferences_total: 12, work_seconds_total: 288000, work_seconds_spread: 1800 * number, assignment_count: assignments.length, proposal_hash: `synthetic-${number}`, duplicate_of: null, solver: { job_id: `job-${number}`, status: "FEASIBLE", random_seed: number - 1, objective_by_level: [], proven_levels: 2 } })), pairs: [{ a: "synthetic-draft-1", b: "synthetic-draft-2", differing_duties: 2, affected_people: 2 }], order: ["synthetic-draft-1", "synthetic-draft-2", "synthetic-draft-3"], order_rule: "違反、変更数、希望、勤務時間差の順", meaning: "合成総合点は使用せず、同じサーバー定義の数値だけを比較します。" } },
+  // One story the server could return (application/plan_comparison.py) for a period whose
+  // published schedule holds the two duties above, compared against the input made from it.
+  // Plan 1 keeps both duties and one of them lies on one of the two day-off wishes; plan 2
+  // moves one person's duty off the wish and has one unverified finding; plan 3 moves both.
+  // The order is the server's key (violations, unverified, unsupported, changes, preference
+  // cost, spread): 1, 3, 2. The server pairs every two plans, and its two sentences are its own.
+  { path: "/planning/plan-comparison", body: { input_hash: input.input_hash, plans: ([
+    { number: 1, unverified: 0, changes: 0, cost: 2, overlapped: 1, total: 57600, spread: 0 },
+    { number: 2, unverified: 1, changes: 2, cost: 0, overlapped: 0, total: 55800, spread: 1800 },
+    { number: 3, unverified: 0, changes: 4, cost: 0, overlapped: 0, total: 54000, spread: 3600 },
+  ]).map((plan) => ({ draft_id: `synthetic-draft-${plan.number}`, findings: { violation: 0, unverified: plan.unverified, unsupported: 0 }, publishable: true, changes_from_previous: plan.changes, changes_from_publication: plan.changes, preference_cost: plan.cost, preferences_met: plan.overlapped, preferences_total: 2, work_seconds_total: plan.total, work_seconds_spread: plan.spread, assignment_count: assignments.length, proposal_hash: `synthetic-${plan.number}`, duplicate_of: null, solver: { job_id: `job-${plan.number}`, status: "FEASIBLE", random_seed: plan.number - 1, objective_by_level: [], proven_levels: 2 } })),
+    pairs: [{ a: "synthetic-draft-1", b: "synthetic-draft-2", differing_duties: 2, affected_people: 1 }, { a: "synthetic-draft-1", b: "synthetic-draft-3", differing_duties: 4, affected_people: 2 }, { a: "synthetic-draft-2", b: "synthetic-draft-3", differing_duties: 2, affected_people: 1 }],
+    order: ["synthetic-draft-1", "synthetic-draft-3", "synthetic-draft-2"],
+    order_rule: "違反の数 → 未確認の数 → 未対応の数 → 前回からの変更数 → 希望のコスト → 勤務時間の差（最大と最小）の小さい順。同じ値なら作成順。",
+    meaning: "合成の点数はありません。並びは確認の補助で、公開には確認（review）と検証が必要です。" } },
   { path: "/planning/inputs", body: [{ input_hash: input.input_hash, period, stale: false }] },
   { path: "/planning/publications", own: ["assignments"], body: [publication] },
   { path: "/planning/scopes", body: [{ scope_id: "synthetic/clinical-pharmacy", person_id: "synthetic-admin", role: "ADMIN", input_revision: 12 }] },
-  { path: "/planning/memberships", body: [
-    { membership_id: "synthetic-admin-membership", issuer: "mock", subject: "synthetic-admin", person_id: "synthetic-admin", scope_id: "synthetic/clinical-pharmacy", role: "ADMIN", active: true, revision: 1 },
-    { membership_id: "synthetic-pharmacist-membership", issuer: "mock", subject: "synthetic-pharmacist", person_id: "synthetic-pharmacist", scope_id: "synthetic/clinical-pharmacy", role: "PHARMACIST", active: true, revision: 1 },
-  ] },
+  { path: "/planning/memberships", body: memberships, byQuery: (body, query) => query.get("include_inactive") === "true" ? body : (body as typeof memberships).filter((item) => item.active) },
   { path: "/planning/lifecycle-cases", body: lifecycleCases },
-  { path: "/planning/scope-settings", body: { scope_id: "synthetic/clinical-pharmacy", absence_replacement_consent: { enabled: false, revision: 2, history: [{ revision: 2, enabled: false, reason: "運用確認", reference: "SYNTHETIC-2", actor: "ADMIN", at: "2026-10-01T09:00:00+09:00" }] } } },
-  { path: "/planning/audit-timeline", body: { entries: [{ at: "2026-10-12T07:42:00+09:00", category: "schedule", kind: "schedule.published", actor_role: "LEADER", subject_count: 3, version: 12 }], next_cursor: null, limits: ["氏名・職員IDは表示しません。"] } },
+  { path: "/planning/scope-settings", body: scopeSettings("ADMIN"), byRole: scopeSettings },
+  { path: "/planning/audit-timeline", body: { entries: [{ at: publicationSummary.created_at, category: "schedule", kind: "schedule.published", actor_role: "LEADER", subject_count: 3, version: 12 }], next_cursor: null, limits: ["氏名・職員IDは表示しません。"] } },
   { path: "/planning/compliance/recovery-status", body: { state: "REPLAYED", manifest_hash: "synthetic-manifest-sha256", note: "隔離復旧演習で消去制御を再適用しました。" } },
   { path: "/planning/compliance/records", body: leaveRecords, byRole: (role, personId) => leaveRecords.filter((row) => planner(role) || (row.payload as { person_id?: string }).person_id === personId) },
   { path: "/planning/compliance/privacy", body: privacyListing("ADMIN", "synthetic-admin"), byRole: privacyListing },

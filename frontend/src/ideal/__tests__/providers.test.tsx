@@ -38,7 +38,7 @@ test('Storybook and the showcase never reach the API (synthetic by default and b
   expect(screen.getByRole('heading', { level: 1, name: '勤務表' })).toBeInTheDocument();
   unmount();
   render(<CognitiveWorkspaceShowcase screen="settings" view="appearance" role="LEADER" />);
-  expect(await screen.findByRole('heading', { name: '外観と動き' })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: '配色' })).toBeInTheDocument();
   expect(spy).not.toHaveBeenCalled();
 });
 

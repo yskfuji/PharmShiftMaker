@@ -99,9 +99,10 @@ test("first the current state, the next step and the history; no form is open", 
   const { calls } = await mount(context([row(declaration()), row(withdrawn, 2)]));
   expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual(["申告の状態と次の操作", "現在の状態", "次の操作", "履歴"]);
   const current = within(screen.getByRole("region", { name: "現在の申告" })).getAllByRole("row").map((item) => item.textContent);
-  expect(current).toEqual(["本人雇用主・事業場区分適用期間（日本時間）状態版", "あなた他社法人・他社事業場雇用2026-01-01 00:00 〜 2027-01-01 00:00照合待ち第1版"]);
-  expect(within(screen.getByRole("region", { name: "申告の履歴（現在の版）" })).getAllByRole("row")).toHaveLength(3);
-  expect(panel("履歴")).toHaveTextContent("この画面が受け取るのは現在の版だけで、以前の版の内容は表示できません。");
+  expect(current).toEqual(["本人状態雇用主・事業場区分適用期間（日本時間）版", "あなた照合待ち他社法人・他社事業場雇用2026-01-01 00:00 〜 2027-01-01 00:00第1版"]);
+  // The withdrawn declaration is the history; the current one is not repeated there.
+  expect(within(screen.getByRole("region", { name: "取り下げた申告（現在の版）" })).getAllByRole("row").slice(1).map((item) => item.textContent)).toEqual(["あなた取下げ済み他社法人・他社事業場雇用2025-01-01 00:00 〜 2026-01-01 00:00第2版"]);
+  expect(panel("履歴")).toHaveTextContent("この画面に表示できるのは現在の版の内容だけで、以前の版の内容は表示できません。");
   expect(screen.getByText("照合が済んでいない申告 1件")).toBeInTheDocument();
   for (const summary of [EDIT, WITHDRAW]) expect(task(summary).open).toBe(false);
   expect(field(EDIT, "編集する対象")).not.toBeVisible();
@@ -117,29 +118,58 @@ test("first the current state, the next step and the history; no form is open", 
   expect(document.body).not.toHaveTextContent(/SUBMITTED|WITHDRAWN|d-own|synthetic-pharmacist/);
 });
 
+test("the header leads to the registration and, for an administrator, from its count to the comparison; no declaration is listed twice", async () => {
+  Element.prototype.scrollIntoView = jest.fn();
+  const withdrawn = declaration({ declaration_id: "d-old", status: "WITHDRAWN", start: "2025-01-01T00:00:00+09:00", end: "2026-01-01T00:00:00+09:00" });
+  const frame = (summary: string) => task(summary).parentElement!;
+  const { show } = await mount(context([row(declaration()), row(withdrawn, 2)]));
+  // Registering is what the route points a person at; a withdrawal changes a status and is not marked as one that cannot be undone.
+  expect(frame(EDIT)).toHaveClass("ideal-v3-task--primary");
+  expect(frame(WITHDRAW)).toHaveClass("ideal-v3-task--routine");
+  expect(document.querySelector(".ideal-v3-task--danger")).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "申告する" }));
+  expect(task(EDIT).open).toBe(true);
+  expect(screen.queryByRole("button", { name: "照合する" })).toBeNull();
+  // Each declaration is in one of the two tables.
+  expect(within(screen.getByRole("region", { name: "現在の申告" })).getAllByRole("row")).toHaveLength(2);
+  expect(within(screen.getByRole("region", { name: "取り下げた申告（現在の版）" })).getAllByRole("row")).toHaveLength(2);
+  // Nothing withdrawn: the history says so and points to where the declarations are.
+  show(context([row(declaration())]));
+  expect(screen.queryByRole("region", { name: "取り下げた申告（現在の版）" })).toBeNull();
+  expect(panel("履歴")).toHaveTextContent("取り下げた申告はありません。取り下げていない申告は、上の「現在の状態」に表示しています。");
+  document.body.innerHTML = "";
+  await mount(context([row(declaration())], "synthetic-admin"), undefined, "ADMIN");
+  // The comparison is what the route points an administrator at.
+  expect(frame(EDIT)).toHaveClass("ideal-v3-task--routine");
+  expect(frame(REVIEW)).toHaveClass("ideal-v3-task--primary");
+  fireEvent.click(screen.getByRole("button", { name: "照合する" }));
+  expect(task(REVIEW).open).toBe(true);
+  expect(screen.getByText(REVIEW, { selector: "summary" })).toHaveFocus();
+});
+
 test("the showcase shows each role what the API gives it, ready and empty", async () => {
   const fetchSpy = jest.fn(() => { throw new Error("no network"); });
   global.fetch = fetchSpy as never;
   const admin = render(<CognitiveWorkspaceShowcase screen="requests" view="outside" role="ADMIN" />);
   expect(await screen.findByRole("heading", { level: 2, name: "現在の状態" })).toBeInTheDocument();
   expect(within(screen.getByRole("region", { name: "現在の申告" })).getAllByRole("row").slice(1).map((item) => item.textContent)).toEqual([
-    "高橋 葵合成薬局 みなと店（架空）・みなと店雇用2026-10-01 00:00 〜 2027-04-01 00:00照合待ち第1版",
-    "鈴木 悠斗合成薬局 みなと店（架空）・みなと店雇用2026-10-01 00:00 〜 2027-04-01 00:00確認済み第2版",
+    "高橋 葵照合待ち合成薬局 みなと店（架空）・みなと店雇用2026-10-01 00:00 〜 2027-04-01 00:00第1版",
+    "鈴木 悠斗確認済み合成薬局 みなと店（架空）・みなと店雇用2026-10-01 00:00 〜 2027-04-01 00:00第2版",
   ]);
-  expect(within(screen.getByRole("region", { name: "申告の履歴（現在の版）" })).getAllByRole("row")).toHaveLength(4);
+  expect(within(screen.getByRole("region", { name: "取り下げた申告（現在の版）" })).getAllByRole("row")).toHaveLength(2);
   expect(screen.getByText(REVIEW)).toBeInTheDocument();
   expect(screen.getByRole("link", { name: /監査の履歴を開く/ })).toHaveAttribute("href", "/workspace/governance/audit");
   admin.unmount();
   const leader = render(<CognitiveWorkspaceShowcase screen="requests" view="outside" role="LEADER" />);
-  expect(await screen.findByRole("region", { name: "現在の申告" })).toHaveTextContent("鈴木 悠斗合成薬局 みなと店（架空）・みなと店雇用2026-10-01 00:00 〜 2027-04-01 00:00確認済み第2版");
+  expect(await screen.findByRole("region", { name: "現在の申告" })).toHaveTextContent("鈴木 悠斗確認済み合成薬局 みなと店（架空）・みなと店雇用2026-10-01 00:00 〜 2027-04-01 00:00第2版");
   expect(within(screen.getByRole("region", { name: "現在の申告" })).getAllByRole("row")).toHaveLength(2);
   // The server's refusal for the person's own reviewed declaration is shown as it gives it.
   expect(panel("現在の状態")).toHaveTextContent(LOCK);
   expect(screen.queryByText(REVIEW)).toBeNull();
   leader.unmount();
   const pharmacist = render(<CognitiveWorkspaceShowcase screen="requests" view="outside" role="PHARMACIST" />);
-  expect(await screen.findByRole("region", { name: "現在の申告" })).toHaveTextContent("あなた合成薬局 みなと店（架空）・みなと店雇用2026-10-01 00:00 〜 2027-04-01 00:00照合待ち第1版");
-  expect(within(screen.getByRole("region", { name: "申告の履歴（現在の版）" })).getAllByRole("row")).toHaveLength(3);
+  expect(await screen.findByRole("region", { name: "現在の申告" })).toHaveTextContent("あなた照合待ち合成薬局 みなと店（架空）・みなと店雇用2026-10-01 00:00 〜 2027-04-01 00:00第1版");
+  expect(within(screen.getByRole("region", { name: "取り下げた申告（現在の版）" })).getAllByRole("row")).toHaveLength(2);
   pharmacist.unmount();
   render(<CognitiveWorkspaceShowcase screen="requests" view="outside" role="PHARMACIST" state="empty" />);
   expect(await screen.findByText("現在の申告はありません。")).toBeInTheDocument();

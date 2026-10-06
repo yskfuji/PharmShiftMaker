@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { PublishedDuty } from "@/ideal/api/contracts";
 import { problemFrom } from "@/ideal/api/errors";
-import { dutyWhen } from "@/ideal/live/format";
+import { dutyWhen } from "../format";
 import { ActionStatus, EMPTY_EVIDENCE, EvidenceFields, evidenceReady, InlineProblem, useAction } from "@/ideal/live/parts";
 import type { ProblemModel } from "@/ideal/model";
 import type { ChangeOptions } from "@/ideal/types";
@@ -11,6 +11,7 @@ import { StatusPill } from "@/ideal/ui/atoms";
 import { PlanningError } from "@/lib/planningTransport";
 import { useLive } from "../../shell/WorkspaceRuntime";
 import { useEnteredBeforeMount } from "../hydration";
+import WhyDisabled, { EVIDENCE_NEEDED } from "../WhyDisabled";
 
 type Kind = "ABSENCE" | "SWAP";
 const NONE = "none";
@@ -67,6 +68,11 @@ export default function NewCaseForm({ duties, kinds }: { duties: PublishedDuty[]
   if (!duties.length) return <p className="ideal-note">公開版 v{publication.version} に、申請できる勤務はありません。</p>;
   const option = options?.options.find((o) => o.option_id === choice);
   const ready = dutyId && evidenceReady(evidence) && (choice === NONE ? kind === "ABSENCE" : Boolean(option));
+  // What is still to be chosen or entered, in the order of the form.
+  const why = action.busy || ready ? null
+    : !dutyId ? "勤務を選び、理由と参照を3文字以上入力すると押せます。"
+      : !(choice === NONE ? kind === "ABSENCE" : Boolean(option)) ? (kind === "ABSENCE" ? "代わりの人を選ぶと押せます（指定しないことも選べます）。" : "交換の相手を選ぶと押せます。")
+        : EVIDENCE_NEEDED;
 
   async function submit() {
     const body = {
@@ -91,6 +97,7 @@ export default function NewCaseForm({ duties, kinds }: { duties: PublishedDuty[]
         <option value="">選んでください</option>
         {duties.map((d) => <option key={d.duty_id} value={d.duty_id}>{live.nameOf(d.person_id)} · {dutyWhen(d.start, d.end)} · {d.kind}</option>)}
       </select>
+      {!dutyId && <p className="ideal-note">{kinds.includes("ABSENCE") ? "勤務を選ぶと、この下に「代わりの人」の欄が出ます。代わりに入る人は、そこで決めます。" : "交換の相手は、勤務を選んだ後に決めます。勤務を選ぶと、この下に「交換の相手」の欄が出て、相手はそこに表示される候補から選びます。"}{kinds.length > 1 ? "交換を選んだ場合は「交換の相手」の欄が出ます。" : ""}</p>}
       {kinds.length > 1 && <fieldset className="ideal-fieldset ideal-fieldset--inline">
         <legend>種類</legend>
         {kinds.map((k) => <label key={k} className="ideal-radio"><input type="radio" name={`${id}-kind`} value={k} checked={kind === k} onChange={() => setKind(k)} />{k === "ABSENCE" ? "欠勤（代わりの人）" : "交換（相手と入れ替え）"}</label>)}
@@ -115,7 +122,8 @@ export default function NewCaseForm({ duties, kinds }: { duties: PublishedDuty[]
         </label>}
       </fieldset>}
       <EvidenceFields value={evidence} onChange={setEvidence} />
-      <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={action.busy || !ready}>申請する</button></div>
+      <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={action.busy || !ready} aria-describedby={why ? `${id}-why` : undefined}>申請する</button></div>
+      <WhyDisabled id={`${id}-why`}>{why}</WhyDisabled>
       <ActionStatus problem={action.problem} done={action.done} />
     </form>
   );

@@ -91,7 +91,9 @@ test("preview, the dedicated confirmation with the server's targets, the consent
   expect(confirmation).toHaveTextContent("この操作は取り消せません。消去した勤務入力と、それを参照する計画案・公開版・生成処理・受付記録・通知の記録は復元できません。消去した後は、この期間のこの版の勤務表を再現できません。サーバーの回答でも、この消去は不可逆です。");
   const erase = within(confirmation).getByRole("button", { name: "この旧勤務入力を消去する" });
   expect(erase).toBeDisabled();
+  expect(erase).toHaveAccessibleDescription("上の同意にチェックを入れると押せます。");
   tick(TASK, CONSENT);
+  expect(erase).not.toHaveAttribute("aria-describedby");
   await press(TASK, "この旧勤務入力を消去する");
   expect(posts(calls)[1]).toEqual({ method: "POST", path: EXECUTE, body: keyed(INPUT_EXECUTION, 2) });
   expect(refresh).toHaveBeenCalledTimes(2);

@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { hydrateRoot, type Root } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { PlanningError } from "@/lib/planningTransport";
+import { TYPED, shownTimes, unmarked } from "../../../shared/__fixtures__/typed";
 import { hasUnsavedChanges } from "../../../shared/useUnsavedNavigation";
 import { ROUTE_DEFINITIONS, routeKey } from "../../../shell/routes";
 import { readRoute } from "../../../shell/routeTypes";
@@ -41,11 +42,13 @@ test("an administrator first sees the requests, the rules, the holds, the next s
   const { calls } = await mount();
   expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual(["本人対応の状態と次の操作", "現在の状態", "次の操作", "履歴"]);
   expect(within(screen.getByRole("region", { name: "本人対応の請求" })).getAllByRole("row").map((item) => item.textContent)).toEqual([
-    "職員請求の種類請求の内容状態版サーバーが受け付ける次の判断",
+    "職員請求の種類請求の内容状態版次にできる判断",
     "合成 一消去合成のerase本人確認済み第2版実施承認、理由を付して不承認",
     "合成 二開示合成のaccess実施承認第3版実施完了、利用停止を解除",
     "合成 一訂正合成のrectify理由を付して不承認第2版なし",
   ]);
+  // Two different stages never look the same: the tone is a fixed table of the status code.
+  expect(Array.from(screen.getByRole("region", { name: "本人対応の請求" }).querySelectorAll("tbody .ideal-pill")).map((pill) => pill.className.replace("ideal-pill ideal-pill--", ""))).toEqual(["info", "good", "neutral"]);
   expect(screen.getByText("次の判断ができる請求 2件")).toBeInTheDocument();
   expect(panel("現在の状態")).toHaveTextContent("請求の対象として選択中の職員：佐藤 美咲（あなた）。");
   expect(within(screen.getByRole("region", { name: "保存規則" })).getAllByRole("row").map((item) => item.textContent)).toEqual([
@@ -54,22 +57,124 @@ test("an administrator first sees the requests, the rules, the holds, the next s
   ]);
   expect(screen.getByRole("heading", { level: 3, name: "法的保全（保全中 1件）" })).toBeInTheDocument();
   expect(within(screen.getByRole("list", { name: "法的保全" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["合成 一：保全中（第1版）。理由：当初の理由"]);
-  expect(within(screen.getByRole("list", { name: "請求ごとの判断の記録" })).getAllByRole("listitem").map((item) => item.textContent?.replace(/\s+/g, " ").trim())).toEqual([
-    "合成 一・消去：受付（第1版） → 本人確認済み（第2版。理由：本人確認済み）", "合成 二・開示：受付（第1版）", "合成 一・訂正：受付（第1版）",
+  // Each request, then its versions in order: one line per decision, not a chain in one line.
+  const history = screen.getByRole("list", { name: "請求ごとの判断の記録" });
+  expect(Array.from(history.children).map((item) => [item.querySelector(":scope > strong")?.textContent, ...within(item as HTMLElement).getAllByRole("listitem").map((step) => Array.from(step.children).map((part) => part.textContent))])).toEqual([
+    ["合成 一・消去", ["第1版", "受付"], ["第2版", "本人確認済み", "理由：本人確認済み"]], ["合成 二・開示", ["第1版", "受付"]], ["合成 一・訂正", ["第1版", "受付"]],
   ]);
-  expect(panel("履歴")).toHaveTextContent("判断した時刻は、この一覧にはAPIが返さないため表示できません。");
+  expect(panel("履歴")).toHaveTextContent("判断した時刻と操作した役割は、この画面には表示されません。監査の履歴で確認できます。");
+  expect(document.body).not.toHaveTextContent("API");
   expect(within(panel("履歴")).getByRole("link", { name: "監査の履歴を開く" })).toHaveAttribute("href", "/workspace/governance/audit");
   for (const summary of [TASKS.request, ...ADMIN_TASKS]) expect(task(summary).open).toBe(false);
   // Identifiers are collapsed; names and labels are what is read.
   const identifiers = within(panel("現在の状態")).getByText("識別情報").closest("details")!;
   expect(identifiers.open).toBe(false);
-  expect(identifiers).toHaveTextContent("請求の識別子 case-erase／職員の識別子 p1");
+  expect(identifiers).toHaveTextContent("請求の識別子：case-erase");
+  expect(identifiers).toHaveTextContent("職員の識別子：p1");
+  // One form for identifiers everywhere: what each is of, then the identifier as code.
+  expect(identifiers.querySelector("dl")).toHaveClass("ideal-definition-list", "ideal-v3-identifiers");
+  expect(Array.from(identifiers.querySelectorAll("dd code")).map((code) => code.textContent)).toContain("case-erase");
   expect(screen.getByRole("region", { name: "本人対応の請求" })).not.toHaveTextContent(/case-|VERIFIED|APPROVED|p1/);
   expect(screen.queryByRole("alert")).toBeNull();
   expect(calls).toEqual([]);
   expect(document.body.innerHTML).not.toMatch(/href="\/(planning|settings|dashboard)/);
   expect(document.body.innerHTML).not.toMatch(/class="[^"]*\b(ui-|workflow-|ideal-v3-purpose)/);
   expect(document.querySelector("dialog")).toBeNull();
+});
+
+test("the next steps are five groups in the order of the tasks; what cannot be undone says so in words, and the count leads to the decision", async () => {
+  Element.prototype.scrollIntoView = jest.fn();
+  const { calls, show } = await mount();
+  const next = panel("次の操作");
+  expect(Array.from(next.querySelectorAll(":scope > .ideal-v3-record > section > h3")).map((heading) => heading.textContent)).toEqual(["請求", "保存規則と法的保全", "職員ごとの消去", "記録の整備", "保存期限を過ぎた勤務入力"]);
+  // The order of the tasks is the order they were always in.
+  // (A task is the reveal of a task frame; a reveal of background inside a group or a task is not one.)
+  expect(Array.from(next.querySelectorAll(".ideal-v3-task > details > summary")).map((summary) => summary.textContent)).toEqual(Object.values(TASKS));
+  // What explains the three tasks on one person's records is cut to the order and that
+  // opening changes nothing; how they depend on one another and the words they use are a
+  // reveal of background, closed, before the tasks.
+  const sequence = next.querySelector(".ideal-v3-governance-sequence")!.parentElement!;
+  expect(sequence.querySelector(":scope > p.ideal-note")).toHaveTextContent(/^職員1人の記録を消去するときは、まず人物制御を適用し（手順1）、次にその職員の消去計画を作って実行します（手順2）。どの操作も、開いただけでは何も変わりません。$/);
+  const background = sequence.querySelector<HTMLDetailsElement>(":scope > details.ideal-v3-disclosure--info")!;
+  expect(background.open).toBe(false);
+  expect(background.querySelector("summary")).toHaveTextContent("3つの操作の関係と、この欄で使うことば");
+  expect(Array.from(background.querySelectorAll("li")).map((item) => item.textContent)).toEqual(["手順2は、手順1を適用した職員にだけ実行できます（サーバーが確かめます）。", "3つ目の操作は、同じ登録済みのコピーの確認と消去を、人物制御を条件にせずに行います。外部管理先の処理確認と保全の判断は、3つ目の操作で記録します。"]);
+  expect(Array.from(background.querySelectorAll("dt")).map((item) => item.textContent)).toEqual(["人物制御", "消去計画・確認版", "DB記録・管理ファイル"]);
+  // The look is fixed where the tasks are declared, never worked out from the listing.
+  const looks = Object.fromEntries(Array.from(next.querySelectorAll(".ideal-v3-task")).map((frame) => [frame.querySelector("summary")!.textContent, [frame.className.replace("ideal-v3-task ideal-v3-task--", ""), frame.querySelector(".ideal-v3-task__hint > .ideal-pill")?.textContent ?? null]]));
+  expect(looks).toEqual({
+    [TASKS.request]: ["routine", null], [TASKS.decide]: ["primary", null], [TASKS.rule]: ["routine", null], [TASKS.hold]: ["routine", null],
+    [TASKS.control]: ["danger", "取り消せません"], [TASKS.plan]: ["danger", "消去は取り消せません"], [TASKS.copies]: ["danger", "消去は取り消せません"],
+    [TASKS.register]: ["routine", null], [TASKS.backfill]: ["routine", null], [TASKS.inputs]: ["danger", "消去は取り消せません"],
+  });
+  for (const summary of Object.values(TASKS)) {
+    const described = screen.getByText(summary, { selector: "summary" });
+    expect(described.textContent).toBe(summary);
+    expect(described).toHaveAccessibleDescription(/ます。/);
+  }
+  // From the count to its task: a button of the page, which opens the task and reads nothing.
+  const jump = screen.getByRole("button", { name: "判断する" });
+  expect(jump.closest("section")).toBe(screen.getByText("次の判断ができる請求 2件").closest("section"));
+  fireEvent.click(jump);
+  expect(task(TASKS.decide).open).toBe(true);
+  expect(screen.getByText(TASKS.decide, { selector: "summary" })).toHaveFocus();
+  for (const summary of ADMIN_TASKS.filter((name) => name !== TASKS.decide)) expect(task(summary).open).toBe(false);
+  expect(calls).toEqual([]);
+  // No request accepts a decision: the count says so and there is nothing to lead to.
+  show(listing({ cases: [CLOSED_CASE] }));
+  expect(screen.getByText("次の判断ができる請求なし")).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "判断する" })).toBeNull();
+});
+
+test("each task that cannot be undone shows its steps before its first field, and says at which step something is erased", async () => {
+  await mount((call) => (call.path.includes("/erasure-candidates") ? { observed_at: "2026-10-05T09:00:00+09:00", inputs: [] } : {}));
+  const outline = async (summary: string) => { const details = await open(summary); const group = within(details).getByRole("group", { name: summary }); const first = group.querySelector(".ideal-v3-record")!.firstElementChild!; return { steps: within(first as HTMLElement).getAllByRole("listitem").map((item) => item.textContent), text: first.textContent }; };
+  // The numbers are those of the task's own headings; the last step is the one named in words.
+  expect((await outline(TASKS.control)).steps).toEqual(["1対象の職員を選ぶ", "2いまの状態を確かめ、もとにする判断と理由を入力する", "3内容を確かめて、人物制御を適用する取り消せない手順"]);
+  expect((await outline(TASKS.control)).text).toContain("この操作では、記録もコピーも消去しません。");
+  expect((await outline(TASKS.plan)).steps).toHaveLength(5);
+  expect((await outline(TASKS.plan)).text).toContain("手順1〜4では、何も消去されません。");
+  expect((await outline(TASKS.copies)).steps).toHaveLength(4);
+  expect((await outline(TASKS.copies)).text).toContain("手順1〜3では、何も消去されません。");
+  expect((await outline(TASKS.inputs)).steps).toHaveLength(3);
+  expect((await outline(TASKS.inputs)).text).toContain("手順1・2では、何も消去されません。");
+  // The order of the three tasks on one person's records is said in their descriptions.
+  // The server enforces one order only: the plan needs the control (subject_controls.py).
+  // The third task needs neither and is not numbered as a step after them.
+  for (const [summary, step] of [[TASKS.control, "手順1"], [TASKS.plan, "手順2"], [TASKS.copies, "人物制御の適用は条件ではありません"]] as const) expect(screen.getByText(summary, { selector: "summary" })).toHaveAccessibleDescription(new RegExp(step));
+  expect(screen.getByText(TASKS.copies, { selector: "summary" })).not.toHaveAccessibleDescription(/手順3/);
+  // A record written before the last step that cannot be taken back is said at its step.
+  expect((await outline(TASKS.copies)).steps[2]).toBe("3消去されるものと残る理由を確かめる取り消せない記録を含むことがあります");
+  expect((await outline(TASKS.copies)).text).toContain("「外部管理先の処理確認」を記録すると、その記録は取り消せません");
+  expect((await outline(TASKS.plan)).text).toContain("「共同消去判断」を記録すると、その判断は記録として残ります。記録し直せますが、取り下げる操作はありません。");
+  // The step that may write such a record says so beside its name; what exactly it writes is
+  // a reveal under the outline's sentence, closed until it is asked for.
+  expect((await outline(TASKS.plan)).steps[3]).toBe("4消去されるものと残るものを確かめる取り下げられない記録を含むことがあります");
+  for (const summary of [TASKS.plan, TASKS.copies]) {
+    const more = task(summary).querySelector<HTMLDetailsElement>(".ideal-v3-governance-outline > details")!;
+    expect(more.open).toBe(false);
+    expect(more.querySelector("summary")).toHaveTextContent("最後の手順より前に残る記録");
+  }
+  expect(task(TASKS.control).querySelector(".ideal-v3-governance-outline > details")).toBeNull();
+});
+
+test("a legal hold shows its state as a word beside the name, and a released one is told apart from one in force", async () => {
+  const { show } = await mount(undefined, listing({ holds: [HOLD, { ...HOLD, hold_id: "hold-2", revision: 2, active: false, person_id: null, payload: {} }] }));
+  const holds = within(screen.getByRole("list", { name: "法的保全" })).getAllByRole("listitem");
+  expect(holds.map((item) => item.textContent)).toEqual(["合成 一：保全中（第1版）。理由：当初の理由", "部署全体：解除済み（第2版）。理由：（なし）"]);
+  expect(holds.map((item) => [item.className, item.querySelector(".ideal-pill")?.className])).toEqual([["is-active", "ideal-pill ideal-pill--warn"], ["", "ideal-pill ideal-pill--neutral"]]);
+  expect(screen.getByRole("heading", { level: 3, name: "法的保全（保全中 1件）" })).toBeInTheDocument();
+  // The server looks for a hold in every department of the facility; the list is this
+  // department's. That is said under the list whether or not this department has a hold,
+  // so that a refusal caused by another department's hold has its reason on the screen.
+  const section = () => screen.getByRole("heading", { level: 3, name: /^法的保全/ }).closest("section")!;
+  expect(section()).toHaveTextContent("保全中の職員には、人物制御の適用も消去の実行もできません。「部署全体」の保全が保全中のあいだは、どの職員にもできません（サーバーが受け付けません）。同じ施設のほかの部署の保全も同じように止めますが、その保全はこの一覧には出ません。");
+  show(listing({ holds: [] }));
+  expect(section()).toHaveTextContent("法的保全の記録はありません。同じ施設のほかの部署で、対象の職員または部署全体が保全中のときも、サーバーは人物制御の適用と消去の実行を受け付けません。その保全は、この一覧には出ません。");
+  // A hold that was released stops nobody: only the sentence about the other departments is said.
+  show(listing({ holds: [{ ...HOLD, active: false }] }));
+  expect(section()).not.toHaveTextContent("保全中の職員には");
+  expect(section()).toHaveTextContent("その保全は、この一覧には出ません。");
 });
 
 test("a rule revised several times is listed once per data kind and anchor, at its newest revision", async () => {
@@ -95,6 +200,8 @@ test("a pharmacist sees their own requests and one task; nothing an administrato
   expect(screen.queryByRole("heading", { name: /法的保全/ })).toBeNull();
   expect(task(TASKS.request).open).toBe(false);
   for (const summary of ADMIN_TASKS) expect(screen.queryByText(summary)).toBeNull();
+  expect(Array.from(panel("次の操作").querySelectorAll(":scope > .ideal-v3-record > section > h3")).map((heading) => heading.textContent)).toEqual(["請求"]);
+  expect(screen.queryByRole("button", { name: "判断する" })).toBeNull();
   expect(panel("次の操作")).toHaveTextContent("請求の判断、保存規則の改定、法的保全、人物制御、コピーと旧勤務入力の確認と消去は、サーバーが管理者にだけ許可しています。");
   expect(screen.queryByRole("link", { name: "監査の履歴を開く" })).toBeNull();
   expect(panel("履歴")).toHaveTextContent("監査の履歴は管理者が確認できます。");
@@ -236,6 +343,29 @@ describe("deciding a request", () => {
     expect(calls).toEqual([{ method: "POST", path: SEND("case-erase"), body: keyed(DECISION) }]);
     expect(refresh).toHaveBeenCalledTimes(1);
     expect(done(TASKS.decide)).toHaveTextContent("判断を記録しました（第3版・実施承認）。");
+  });
+
+  test("a reason is shown as it was typed, in the confirmation, in the list and in the history, and is marked as a person's words wherever it is shown", async () => {
+    // A journey types reasons that hold an enumeration value and the word 「API」: they are the person's words.
+    const decided = { ...VERIFIED_CASE, payload: { ...VERIFIED_CASE.payload, reason: TYPED, decision_history: [{ expected_revision: 1, status: "VERIFIED", reason: TYPED, result_reference: TYPED, identity_evidence: { reference: "ID-1", status: "verified", verified_by: "確認者", valid_until: null } }] } };
+    await mount(() => ({ case_id: "case-erase", revision: 3, status: "APPROVED" }), listing({ cases: [decided], holds: [{ ...HOLD, payload: { ...HOLD.payload, reason: TYPED } }] }));
+    // Closed: the list of requests, the legal hold and the history of decisions.
+    expect(within(screen.getByRole("region", { name: "本人対応の請求" })).getByRole("cell", { name: TYPED })).toHaveAttribute("data-verbatim");
+    expect(shownTimes(panel("現在の状態"))).toBe(2);
+    expect(shownTimes(panel("履歴"))).toBe(2);
+    expect(unmarked(document.body)).toEqual([]);
+    // Deciding: the request as read back, then the confirmation of what was typed.
+    await open(TASKS.decide);
+    set(TASKS.decide, "判断する請求", "case-erase");
+    expect(unmarked(task(TASKS.decide))).toEqual([]);
+    expect(shownTimes(task(TASKS.decide))).toBe(1);
+    set(TASKS.decide, "次の判断", "APPROVED"); set(TASKS.decide, "判断理由", TYPED); set(TASKS.decide, "本人確認の根拠", TYPED); set(TASKS.decide, "本人確認者", TYPED); set(TASKS.decide, /実施結果の参照/, TYPED);
+    await press(TASKS.decide, "判断の内容を確認する");
+    expect(changes(TASKS.decide)).toEqual(["状態：本人確認済み → 実施承認", `判断理由：（なし） → ${TYPED}`, `本人確認の根拠：（なし） → ${TYPED}`, `本人確認者：（なし） → ${TYPED}`, `実施結果の参照：（なし） → ${TYPED}`]);
+    expect(shownTimes(surface(TASKS.decide)!)).toBe(4);
+    expect(unmarked(document.body)).toEqual([]);
+    // A line that is not a person's words is not marked.
+    expect(within(line(TASKS.decide, "変更内容")).getAllByRole("listitem").map((item) => item.hasAttribute("data-verbatim"))).toEqual([false, true, true, true, true]);
   });
 
   test("a completion carries the result reference", async () => {

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { WORKSPACE_STORY_ROUTES } from "../../src/features/workspace/generated/usecaseRoutes";
 import { applyTheme, audit, explicit, FIXED_NOW, scheme, THEMES, WIDTHS } from "./lib/audit";
+import { attachStructure, structureLines } from "./lib/structure";
 
 const BASE = process.env.VISUAL_STORYBOOK_URL ?? "http://127.0.0.1:18530";
 
@@ -25,8 +26,12 @@ for (const story of WORKSPACE_STORY_ROUTES) {
         await page.goto(`${BASE}/iframe.html?id=${story.storybookId}&viewMode=story&globals=theme:${explicit(theme) ?? "system"}`);
         await page.locator(".ideal-v3-app").waitFor();
         await applyTheme(page, theme);
-        const result = await audit(page, info, `v3-${story.storybookId}-${theme}-${width}`, width, theme);
+        const name = `v3-${story.storybookId}-${theme}-${width}`;
+        const result = await audit(page, info, name, width, theme);
         failures.push(...result.findings.map((finding) => `${theme} ${width}px ${finding.check} ${finding.selector} ${finding.detail}`));
+        // What the optical checks do not measure (lib/structure.ts). Its advisories and metrics are
+        // attached and never fail; `skipped` stays what the optical audit could not judge.
+        failures.push(...structureLines(await attachStructure(page, info, name, width), `${theme} ${width}px `));
       }
     }
     expect(failures, failures.slice(0, 40).join("\n")).toEqual([]);

@@ -28,7 +28,8 @@ const PLAN_ROUTES = "/workspace/plan/";
  * The href of a workspace path with its context. A value that is not well-formed is left
  * out, never passed on. `inherited` (the context of the URL on screen) fills only what the
  * caller did not name: a value the caller named and that was refused is not replaced by
- * another. The privacy-purpose route is never given a publication or a change case.
+ * another. The privacy-purpose route is never given a publication or a change case, and a
+ * link to another month never inherits the publication or the case of the month on screen.
  */
 export const workspaceHrefWithContext = (
   path: string,
@@ -42,9 +43,14 @@ export const workspaceHrefWithContext = (
     const value = context[key];
     if (carried(key) && value && PATTERN[key].test(value)) query.set(key, value);
   }
+  // A link that names another month than the one on screen leaves the screen's publication
+  // and case behind: they belong to the month on screen, and the server refuses a
+  // publication together with another month (409).
+  const otherMonth = Boolean(context.period && PATTERN.period.test(context.period) && context.period !== inherited.period);
+  const leftBehind = (key: (typeof CONTEXT_KEYS)[number]) => otherMonth && (key === "publication" || key === "case");
   for (const key of CONTEXT_KEYS) {
     const value = inherited[key];
-    if (carried(key) && !context[key] && value && PATTERN[key].test(value)) query.set(key, value);
+    if (carried(key) && !leftBehind(key) && !context[key] && value && PATTERN[key].test(value)) query.set(key, value);
   }
   if (path.startsWith(PLAN_ROUTES)) {
     if (context.input && IDENTIFIER.test(context.input)) query.set("input", context.input);

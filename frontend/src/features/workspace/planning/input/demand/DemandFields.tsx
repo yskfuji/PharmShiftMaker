@@ -42,6 +42,6 @@ export default function DemandFields({ value, dutyOptions, onChange, onEvidence 
     <JstDateTimeField label="適用開始（日本時間）" value={value.start} onChange={(start) => onChange({ start })} required />
     <JstDateTimeField label="適用終了（日本時間）" value={value.end} onChange={(end) => onChange({ end })} required />
     <RecordEvidenceFields value={value.evidence} onChange={onEvidence} />
-    <p className="ideal-note">必須の人数を満たせるかどうかは、生成と検証でサーバーが判定します。保存しても勤務入力には自動で反映されません。</p>
+    <p className="ideal-note">必須の人数を満たせるかどうかは、案を作るときと検証のときにサーバーが判定します。保存した内容は、新しい入力版を作るまで案の作成には使われません。</p>
   </>;
 }

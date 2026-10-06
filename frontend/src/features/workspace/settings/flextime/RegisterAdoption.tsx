@@ -15,6 +15,7 @@ import AdoptionFields from "./AdoptionFields";
 import { NOBODY_NOTIFIED } from "./decisions";
 import { flexNames, STATUS_LABEL, termsFacts } from "./model";
 import { emptyForm, entrySlips, firstEnrollment, refusedRegistration, termsOf, type RegistrationField, type RegistrationForm } from "./registration";
+import Identifiers from "../../shared/Identifiers";
 
 /** What one registration sends: the adoption, then each participant's participation. */
 type Registration = { payload: AdoptionTerms; participants: EnrollmentRequest[] };
@@ -122,11 +123,11 @@ export default function RegisterAdoption({ listing }: { listing: FlexListing }) 
       busy={send.busy} confirmLabel="この内容で登録する（確認待ち）"
       onConfirm={() => void save()} onBack={() => { send.clear(); setConfirming(false); steps.moveTo("content"); }} onReviewed={reviewed}>
       <p className="ideal-note">登録しても、採用は確認されるまで有効になりません。登録した管理者とは別の管理者が、影響を表示して確認します。</p>
-      <details className="ideal-v3-disclosure"><summary>識別情報</summary><p className="ideal-note">採用の識別子：{identity}／事業場の識別子：{terms.establishment_id}／雇用主の識別子：{terms.employer_id}</p></details>
+      <Identifiers items={[{ label: "採用の識別子", value: identity }, { label: "事業場の識別子", value: terms.establishment_id }, { label: "雇用主の識別子", value: terms.employer_id }]} />
     </ConfirmSurface>}
     <div className="ideal-done" role="status">{done && <>
       <p>採用を第{done.adoption.revision}版として登録しました（確認待ち）。別の管理者が影響を確認して確認するまで、フレックスタイム制は有効になりません。</p>
-      {done.participants.length > 0 && <ul className="ideal-note-list" aria-label="参加者の登録結果">{done.participants.map((item) => <li key={item.personId}>{names.person(item.personId)}：{item.registered ? "参加を登録しました（確認待ち）。" : `参加を登録できませんでした。${item.reason} 一覧を確かめ、登録されていなければ「参加者を追加する」から登録してください。`}</li>)}</ul>}
+      {done.participants.length > 0 && <ul role="list" className="ideal-note-list" aria-label="参加者の登録結果">{done.participants.map((item) => <li key={item.personId}>{names.person(item.personId)}：{item.registered ? "参加を登録しました（確認待ち）。" : `参加を登録できませんでした。${item.reason} 一覧を確かめ、登録されていなければ「参加者を追加する」から登録してください。`}</li>)}</ul>}
     </>}{exists}</div>
   </div>;
 }

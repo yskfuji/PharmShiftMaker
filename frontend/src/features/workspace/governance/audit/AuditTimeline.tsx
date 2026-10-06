@@ -1,12 +1,19 @@
 "use client";
 
 import { useId, useState } from "react";
-import { stamp } from "@/ideal/live/format";
+import { roleLabels } from "@/ideal/data";
+import { stamp } from "../../shared/format";
 import { ActionStatus, Loaded, useAction } from "@/ideal/live/parts";
 import { useResource } from "@/ideal/live/useResource";
 import type { AuditEntry, AuditTimelinePage } from "@/ideal/types";
+import { labelOf } from "../../shared/labels";
 import { useLive } from "../../shell/WorkspaceRuntime";
 import { CATEGORY, eventLabel } from "./labels";
+
+/** The role that acted, in the words the shell uses for the viewer's own role. The server
+ * sends none when it cannot name one role; a code this screen does not know is said to be
+ * unknown and is never shown as the code. */
+const roleText = (role: string | null) => (role === null ? "役割不明" : labelOf(roleLabels, role));
 
 /** `first` is the route's own read. Choosing a category and asking for older pages are
  * reads on demand; only the choice and the pages added to it are kept here. */
@@ -28,18 +35,18 @@ export default function AuditTimeline({ first }: { first: AuditTimelinePage }) {
   const more = useAction();
   const entries = [...(page?.entries ?? []), ...(extra?.pages.flat() ?? [])];
   return <section className="ideal-panel" aria-labelledby={`${id}-title`}>
-    <div className="ideal-panel__head"><div><span className="ideal-eyebrow">計画の通知から</span><h2 id={`${id}-title`}>監査タイムライン</h2></div>
+    <div className="ideal-panel__head"><div><span className="ideal-eyebrow">操作の記録・新しい順</span><h2 id={`${id}-title`}>監査タイムライン</h2></div>
       <label className="ideal-inline-field" htmlFor={`${id}-category`}>種類<select id={`${id}-category`} className="ideal-input" value={category} onChange={(e) => setCategory(e.target.value)}><option value="">すべて</option>{Object.entries(CATEGORY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label></div>
     <Loaded resource={{ data: page, problem: category ? chosen.problem : null, loading: Boolean(category) && chosen.loading, reload: () => void chosen.reload() }}>{(shown) => <>
-      {entries.length ? <ol className="ideal-timeline">{entries.map((e, index) => <li key={`${e.at}-${e.kind}-${index}`}><span /><div><strong>{eventLabel(e.kind)}</strong>
-        <p>{CATEGORY[e.category]} · {e.actor_role ?? "役割不明"} · 関係した人 {e.subject_count === null ? "—" : `${e.subject_count}名`}{e.version === null ? "" : ` · 版 ${e.version}`}</p><small>記録種別 <code>{e.kind}</code></small></div><time dateTime={e.at}>{stamp(e.at)}</time></li>)}</ol>
+      {entries.length ? <ol className="ideal-timeline">{entries.map((e, index) => <li key={`${e.at}-${e.kind}-${index}`}><span /><div><strong>{eventLabel(e.kind, e.category)}</strong>
+        <p>{labelOf(CATEGORY, e.category)} · {roleText(e.actor_role)} · 関係した人 {e.subject_count === null ? "—" : `${e.subject_count}名`}{e.version === null ? "" : ` · 第${e.version}版`}</p><small>記録種別 <code>{e.kind}</code></small></div><time dateTime={e.at}>{stamp(e.at)}</time></li>)}</ol>
         : <p className="ideal-note">記録はありません。</p>}
       {cursor && <button type="button" className="ideal-button ideal-button--secondary" disabled={more.busy} onClick={() => void more.run(async () => {
         const next = await live.client.timeline(live.scopeId, cursor, category || null);
         setMore({ key, pages: [...(extra?.pages ?? []), next.entries], cursor: next.next_cursor });
       })}>さらに読み込む</button>}
       <ActionStatus problem={more.problem} done={null} />
-      <ul className="ideal-note-list">{shown.limits.map((l) => <li key={l}>{l}</li>)}</ul>
+      <ul role="list" className="ideal-note-list">{shown.limits.map((l) => <li key={l}>{l}</li>)}</ul>
     </>}</Loaded>
   </section>;
 }

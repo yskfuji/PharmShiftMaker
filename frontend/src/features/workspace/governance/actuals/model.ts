@@ -5,6 +5,14 @@ import { jstText } from "../../shared/jst";
 import type { Fact } from "../../shared/records/facts";
 import type { ActualDuty, ActualRow, ActualSaveBody, ActualsContext, DutyOption, EmploymentRevision, Piece, PublishedPlan, WorkTerms } from "../api";
 
+/**
+ * The `id` of the task that records a reconciliation: the header's count leads to it. It is
+ * declared here, in a module without the client directive, because the server-rendered
+ * view reads it too: a value exported by a client module reaches a Server Component as a
+ * reference to that module, not as the string.
+ */
+export const REVIEW_TASK = "actuals-task-review";
+
 /** What the route keeps of the workflow context for its first view. */
 export type ActualsData = { role: string; canCorrect: boolean; names: Record<string, string>; actuals: ActualRow[] };
 
@@ -105,7 +113,7 @@ export function actualFacts(duty: Pick<ActualDuty, "person_id" | "kind" | "task"
   const chosen = edit.employmentIds.map((id) => context.employments.find((item) => item.revision_id === id));
   return [
     { label: "職員", text: personName(context.names, duty.person_id) },
-    { label: "業務・場所", text: dutyOptionLabel(duty) },
+    { label: "業務・場所", text: dutyOptionLabel(duty), verbatim: true },
     { label: "実労働（日本時間）", text: piecesText(edit.work) },
     { label: "休憩（日本時間）", text: piecesText(edit.breaks) },
     { label: "所定労働（日本時間）", text: chosen.some(isFlextime) ? "記録しません（フレックスタイム制の雇用条件）" : piecesText(edit.scheduled) },

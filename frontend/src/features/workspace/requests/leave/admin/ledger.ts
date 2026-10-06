@@ -64,7 +64,7 @@ export const accountFacts = (ledger: Ledger, item: LeaveAccountPayload): Fact[] 
   { label: "失効日（この日を含まない）", text: day(item.expires_on) },
   { label: "原本の付与日数", text: `${item.granted_days}日` },
   { label: "うち法定付与日数", text: `${item.statutory_days}日` },
-  { label: "外部人事の付与系列の参照", text: item.grant_cycle_id || NONE },
+  { label: "外部人事の付与系列の参照", text: item.grant_cycle_id || NONE, verbatim: true },
   ...evidenceFacts("原本確認", item.evidence),
 ];
 export const policyFacts = (ledger: Ledger, item: LeavePolicyPayload): Fact[] => [
@@ -116,7 +116,7 @@ export const recordingFacts = (ledger: Ledger, item: LedgerRecordingPayload): Fa
   return [
     { label: "記録日時を照合する原本の種類", text: item.object_kind === "leave_account" ? "付与原本" : "予約・取得等の原本" },
     { label: "記録日時を付す原本", text: account ? accountLabel(ledger, account) : event ? eventLabel(event) : NONE },
-    { label: "外部人事の原本イベント番号", text: item.external_event_id || NONE },
+    { label: "外部人事の原本イベント番号", text: item.external_event_id || NONE, verbatim: true },
     { label: "外部人事の原本改定番号", text: String(item.external_revision) },
     { label: "原本を把握した日時（日本時間）", text: jstText(item.recorded_at) || NONE },
     ...evidenceFacts("原本確認", item.evidence),

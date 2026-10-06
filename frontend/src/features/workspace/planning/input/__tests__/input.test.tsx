@@ -89,7 +89,7 @@ test("staffing that cannot be read is reported beside the premises", async () =>
   await mount({ input: input(), demand: null }, undefined, "LEADER");
   expect(screen.getByText("必要配置を確認できません。取得できた前提は上に表示しています。")).toBeInTheDocument();
   expect(screen.queryByText("必要配置を登録・変更する")).toBeNull();
-  expect(panel("前提チェック")).toHaveTextContent("職員2名");
+  expect(panel("この入力版に含まれる数")).toHaveTextContent("職員2名");
 });
 
 test("without an input the route is a problem", async () => {
@@ -102,20 +102,24 @@ test("the showcase shows the premises and the registered staffing of the synthet
   global.fetch = fetchSpy as never;
   const ready = render(<CognitiveWorkspaceShowcase screen="plan" view="input" role="ADMIN" />);
   expect(await screen.findByRole("heading", { level: 2, name: "生成前提を確定" })).toBeInTheDocument();
-  expect(panel("前提チェック")).toHaveTextContent("対象期間2026-10-01〜2026-11-01職員3名契約0件資格0件必要配置0件勤務候補2件");
+  // What the synthetic input holds agrees with the records laid over it: it is current.
+  expect(panel("この入力版に含まれる数")).toHaveTextContent("対象期間2026年10月1日（木）〜10月31日（土）職員3名契約2件資格2件必要配置2件勤務候補2件");
+  expect(panel("この入力版に含まれる数")).toHaveTextContent("この入力版を作ったあとに、申請・実績・契約などの記録は変わっていません（システムが確かめた結果です）。");
   expect(screen.getByText("前提は最新")).toBeInTheDocument();
+  // The required staffing is a part of the premises: in sight without being opened.
+  expect(screen.getByRole("heading", { level: 2, name: "必要配置・資格要件を確認・編集" }).closest("details")).toBeNull();
   expect(screen.getByRole("link", { name: /前提を確認して候補生成へ/ })).toHaveAttribute("href", "/workspace/plan/generate");
   const rows = within(screen.getByRole("region", { name: "登録されている必要配置" })).getAllByRole("row");
   expect(rows.map((row) => row.textContent)).toEqual([
     "業務・場所時間帯（日本時間）必須希望原本確認版",
     "病棟・本館2026-10-12 08:30 〜 2026-10-12 17:301名2名確認済み第2版",
-    "調剤・薬剤部2026-10-12 10:30 〜 2026-10-12 19:302名2名未確認未登録（入力版の値）",
+    "調剤・薬剤部2026-10-12 10:30 〜 2026-10-12 19:302名2名未確認保存なし（入力版にある値）",
   ]);
   expect(screen.getByText("必要配置を登録・変更する")).toBeInTheDocument();
   ready.unmount();
   render(<CognitiveWorkspaceShowcase screen="plan" view="input" role="ADMIN" state="empty" />);
-  expect(await screen.findByRole("heading", { level: 2, name: "前提チェック" })).toBeInTheDocument();
-  expect(panel("前提チェック")).toHaveTextContent("職員0名契約0件資格0件必要配置0件勤務候補0件");
+  expect(await screen.findByRole("heading", { level: 2, name: "この入力版に含まれる数" })).toBeInTheDocument();
+  expect(panel("この入力版に含まれる数")).toHaveTextContent("職員0名契約0件資格0件必要配置0件勤務候補0件");
   expect(screen.getByText("この入力版に登録された必要配置はありません。")).toBeInTheDocument();
   expect(screen.getByText("必要配置を登録・変更する")).toBeInTheDocument();
   // Nothing of the route reaches a server: the established form, which fetched by itself, is gone.
@@ -126,7 +130,9 @@ test("a stale input is said aloud; a leader sees the premises without the admini
   const { calls } = await mount(data({ stale: true }), undefined, "LEADER");
   expect(screen.getByText("再導出が必要")).toBeInTheDocument();
   expect(screen.getByRole("alert")).toHaveTextContent("この入力版のまま生成しないでください。");
-  expect(panel("前提チェック")).toHaveTextContent("職員2名契約1件資格3件必要配置2件勤務候補0件");
+  // The server's word is said once: a stale input is not also said to be unchanged.
+  expect(screen.queryByText(/記録は変わっていません/)).toBeNull();
+  expect(panel("この入力版に含まれる数")).toHaveTextContent("職員2名契約1件資格3件必要配置2件勤務候補0件");
   expect(screen.queryByRole("button", { name: "申請・実績を計画に反映" })).toBeNull();
   expect(screen.queryByRole("heading", { name: "契約・資格から勤務候補を再導出" })).toBeNull();
   expect(screen.queryByRole("heading", { name: "入力ファイルの取込" })).toBeNull();
@@ -137,7 +143,7 @@ test("a stale input is said aloud; a leader sees the premises without the admini
 test("applying requests and actuals is sent against the version on screen, then the route is read again", async () => {
   let refuse = true;
   const { calls, refresh, show } = await mount(data(), () => { if (refuse) { refuse = false; throw new PlanningError(409, "moved"); } return { input_hash: "hash-13" }; });
-  const check = panel("前提チェック");
+  const check = panel("この入力版に含まれる数");
   fireEvent.click(within(check).getByRole("button", { name: "申請・実績を計画に反映" }));
   expect(await within(check).findByRole("alert")).toHaveTextContent("新しい変更があります");
   expect(refresh).not.toHaveBeenCalled();
@@ -147,7 +153,7 @@ test("applying requests and actuals is sent against the version on screen, then 
   expect(calls).toEqual(Array(2).fill({ method: "POST", path: `/inputs/refresh?${SCOPE}`, body: { expected_revision: 12 } }));
   // The confirmation does not depend on the next read; the version shown does.
   show(data({ input_revision: 13 }));
-  expect(panel("生成前提を確定")).toHaveTextContent("入力版 13");
+  expect(panel("生成前提を確定")).toHaveTextContent("入力版 第13版");
   expect(within(check).getByRole("status")).toHaveTextContent("最新の申請・実績を反映した入力版を作りました。");
 });
 
@@ -187,11 +193,23 @@ test("an input file is read in the browser and registered only after the confirm
   const { calls, refresh } = await mount(data());
   const section = panel("入力ファイルの取込");
   const picker = within(section).getByLabelText("JSONを選ぶ");
+  // A file the browser turns away was never sent: the refusal says so, and is not shown as
+  // a change whose outcome is unknown.
   fireEvent.change(picker, { target: { files: [jsonFile("big.json", "{}", 5 * 1024 * 1024 + 1)] } });
-  expect(await within(section).findByRole("alert")).toBeInTheDocument();
+  expect(await within(section).findByRole("alert")).toHaveTextContent("このファイルは登録していません。取込ファイルは5MB以内にしてください。");
+  expect(section).not.toHaveTextContent("結果を確認できません");
   expect(section.querySelector(".ideal-confirm")).toBeNull();
   fireEvent.change(picker, { target: { files: [jsonFile("broken.json", "{not json")] } });
+  await waitFor(() => expect(within(section).getByRole("alert")).toHaveTextContent("このファイルは登録していません。JSONとして読めませんでした。"));
+  expect(section).not.toHaveTextContent("結果を確認できません");
+  expect(section.querySelector(".ideal-confirm")).toBeNull();
+  fireEvent.change(picker, { target: { files: [jsonFile("october.json", JSON.stringify({ period: "2026-10" }))] } });
+  await waitFor(() => expect(section.querySelector(".ideal-confirm")).not.toBeNull());
+  expect(within(section).queryByRole("alert")).toBeNull();
+  // A refused file ends the confirmation of the file chosen before it.
+  fireEvent.change(picker, { target: { files: [jsonFile("broken.json", "{not json")] } });
   await waitFor(() => expect(section.querySelector(".ideal-confirm")).toBeNull());
+  expect(calls).toEqual([]);
   fireEvent.change(picker, { target: { files: [jsonFile("october.json", JSON.stringify({ period: "2026-10" }))] } });
   await waitFor(() => expect(section.querySelector(".ideal-confirm")).not.toBeNull());
   const surface = section.querySelector(".ideal-confirm") as HTMLElement;
@@ -207,6 +225,32 @@ test("an input file is read in the browser and registered only after the confirm
   expect(calls).toEqual([{ method: "POST", path: `/inputs?${SCOPE}`, body: { snapshot: { period: "2026-10" }, expected_revision: 12 } }]);
   expect(refresh).toHaveBeenCalledTimes(1);
   expect(section.querySelector(".ideal-confirm")).toBeNull();
+});
+
+test("a file still being read when another is chosen is dropped: the confirmation and the refusal are of the last choice", async () => {
+  await mount(data());
+  const section = panel("入力ファイルの取込");
+  const picker = within(section).getByLabelText("JSONを選ぶ");
+  // A is read slowly; B, chosen meanwhile, is too large.
+  let finishA: (text: string) => void = () => undefined;
+  const slow = new File(["{}"], "slow-a.json", { type: "application/json" });
+  Object.defineProperty(slow, "text", { value: () => new Promise<string>((resolve) => { finishA = resolve; }) });
+  fireEvent.change(picker, { target: { files: [slow] } });
+  fireEvent.change(picker, { target: { files: [jsonFile("big.json", "{}", 5 * 1024 * 1024 + 1)] } });
+  expect(await within(section).findByRole("alert")).toHaveTextContent("取込ファイルは5MB以内にしてください。");
+  await act(async () => { finishA("{}"); });
+  expect(section.querySelector(".ideal-confirm")).toBeNull();
+  expect(within(section).getByRole("alert")).toHaveTextContent("取込ファイルは5MB以内にしてください。");
+  // The other order: a broken A read slowly, then a good B. B's confirmation stays.
+  let failA: (text: string) => void = () => undefined;
+  const broken = new File(["{"], "broken-a.json", { type: "application/json" });
+  Object.defineProperty(broken, "text", { value: () => new Promise<string>((resolve) => { failA = resolve; }) });
+  fireEvent.change(picker, { target: { files: [broken] } });
+  fireEvent.change(picker, { target: { files: [jsonFile("good-b.json", "{}")] } });
+  await waitFor(() => expect(section.querySelector(".ideal-confirm")).not.toBeNull());
+  await act(async () => { failA("{not json"); });
+  expect(within(section.querySelector(".ideal-confirm") as HTMLElement).getByRole("heading", { level: 3, name: "good-b.json" })).toBeInTheDocument();
+  expect(within(section).queryByRole("alert")).toBeNull();
 });
 
 test("a registration the server refuses keeps the file for another attempt", async () => {

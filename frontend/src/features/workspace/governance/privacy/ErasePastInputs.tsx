@@ -9,6 +9,9 @@ import useUnsavedNavigation from "../../shared/useUnsavedNavigation";
 import { useLive } from "../../shell/WorkspaceRuntime";
 import { governanceApi, type ErasureCandidate, type ErasureCandidates, type InputErased, type InputErasurePlan } from "../api";
 import IrreversibleConfirm from "./IrreversibleConfirm";
+import StepOutline from "./StepOutline";
+import TableScrollCue from "../../shared/TableScrollCue";
+import Identifiers from "../../shared/Identifiers";
 
 type PreviewBody = { expected_revision: 0; payload: { input_hash: string } };
 type ExecuteBody = { expected_revision: 0; payload: { plan_id: string; fingerprint: string } };
@@ -84,21 +87,26 @@ export default function ErasePastInputs({ candidates, onChanged }: { candidates:
 
   const groups = plan ? byTable(plan) : [];
   return <div className="ideal-v3-record">
+    <StepOutline steps={["消去する旧い勤務入力を選ぶ", "確認版を作る（消去される記録を書き出すだけです）"]} last="消去される記録を確かめ、同意して消去する">手順1・2では、何も消去されません。消去されるのは、手順3で同意にチェックを入れ、赤いボタン「この旧勤務入力を消去する」を押したときだけです。消去した勤務入力と、それを参照する計画案・公開版は復元できません。</StepOutline>
     <h3 className="ideal-v3-heading" {...steps.heading("target")}>1. 消去する旧勤務入力を選ぶ</h3>
     <p className="ideal-note">消去できるのは、新しい版に置き換えられた旧い勤務入力のうち、サーバーが保存期限の経過と消去の可否を確認したものだけです。下の一覧は {jstText(candidates.observed_at)}（日本時間）時点のサーバーの回答です。</p>
     {erasable.length === 0 ? <p className="ideal-note">サーバーが消去できると答えた勤務入力はありません。</p>
-      : <div className="ideal-table-wrap" role="region" aria-label="サーバーが消去できると答えた勤務入力" tabIndex={0}><table className="ideal-table">
+      : <><TableScrollCue /><div className="ideal-table-wrap" role="region" aria-label="サーバーが消去できると答えた勤務入力" tabIndex={0}><table className="ideal-table">
         <thead><tr><th scope="col">対象期間（日本時間）</th><th scope="col">入力の版</th><th scope="col">登録日時（日本時間）</th><th scope="col">消去される記録</th></tr></thead>
-        <tbody>{erasable.map((item) => <tr key={item.input_hash}><th scope="row">{jstText(item.period.start)} 〜 {jstText(item.period.end)}</th><td>第{item.input_revision}版</td><td>{jstText(item.registered_at)}</td><td>{item.target_count}件</td></tr>)}</tbody>
-      </table></div>}
-    {refused.length > 0 && <ul className="ideal-note-list" aria-label="サーバーが消去できないと答えた勤務入力と理由">{refused.map((item) => <li key={item.input_hash}>{inputLabel(item)}：{item.blockers.join("、")}</li>)}</ul>}
+        <tbody>{erasable.map((item) => <tr key={item.input_hash}><th scope="row"><time>{jstText(item.period.start)}</time> 〜 <time>{jstText(item.period.end)}</time></th><td>第{item.input_revision}版</td><td>{jstText(item.registered_at)}</td><td>{item.target_count}件</td></tr>)}</tbody>
+      </table></div></>}
+    {refused.length > 0 && <p className="ideal-note">次の勤務入力は、サーバーが消去できないと答えています。</p>}
+    {refused.length > 0 && <ul className="ideal-v3-governance-marked" aria-label="サーバーが消去できないと答えた勤務入力と理由">{refused.map((item) => <li key={item.input_hash}>{inputLabel(item)}：{item.blockers.join("、")}</li>)}</ul>}
     {candidates.inputs.length > 0 && <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); setDone(null); setNote(null); planning.clear(); setStage("plan"); }}>
       <label htmlFor={`${id}-input`}>確認する勤務入力</label>
       <select id={`${id}-input`} className="ideal-input" required value={chosen} disabled={stage !== "idle"} onChange={(event) => { setChosen(event.target.value); setDone(null); setNote(null); }}>
         <option value="">選んでください</option>
         {candidates.inputs.map((item) => <option key={item.input_hash} value={item.input_hash}>{inputLabel(item)}（サーバーの回答：{item.erasable ? "消去できる" : "消去できない"}）</option>)}
       </select>
-      {stage === "idle" && <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">確認版の作成内容を確認する</button></div>}
+      {stage === "idle" && <>
+        <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">確認版の作成内容を確認する</button></div>
+        <p className="ideal-v3-governance-safe">このボタンでは、何も消去されません。確認版は、消去される記録と、消去できない場合の理由をサーバーに記録した一覧です。</p>
+      </>}
     </form>}
     {note && <p className="ideal-note" role="status">{note}</p>}
     {input && stage === "plan" && <ConfirmSurface title="2. 確認版の作成前の確認"
@@ -113,7 +121,7 @@ export default function ErasePastInputs({ candidates, onChanged }: { candidates:
     {input && plan && stage === "result" && !plan.erasable && <>
       <h3 className="ideal-v3-heading" {...steps.heading("result")}>3. サーバーの確認結果：この入力は消去できません</h3>
       <p className="ideal-note">サーバーは、次の理由でこの勤務入力を消去できないと答えました。消去の実行は行えません。</p>
-      <ul className="ideal-note-list" aria-label="サーバーが返した消去できない理由">{plan.blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}</ul>
+      <ul role="list" className="ideal-note-list" aria-label="サーバーが返した消去できない理由">{plan.blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}</ul>
       <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--secondary" onClick={() => { forget(null); onChanged(); }}>入力の選択に戻る</button></div>
     </>}
     {input && plan && stage === "result" && plan.erasable && <IrreversibleConfirm key={attempt} title="3. 取り消せない操作の確認：旧勤務入力の消去"
@@ -142,10 +150,7 @@ export default function ErasePastInputs({ candidates, onChanged }: { candidates:
       busy={executing.busy} confirmLabel="この旧勤務入力を消去する" backLabel="消去せずに戻る"
       onConfirm={() => void execute()} onBack={() => forget("この確認版は実行していません。")}
       onReviewed={() => { forget("この確認版は実行していません。保存規則・法的保全・対象が変わったため、一覧を読み直しました。確認版を作り直してください。"); onChanged(); }}>
-      <details className="ideal-v3-disclosure"><summary>識別情報</summary>
-        <p className="ideal-note">入力の識別子（SHA-256）：{plan.input_hash}</p>
-        <ul className="ideal-note-list">{plan.targets.map((target) => <li className="ideal-note" key={`${target.table}:${target.key}`}>{tableLabel(target.table)}：{target.key}</li>)}</ul>
-      </details>
+      <Identifiers items={[{ key: "input", label: "入力の識別子（SHA-256）", value: plan.input_hash }, ...plan.targets.map((target) => ({ key: `${target.table}:${target.key}`, label: tableLabel(target.table), value: target.key }))]} />
     </IrreversibleConfirm>}
     <p className="ideal-done" role="status">{done ?? ""}</p>
   </div>;

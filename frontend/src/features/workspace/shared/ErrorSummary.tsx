@@ -20,7 +20,7 @@ export default function ErrorSummary({ title, issues, attempt = 0, level = 4 }: 
   return <section className="ideal-inline-problem" aria-labelledby={`${id}-title`}>
     <div>
       <Heading id={`${id}-title`} className="ideal-v3-heading" ref={heading} tabIndex={-1}>{title}（{issues.length}件）</Heading>
-      <ul className="ideal-note-list">{issues.map((issue, index) => <li key={index}>{issue.fieldId
+      <ul role="list" className="ideal-note-list">{issues.map((issue, index) => <li key={index}>{issue.fieldId
         ? <button type="button" className="ideal-link ideal-link--target" onClick={() => document.getElementById(issue.fieldId!)?.focus()}>{issue.message}</button>
         : issue.message}</li>)}</ul>
     </div>

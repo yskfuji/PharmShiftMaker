@@ -10,6 +10,7 @@ import { useLive } from "../../shell/WorkspaceRuntime";
 import { settingsApi, type EnrollmentRequest, type EnrollmentRow, type FlexListing, type FlexRegistered } from "../api";
 import { NOBODY_NOTIFIED } from "./decisions";
 import { adoptionLabel, dayOf, enrollmentFacts, flexNames, STATUS_LABEL } from "./model";
+import RefusedList from "./RefusedList";
 import { laterEnrollment } from "./registration";
 
 /**
@@ -75,7 +76,7 @@ export default function AddParticipant({ listing }: { listing: FlexListing }) {
       <label htmlFor={`${id}-adoption`}>参加者を追加する採用</label>
       <select id={`${id}-adoption`} className="ideal-input" required value={adoptionId} onChange={(event) => { setAdoptionId(event.target.value); setStart(""); setDone(null); }}>
         <option value="">選んでください</option>
-        {open.map((row) => <option key={row.entity_id} value={row.entity_id}>{adoptionLabel(row, names)}</option>)}
+        {open.map((row) => <option key={row.entity_id} value={row.entity_id} data-verbatim>{adoptionLabel(row, names)}</option>)}
       </select>
       <label htmlFor={`${id}-person`}>職員</label>
       <select id={`${id}-person`} className="ideal-input" required value={personId} onChange={(event) => setPersonId(event.target.value)}>
@@ -90,7 +91,7 @@ export default function AddParticipant({ listing }: { listing: FlexListing }) {
       <p className="ideal-note">選べる開始日は、サーバーが返した将来の清算期間の初日です。選んだ職員が参加できるかどうかは、登録のときにサーバーが判定します。</p>
       <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">参加の内容を確認する</button></div>
     </form>}
-    {closed.length > 0 && <ul className="ideal-note-list" aria-label="参加者を追加できない採用">{closed.map((row) => <li key={row.entity_id}>{adoptionLabel(row, names)}：{row.actions.add_participant.refusal}</li>)}</ul>}
+    {closed.length > 0 && <RefusedList label="参加者を追加できない採用" items={closed.map((row) => ({ key: row.entity_id, name: adoptionLabel(row, names), typed: true, reason: row.actions.add_participant.refusal }))} />}
     {draft && <ConfirmSurface title="2. 登録前の確認"
       changes={changedFacts(null, proposed(draft))}
       version={{ from: 0, to: 1 }}

@@ -34,7 +34,7 @@ sequenceDiagram
 | 2 | UI → API → DB | GET /auth/me | account_memberships, planning_scopes |
 | 3 | UI → API → DB | GET /planning/scopes | account_memberships, planning_scopes |
 | 4 | API → UI | 認可済み結果、または区別された失敗 | 監査: なし |
-| 5 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/operations/cases, /workspace/schedule |
+| 5 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/operations/cases, /workspace/operations/today, /workspace/requests/leave, /workspace/schedule |
 
 ## U02 本人勤務と個人出力
 
@@ -113,7 +113,7 @@ sequenceDiagram
 | 4 | UI → API → DB | POST /planning/drafts/{draft_id}/review | planning_jobs, planning_drafts, planning_publications |
 | 5 | UI → API → DB | POST /planning/drafts/{draft_id}/publish | planning_jobs, planning_drafts, planning_publications |
 | 6 | API → UI | 認可済み結果、または区別された失敗 | 監査: schedule.published |
-| 7 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/plan/input, /workspace/plan/generate, /workspace/plan/compare, /workspace/plan/drafts, /workspace/plan/publications, /workspace/schedule |
+| 7 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/plan/input, /workspace/plan/generate, /workspace/plan/compare, /workspace/plan/drafts, /workspace/plan/publications, /workspace/schedule, /workspace/settings/notifications |
 
 ## U04 古い入力の更新
 
@@ -475,7 +475,7 @@ sequenceDiagram
 | 2 | UI → API → DB | POST /planning/scope-settings/absence-consent | planning_receipts |
 | 3 | UI → API → DB | POST /planning/change-cases | planning_receipts |
 | 4 | API → UI | 認可済み結果、または区別された失敗 | 監査: なし |
-| 5 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/operations/cases, /workspace/schedule |
+| 5 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/operations/cases, /workspace/operations/today, /workspace/requests/leave, /workspace/schedule |
 
 ## U15 月間勤務・版差分・部署出力
 
@@ -544,7 +544,7 @@ sequenceDiagram
 | 2 | UI → API → DB | GET /planning/daily-operations | planning_publications, planning_change_cases, planning_outbox |
 | 3 | UI → API → DB | GET /planning/change-cases | planning_publications, planning_change_cases, planning_outbox |
 | 4 | API → UI | 認可済み結果、または区別された失敗 | 監査: なし |
-| 5 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/home, /workspace/schedule, /workspace/governance/audit |
+| 5 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/home, /workspace/schedule, /workspace/governance/audit, /workspace/operations/cases |
 
 ## U17 役割別ホーム
 
@@ -586,7 +586,7 @@ sequenceDiagram
 | 4 | UI → API → DB | GET /planning/schedule-stability | planning_publications, planning_change_cases, planning_outbox |
 | 5 | UI → API → DB | GET /planning/notifications | planning_publications, planning_change_cases, planning_outbox |
 | 6 | API → UI | 認可済み結果、または区別された失敗 | 監査: なし |
-| 7 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/operations/cases, /workspace/schedule |
+| 7 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/operations/cases, /workspace/operations/today, /workspace/requests/leave, /workspace/schedule |
 
 ## U18 施設・個人設定
 
@@ -618,7 +618,7 @@ sequenceDiagram
 | 2 | UI → API → DB | GET /planning/scope-settings | compliance_entities, compliance_revisions |
 | 3 | UI → API → DB | GET /planning/compliance/flex-adoptions | compliance_entities, compliance_revisions |
 | 4 | API → UI | 認可済み結果、または区別された失敗 | 監査: なし |
-| 5 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/settings/appearance, /workspace/settings/notifications, /workspace/settings/absence-consent, /workspace/settings/flextime |
+| 5 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/settings/appearance, /workspace/settings/notifications, /workspace/settings/absence-consent, /workspace/settings/flextime, /workspace/schedule |
 
 ## U19 休暇
 
@@ -1037,7 +1037,7 @@ sequenceDiagram
 | 16 | UI → API → DB | POST /planning/compliance/copies/{operation} | privacy_cases, retention_rules, legal_holds, compliance_entities, compliance_revisions, erased_subjects, managed_copies, copy_subjects, copy_erasures, preserved_archives, planning_receipts |
 | 17 | UI → API → DB | GET /planning/compliance/copies/{copy_id}/projection | privacy_cases, retention_rules, legal_holds, compliance_entities, compliance_revisions, erased_subjects, managed_copies, copy_subjects, copy_erasures, preserved_archives, planning_receipts |
 | 18 | API → UI | 認可済み結果、または区別された失敗 | 監査: privacy.request, privacy.decision, retention.rule, privacy.hold, copy.preview, copy.erasure_queued, copy.external_confirmed, copy.preservation_review, copy.register |
-| 19 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/governance/audit, /workspace/governance/actuals, /workspace/governance/privacy, /workspace/governance/recovery |
+| 19 | UI → 関連画面 | 列挙済み遷移だけを生成 | /workspace/governance/audit, /workspace/governance/actuals, /workspace/governance/privacy, /workspace/governance/recovery, /workspace/people/directory |
 
 ## U26 復旧と照合
 

@@ -68,7 +68,7 @@ export default function ReviewQueue({ requests }: { requests: LeaveRequestRow[] 
     </div>}
     {row && !base && <>
       <h4 className="ideal-v3-heading" {...steps.heading("content")}>2. 判断と根拠を入力する</h4>
-      <dl className="ideal-definition-list">{facts(row).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.text}</dd></div>)}</dl>
+      <dl className="ideal-definition-list">{facts(row).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd data-verbatim={fact.verbatim ? "" : undefined}>{fact.text}</dd></div>)}</dl>
       <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); setDone(null); setBase(row); }}>
         <label htmlFor={`${id}-decision`}>判断</label>
         <select id={`${id}-decision`} className="ideal-input" value={approved ? "approve" : "continue"} onChange={(event) => setApproved(event.target.value === "approve")}>

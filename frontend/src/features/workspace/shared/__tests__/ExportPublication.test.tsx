@@ -55,7 +55,7 @@ test("one press registers the export, has it handed over and saves the verified 
   network(artifact(), file("transfer-9"));
   view();
   const region = screen.getByRole("region", { name: "公開版の登録済み出力" });
-  expect(within(region).getByLabelText("出力形式")).toHaveAccessibleDescription(/JSONは他のシステムとの連携用/);
+  expect(within(region).getByLabelText("出力形式")).toHaveAccessibleDescription(/JSONは、ほかのシステムに読み込ませるための形式です/);
   expect(within(region).getAllByRole("option").map((option) => (option as HTMLOptionElement).value)).toEqual(["json", "csv", "csv-wide"]);
   // The live region is there before anything is said, and says nothing yet.
   expect(said()).toBe("");
@@ -100,7 +100,7 @@ test("a changed publication is the server's refusal, shown as the workspace show
   expect(said()).toBe("");
   press();
   await waitFor(() => expect(sent).toHaveLength(3));
-  await waitFor(() => expect(said()).toContain("保存を止めました。受渡し記録が無いか、受け取った内容のSHA-256が登録済みの値と一致しません。"));
+  await waitFor(() => expect(said()).toContain("保存を止めました。受渡し記録が無いか、受け取った内容が、サーバーに残した内容と一致しません。"));
   expect(screen.queryByRole("alert")).toBeNull();
   // After the refusal the export was a new one.
   expect(sent[1].body.idempotency_key).not.toBe(sent[0].body.idempotency_key);
@@ -226,4 +226,20 @@ test("in the showcase nothing reaches the network: the synthetic client refuses 
   expect(await screen.findByRole("alert")).toHaveTextContent("合成データの表示では変更を行いません。");
   expect(fetchSpy).not.toHaveBeenCalled();
   expect(clicked).toEqual([]);
+});
+
+test("what the formats are and how the transfer is recorded is a closed reveal after the action; the owner chooses the button's weight", () => {
+  const shown = view();
+  const region = screen.getByRole("region", { name: "公開版の登録済み出力" });
+  // Format, action, reveal, outcome: nothing is read before the control that it explains.
+  expect(Array.from(region.children).map((child) => child.tagName === "DIV" ? child.className : child.tagName)).toEqual(["LABEL", "SELECT", "ideal-actions", "DETAILS", "P"]);
+  const reveal = screen.getByText("出力形式と受渡しの記録について", { selector: "summary" }).closest("details")!;
+  expect(reveal).toHaveClass("ideal-v3-disclosure", "ideal-v3-disclosure--info");
+  expect(reveal.open).toBe(false);
+  expect(reveal).toHaveTextContent("JSONは、ほかのシステムに読み込ませるための形式です。職員や勤務を見分ける記号（ID）も、そのまま入ります。");
+  expect(reveal).toHaveTextContent("受け取ったファイルは、残した内容と同じだと確かめられたときだけ保存します。");
+  expect(screen.getByRole("button", { name: "この公開版を出力" })).toHaveClass("ideal-button", "ideal-button--secondary");
+  shown.unmount();
+  render(<LiveProvider live={production}><ExportPublication scope="hospital/pharmacy" publication="pub-1" version={3} actionTone="primary" /></LiveProvider>);
+  expect(screen.getByRole("button", { name: "この公開版を出力" })).toHaveClass("ideal-button", "ideal-button--primary");
 });

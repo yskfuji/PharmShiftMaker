@@ -1,0 +1,108 @@
+/* Route layout of settings: appearance, notifications, absence-consent and flextime. Selectors start with .ideal-v3-app; class names are ideal-v3-<purpose>-*. */
+
+/* 1. flextime ---------------------------------------------------------------------------- */
+/* An adoption is a card: a surface and a frame, like a lifecycle case. Its heading is its
+   state and its period; the site, with its own period, is the first of its facts. */
+.ideal-v3-app .ideal-v3-record > .ideal-v3-flextime-adoption { display: grid; gap: var(--space-3); min-width: 0; padding: var(--space-4); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-v3-record > .ideal-v3-flextime-adoption + .ideal-v3-flextime-adoption { margin-top: var(--space-3); padding-top: var(--space-4); border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-record > .ideal-v3-flextime-adoption > * { margin-inline-start: 0; }
+.ideal-v3-app .ideal-v3-flextime-adoption > h3.ideal-v3-heading { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); margin: 0; word-break: keep-all; overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-v3-flextime-adoption > h4.ideal-v3-heading { margin: 0; }
+.ideal-v3-app .ideal-v3-record > .ideal-v3-flextime-adoption > p.ideal-v3-callout { margin-block: 0; }
+.ideal-v3-app .ideal-v3-flextime-adoption > .ideal-note { margin: 0; }
+/* Its terms: pairs of a term and its value in two even columns where there is room (every
+   row has a neighbour, so the rules of the two columns meet); the evidence and an end take
+   the full width. A term breaks only where its words do. */
+.ideal-v3-app .ideal-v3-record .ideal-v3-flextime-facts > div { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); gap: var(--space-1) var(--space-3); padding: var(--space-2) 0; }
+.ideal-v3-app .ideal-v3-flextime-facts dt { word-break: keep-all; overflow-wrap: anywhere; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-record .ideal-v3-flextime-facts > div { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 900px) {
+  .ideal-v3-app .ideal-v3-flextime-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-6); }
+  .ideal-v3-app .ideal-v3-record .ideal-v3-flextime-facts > div:nth-child(2) { border-top: 0; }
+  .ideal-v3-app .ideal-v3-record .ideal-v3-flextime-facts > .ideal-v3-flextime-facts__wide { grid-column: 1 / -1; }
+}
+/* The evidence: each piece with the word for its state, kept whole. */
+.ideal-v3-app .ideal-v3-flextime-marks { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+.ideal-v3-app .ideal-v3-flextime-marks > span:not(.sr-only) { display: inline-flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
+/* The participants: one row each (who, from when, the state, who registered and confirmed). */
+.ideal-v3-app .ideal-v3-flextime-people { display: grid; margin: 0; padding: 0; border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); list-style: none; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-flextime-people > li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-4); min-width: 0; padding: var(--space-2) var(--space-3); }
+.ideal-v3-app .ideal-v3-flextime-people > li + li { border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-flextime-people > li > strong { flex: 0 0 auto; min-width: 8em; color: rgb(var(--color-fg)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-flextime-people > li > span:not(.sr-only, .ideal-pill) { color: rgb(var(--color-fg)); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ideal-v3-app .ideal-v3-flextime-people > li > small { min-width: 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); overflow-wrap: anywhere; }
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-record > .ideal-v3-flextime-adoption, .ideal-v3-app .ideal-v3-flextime-people { border-color: CanvasText; }
+}
+/* A day is never broken at its hyphens; a period is one line where the table has the room. */
+.ideal-v3-app .ideal-v3-flextime-day { white-space: nowrap; }
+@media (min-width: 821px) {
+  .ideal-v3-app [aria-label="取り下げた採用・終了した採用"] .ideal-table tbody th[scope="row"] { white-space: nowrap; }
+}
+/* The settlement: its period stays on one line where the table is not scrolled anyway. */
+@media (min-width: 521px) {
+  .ideal-v3-app [aria-label="職員別・清算期間別の清算"] .ideal-table td:nth-child(2) { white-space: nowrap; }
+  /* Seven columns: the last header takes two lines, broken between its phrases, so the
+     table fits its region and the header keeps the cell's padding from the region's edge. */
+  .ideal-v3-app [aria-label="職員別・清算期間別の清算"] .ideal-table thead th:last-child { max-width: 10.5em; white-space: normal; word-break: auto-phrase; }
+}
+/* What the server's validation found in the settlement: a warning, with its list. */
+.ideal-v3-app .ideal-v3-record .ideal-v3-callout.ideal-v3-flextime-findings { display: grid; gap: var(--space-2); margin-block: 0; }
+.ideal-v3-app .ideal-v3-flextime-findings > .ideal-v3-heading { margin: 0; }
+.ideal-v3-app .ideal-v3-flextime-findings > .ideal-note-list { margin: 0; color: rgb(var(--color-fg)); }
+/* The mark that stands for a record's key in a finding: kept with the word before it. */
+.ideal-v3-app .ideal-v3-flextime-ref { white-space: nowrap; }
+.ideal-v3-app .ideal-panel .ideal-v3-flextime-findings > .ideal-note { margin: 0; }
+/* The three steps of a participation side by side where three fit. */
+@media (min-width: 1280px) {
+  .ideal-v3-app .ideal-v3-task-list.ideal-v3-flextime-trio { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+}
+/* In a task: the records the server refuses for the step, under their caption. Each is a
+   row in a quiet frame: which record (in the label's weight), then the server's reason. */
+.ideal-v3-app .ideal-v3-flextime-refused { display: grid; gap: var(--space-2); min-width: 0; max-width: var(--ideal-v3-measure); }
+.ideal-v3-app .ideal-v3-flextime-refused > .ideal-v3-heading { margin: 0; }
+.ideal-v3-app .ideal-v3-flextime-refused > .ideal-note-list { display: grid; gap: 0; margin: 0; padding: 0; border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); color: rgb(var(--color-fg)); list-style: none; }
+.ideal-v3-app .ideal-v3-flextime-refused > .ideal-note-list > li { display: grid; gap: var(--space-1); min-width: 0; padding: var(--space-2) var(--space-3); border-inline-start: 0; }
+.ideal-v3-app .ideal-v3-flextime-refused > .ideal-note-list > li + li { border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-flextime-refused > .ideal-note-list > li > strong { font-weight: var(--ideal-v3-weight-label); overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-v3-flextime-refused > .ideal-note-list > li > span:not(.sr-only) { color: rgb(var(--color-fg-muted)); }
+/* What the history shows, with the way to the audit trail beside it. */
+.ideal-v3-app .ideal-v3-flextime-history-lead { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--space-3) var(--space-5); }
+.ideal-v3-app .ideal-panel .ideal-v3-flextime-history-lead > p { flex: 1 1 20rem; margin: 0; }
+
+/* The withdrawn and ended adoptions: the short columns keep to one line, so the reason has
+   the room. The table carries no class of its own; it is found by the name of its region. */
+.ideal-v3-app [aria-label="取り下げた採用・終了した採用"] .ideal-table :is(th, td):nth-child(4), .ideal-v3-app [aria-label="取り下げた採用・終了した採用"] .ideal-table :is(th, td):nth-child(6), .ideal-v3-app [aria-label="取り下げた採用・終了した採用"] .ideal-table :is(th, td):nth-child(7) { min-width: 5em; white-space: nowrap; }
+
+/* 2. absence-consent --------------------------------------------------------------------- */
+/* The setting as it is now, before anything that changes it. */
+.ideal-v3-app .ideal-panel .ideal-v3-callout.ideal-v3-consent-state { display: grid; gap: var(--space-1); margin-bottom: var(--space-4); }
+.ideal-v3-app .ideal-panel .ideal-v3-consent-state p { margin: 0; color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-panel .ideal-v3-consent-state .ideal-v3-consent-state__now { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-consent-state__now > .ideal-pill { font-size: var(--ideal-v3-text-sm); }
+/* The form that changes it. */
+.ideal-v3-app .ideal-v3-consent-form { display: grid; gap: var(--space-3); min-width: 0; }
+.ideal-v3-app .ideal-v3-consent-form > .ideal-fieldset, .ideal-v3-app .ideal-v3-consent-form > .ideal-actions, .ideal-v3-app .ideal-v3-consent-form > .ideal-done { margin: 0; }
+
+/* 3. appearance -------------------------------------------------------------------------- */
+/* The colour choice is the established product's control: here its label is above its
+   field, as every field of the workspace is. */
+.ideal-v3-app .ideal-v3-appearance-field { margin-block: var(--space-3); }
+.ideal-v3-app .ideal-v3-appearance-field > span { display: grid; justify-items: start; gap: var(--space-1); }
+.ideal-v3-app .ideal-v3-appearance-field label { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-appearance-field select { min-width: min(16rem, 100%); max-width: 100%; min-height: 44px; padding: .55rem .7rem; border: 1px solid rgb(var(--color-line-strong)); border-radius: var(--radius-control); color: rgb(var(--color-fg)); background: rgb(var(--color-surface)); font-size: var(--ideal-v3-text-md); }
+
+/* 4. notifications ----------------------------------------------------------------------- */
+.ideal-v3-app .ideal-v3-notifications .ideal-panel__head p { margin: var(--space-1) 0 0; }
+/* The one action of a notification stands clear of what the notification says. */
+.ideal-v3-app .ideal-v3-notifications-list .ideal-button { margin-top: var(--space-2); }
+.ideal-v3-app .ideal-v3-notifications-list .ideal-note { margin-top: var(--space-1); }
+.ideal-v3-app .ideal-v3-notifications-empty { display: grid; gap: var(--space-1); }
+
+
+/* === Package r3: appearance and notifications (nothing above this line is this package's) === */
+/* appearance: what follows the device, set apart from the one field that is chosen here. */
+.ideal-v3-app .ideal-v3-appearance-follows { margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-appearance-follows > .ideal-v3-heading { margin: 0 0 var(--space-2); }

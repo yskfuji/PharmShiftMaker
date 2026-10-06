@@ -14,6 +14,7 @@ import { useLive } from "../../shell/WorkspaceRuntime";
 import { settingsApi, type AdoptionConfirmed, type AdoptionRow, type FlexImpact, type FlexListing } from "../api";
 import { NOBODY_NOTIFIED } from "./decisions";
 import { adoptionFacts, adoptionLabel, dayOf, flexNames, impactFacts, type FlexNames } from "./model";
+import RefusedList from "./RefusedList";
 
 /** The adoption and the impact the server answered for it: what a confirmation is bound to. */
 type Seen = { row: AdoptionRow; impact: FlexImpact };
@@ -22,7 +23,7 @@ function Impact({ impact, names }: { impact: FlexImpact; names: FlexNames }) {
   return <>
     <p className="ideal-note">参加者 {impact.people.length}人：{impact.people.map((item) => `${names.person(item.person_id)}（${dayOf(item.start)} から）`).join("、") || "なし"}</p>
     <p className="ideal-note">開始日以降の時刻付きの勤務（割当から外す必要があります）：{impact.timed_duties.length}件</p>
-    {impact.timed_duties.length > 0 && <ul className="ideal-note-list" aria-label="開始日以降の時刻付きの勤務">
+    {impact.timed_duties.length > 0 && <ul role="list" className="ideal-note-list" aria-label="開始日以降の時刻付きの勤務">
       {impact.timed_duties.slice(0, 20).map((duty) => <li key={duty.scope_id + duty.duty_id}>{names.person(duty.person_id)} {dayOf(duty.start)}</li>)}
       {impact.timed_duties.length > 20 && <li>ほか {impact.timed_duties.length - 20}件</li>}
     </ul>}
@@ -113,17 +114,17 @@ export default function ConfirmAdoption({ listing }: { listing: FlexListing }) {
       <label htmlFor={`${id}-target`}>確認する採用</label>
       <select id={`${id}-target`} className="ideal-input" required value={chosen} disabled={Boolean(seen) || reading} onChange={(event) => choose(event.target.value)}>
         <option value="">選んでください</option>
-        {open.map((row) => <option key={row.entity_id} value={row.entity_id}>{adoptionLabel(row, names)}（第{row.revision}版）</option>)}
+        {open.map((row) => <option key={row.entity_id} value={row.entity_id} data-verbatim>{adoptionLabel(row, names)}（第{row.revision}版）</option>)}
       </select>
       {!seen && <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={reading}>確認の前に影響を表示する</button></div>}
     </form>}
-    {closed.length > 0 && <ul className="ideal-note-list" aria-label="確認できない採用">{closed.map((row) => <li key={row.entity_id}>{adoptionLabel(row, names)}：{row.actions.confirm.refusal}</li>)}</ul>}
+    {closed.length > 0 && <RefusedList label="確認できない採用" items={closed.map((row) => ({ key: row.entity_id, name: adoptionLabel(row, names), typed: true, reason: row.actions.confirm.refusal }))} />}
     {readProblem && <InlineProblem problem={readProblem} />}
     {seen && seen.impact.blocking.length > 0 && <section aria-labelledby={`${id}-blocked`}>
       <h3 id={`${id}-blocked`} className="ideal-v3-heading" {...steps.heading("blocked")}>2. 確認すると変わること（いまは確認できません）</h3>
       <Impact impact={seen.impact} names={names} />
       <p className="ideal-note">サーバーが返した、確認できない理由：</p>
-      <ul className="ideal-note-list" aria-label="確認できない理由">{seen.impact.blocking.map((reason) => <li key={reason}>{reason}</li>)}</ul>
+      <ul role="list" className="ideal-note-list" aria-label="確認できない理由">{seen.impact.blocking.map((reason) => <li key={reason}>{reason}</li>)}</ul>
       <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--secondary" onClick={leave}>採用の選択に戻る</button></div>
     </section>}
     {seen && seen.impact.blocking.length === 0 && <ConfirmSurface title="2. 確認すると変わること"

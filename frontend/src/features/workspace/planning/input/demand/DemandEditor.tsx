@@ -124,7 +124,7 @@ export default function DemandEditor({ inputHash, inputRevision, records, dutyOp
       changes={changes}
       version={{ from: revision, to: !changes.length && revision > 0 ? revision : revision + 1 }}
       notified="誰にも通知されません。保存の記録（操作した役割・版・時刻）は監査の履歴に残ります。"
-      risk={`保存前の時点では検出されていません。保存時にサーバーが、${revision > 0 ? `この記録が第${revision}版のままであること` : "この記録がまだ登録されていないこと"}と、入力版 ${inputRevision} が最新であることを照合します。違っていれば保存せず、競合として知らせます。1件の記録だけを保存するため、一部だけが保存されることはありません。`}
+      risk={`保存前の時点では検出されていません。保存時にサーバーが、${revision > 0 ? `この記録が第${revision}版のままであること` : "この記録がまだ登録されていないこと"}と、入力版 第${inputRevision}版が最新であることを照合します。違っていれば保存せず、競合として知らせます。1件の記録だけを保存するため、一部だけが保存されることはありません。`}
       outcome={outcome} busy={record.busy} confirmLabel="この内容で保存する"
       onConfirm={() => void save()}
       onBack={() => { record.clear(); setConfirming(false); setRebased(false); steps.moveTo("content"); }}

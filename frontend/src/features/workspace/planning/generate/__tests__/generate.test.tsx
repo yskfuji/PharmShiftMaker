@@ -17,7 +17,7 @@ afterEach(() => { jest.restoreAllMocks(); jest.useRealTimers(); mockQuery = null
 
 type Call = { method: string; path: string; body: unknown };
 const SCOPE = "scope_id=synthetic%2Fclinical-pharmacy";
-const fresh: GenerateData = { revision: 12, inputHash: "hash-12", stale: false };
+const fresh: GenerateData = { revision: 12, inputHash: "hash-12", stale: false, period: { start: "2026-10-01T00:00:00+09:00", end: "2026-11-01T00:00:00+09:00" }, counts: { people: 3, demands: 2, candidates: 2 } };
 const seedOf = (call: Call) => (call.body as { random_seed: number }).random_seed;
 const queued = (call: Call): Job => ({ job_id: `job-${seedOf(call)}`, status: "QUEUED" });
 
@@ -44,10 +44,12 @@ async function mount(data: GenerateData, answer: (call: Call) => unknown) {
 const start = () => fireEvent.click(screen.getByRole("button", { name: "3つの案を作る" }));
 const posts = (calls: Call[]) => calls.filter((call) => call.method === "POST");
 
-test("the route reads the latest input and keeps its version, hash and staleness", async () => {
-  const { calls, client } = api(() => ({ input_hash: "hash-12", input_revision: 12, publication_version: 3, stale: true, snapshot: { people: [{ person_id: "p1", name: "名前" }], period: { start: "", end: "" } } }));
+test("the route reads the latest input and keeps its version, hash, staleness and what it holds in a line", async () => {
+  const period = { start: "2026-10-01T00:00:00+09:00", end: "2026-11-01T00:00:00+09:00" };
+  const { calls, client } = api(() => ({ input_hash: "hash-12", input_revision: 12, publication_version: 3, stale: true, snapshot: { people: [{ person_id: "p1", name: "名前" }], period, demands: [{}, {}], candidates: [{}, {}, {}] } }));
   const state = await readRoute(route, client, syntheticContext("ADMIN"));
-  expect(state).toEqual({ kind: "ready", partial: [], data: { revision: 12, inputHash: "hash-12", stale: true } });
+  // No name of a person is kept: only how many the input holds.
+  expect(state).toEqual({ kind: "ready", partial: [], data: { revision: 12, inputHash: "hash-12", stale: true, period, counts: { people: 1, demands: 2, candidates: 3 } } });
   expect(calls).toEqual([{ method: "GET", path: `/inputs/latest?${SCOPE}`, body: undefined }]);
   expect(route.names).toBe("none");
 });
@@ -63,9 +65,15 @@ test("the showcase shows the route, ready and empty, without a server", async ()
   for (const state of ["ready", "empty"] as const) {
     const view = render(<CognitiveWorkspaceShowcase screen="plan" view="generate" role="LEADER" state={state} />);
     expect(await screen.findByRole("heading", { level: 2, name: "同じ前提から3案を作成" })).toBeInTheDocument();
-    expect(screen.getByText("入力版 12")).toBeInTheDocument();
+    expect(screen.getByText("入力版 第12版")).toBeInTheDocument();
     expect(screen.getByText("生成可能")).toBeInTheDocument();
-    expect(screen.getByRole("list", { name: "計画の工程" }).querySelector('[aria-current="step"]')).toHaveTextContent("2候補生成");
+    // Which input the plans are made from, and what the action does to the plans that exist.
+    expect(screen.getByText("もとにする入力版").closest("div")).toHaveTextContent(state === "ready" ? "入力版 第12版（職員 3名・必要配置 2件・勤務候補 2件）" : "入力版 第12版（職員 0名・必要配置 0件・勤務候補 0件）");
+    expect(screen.getByText("もとにする入力版").closest("dl")).toHaveTextContent("対象期間2026年10月1日（木）〜10月31日（土）");
+    expect(screen.getByRole("list", { name: "押したあとに起きること" })).toHaveTextContent("すでにある案は消えず、置き換わりません。");
+    expect(screen.getByRole("list", { name: "押したあとに起きること" })).toHaveTextContent("1案あたりの探索は最長25秒です");
+    // The process of the plan is the shell's navigation: the view repeats none.
+    expect(screen.queryByRole("list", { name: "計画の工程" })).toBeNull();
     expect(screen.getByRole("button", { name: "3つの案を作る" })).toBeEnabled();
     view.unmount();
   }
@@ -142,7 +150,7 @@ test("a running job is cancelled with its own key; a refusal is shown", async ()
   });
   await act(async () => { start(); });
   await waitFor(() => expect(screen.getAllByRole("button", { name: "中止" })).toHaveLength(3));
-  const third = screen.getByText("案 3（乱数種 2）").closest("li")!;
+  const third = screen.getByText("案 3").closest("li")!;
   fireEvent.click(within(third).getByRole("button", { name: "中止" }));
   expect(await screen.findByRole("alert")).toHaveTextContent("新しい変更があります");
   expect(within(third).getByText("待機中")).toBeInTheDocument();

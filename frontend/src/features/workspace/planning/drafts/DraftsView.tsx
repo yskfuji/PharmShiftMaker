@@ -1,8 +1,7 @@
 import type { Draft, InputLatest } from "@/ideal/api/client";
 import type { Seed } from "../../shared/seed";
-import { routeOf } from "../../shell/routeTypes";
+import { routeOf, type RouteContext } from "../../shell/routeTypes";
 import WorkspaceLink from "../../shell/WorkspaceLink";
-import Stepper from "../Stepper";
 import DraftEditor from "./DraftEditor";
 
 export type DraftSource = {
@@ -19,12 +18,11 @@ export type DraftSource = {
 };
 
 /** One plan: its assignments edited, checked by the server and published, in that order. */
-export default function DraftsView({ data }: { data: DraftSource }) {
+export default function DraftsView({ data, ctx }: { data: DraftSource; ctx: RouteContext }) {
   return <div className="ideal-stack">
-    <Stepper current={3} />
     {data.draftId && data.draft
       // Another plan is another edit: the island starts again from its seed.
-      ? <DraftEditor key={data.draftId} source={data} draftId={data.draftId} seed={data.draft} />
+      ? <DraftEditor key={data.draftId} source={data} draftId={data.draftId} seed={data.draft} scopeName={ctx.scope.display_name} />
       : <section className="ideal-empty"><h2>確認する案が指定されていません</h2><WorkspaceLink className="ideal-button ideal-button--primary" route={routeOf("plan/compare").route}>案比較へ</WorkspaceLink></section>}
   </div>;
 }

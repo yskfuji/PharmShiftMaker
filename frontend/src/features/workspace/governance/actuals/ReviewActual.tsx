@@ -65,7 +65,7 @@ export default function ReviewActual({ actuals, names }: { actuals: ActualRow[];
     </div>}
     {row && !base && <>
       <h3 className="ideal-v3-heading" {...steps.heading("content")}>2. 実績を確かめ、照合内容を入力する</h3>
-      <dl className="ideal-definition-list">{reviewFacts(row).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.text}</dd></div>)}</dl>
+      <dl className="ideal-definition-list">{reviewFacts(row).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd data-verbatim={fact.verbatim ? "" : undefined}>{fact.text}</dd></div>)}</dl>
       <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); setDone(null); setBase(row); }}>
         <label htmlFor={`${id}-reason`}>照合内容・差異の理由</label>
         <textarea id={`${id}-reason`} className="ideal-input" required value={reason} onChange={(event) => setReason(event.target.value)} />
@@ -76,7 +76,7 @@ export default function ReviewActual({ actuals, names }: { actuals: ActualRow[];
       </form>
     </>}
     {base && <ConfirmSurface title="3. 記録前の確認"
-      changes={[{ label: "照合の記録", before: noteState(base), after: `第${base.revision}版に対する記録を1件追加` }, { label: "照合内容・差異の理由", before: "（なし）", after: reason }]}
+      changes={[{ label: "照合の記録", before: noteState(base), after: `第${base.revision}版に対する記録を1件追加` }, { label: "照合内容・差異の理由", before: "（なし）", after: reason, verbatim: true }]}
       version={{ from: base.revision, to: base.revision }}
       versionText={`実績は第${base.revision}版のままです。照合の記録を1件追加します。`}
       notified="誰にも通知されません。照合の記録（対象の版・操作した役割・時刻）は監査の履歴に残ります。理由の本文はサーバーに保存されますが、この画面と監査の履歴の一覧には表示されません。"

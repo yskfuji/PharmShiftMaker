@@ -1,6 +1,7 @@
 import {expect, test, type Page, type Request, type Route, type TestInfo} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {allOptical, textSpacing} from '../visual/lib/optical';
+import {attachStructure, structureLines} from '../visual/lib/structure';
 
 const API = process.env.PHARMSHIFT_E2E_API_URL ?? 'https://127.0.0.1:18540';
 const QUERY = '?scope_id=hospital%2Fpharmacy';
@@ -139,7 +140,13 @@ async function finishAudit(page: Page, info: TestInfo, id: string, width: number
   await info.attach(`${id}-optical`, {body: JSON.stringify(optical), contentType: 'application/json'});
   expect(optical.findings, `${id}: optical findings`).toEqual([]);
   expect(optical.skipped, `${id}: unmeasured optical checks`).toEqual([]);
-  await page.screenshot({path: info.outputPath(`${id}-${width}.png`), fullPage: true});
+  // What the optical checks do not measure: squeezed labels, bare headings, tables and lists, text
+  // under 12px, link colours, machine values. Advisories and metrics are attached and never fail.
+  const shape = structureLines(await attachStructure(page, info, `${id}-${width}`, width));
+  expect(shape, `${id}: structural findings\n${shape.slice(0, 40).join('\n')}`).toEqual([]);
+  // In CSS pixels: at twice that (WebKit's device) a long page at phone width is taller than
+  // the 32,767 pixels one screenshot can hold, and the capture itself fails.
+  await page.screenshot({path: info.outputPath(`${id}-${width}.png`), fullPage: true, scale: 'css'});
 }
 
 function matrix(name: string, run: (page: Page, info: TestInfo, width: number) => Promise<void>) {
@@ -530,9 +537,9 @@ matrix('ideal-deep-u14-failure-retry', async (page, info, width) => {
 matrix('ideal-deep-u15-monthly-schedule', async (page, _info, width) => {
   await signIn(page, 'admin'); await openWorkspace(page, '/workspace/schedule?period=2026-01', '勤務表');
   await expect(page.getByText(/公開版 v/).first()).toBeVisible(); const filters = page.getByRole('region', {name: '勤務表の表示条件'}); await filters.getByLabel('職員名').fill('Person 0'); await expect(filters.getByRole('status')).toContainText('1名');
-  // The responsive contract switches to the agenda through 1180px; assert the
+  // The responsive contract switches to the agenda through 600px; assert the
   // representation the user actually receives instead of treating 768px as desktop.
-  if (width <= 1180) await expect(page.getByRole('region', {name: '日別勤務予定'})).toBeVisible(); else await expect(page.getByRole('region', {name: '月間勤務表'})).toBeVisible();
+  if (width <= 600) await expect(page.getByRole('region', {name: '日別勤務予定'})).toBeVisible(); else await expect(page.getByRole('region', {name: '月間勤務表'})).toBeVisible();
   await page.getByText('部署の公開版を出力', {exact: false}).click();
   const region = page.getByRole('region', {name: '公開版の登録済み出力'}); await expect(region).toBeVisible();
   // The workspace's own export control against the real API. The response of the first
@@ -560,7 +567,7 @@ matrix('ideal-deep-u16-daily-operations', async (page) => {
   await signIn(page, 'pharmacist'); const created = await submitAbsenceWithoutReplacement(page); await signOut(page); await signIn(page, 'leader');
   await openWorkspace(page, '/workspace/operations/today', '当日運用'); await expect(page.getByRole('heading', {name: '予定上の勤務'})).toBeVisible(); await expect(page.getByText('在席・出勤実績ではありません', {exact: true})).toBeVisible();
   const snapshot = await page.request.get(`${API}/planning/daily-operations${QUERY}&day=2026-01-05`); expect(snapshot.status()).toBe(200); expect((await snapshot.json()).open_case_count).toBeGreaterThanOrEqual(1);
-  await page.goto(`/workspace/operations/cases?case=${created.case_id}`); await expect(page.locator('.ideal-v3-detail')).toContainText(`ケース版 ${created.version}`);
+  await page.goto(`/workspace/operations/cases?case=${created.case_id}`); await expect(page.locator('.ideal-v3-detail')).toContainText(`第${created.version}版`);
 });
 
 matrix('ideal-deep-u17-role-home', async (page) => {
@@ -570,7 +577,7 @@ matrix('ideal-deep-u17-role-home', async (page) => {
 
 matrix('ideal-deep-u18-settings', async (page) => {
   await signIn(page, 'admin'); await openWorkspace(page, '/workspace/settings/appearance', '設定');
-  const appearance = sectionWithHeading(page, '外観と動き');
+  const appearance = sectionWithHeading(page, '配色');
   await appearance.getByLabel('配色').selectOption('dark'); await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
   await page.goto('/workspace/settings/notifications'); const read = page.getByRole('button', {name: '確認しました'}).first(); if (await read.isVisible()) { await read.click(); await expect(read).toHaveCount(0); }
   await page.goto('/workspace/settings/absence-consent'); await expect(page.getByText(/切り替えは、切り替えた後に作るケースから適用/)).toBeVisible();

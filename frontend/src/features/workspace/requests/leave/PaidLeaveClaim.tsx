@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import ConfirmSurface from "../../shared/ConfirmSurface";
+import FieldRow, { Field } from "../../shared/FieldRow";
 import JstDateTimeField from "../../shared/JstDateTimeField";
 import { jstOffsetText, jstText } from "../../shared/jst";
 import { changedFacts, type Fact } from "../../shared/records/facts";
@@ -55,7 +56,7 @@ export default function PaidLeaveClaim({ sources }: { sources: OwnSources | null
     { label: "請求する単位", text: UNIT_LABEL[draft.unit] },
     { label: "数量", text: String(draft.quantity) },
     { label: "休暇の期間（日本時間）", text: periodText(draft.start, draft.end) },
-    { label: "請求内容・根拠の参照", text: claim.reference || "（なし）" },
+    { label: "請求内容・根拠の参照", text: claim.reference || "（なし）", verbatim: true },
     { label: "状態", text: "確認待ち" },
   ];
   const patch = (next: Partial<Draft>) => setDraft((old) => ({ ...old, ...next }));
@@ -70,33 +71,48 @@ export default function PaidLeaveClaim({ sources }: { sources: OwnSources | null
 
   return <div className="ideal-v3-record">
     <h4 className="ideal-v3-heading" {...steps.heading("content")}>1. 請求の内容を入力する</h4>
+    {!confirming && <p className="ideal-note">「年休付与台帳」では、どの付与（いつ付与された年休）から使うかを選びます。「適用する年休規則」では、その休暇に当てはめる取得の決まり（半日・時間単位で取れるか、1日が何時間に当たるか）を選びます。付与や規則が複数登録されていることがあるため、どれを使うかを指定します。選択肢に出るのは、あなたに登録されているものだけです。</p>}
     {!confirming && <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); setDone(null); setConfirming(true); }}>
-      <label htmlFor={`${id}-account`}>年休付与台帳</label>
-      <select id={`${id}-account`} className="ideal-input" required value={draft.account} onChange={(event) => patch({ account: event.target.value })}>
-        <option value="">選んでください</option>
-        {sources.grants.map((item) => <option key={item.account_id} value={item.account_id}>{grantLabel(item)}</option>)}
-      </select>
-      <label htmlFor={`${id}-policy`}>適用する年休規則</label>
-      <select id={`${id}-policy`} className="ideal-input" required value={draft.policy} onChange={(event) => {
-        const next = sources.policies.find((item) => item.policy_id === event.target.value);
-        // A unit the newly chosen rule does not list is not kept.
-        patch({ policy: event.target.value, unit: unitsOf(next).includes(draft.unit) ? draft.unit : "day" });
-      }}>
-        <option value="">選んでください</option>
-        {sources.policies.map((item) => <option key={item.policy_id} value={item.policy_id}>{policyLabel(item)}</option>)}
-      </select>
-      <label htmlFor={`${id}-unit`}>請求する単位</label>
-      <select id={`${id}-unit`} className="ideal-input" value={draft.unit} onChange={(event) => patch({ unit: event.target.value as LeaveUnit })}>
-        {units.map((unit) => <option key={unit} value={unit}>{UNIT_LABEL[unit]}</option>)}
-      </select>
+      <FieldRow>
+        <Field>
+          <label htmlFor={`${id}-account`}>年休付与台帳</label>
+          <select id={`${id}-account`} className="ideal-input" required value={draft.account} onChange={(event) => patch({ account: event.target.value })}>
+            <option value="">選んでください</option>
+            {sources.grants.map((item) => <option key={item.account_id} value={item.account_id}>{grantLabel(item)}</option>)}
+          </select>
+        </Field>
+        <Field>
+          <label htmlFor={`${id}-policy`}>適用する年休規則</label>
+          <select id={`${id}-policy`} className="ideal-input" required value={draft.policy} onChange={(event) => {
+            const next = sources.policies.find((item) => item.policy_id === event.target.value);
+            // A unit the newly chosen rule does not list is not kept.
+            patch({ policy: event.target.value, unit: unitsOf(next).includes(draft.unit) ? draft.unit : "day" });
+          }}>
+            <option value="">選んでください</option>
+            {sources.policies.map((item) => <option key={item.policy_id} value={item.policy_id}>{policyLabel(item)}</option>)}
+          </select>
+        </Field>
+      </FieldRow>
+      <FieldRow>
+        <Field>
+          <label htmlFor={`${id}-unit`}>請求する単位</label>
+          <select id={`${id}-unit`} className="ideal-input" value={draft.unit} onChange={(event) => patch({ unit: event.target.value as LeaveUnit })}>
+            {units.map((unit) => <option key={unit} value={unit}>{UNIT_LABEL[unit]}</option>)}
+          </select>
+        </Field>
+        <Field>
+          <label htmlFor={`${id}-quantity`}>数量（日・半日は1、時間は取得する時間数）</label>
+          <input id={`${id}-quantity`} className="ideal-input" type="number" min={1} step={1} required value={Number.isFinite(draft.quantity) ? draft.quantity : ""} onChange={(event) => patch({ quantity: event.target.valueAsNumber })} />
+        </Field>
+      </FieldRow>
       <p className="ideal-note">選べる単位は、選んだ取得規則に登録されている設定（半日単位・時間単位を認めるか）によります。</p>
-      <label htmlFor={`${id}-quantity`}>数量（日・半日は1、時間は取得する時間数）</label>
-      <input id={`${id}-quantity`} className="ideal-input" type="number" min={1} step={1} required value={Number.isFinite(draft.quantity) ? draft.quantity : ""} onChange={(event) => patch({ quantity: event.target.valueAsNumber })} />
-      <JstDateTimeField label="休暇開始（日本時間）" value={draft.start} onChange={(start) => patch({ start })} required />
-      <JstDateTimeField label="休暇終了（日本時間）" value={draft.end} onChange={(end) => patch({ end })} required />
+      <FieldRow>
+        <Field><JstDateTimeField label="休暇開始（日本時間）" value={draft.start} onChange={(start) => patch({ start })} required /></Field>
+        <Field><JstDateTimeField label="休暇終了（日本時間）" value={draft.end} onChange={(end) => patch({ end })} required /></Field>
+      </FieldRow>
       <label htmlFor={`${id}-reference`}>請求内容・根拠の参照</label>
       <input id={`${id}-reference`} className="ideal-input" required maxLength={2000} value={draft.reference} onChange={(event) => patch({ reference: event.target.value })} />
-      <p className="ideal-note">請求の時点でサーバーが確かめるのは、入力の形式と、年休の付与があなた本人のものであることだけです。単位と数量が取得規則に合うか、残高と時間単位の年間上限に収まるかは、請求を確認して計画へ反映するときに、年休台帳と照合されます。請求の受付は、予約や取得の確定ではありません。</p>
+      <p className="ideal-note">請求の時点で確かめられるのは、入力の形式と、年休の付与があなた本人のものであることだけです。単位と数量が取得規則に合うか、残高と時間単位の年間上限に収まるかは、請求を確認して計画へ反映するときに、年休台帳と照合されます。請求の受付は、予約や取得の確定ではありません。</p>
       <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">請求の内容を確認する</button></div>
     </form>}
     {confirming && <ConfirmSurface level={4} title="2. 請求前の確認"

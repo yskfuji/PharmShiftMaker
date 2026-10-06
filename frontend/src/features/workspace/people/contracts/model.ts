@@ -95,8 +95,11 @@ export function rosterOf(context: RosterContext): Roster {
 // ── Names and labels ────────────────────────────────────────────────────────
 export const NONE = "（なし）";
 export const WEEKDAYS = ["月", "火", "水", "木", "金", "土", "日"];
-export const versionText = (revision: number) => (revision > 0 ? `第${revision}版` : "未登録（入力版の値）");
-export const periodText = (start: unknown, end: unknown) => `${jstText(start) || "未入力"} 〜 ${jstText(end) || "未入力"}`;
+/** A record's version, or that it has none: the value is what the input version holds, and
+ * nothing was saved for it on this screen (the wording of planning/input for the same state). */
+export const versionText = (revision: number) => (revision > 0 ? `第${revision}版` : "保存なし（入力版にある値）");
+export const periodParts = (start: unknown, end: unknown): [string, string] => [jstText(start) || "未入力", jstText(end) || "未入力"];
+export const periodText = (start: unknown, end: unknown) => periodParts(start, end).join(" 〜 ");
 export const dayPeriodText = (start: unknown, end: unknown) => `${typeof start === "string" && start ? start : "未入力"} 〜 ${typeof end === "string" && end ? end : "未入力"}`;
 
 export const personName = (roster: Roster, personId: unknown) => roster.people.find((item) => item.key === personId)?.payload.name || "氏名未登録の職員";
@@ -119,6 +122,15 @@ export const siteLabel = (roster: Roster, site: EstablishmentPayload) => `${empl
 export const siteName = (roster: Roster, establishmentId: unknown) => {
   const site = roster.establishments.find((item) => item.key === establishmentId)?.payload;
   return site ? siteLabel(roster, site) : NONE;
+};
+/** A site as the first cell of a table row on this route: its employer's name. A site has
+ * no name of its own, so its period is added only where it is needed to tell it from
+ * another site of the same employer; the row's own period is in the next column. */
+export const siteCell = (roster: Roster, establishmentId: unknown) => {
+  const site = roster.establishments.find((item) => item.key === establishmentId)?.payload;
+  if (!site) return NONE;
+  const several = roster.establishments.filter((item) => item.payload.employer_id === site.employer_id).length > 1;
+  return several ? siteLabel(roster, site) : `${employerName(roster, site.employer_id)}の事業場`;
 };
 export const employmentLabel = (roster: Roster, item: EmploymentPayload) => `${personName(roster, item.person_id)}・${employerName(roster, item.employer_id)} ${periodText(item.start, item.end)}`;
 export const contractLabel = (roster: Roster, item: ContractPayload) => `${personName(roster, item.person_id)}・${employerName(roster, item.employer_id)} ${periodText(item.start, item.end)}`;

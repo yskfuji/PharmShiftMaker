@@ -82,7 +82,7 @@ export default function ReviewDeclaration({ context }: { context: DeclarationCon
     </div>}
     {row && !base && <>
       <h3 className="ideal-v3-heading" {...steps.heading("content")}>2. 申告内容を確かめ、判断と根拠を入力する</h3>
-      <dl className="ideal-definition-list">{facts(row.payload).slice(0, 13).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.text}</dd></div>)}</dl>
+      <dl className="ideal-definition-list">{facts(row.payload).slice(0, 13).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd data-verbatim={fact.verbatim ? "" : undefined}>{fact.text}</dd></div>)}</dl>
       <DeclarationTotals declaration={row.payload} />
       <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); setDone(null); setBase({ revision: row.revision, payload: row.payload }); }}>
         <label htmlFor={`${id}-status`}>判断</label>

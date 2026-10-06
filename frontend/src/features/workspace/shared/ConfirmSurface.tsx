@@ -7,6 +7,7 @@ import { StatusPill } from "@/ideal/ui/atoms";
 import type { Change, ThreeWayRow } from "./records/facts";
 import type { FieldIssue } from "./records/useRecordSave";
 import ThreeWayTable from "./ThreeWayTable";
+import WhyDisabled from "./WhyDisabled";
 
 export type ConfirmOutcome =
   | { kind: "idle" }
@@ -25,8 +26,18 @@ export type ConfirmOutcome =
  * - unknown outcome: it says the same content can be sent again; the owner resends the
  *   same body, so the same idempotency key is used.
  * - refused: the server's message (and fields, when it names them) is shown; nothing was saved.
+ * The confirmation of something that cannot be undone is given `confirmTone="danger"`: its
+ * edge and its confirming button are then in the danger colour (the owner declares it where
+ * it declares the operation; it is never derived from the data).
+ * A confirming button that cannot be pressed says why, in a note under the buttons that is
+ * the button's description: after a conflict, that the three contents have to be reviewed
+ * first (this part knows that itself); while the owner holds it back (`confirmDisabled`),
+ * the owner's own sentence (`confirmDisabledReason`: a consent not yet given, a date that
+ * could not be read). While something is being sent there is no note.
+ * A change whose owner marked it as typed by a person (`verbatim`, records/facts.ts) is
+ * shown with `data-verbatim`: its words are the person's, not the product's.
  */
-export default function ConfirmSurface({ title, level = 3, changes, version, versionText, notified, risk, outcome, busy, confirmLabel, confirmDisabled = false, resendLabel = "同じ内容を再送する", backLabel = "入力に戻る", onConfirm, onBack, onReviewed, children }: {
+export default function ConfirmSurface({ title, level = 3, changes, version, versionText, notified, risk, outcome, busy, confirmLabel, confirmTone = "primary", confirmDisabled = false, confirmDisabledReason, resendLabel = "同じ内容を再送する", backLabel = "入力に戻る", onConfirm, onBack, onReviewed, children }: {
   title: string;
   level?: 3 | 4;
   /** The lines that differ from the current version; none when the content is the same. */
@@ -42,9 +53,14 @@ export default function ConfirmSurface({ title, level = 3, changes, version, ver
   outcome: ConfirmOutcome;
   busy: boolean;
   confirmLabel: string;
+  /** `danger` for an operation that cannot be undone. */
+  confirmTone?: "primary" | "danger";
   /** True while something the owner asks for inside the confirmation (an explicit consent)
    * is still missing: nothing can be sent. */
   confirmDisabled?: boolean;
+  /** Why, in one sentence a person can act on (「上の確認にチェックを入れると押せます。」):
+   * shown under the buttons while `confirmDisabled` is true, as the button's description. */
+  confirmDisabledReason?: string;
   resendLabel?: string;
   backLabel?: string;
   onConfirm: () => void;
@@ -57,11 +73,14 @@ export default function ConfirmSurface({ title, level = 3, changes, version, ver
   useEffect(() => heading.current?.focus(), []);
   const Heading = `h${level}` as const;
   const conflict = outcome.kind === "conflict" ? outcome : null;
-  return <section className="ideal-confirm ideal-v3-confirm" aria-labelledby={`${id}-title`}>
+  // Why the confirming button cannot be pressed, when that is not just "it is being sent".
+  const why = busy ? null : conflict ? "競合した内容を確かめる必要があります。上の「三つの内容を確認し、現在の版に対して確認し直す」を押すと、もう一度押せるようになります。"
+    : confirmDisabled ? confirmDisabledReason ?? null : null;
+  return <section className={`ideal-confirm ideal-v3-confirm${confirmTone === "danger" ? " ideal-confirm--danger" : ""}`} aria-labelledby={`${id}-title`}>
     <Heading id={`${id}-title`} className="ideal-v3-heading" ref={heading} tabIndex={-1}>{title}</Heading>
     <dl className="ideal-definition-list">
       <div><dt>変更内容</dt><dd>{changes.length
-        ? <ul>{changes.map((change) => <li key={change.label}>{change.label}：{change.before} → {change.after}</li>)}</ul>
+        ? <ul>{changes.map((change) => <li key={change.label} data-verbatim={change.verbatim ? "" : undefined}>{change.label}：{change.before} → {change.after}</li>)}</ul>
         : "現在の版との差分はありません。"}</dd></div>
       <div><dt>作成される版</dt><dd>{versionText ? versionText : version.from === 0 ? `新規登録（第${version.to}版を作成）`
         : version.from === version.to ? `第${version.from}版のまま（内容が同じため、新しい版は作られません）`
@@ -82,10 +101,11 @@ export default function ConfirmSurface({ title, level = 3, changes, version, ver
       <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--secondary" onClick={onReviewed}>三つの内容を確認し、現在の版に対して確認し直す</button></div>
     </>}
     {(outcome.kind === "unknown" || outcome.kind === "refused") && <InlineProblem problem={outcome.problem} />}
-    {outcome.kind === "refused" && outcome.fields.length > 0 && <ul className="ideal-note-list">{outcome.fields.map((issue, index) => <li key={index}>{issue.field ? `${issue.field}：` : ""}{issue.message}</li>)}</ul>}
+    {outcome.kind === "refused" && outcome.fields.length > 0 && <ul role="list" className="ideal-note-list">{outcome.fields.map((issue, index) => <li key={index}>{issue.field ? `${issue.field}：` : ""}{issue.message}</li>)}</ul>}
     <div className="ideal-actions">
-      <button type="button" className="ideal-button ideal-button--primary" disabled={busy || Boolean(conflict) || confirmDisabled} onClick={onConfirm}>{outcome.kind === "unknown" ? resendLabel : confirmLabel}</button>
+      <button type="button" className={confirmTone === "danger" ? "ideal-button ideal-button--danger" : "ideal-button ideal-button--primary"} disabled={busy || Boolean(conflict) || confirmDisabled} aria-describedby={why ? `${id}-why` : undefined} onClick={onConfirm}>{outcome.kind === "unknown" ? resendLabel : confirmLabel}</button>
       <button type="button" className="ideal-button ideal-button--secondary" disabled={busy} onClick={onBack}>{backLabel}</button>
     </div>
+    <WhyDisabled id={`${id}-why`}>{why}</WhyDisabled>
   </section>;
 }

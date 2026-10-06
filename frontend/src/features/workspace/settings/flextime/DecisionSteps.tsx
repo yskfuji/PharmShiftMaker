@@ -7,6 +7,7 @@ import { conflictOutcome, useConfirmedSend } from "../../shared/records/useConfi
 import { useStepFocus } from "../../shared/useStepFocus";
 import useUnsavedNavigation from "../../shared/useUnsavedNavigation";
 import type { FlexAction } from "../api";
+import RefusedList from "./RefusedList";
 
 type Row = { entity_id: string; revision: number };
 export type DecisionFieldsProps<R, F> = { row: R; value: F; onChange: (patch: Partial<F>) => void; id: string };
@@ -19,7 +20,7 @@ export type DecisionFieldsProps<R, F> = { row: R; value: F; onChange: (patch: Pa
  * a 409 is reviewed against the record as the server holds it now. What the decision is
  * (its fields, its lines and its endpoint) is given by its owner, one file per decision.
  */
-export default function DecisionSteps<R extends Row, F extends object, B extends { expected_revision: number }, A>({ targetTitle, targetLabel, noneText, refusedLabel, rows, action, label, content, facts, decided, body, mutation, send, readCurrent, confirmTitle, confirmLabel, backLabel, notified, risk, note, done: doneText }: {
+export default function DecisionSteps<R extends Row, F extends object, B extends { expected_revision: number }, A>({ targetTitle, targetLabel, noneText, refusedLabel, rows, action, label, typedLabel = false, content, facts, decided, body, mutation, send, readCurrent, confirmTitle, confirmLabel, confirmTone, backLabel, notified, risk, note, done: doneText }: {
   targetTitle: string;
   targetLabel: string;
   /** Said when the server lets the viewer decide none of the records. */
@@ -29,6 +30,9 @@ export default function DecisionSteps<R extends Row, F extends object, B extends
   rows: R[];
   action: (row: R) => FlexAction;
   label: (row: R) => string;
+  /** True when the label holds words a person typed (an adoption is named by whom it covers):
+   * it is then shown as typed (`data-verbatim`). */
+  typedLabel?: boolean;
   /** The decision's own fields, with the heading of their step (without its number). */
   content?: { title: string; empty: F; fields: (props: DecisionFieldsProps<R, F>) => ReactNode };
   /** The record as the lines a person reads. */
@@ -43,6 +47,8 @@ export default function DecisionSteps<R extends Row, F extends object, B extends
   readCurrent: (row: R) => Promise<R | null>;
   confirmTitle: string;
   confirmLabel: string;
+  /** `danger` for a decision the server has no step to take back. */
+  confirmTone?: "primary" | "danger";
   backLabel?: string;
   /** Who is notified, in words. */
   notified: string;
@@ -102,11 +108,11 @@ export default function DecisionSteps<R extends Row, F extends object, B extends
       <label htmlFor={`${id}-target`}>{targetLabel}</label>
       <select id={`${id}-target`} className="ideal-input" required value={chosen} disabled={Boolean(base)} onChange={(event) => choose(event.target.value)}>
         <option value="">選んでください</option>
-        {open.map((item) => <option key={item.entity_id} value={item.entity_id}>{label(item)}（第{item.revision}版）</option>)}
+        {open.map((item) => <option key={item.entity_id} value={item.entity_id} data-verbatim={typedLabel ? "" : undefined}>{label(item)}（第{item.revision}版）</option>)}
       </select>
       {!content && !base && <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">内容を確認する</button></div>}
     </form>}
-    {closed.length > 0 && <ul className="ideal-note-list" aria-label={refusedLabel}>{closed.map((item) => <li key={item.entity_id}>{label(item)}：{action(item).refusal}</li>)}</ul>}
+    {closed.length > 0 && <RefusedList label={refusedLabel} items={closed.map((item) => ({ key: item.entity_id, name: label(item), typed: typedLabel, reason: action(item).refusal }))} />}
     {content && row && !base && <>
       <h3 className="ideal-v3-heading" {...steps.heading("content")}>2. {content.title}</h3>
       <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); review(); }}>
@@ -123,7 +129,7 @@ export default function DecisionSteps<R extends Row, F extends object, B extends
       notified={notified}
       risk={risk(base.revision)}
       outcome={conflictOutcome(sender.outcome, (current) => ({ currentRevision: current?.revision ?? null, rows: threeWayRows(facts(base), current && facts(current), decided(base, value)) }))}
-      busy={sender.busy} confirmLabel={confirmLabel} backLabel={backLabel}
+      busy={sender.busy} confirmLabel={confirmLabel} confirmTone={confirmTone} backLabel={backLabel}
       onConfirm={() => void save()} onBack={leave} onReviewed={reviewed}>
       {note}
       {rebased && <p className="ideal-note" role="status">現在の第{base.revision}版に対する操作として確認し直します。内容を確認して、もう一度操作してください。</p>}

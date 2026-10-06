@@ -37,10 +37,10 @@ export const declarationFacts = (item: DeclarationPayload, names: DeclarationNam
   { label: "所定外労働区間", text: piecesText(item.additional_work) },
   { label: "他社の法定休日の労働区間", text: piecesText(item.other_holiday_work) },
   { label: "労働区間の記載", text: item.work_report_complete ? "この期間の区間をすべて記載した" : "すべては記載していない" },
-  { label: "照合資料", text: item.reference || NONE },
+  { label: "照合資料", text: item.reference || NONE, verbatim: true },
   { label: "状態", text: STATUS_LABEL[item.status] ?? item.status },
-  { label: "照合根拠", text: item.review_evidence?.reference || NONE },
-  { label: "照合担当者", text: item.review_evidence?.verified_by || NONE },
+  { label: "照合根拠", text: item.review_evidence?.reference || NONE, verbatim: true },
+  { label: "照合担当者", text: item.review_evidence?.verified_by || NONE, verbatim: true },
   { label: "照合の有効期限", text: item.review_evidence ? jstText(item.review_evidence.valid_until) || "期限なし" : NONE },
 ];
 

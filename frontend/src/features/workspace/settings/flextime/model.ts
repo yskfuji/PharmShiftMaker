@@ -18,6 +18,9 @@ export const settlementOrNotYet = (read: Promise<FlexSettlements>): Promise<Sett
     throw error;
   });
 
+/** The `id` of the task that confirms an adoption: the header's count leads to it. */
+export const CONFIRM_TASK = "flextime-task-confirm";
+
 export const STATUS_LABEL: Record<FlexStatus, string> = { registered: "確認待ち", confirmed: "採用中", withdrawn: "取下げ済み" };
 export const WEEKDAYS = ["月", "火", "水", "木", "金", "土", "日"];
 export const RULE_LABEL: Record<AdoptionTerms["total_hours_rule"], string> = { statutory_frame: "法定の枠（清算期間の暦日数 ÷ 7 × 40時間）", full_two_day_weekend: "完全週休2日制の特例（8時間 × 所定労働日数）" };
@@ -56,28 +59,28 @@ export const enrollmentLabel = (row: EnrollmentRow, names: FlexNames) => `${name
 /** The agreement's terms as the lines a person reads. */
 export const termsFacts = (terms: AdoptionTerms, names: FlexNames): Fact[] => [
   { label: "事業場", text: terms.establishment_id ? names.site(terms.establishment_id) : NONE },
-  { label: "対象労働者の範囲", text: terms.target_scope || NONE },
+  { label: "対象労働者の範囲", text: terms.target_scope || NONE, verbatim: true },
   { label: "清算期間", text: `${terms.settlement_months}か月` },
   { label: "起算日（採用の開始日）", text: terms.settlement_anchor || NONE },
   { label: "採用の最終日", text: lastDayOf(terms.end) || NONE },
   { label: "総労働時間の定め", text: `${RULE_LABEL[terms.total_hours_rule] ?? terms.total_hours_rule}${terms.rest_weekdays?.length ? `・毎週の休日：${terms.rest_weekdays.map((day) => WEEKDAYS[day] ?? String(day)).join("・")}` : ""}` },
-  { label: "協定で定めた総労働時間", text: terms.agreed_total_description || NONE },
+  { label: "協定で定めた総労働時間", text: terms.agreed_total_description || NONE, verbatim: true },
   { label: "標準となる1日の労働時間", text: terms.standard_day_seconds === null ? NONE : hm(terms.standard_day_seconds) },
   { label: "フレキシブルタイム", text: windowsText(terms.flexible_time) },
   { label: "コアタイム", text: windowsText(terms.core_time) },
-  { label: "就業規則の規定の根拠", text: evidenceText(terms.work_rules_evidence) },
-  { label: "労使協定の根拠", text: evidenceText(terms.agreement_evidence) },
-  { label: "協定届", text: terms.filing ? `${terms.filing.filed_on || NONE} ${terms.filing.office || NONE}／${evidenceText(terms.filing.evidence)}` : "なし" },
+  { label: "就業規則の規定の根拠", text: evidenceText(terms.work_rules_evidence), verbatim: true },
+  { label: "労使協定の根拠", text: evidenceText(terms.agreement_evidence), verbatim: true },
+  { label: "協定届", text: terms.filing ? `${terms.filing.filed_on || NONE} ${terms.filing.office || NONE}／${evidenceText(terms.filing.evidence)}` : "なし", verbatim: true },
   { label: "協定の有効期間の終了日", text: terms.agreement_valid_until || "なし" },
 ];
 
 /** An adoption as it stands: its state and period, and who did what. */
 export const adoptionFacts = (row: AdoptionRow, names: FlexNames): Fact[] => [
-  { label: "採用", text: `${names.site(row.payload.establishment_id)}：${row.payload.target_scope}` },
+  { label: "採用", text: `${names.site(row.payload.establishment_id)}：${row.payload.target_scope}`, verbatim: true },
   { label: "状態", text: STATUS_LABEL[row.payload.status] ?? row.payload.status },
   { label: "採用の期間", text: `${dayOf(row.payload.start)} 〜 ${lastDayOf(row.payload.end)}` },
   { label: "確認した管理者", text: names.account(row.payload.reviewed_by) },
-  { label: "取下げ・終了の理由", text: row.payload.withdrawal_reason ?? row.payload.end_reason ?? NONE },
+  { label: "取下げ・終了の理由", text: row.payload.withdrawal_reason ?? row.payload.end_reason ?? NONE, verbatim: true },
   { label: "取下げ・終了を記録した管理者", text: names.account(row.payload.decided_by) },
 ];
 
@@ -86,9 +89,29 @@ export const enrollmentFacts = (row: EnrollmentRow, names: FlexNames): Fact[] =>
   { label: "参加の開始日", text: dayOf(row.payload.start) },
   { label: "状態", text: STATUS_LABEL[row.payload.status] ?? row.payload.status },
   { label: "確認した管理者", text: names.account(row.payload.reviewed_by) },
-  { label: "取下げの理由", text: row.payload.withdrawal_reason ?? NONE },
+  { label: "取下げの理由", text: row.payload.withdrawal_reason ?? NONE, verbatim: true },
   { label: "取下げを記録した管理者", text: names.account(row.payload.decided_by) },
 ];
+
+/**
+ * A finding's sentence in pieces, so that the identifier of a record named in it can be shown
+ * as an identifier. The sentences are those of lib/findingText ("雇用条件 <id>：…",
+ * "採用 <id> の…", "契約 <id>：…"); a sentence of another form is one piece, unchanged.
+ * Joined, the pieces are always the sentence.
+ */
+const NAMED_RECORD = /(雇用条件|採用|契約) (.+?)(?=：| [をのと])/g;
+export function findingParts(sentence: string): Array<{ text: string; identifier: boolean }> {
+  const parts: Array<{ text: string; identifier: boolean }> = [];
+  let from = 0;
+  sentence.replace(NAMED_RECORD, (whole: string, word: string, identifier: string, index: number) => {
+    const at = index + word.length + 1;
+    parts.push({ text: sentence.slice(from, at), identifier: false }, { text: identifier, identifier: true });
+    from = at + identifier.length;
+    return whole;
+  });
+  if (from < sentence.length) parts.push({ text: sentence.slice(from), identifier: false });
+  return parts;
+}
 
 /** What the server said confirming would change, as the lines a person compares. */
 export const impactFacts = (impact: FlexImpact, names: FlexNames): Fact[] => [

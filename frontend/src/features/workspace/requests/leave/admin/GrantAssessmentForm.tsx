@@ -78,15 +78,15 @@ export default function GrantAssessmentForm({ context, name, reload }: { context
   const facts: Fact[] = account ? [
     { label: "照合する付与", text: grantLabel(account) },
     { label: "付与基準日", text: (cycle.length ? draft.cycleBasis : account.granted_on) || "（なし）" },
-    ...(cycle.length ? [{ label: "照合する付与系列", text: cycle.map((item) => `${item.granted_on}（法定 ${item.statutory_days}日）`).join("、") }, { label: "系列全体の人事原本参照", text: draft.cycleReference || "（なし）" }] : []),
+    ...(cycle.length ? [{ label: "照合する付与系列", text: cycle.map((item) => `${item.granted_on}（法定 ${item.statutory_days}日）`).join("、") }, { label: "系列全体の人事原本参照", text: draft.cycleReference || "（なし）", verbatim: true as const }] : []),
     { label: "確認済み勤続月数", text: number(draft.months) },
     { label: "週の所定労働時間", text: `${number(draft.hours)}時間${draft.minutes}分${draft.seconds}秒` },
     { label: "所定日数の基準", text: BASIS[draft.basis] },
-    ...(shift ? [{ label: "実績の期間", text: PERIOD[draft.actualPeriod] }, { label: "労働日数の実績", text: number(draft.actualDays) }, { label: "目安となる労働日数", text: number(draft.guidelineDays) }, { label: "改正前の基準日での人事の確認記録", text: draft.guidanceReference || "（なし）" }]
+    ...(shift ? [{ label: "実績の期間", text: PERIOD[draft.actualPeriod] }, { label: "労働日数の実績", text: number(draft.actualDays) }, { label: "目安となる労働日数", text: number(draft.guidelineDays) }, { label: "改正前の基準日での人事の確認記録", text: draft.guidanceReference || "（なし）", verbatim: true as const }]
       : [{ label: draft.basis === "weekly" ? "週の所定労働日数" : "年の所定労働日数", text: number(draft.days) }]),
     { label: "出勤率（分子／分母）", text: `${number(draft.attended)}／${number(draft.denominator)}` },
-    { label: "付与照合の原本参照", text: draft.reference || "（なし）" },
-    { label: "付与照合の確認者", text: draft.verifier || "（なし）" },
+    { label: "付与照合の原本参照", text: draft.reference || "（なし）", verbatim: true },
+    { label: "付与照合の確認者", text: draft.verifier || "（なし）", verbatim: true },
   ] : [];
   const link = result ? sourceLink(result.source) : null;
   const source = (value: GrantAssessmentContext | null) => (value ? `原本の第${value.source_revision}版・未解消の差異 ${value.findings.length}件` : "（なし）");
@@ -107,7 +107,7 @@ export default function GrantAssessmentForm({ context, name, reload }: { context
       <SelectField label="照合する付与ロット" value={draft.account} options={context.accounts.map((item) => ({ value: item.account_id, label: grantLabel(item) }))} onChange={(next) => patch({ account: next })} />
       {cycle.length > 0 && <fieldset className="ideal-fieldset">
         <legend>前倒し・分割付与の系列照合</legend>
-        <ul className="ideal-note-list">{cycle.map((item) => <li key={item.account_id}>{item.granted_on}：法定 {item.statutory_days} 日</li>)}</ul>
+        <ul role="list" className="ideal-note-list">{cycle.map((item) => <li key={item.account_id}>{item.granted_on}：法定 {item.statutory_days} 日</li>)}</ul>
         <DayField label="人事が確認した付与基準日" value={draft.cycleBasis} onChange={(cycleBasis) => patch({ cycleBasis })} />
         <TextField label="系列全体の人事原本参照" value={draft.cycleReference} onChange={(cycleReference) => patch({ cycleReference })} />
         <div className="ideal-inline-field">
@@ -144,7 +144,7 @@ export default function GrantAssessmentForm({ context, name, reload }: { context
       risk={`送信前の時点では検出されていません。送信時にサーバーが、付与原本が第${against.source_revision}版のままであることと、訂正履歴に未解消の差異がないことを照合します。違っていれば照合せず、競合として知らせます。`}
       outcome={conflictOutcome(send.outcome, (now) => ({ currentRevision: now?.source_revision ?? null, rows: [
         { label: "照合に使う付与原本", base: source(against), current: source(now), proposed: source(against) },
-        ...facts.map((fact) => ({ label: fact.label, base: "（なし）", current: "（なし）", proposed: fact.text })),
+        ...facts.map((fact) => ({ label: fact.label, base: "（なし）", current: "（なし）", proposed: fact.text, ...(fact.verbatim && { verbatim: true as const }) })),
       ] }))} busy={send.busy}
       confirmLabel="この内容で照合して記録する"
       onConfirm={() => void save()} onBack={() => { send.clear(); setAgainst(null); setRebased(false); steps.moveTo("content"); }}

@@ -2,7 +2,6 @@ import type { PlanComparison } from "@/ideal/types";
 import type { Seed } from "../../shared/seed";
 import { routeOf } from "../../shell/routeTypes";
 import WorkspaceLink from "../../shell/WorkspaceLink";
-import Stepper from "../Stepper";
 import CompareDrafts from "./CompareDrafts";
 
 export type CompareData = {
@@ -17,7 +16,6 @@ export type CompareData = {
 /** The plans the URL lists, compared by the server with one definition. */
 export default function CompareView({ data }: { data: CompareData }) {
   return <div className="ideal-stack">
-    <Stepper current={2} />
     {data.comparison
       // Another choice of plans is another comparison: the island starts again from its seed.
       ? <CompareDrafts key={`${data.inputHash}|${data.draftIds.join(",")}`} draftIds={data.draftIds} inputHash={data.inputHash} seed={data.comparison} />

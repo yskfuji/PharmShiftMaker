@@ -1,0 +1,177 @@
+/* Route layout of people/contracts, and the row of section buttons it is the first user of
+   (shared/SectionNav). Selectors start with .ideal-v3-app; class names are
+   ideal-v3-<purpose>-*. Colours are tokens and a tint is rgb(var(--token) / alpha). */
+
+/* 1. The sections of a long route: a row of buttons under the header --------------------------- */
+.ideal-v3-app .ideal-v3-section-nav { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-section-nav__label { align-self: center; margin-inline-end: var(--space-1); color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-section-nav > button {
+  display: flex; flex: 1 1 13rem; align-items: center; justify-content: space-between; gap: var(--space-3); min-width: 0; min-height: 48px; padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
+  border: 1px solid rgb(var(--color-control)); border-radius: var(--radius-control); color: rgb(var(--color-fg)); background: rgb(var(--color-surface));
+  font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-label); line-height: var(--line-height-dense); text-align: start; cursor: pointer;
+}
+.ideal-v3-app .ideal-v3-section-nav > button > span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-3); min-width: 0; }
+.ideal-v3-app .ideal-v3-section-nav > button small { color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: 400; line-height: var(--line-height-heading); }
+.ideal-v3-app .ideal-v3-section-nav > button > svg { flex: 0 0 auto; width: 1rem; height: 1rem; color: rgb(var(--ideal-teal-text)); }
+.ideal-v3-app .ideal-v3-section-nav > button:hover:not(:disabled) { border-color: rgb(var(--ideal-teal)); background: rgb(var(--color-surface-sunken)); }
+/* Before React has attached a button can do nothing: a shape, not a fade. */
+.ideal-v3-app .ideal-v3-section-nav > button:disabled { border-style: dashed; color: rgb(var(--color-fg-muted)); background: rgb(var(--color-surface-sunken)); cursor: default; }
+.ideal-v3-app .ideal-v3-section-nav > button:disabled > svg { color: rgb(var(--color-fg-muted)); }
+/* The heading a button goes to does not stop under the top edge of the window. */
+.ideal-v3-app .ideal-v3-section-nav__target { scroll-margin-top: var(--space-6); }
+/* Where the row is narrow its name goes above it, and the buttons share the whole width. */
+@media (max-width: 820px) {
+  .ideal-v3-app .ideal-v3-section-nav__label { flex: 1 0 100%; margin-inline-end: 0; }
+}
+/* At phone width the row stays one row: the name of each section, without the line beside
+   it (which stays in the button's name) and without the arrow. */
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-section-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr)); gap: var(--space-1); }
+  .ideal-v3-app .ideal-v3-section-nav__label { grid-column: 1 / -1; }
+  .ideal-v3-app .ideal-v3-section-nav > button { position: relative; justify-content: center; min-height: 44px; padding: var(--space-2) var(--space-1); font-size: var(--ideal-v3-text-sm); text-align: center; }
+  .ideal-v3-app .ideal-v3-section-nav > button small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .ideal-v3-app .ideal-v3-section-nav > button > svg { display: none; }
+}
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-section-nav > button { border-color: ButtonText; }
+  .ideal-v3-app .ideal-v3-section-nav > button:disabled { border-color: GrayText; color: GrayText; }
+}
+
+/* 2. The server's validation result when it found something ------------------------------------- */
+.ideal-v3-app .ideal-v3-contracts-issues { display: grid; gap: var(--space-2); }
+.ideal-v3-app .ideal-v3-contracts-issues > p { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: 0; color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-v3-contracts-issues > .ideal-note-list { margin-top: 0; color: rgb(var(--color-fg)); overflow-wrap: anywhere; }
+/* A callout of this route stands in a grid that already spaces it. */
+.ideal-v3-app .ideal-panel :is(.ideal-v3-contracts-current, .ideal-v3-contracts-next) .ideal-v3-callout { margin-bottom: 0; }
+
+/* 3. Staff: the list, and the records of the one chosen ----------------------------------------- */
+@media (min-width: 821px) {
+  /* The list gives way to the detail before the detail's tables have to scroll. */
+  .ideal-v3-app .ideal-v3-contracts-staff { grid-template-columns: clamp(14rem, calc(100% - 44rem), 19rem) minmax(0, 1fr); gap: var(--space-4); }
+}
+.ideal-v3-app .ideal-v3-contracts-staff > div:first-child { display: grid; align-content: start; gap: var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-contracts-staff > div:first-child > label.ideal-field-label { margin-bottom: 0; }
+/* The list of people is framed at every width, as the list of the people directory is. */
+.ideal-v3-app .ideal-v3-contracts-staff > div:first-child > .ideal-v3-master { padding: var(--space-1); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+/* The counts under a name break between two counts, never inside one. */
+.ideal-v3-app .ideal-v3-contracts-tally > span { white-space: nowrap; }
+/* The detail is the second plane of the panel: the tables of the chosen person stand on it. */
+.ideal-v3-app .ideal-v3-contracts-detail { container-type: inline-size; display: grid; align-content: start; gap: var(--space-2); padding: var(--space-4); border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); }
+.ideal-v3-app .ideal-v3-contracts-detail__head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--space-2) var(--space-4); }
+.ideal-v3-app .ideal-v3-contracts-detail__head h4.ideal-v3-heading { margin-top: var(--space-1); font-size: var(--ideal-v3-text-md); }
+.ideal-v3-app .ideal-v3-contracts-detail > h5.ideal-v3-heading { margin-top: var(--space-2); }
+.ideal-v3-app .ideal-v3-contracts-detail > .ideal-note-list { margin-top: 0; }
+.ideal-v3-app .ideal-v3-contracts-detail > nav { margin-top: var(--space-1); }
+/* Where the detail is wide enough for its tables (five to seven columns), a table takes the
+   width of the detail and its cells wrap at their words, so every column is seen without
+   scrolling; a period breaks only between its two dates. Narrower, the table keeps its
+   natural width and scrolls in its region, as every other table does. */
+@container (min-width: 40.5rem) {
+  .ideal-v3-app .ideal-v3-contracts-detail .ideal-table { width: 100%; max-width: 100%; }
+  .ideal-v3-app .ideal-v3-contracts-detail .ideal-table :is(th, td) { min-width: 3.5em; padding-inline: var(--space-2); }
+  .ideal-v3-app .ideal-v3-contracts-detail .ideal-table :is(th, td):first-child { padding-inline-start: var(--space-3); }
+  .ideal-v3-app .ideal-v3-contracts-detail .ideal-v3-contracts-period { white-space: normal; }
+}
+/* Nobody is chosen: the place of the detail says what choosing does, instead of standing empty. */
+.ideal-v3-app .ideal-v3-contracts-pick { display: grid; align-content: center; justify-items: center; gap: var(--space-2); padding: var(--space-6) var(--space-4); border: 1px dashed rgb(var(--color-control)); border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); text-align: center; }
+.ideal-v3-app .ideal-v3-contracts-pick > strong { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-contracts-pick > .ideal-note { max-width: 30rem; }
+.ideal-v3-app .ideal-v3-contracts-pick > .ideal-note + .ideal-note { margin-top: var(--space-2); }
+
+/* Dates in a cell stay on one line; each date of a period is never broken in itself. */
+.ideal-v3-app .ideal-v3-contracts-period { white-space: nowrap; }
+.ideal-v3-app .ideal-v3-contracts-period > span { white-space: nowrap; }
+
+/* 4. A group of record kinds: how many of each, then one reveal with the tables ----------------- */
+.ideal-v3-app .ideal-v3-contracts-counts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: 0 var(--space-6); margin-block: 0; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-contracts-counts > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); min-width: 0; padding: var(--space-2) 0; border-bottom: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-contracts-counts dt { min-width: 0; color: rgb(var(--color-fg-muted)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-contracts-counts dd { flex: 0 0 auto; margin: 0; color: rgb(var(--color-fg)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-contracts-counts > .is-empty dd { color: rgb(var(--color-fg-muted)); font-weight: 400; }
+.ideal-v3-app .ideal-v3-contracts-counts dd > .ideal-pill { vertical-align: .05em; }
+/* The records of the facility and those of the rules stand side by side where there is room,
+   on one grid of three equal columns: the facility's three kinds in the first, the six of
+   the rules in the other two, so every row of counts is as wide as its neighbour and their
+   rules meet. Opened, a group takes the whole width for its tables. */
+@media (min-width: 1100px) {
+  .ideal-v3-app .ideal-v3-contracts-current { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--space-6); }
+  .ideal-v3-app .ideal-v3-contracts-current > section { grid-column: 1 / -1; }
+  .ideal-v3-app .ideal-v3-contracts-current > .ideal-v3-contracts-half { grid-column: auto; align-content: start; }
+  .ideal-v3-app .ideal-v3-contracts-current > .ideal-v3-contracts-half + .ideal-v3-contracts-half { grid-column: span 2; }
+  .ideal-v3-app .ideal-v3-contracts-current:has(> .ideal-v3-contracts-half > details[open]) > .ideal-v3-contracts-half { grid-column: 1 / -1; }
+  .ideal-v3-app .ideal-v3-contracts-current:not(:has(> .ideal-v3-contracts-half > details[open])) > .ideal-v3-contracts-half .ideal-v3-contracts-counts { grid-template-columns: minmax(0, 1fr); }
+  .ideal-v3-app .ideal-v3-contracts-current:not(:has(> .ideal-v3-contracts-half > details[open])) > .ideal-v3-contracts-half + .ideal-v3-contracts-half .ideal-v3-contracts-counts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Inside the reveal: each table under the name of its kind. The name is a heading over a
+   table of small print: a step larger than the cells it names. */
+.ideal-v3-app .ideal-v3-contracts-kinds > h4.ideal-v3-heading { margin-block: var(--space-4) var(--space-2); font-size: var(--ideal-v3-text-md); }
+.ideal-v3-app .ideal-v3-contracts-detail > h5.ideal-v3-heading { font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-heading); }
+/* The kinds that have no record: one quiet framed list under the tables, not bare bullets. */
+.ideal-v3-app .ideal-v3-contracts-missing { display: grid; gap: var(--space-1); margin-top: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); }
+.ideal-v3-app .ideal-v3-contracts-missing > :is(h4, h5).ideal-v3-heading { margin: 0; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-contracts-missing > .ideal-note-list { margin: 0; color: rgb(var(--color-fg)); }
+/* Three states in one cell (an agreement, another, a notice): each with its word, kept whole. */
+.ideal-v3-app .ideal-v3-contracts-marks { display: inline-flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); }
+.ideal-v3-app .ideal-v3-contracts-marks > span:not(.sr-only) { display: inline-flex; align-items: center; gap: var(--space-1); white-space: nowrap; }
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-contracts-missing { border-color: CanvasText; }
+}
+.ideal-v3-app .ideal-v3-contracts-kinds > summary + h4.ideal-v3-heading { margin-top: var(--space-1); }
+/* The key of a rule in a table of these kinds is read as one word: it is not broken inside
+   itself (「synthetic-rule-」／「2026」), and its column is as wide as the key. What follows
+   the key (a provision) wraps under it. */
+.ideal-v3-app .ideal-v3-contracts-kinds .ideal-table code { overflow-wrap: normal; white-space: nowrap; }
+@media (max-width: 520px) {
+  /* At phone width a row's header is held to twelve characters. One that holds a key is as
+     wide as the key, and what follows the key is a line of its own that wraps within those
+     twelve characters: the column never grows to the length of a provision. */
+  .ideal-v3-app .ideal-v3-contracts-kinds .ideal-table tbody th[scope="row"]:has(code) { max-width: none; }
+  .ideal-v3-app .ideal-v3-contracts-kinds .ideal-table tbody th[scope="row"] code + span { display: block; max-width: 12em; }
+}
+.ideal-v3-app .ideal-v3-contracts-kinds > .ideal-note-list, .ideal-v3-app .ideal-v3-contracts-half > .ideal-note-list { margin-top: 0; }
+.ideal-v3-app .ideal-v3-contracts-kinds > .ideal-v3-disclosure { margin-top: var(--space-2); }
+
+/* 5. The steps of adding a person: six cards, three to a row where there is room --------------- */
+.ideal-v3-app .ideal-v3-contracts-steps { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+.ideal-v3-app .ideal-v3-contracts-steps > li { align-content: start; min-width: 0; padding: var(--space-3); border: 1px solid rgb(var(--color-line)); border-inline-start-width: 3px; border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); }
+.ideal-v3-app .ideal-v3-contracts-steps > li.is-done { background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-v3-contracts-steps > li.is-current { border-color: rgb(var(--ideal-teal)); background: rgb(var(--color-surface)); }
+/* The title and what it says of its record read as one line; the reason and the starts follow. */
+.ideal-v3-app .ideal-v3-contracts-steps > li > div { min-width: 0; }
+.ideal-v3-app .ideal-v3-contracts-steps > li strong { display: inline; margin-inline-end: var(--space-2); color: rgb(var(--color-fg)); line-height: var(--line-height-body); word-break: auto-phrase; }
+.ideal-v3-app .ideal-v3-contracts-steps > li .ideal-pill { display: inline-flex; vertical-align: .1em; }
+.ideal-v3-app .ideal-v3-contracts-steps > li small { margin-top: var(--space-1); }
+/* The starts take the width of the card, under the number; a start never leaves its card. */
+.ideal-v3-app .ideal-v3-contracts-steps > li > .ideal-actions { grid-column: 1 / -1; gap: var(--space-2); margin-top: 0; }
+.ideal-v3-app .ideal-v3-contracts-steps > li > .ideal-actions > .ideal-button { min-width: 0; white-space: normal; }
+/* A start leads down the page to its task: the arrow of such a control, after its name. */
+.ideal-v3-app .ideal-v3-contracts-steps > li > .ideal-actions > .ideal-button > svg { width: 1rem; height: 1rem; }
+/* How to use the list: a reveal of background between the line about it and the cards. */
+.ideal-v3-app .ideal-v3-contracts-next > section > .ideal-v3-disclosure--info > .ideal-note-list { max-width: var(--ideal-v3-measure); margin-block: 0 var(--space-2); }
+/* While a task is open its own form holds the filled button; the step's start steps back, so
+   that one filled button is shown at a time. */
+.ideal-v3-app .ideal-v3-contracts-next:has(.ideal-v3-task > .ideal-v3-disclosure[open]) .ideal-v3-contracts-steps .ideal-button--primary { border-color: rgb(var(--color-control)); color: rgb(var(--color-fg)); background: rgb(var(--color-surface)); box-shadow: none; }
+@media (min-width: 640px) {
+  .ideal-v3-app .ideal-v3-contracts-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .ideal-v3-app .ideal-v3-contracts-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-contracts-steps > li, .ideal-v3-app .ideal-v3-contracts-pick { border-color: CanvasText; }
+  .ideal-v3-app .ideal-v3-contracts-steps > li.is-current { border-inline-start-color: Highlight; }
+}
+
+/* The list of every record's current version: its first column is the record's whole name
+   (a person, an employer and a period), so from tablet width it is given the room for the
+   name, and a date in it is not broken in two. */
+@media (min-width: 521px) {
+  .ideal-v3-app [aria-label="すべての記録の現在の版"] .ideal-table tbody th[scope="row"] { min-width: 16em; max-width: 34em; }
+}
+/* At phone width the name wraps, and the column is as wide as the longest piece that is
+   never broken (an employer's name with its bracket, a date with its dash and bracket:
+   shared/DateText): no line holds a dash or a bracket alone, and the rest of the table
+   scrolls in its region. */
+@media (max-width: 520px) {
+  .ideal-v3-app [aria-label="すべての記録の現在の版"] .ideal-table tbody th[scope="row"] { min-width: 15em; max-width: 15em; }
+}

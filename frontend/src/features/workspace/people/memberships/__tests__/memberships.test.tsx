@@ -11,6 +11,8 @@ import route from "../route";
 
 jest.mock("next/link", () => ({ __esModule: true, default: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => <a href={href} {...rest}>{children}</a> }));
 
+// jsdom has no layout: a control that brings its task into view only needs the call to exist.
+beforeEach(() => { Element.prototype.scrollIntoView = jest.fn(); });
 afterEach(() => jest.restoreAllMocks());
 
 type Call = { method: string; path: string; body: unknown };
@@ -65,11 +67,19 @@ test("the showcase shows the links, and the route's own words when there are non
   global.fetch = fetchSpy as never;
   const ready = render(<CognitiveWorkspaceShowcase screen="people" view="memberships" role="ADMIN" />);
   const table = await screen.findByRole("region", { name: "紐付けの一覧" });
-  expect(within(table).getAllByRole("row")).toHaveLength(3);
-  expect(table).toHaveTextContent("高橋 葵薬剤師synthetic-pharmacist有効 版1");
+  // The active links only, as the API answers without `include_inactive`.
+  expect(within(table).getAllByRole("row")).toHaveLength(4);
+  expect(table).toHaveTextContent("高橋 葵薬剤師synthetic-pharmacist有効 第1版");
+  expect(table).toHaveTextContent("ヴァンデンバーグ 絵里香クリスティーナ薬剤師synthetic-newcomer-erika-christina-vandenberg@example.invalid有効 第1版");
+  expect(table).not.toHaveTextContent("鈴木 悠斗");
   // The viewer's own link, and the only active administrator, cannot be deactivated here.
   expect(table).toHaveTextContent("自分自身の所属は無効にできません。別の管理者に依頼してください。");
   expect(screen.getByText("本人アカウントを紐付ける")).toBeInTheDocument();
+  // Asked for, the deactivated link is listed too, with nothing to do about it.
+  await act(async () => { fireEvent.click(screen.getByRole("checkbox", { name: "無効も表示" })); });
+  const wider = await screen.findByRole("row", { name: /鈴木 悠斗/ });
+  expect(wider).toHaveTextContent("鈴木 悠斗薬剤部責任者synthetic-leader無効 第2版なし");
+  expect(within(screen.getByRole("region", { name: "紐付けの一覧" })).getAllByRole("row")).toHaveLength(5);
   ready.unmount();
   render(<CognitiveWorkspaceShowcase screen="people" view="memberships" role="ADMIN" state="empty" />);
   expect(await screen.findByText("紐付けはありません。")).toBeInTheDocument();
@@ -83,7 +93,48 @@ test("the person the URL names narrows the table and starts the link form", asyn
   expect(screen.getByLabelText("職員")).toHaveValue("synthetic-leader");
   show([member({}), pharmacist, leaderAdmin]);
   expect(within(screen.getByRole("region", { name: "紐付けの一覧" })).getAllByRole("row")).toHaveLength(2);
-  expect(rowOf("lead-account")).toHaveTextContent("鈴木 悠斗システム管理者lead-account有効 版2");
+  expect(rowOf("lead-account")).toHaveTextContent("鈴木 悠斗システム管理者lead-account有効 第2版");
+});
+
+test("the people of the roster without an active link are listed under the table, with the way to the task that links one", async () => {
+  const names = () => { const list = screen.queryByRole("list", { name: "有効な紐付けのない職員" }); return list ? within(list).getAllByRole("listitem").map((item) => item.textContent) : null; };
+  // The roster has four people; the listing links two of them.
+  const { show, calls } = await mount([member({}), pharmacist]);
+  expect(screen.getByRole("heading", { level: 3, name: "有効な紐付けのない職員（2人）" })).toBeInTheDocument();
+  expect(names()).toEqual(["鈴木 悠斗", "ヴァンデンバーグ 絵里香クリスティーナ"]);
+  // The control opens the link task and reads nothing; the person is chosen in the form.
+  const task = screen.getByText("本人アカウントを紐付ける", { selector: "summary" }).closest("details")!;
+  expect(task.open).toBe(false);
+  fireEvent.click(screen.getByRole("button", { name: "紐付けの入力へ進む" }));
+  expect(task.open).toBe(true);
+  expect(calls).toEqual([]);
+  // A link that is not active does not count as one: its person is still listed.
+  show([member({}), pharmacist, { ...leaderAdmin, active: false }]);
+  expect(names()).toEqual(["鈴木 悠斗", "ヴァンデンバーグ 絵里香クリスティーナ"]);
+  show([member({}), pharmacist, leaderAdmin, member({ membership_id: "m-new", subject: "new-account", person_id: "synthetic-newcomer", role: "PHARMACIST" })]);
+  expect(names()).toBeNull();
+  expect(screen.queryByRole("button", { name: "紐付けの入力へ進む" })).toBeNull();
+});
+
+test("with a person chosen in the URL only that person is looked at", async () => {
+  await mount([member({}), pharmacist], () => [], { selectedPersonId: "synthetic-leader" });
+  expect(within(screen.getByRole("list", { name: "有効な紐付けのない職員" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["鈴木 悠斗"]);
+});
+
+test("the two values of the sign-in service are named in plain words on screen; their own terms are in the fields' names and in a reveal", async () => {
+  await mount([member({})]);
+  const form = screen.getByRole("form", { name: "アカウントを紐付ける" });
+  // The names the journeys and assistive technology use are unchanged.
+  for (const [name, term] of [["発行者（issuer）", "（issuer）"], ["アカウント（subject）", "（subject）"]]) {
+    const label = form.querySelector(`label[for="${within(form).getByLabelText(name).id}"]`)!;
+    expect(label.textContent).toBe(name);
+    // On screen the label is the plain word: the term is for assistive technology only.
+    expect(Array.from(label.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => node.textContent).join("")).toBe(name.replace(term, ""));
+    expect(label.querySelector(".sr-only")).toHaveTextContent(term);
+  }
+  const terms = within(form).getByText("担当者に伝える項目の名前").closest("details")!;
+  expect(terms.open).toBe(false);
+  expect(terms).toHaveTextContent("認証サービスの用語では、「発行者」は issuer、「アカウント」は subject と呼ばれます。");
 });
 
 test("the last active administrator is told why there is no button", async () => {
@@ -141,7 +192,9 @@ test("deactivating asks for evidence and is sent against the revision on screen"
   const row = rowOf("ph-account");
   fireEvent.click(within(row).getByRole("button", { name: "無効にする" }));
   expect(within(row).getByRole("button", { name: "無効にする" })).toBeDisabled();
+  expect(within(row).getByRole("button", { name: "無効にする" })).toHaveAccessibleDescription("理由と参照を3文字以上入力すると押せます。");
   fillEvidence(row);
+  expect(within(row).getByRole("button", { name: "無効にする" })).not.toHaveAttribute("aria-describedby");
   fireEvent.click(within(row).getByRole("button", { name: "無効にする" }));
   expect(await within(row).findByRole("alert")).toHaveTextContent("結果を確認できません");
   fireEvent.click(within(row).getByRole("button", { name: "無効にする" }));
@@ -171,7 +224,7 @@ test("inactive links are read on demand, and again when the route's read changes
   const { calls, show } = await mount([member({}), pharmacist], (call) => call.method === "GET" ? [member({}), inactive] : inactive);
   expect(calls).toEqual([]);
   fireEvent.click(screen.getByRole("checkbox", { name: "無効も表示" }));
-  await waitFor(() => expect(rowOf("ph-account")).toHaveTextContent("無効 版5"));
+  await waitFor(() => expect(rowOf("ph-account")).toHaveTextContent("無効 第5版"));
   expect(within(rowOf("ph-account")).queryByRole("button")).toBeNull();
   show([member({})]);
   await waitFor(() => expect(calls).toHaveLength(2));

@@ -113,8 +113,8 @@ test("the showcase shows the directory; with no records every person still has a
   global.fetch = fetchSpy as never;
   const ready = render(<CognitiveWorkspaceShowcase screen="people" view="directory" role="ADMIN" />);
   const list = await screen.findByRole("list", { name: "職員一覧" });
-  expect(within(list).getAllByRole("button").map((button) => button.textContent)).toEqual(["佐佐藤 美咲システム管理者 · 有効", "鈴鈴木 悠斗本人アカウント未紐付け", "高高橋 葵薬剤師 · 有効"]);
-  expect(detail()).toHaveTextContent("システム管理者・有効（版1）");
+  expect(within(list).getAllByRole("button").map((button) => button.textContent)).toEqual(["佐佐藤 美咲システム管理者 · 有効", "鈴鈴木 悠斗本人アカウント未紐付け", "高高橋 葵薬剤師 · 有効", "ヴヴァンデンバーグ 絵里香クリスティーナ薬剤師 · 有効"]);
+  expect(detail()).toHaveTextContent("システム管理者・有効（第1版）");
   ready.unmount();
   // Nothing yet: no roster in the context and no records, so the directory says so itself.
   render(<CognitiveWorkspaceShowcase screen="people" view="directory" role="ADMIN" state="empty" />);
@@ -126,7 +126,7 @@ test("the showcase shows the directory; with no records every person still has a
 test("with a roster and no records every person still has a detail", async () => {
   // The roster of the context, and every list of the route's own read empty.
   await mount({ memberships: [], records: { people: [], counts: [] }, cases: [] });
-  expect(await screen.findByRole("status")).toHaveTextContent("3名を表示");
+  expect(await screen.findByRole("status")).toHaveTextContent("4名を表示");
   expect(detail()).toHaveTextContent("本人アカウント未紐付け契約登録なし資格登録なし入職・退職進行中の手続きなし");
 });
 
@@ -134,14 +134,17 @@ test("the first person is selected; choosing another shows that person's records
   await mount(data);
   expect(within(detail()).getByRole("heading", { level: 3, name: "佐藤 美咲" })).toBeInTheDocument();
   fireEvent.click(within(screen.getByRole("list", { name: "職員一覧" })).getByRole("button", { name: /高橋 葵/ }));
-  expect(detail()).toHaveTextContent("薬剤師・有効（版4）");
+  expect(detail()).toHaveTextContent("薬剤師・有効（第4版）");
   expect(detail()).toHaveTextContent("契約2件（原本記録あり）");
   expect(detail()).toHaveTextContent("資格1件（原本記録あり）");
-  expect(detail()).toHaveTextContent("入職・IN_PROGRESS");
+  expect(detail()).toHaveTextContent("入職・進行中");
   expect(within(within(detail()).getByRole("navigation", { name: "選択職員の詳細" })).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
     ["本人アカウント", "/workspace/people/memberships?person=synthetic-pharmacist"],
     ["契約・資格", "/workspace/people/contracts?person=synthetic-pharmacist"],
     ["入職・退職", "/workspace/people/lifecycle?person=synthetic-pharmacist"],
+    // The direct way to file a privacy request on the person's behalf: the person travels in
+    // the URL, and the server selects them only after checking them against the roster.
+    ["個人情報の請求", "/workspace/governance/privacy?person=synthetic-pharmacist"],
   ]);
 });
 
@@ -174,6 +177,6 @@ test("inactive links are read only when asked for, and the active ones stay unti
   fireEvent.click(within(screen.getByRole("list", { name: "職員一覧" })).getByRole("button", { name: /鈴木 悠斗/ }));
   expect(detail()).toHaveTextContent("本人アカウント未紐付け");
   fireEvent.click(screen.getByRole("checkbox", { name: "無効も表示" }));
-  await waitFor(() => expect(detail()).toHaveTextContent("薬剤部責任者・無効（版2）"));
+  await waitFor(() => expect(detail()).toHaveTextContent("薬剤部責任者・無効（第2版）"));
   expect(calls.map((call) => `${call.method} ${call.path}`)).toEqual([`GET /memberships?${SCOPE}&include_inactive=true`]);
 });

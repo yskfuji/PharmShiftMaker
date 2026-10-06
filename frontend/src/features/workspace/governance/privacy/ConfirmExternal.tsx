@@ -47,7 +47,7 @@ export default function ConfirmExternal({ target, label, personId, onRecorded }:
         <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">処理確認の記録内容を確認する</button></div>
       </form>}
       {body && <IrreversibleConfirm key={attempt} level={4} title={`${label}：取り消せない操作の確認（外部管理先の処理確認）`}
-        changes={[{ label: `${label}の状態`, before: "外部に残存（確認待ち）", after: "外部管理先の処理確認を記録済み" }, { label: "処理確認資料", before: "（なし）", after: body.payload.evidence.reference }, { label: "確認担当者", before: "（なし）", after: body.payload.evidence.verified_by ?? "" }]}
+        changes={[{ label: `${label}の状態`, before: "外部に残存（確認待ち）", after: "外部管理先の処理確認を記録済み" }, { label: "処理確認資料", before: "（なし）", after: body.payload.evidence.reference, verbatim: true }, { label: "確認担当者", before: "（なし）", after: body.payload.evidence.verified_by ?? "", verbatim: true }]}
         version={{ from: target.revision, to: target.revision + 1 }}
         notified="誰にも通知されません。確認の記録（保存物・対象の職員・操作者・時刻）は監査の履歴に残ります。"
         risk={`記録前の時点では検出されていません。記録時にサーバーが、この外部コピーが第${target.revision}版のままで未確認であること、対象者一覧と確認資料が確認済みであること、法的保全がないこと、保存規則が確認済みで保存期限を過ぎていることを照合します。違っていれば記録せず、競合または拒否として知らせます。1件の確認だけを記録するため、一部だけが記録されることはありません。`}

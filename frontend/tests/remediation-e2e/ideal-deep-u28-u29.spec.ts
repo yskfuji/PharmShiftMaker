@@ -1,6 +1,7 @@
 import {expect, test, type Page, type TestInfo} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {allOptical, textSpacing} from '../visual/lib/optical';
+import {attachStructure, structureLines} from '../visual/lib/structure';
 
 const API = process.env.PHARMSHIFT_E2E_API_URL ?? 'https://127.0.0.1:18540';
 const QUERY = '?scope_id=hospital%2Fpharmacy';
@@ -73,7 +74,13 @@ async function finishAudit(page: Page, info: TestInfo, id: string, width: number
   await info.attach(`${id}-optical`, {body: JSON.stringify(optical), contentType: 'application/json'});
   expect(optical.findings, `${id}: optical findings`).toEqual([]);
   expect(optical.skipped, `${id}: unmeasured optical checks`).toEqual([]);
-  await page.screenshot({path: info.outputPath(`${id}-${width}.png`), fullPage: true});
+  // What the optical checks do not measure: squeezed labels, bare headings, tables and lists, text
+  // under 12px, link colours, machine values. Advisories and metrics are attached and never fail.
+  const shape = structureLines(await attachStructure(page, info, `${id}-${width}`, width));
+  expect(shape, `${id}: structural findings\n${shape.slice(0, 40).join('\n')}`).toEqual([]);
+  // In CSS pixels: at twice that (WebKit's device) a long page at phone width is taller than
+  // the 32,767 pixels one screenshot can hold, and the capture itself fails.
+  await page.screenshot({path: info.outputPath(`${id}-${width}.png`), fullPage: true, scale: 'css'});
 }
 
 function matrix(

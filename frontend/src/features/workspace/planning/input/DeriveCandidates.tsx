@@ -7,8 +7,9 @@ import { useLive } from "../../shell/WorkspaceRuntime";
 
 /** Derives the candidate duties again from the approved contracts and qualifications. The
  * server makes a new input version and leaves the one on screen as it is. Only the
- * evidence is a draft. */
-export default function DeriveCandidates({ revision }: { revision: number }) {
+ * evidence is a draft. `stale` is what the server says of the input on screen: while it is
+ * stale, this is the filled action of the route. */
+export default function DeriveCandidates({ revision, stale }: { revision: number; stale: boolean }) {
   const live = useLive();
   const id = useId();
   const section = useRef<HTMLElement>(null);
@@ -19,15 +20,15 @@ export default function DeriveCandidates({ revision }: { revision: number }) {
     const entered = { reason: value('input[id$="-reason"]'), reference: value('input[id$="-reference"]') };
     if (entered.reason || entered.reference) setEvidence(entered);
   });
-  return <section ref={section} className="ideal-panel" aria-labelledby={`${id}-derive`}><h2 id={`${id}-derive`}>契約・資格から勤務候補を再導出</h2><p>承認済みの正本だけをサーバーが使い、元の入力版を上書きせず新しい版を作ります。</p>
+  return <section ref={section} className="ideal-panel" aria-labelledby={`${id}-derive`}><h2 id={`${id}-derive`}>契約・資格から勤務候補を再導出</h2><p>承認済みの原本だけをサーバーが使い、元の入力版を上書きせず新しい版を作ります。</p>
     <EvidenceFields value={evidence} onChange={setEvidence} legend="再導出の根拠" />
-    <button type="button" className="ideal-button ideal-button--primary" disabled={action.busy || !evidenceReady(evidence)} onClick={() => void action.run(async () => {
+    <div className="ideal-actions"><button type="button" className={stale ? "ideal-button ideal-button--primary" : "ideal-button ideal-button--secondary"} disabled={action.busy || !evidenceReady(evidence)} onClick={() => void action.run(async () => {
       const body = { expected_version: revision, evidence };
       await live.mutate("derive-candidates", body, (key) => live.client.deriveCandidates(live.scopeId, { ...body, idempotency_key: key }));
       setEvidence(EMPTY_EVIDENCE);
       await live.refresh();
       return "新しい不変の入力版を作りました。";
-    })}>新しい入力版を作る</button>
+    })}>新しい入力版を作る</button></div>
     <ActionStatus problem={action.problem} done={action.done} />
   </section>;
 }

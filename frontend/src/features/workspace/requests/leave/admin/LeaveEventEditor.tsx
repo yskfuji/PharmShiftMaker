@@ -109,7 +109,7 @@ export default function LeaveEventEditor({ ledger, onSaved }: { ledger: Ledger; 
       risk={`保存前の時点では検出されていません。保存時にサーバーが、付与台帳が${version(against)}のままであることと、追加後の残高を照合します。違っていれば何も追加せず、競合または理由として知らせます。イベントの追加と付与台帳の版の更新は、一度に行われます。`}
       outcome={conflictOutcome(send.outcome, (now) => ({ currentRevision: now?.revision ?? null, rows: [
         { label: "付与台帳の版", base: version(against), current: version(now?.revision), proposed: `${version(against)}に追加` },
-        ...facts.map((fact) => ({ label: fact.label, base: "（なし）", current: "（なし）", proposed: fact.text })),
+        ...facts.map((fact) => ({ label: fact.label, base: "（なし）", current: "（なし）", proposed: fact.text, ...(fact.verbatim && { verbatim: true as const }) })),
       ] }))} busy={send.busy}
       confirmLabel="このイベントを記録する"
       onConfirm={() => void save()} onBack={() => { send.clear(); setAgainst(null); setRebased(false); steps.moveTo("content"); }} onReviewed={reviewed}>

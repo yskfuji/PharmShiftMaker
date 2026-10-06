@@ -1,6 +1,6 @@
 import type { PublicationRead } from "@/ideal/api/contracts";
 import type { IdealRole, ScheduleCalendarView } from "@/ideal/types";
-import { scheduleModel } from "../model";
+import { scheduleModel, shiftMonth } from "../model";
 
 const duty = (id: string, person: string, start: string, end: string) => ({ duty_id: id, person_id: person, kind: "日勤", task: "調剤", location: "中央病棟", start, end });
 const publication: PublicationRead = {
@@ -8,7 +8,7 @@ const publication: PublicationRead = {
   assignments: [duty("d1", "p-self", "2026-10-13T08:30:00+09:00", "2026-10-13T17:15:00+09:00"), duty("d2", "p-other", "2026-10-12T08:30:00+09:00", "2026-10-12T17:15:00+09:00")],
 };
 const build = (role: IdealRole, names: Record<string, string> = {}, pub: PublicationRead | null = publication, calendar: ScheduleCalendarView | null = null) =>
-  scheduleModel({ scope: { scope_id: "hospital/pharmacy", display_name: "合成病院 薬剤部", person_id: "p-self", role, input_revision: 3 }, publication: pub, names, observedAt: "2026-10-12T21:00:00+09:00" },
+  scheduleModel({ scope: { scope_id: "hospital/pharmacy", display_name: "合成病院 薬剤部", person_id: "p-self", role, input_revision: 3 }, publication: pub, names, observedAt: "2026-10-12T21:00:00+09:00", period: "2026-10" },
     calendar, (id, format) => `https://api.example/${id}/${format}`);
 const calendar = (over: Partial<ScheduleCalendarView>): ScheduleCalendarView => ({
   scope_id: "hospital/pharmacy", requested_period: "2026-10", visibility: "department",
@@ -53,8 +53,16 @@ test("without a publication nothing is invented", () => {
   expect(model.summary).toEqual([{ tone: "warn", label: "公開版がありません" }]);
   expect(model.details).toEqual({});
   expect(model.initialSelected).toBe("");
-  // A week from the observed day is shown, empty, so the page still says which period it is.
-  expect(model.agendas).toHaveLength(7);
+  // The month the URL asks for is shown, empty, so the page shows the period the frame names.
+  expect(model.title).toBe("2026年10月");
+  expect(model.range).toBe("表示期間 10/1–10/31");
+  expect(model.agendas).toHaveLength(31);
+  // Another month, a short one and one across a year: calendar arithmetic only.
+  const month = (period: string) => scheduleModel({ scope: { scope_id: "hospital/pharmacy", display_name: "合成病院 薬剤部", person_id: "p-self", role: "ADMIN", input_revision: 3 }, publication: null, names: {}, observedAt: "2026-10-12T21:00:00+09:00", period }, null, () => "");
+  expect([month("2027-02").title, month("2027-02").agendas.length, month("2027-02").days.some((d) => d.today)]).toEqual(["2027年2月", 28, false]);
+  expect([shiftMonth("2026-12", 1), shiftMonth("2026-01", -1), shiftMonth("2026-10", 0), shiftMonth("2026-03", -15)]).toEqual(["2027-01", "2025-12", "2026-10", "2024-12"]);
+  // A period that is not a month names none: a week from the observed day.
+  expect(month("").agendas).toHaveLength(7);
   expect(JSON.stringify(model)).not.toContain("検証済み");
 });
 
@@ -66,7 +74,7 @@ test("two duties on one day are both shown, and a pharmacist count is labelled a
   expect(cells).toHaveLength(1);
   expect(cells[0].shift.split("・")).toHaveLength(2);
   expect(cells[0].time).toBe("08:30–17:15 / 20:00–08:00");
-  expect(model.details[cells[0].id].facts.some((f) => f.startsWith("夜勤 20:00–08:00"))).toBe(true);
+  expect(model.details[cells[0].id].facts.some((f) => f.typed === "夜勤" && f.text === "20:00–08:00")).toBe(true);
   expect(model.summary[0].label).toMatch(/^自分の公開勤務 /);
   expect(model.agendas[1].items[0]).toMatchObject({ status: "日勤・夜勤", tone: "good" });
   expect(model.agendas[0].items[0]).toMatchObject({ status: "勤務なし", tone: "neutral" });
@@ -90,9 +98,33 @@ test("a calendar of another publication is not mixed into the one on screen", ()
   expect(model.rows.flatMap((r) => r.cells).some((c) => c.changed)).toBe(false);
 });
 
-test("a publication whose input changed is marked, and the first duty is the one selected", () => {
+test("a publication whose input changed is marked", () => {
   const model = build("LEADER", {}, { ...publication, validation_status: "revalidation_required" });
   expect(model.summary).toEqual([{ tone: "good", label: "公開勤務 2件" }, { tone: "warn", label: "再検証が必要" }]);
-  expect(model.initialSelected).toBe("p-other-0");
-  expect(model.details["p-other-0"]).toEqual({ title: "p-other · 10月12日", facts: ["日勤 08:30–17:15", "中央病棟", "公開版 v2"], note: "公開済みの勤務です。変更は申請から行います（申請の接続は次の段です）。" });
+  expect(model.details["p-other-0"]).toEqual({ title: "p-other · 10月12日", who: "p-other", when: "10月12日", facts: [{ typed: "日勤", text: "08:30–17:15" }, { typed: "中央病棟" }, { text: "公開版 v2" }], note: "公開済みの勤務です。変更は「申請」の画面から依頼します。" });
+});
+
+test("the viewer's own next duty is the one selected to begin with, and its day the one opened on", () => {
+  // Read on 10/12 at 21:00: the viewer's duty of 10/13 is still to come.
+  const model = build("LEADER");
+  expect(model).toMatchObject({ initialSelected: "p-self-1", initialDay: 1, initialReason: "あなたの次の勤務です。" });
+  // The day the page was read is marked; the weekend is the last two days.
+  expect(model.days.map((d) => d.today)).toEqual([true, false, false, false, false, false, false]);
+  expect(model.days[1]).toEqual({ label: "10/13 火", date: "10/13", weekday: "火", weekend: false, today: false });
+  // The hours of a duty, start and end apart.
+  expect(model.rows.find((r) => r.id === "p-self")!.cells[1].spans).toEqual([{ start: "08:30", end: "17:15" }]);
+  expect(model.rows.find((r) => r.id === "p-self")!.cells[0].spans).toEqual([]);
+});
+
+test("a duty under way is said to be the viewer's duty now; without one of their own nothing is selected and today is opened", () => {
+  const during = scheduleModel({ scope: { scope_id: "hospital/pharmacy", display_name: "合成病院 薬剤部", person_id: "p-self", role: "PHARMACIST", input_revision: 3 }, publication, names: {}, observedAt: "2026-10-13T12:00:00+09:00", period: "2026-10" }, null, () => "");
+  expect(during).toMatchObject({ initialSelected: "p-self-1", initialDay: 1, initialReason: "いまのあなたの勤務です。" });
+  // Read on 10/14: the viewer's only duty has ended. Another person's duty is never picked.
+  const after = scheduleModel({ scope: { scope_id: "hospital/pharmacy", display_name: "合成病院 薬剤部", person_id: "p-self", role: "LEADER", input_revision: 3 }, publication, names: {}, observedAt: "2026-10-14T09:00:00+09:00", period: "2026-10" }, null, () => "");
+  expect(after).toMatchObject({ initialSelected: "", initialDay: 2, initialReason: "" });
+  expect(after.defaultDetail).toEqual({ title: "勤務を選んでいません", facts: [], note: "表の勤務を選ぶと、ここに時間と場所を表示します。" });
+  // A day outside the period shown: the first day is opened.
+  const outside = scheduleModel({ scope: { scope_id: "hospital/pharmacy", display_name: "合成病院 薬剤部", person_id: "p-self", role: "LEADER", input_revision: 3 }, publication, names: {}, observedAt: "2026-11-02T09:00:00+09:00", period: "2026-10" }, null, () => "");
+  expect(outside).toMatchObject({ initialSelected: "", initialDay: 0 });
+  expect(outside.days.some((d) => d.today)).toBe(false);
 });

@@ -13,11 +13,11 @@ export default function RefreshInput({ revision, admin }: { revision: number; ad
   const action = useAction();
   return <>
     {/* Offered once it can answer: a press on a button React has not attached to is lost. */}
-    {admin && mounted && <button type="button" className="ideal-button ideal-button--secondary" disabled={action.busy} onClick={() => void action.run(async () => {
+    {admin && mounted && <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--secondary" disabled={action.busy} onClick={() => void action.run(async () => {
       await live.client.refreshInput(live.scopeId, revision);
       await live.refresh();
       return "最新の申請・実績を反映した入力版を作りました。";
-    })}>申請・実績を計画に反映</button>}
+    })}>申請・実績を計画に反映</button></div>}
     <ActionStatus problem={action.problem} done={action.done} />
   </>;
 }

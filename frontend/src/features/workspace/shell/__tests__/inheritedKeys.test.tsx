@@ -181,7 +181,7 @@ describe("the other places that look a person up by identifier", () => {
       // The browser may be handed the verbs without this key: none are offered then, and
       // nothing every object has is taken for a list of verbs.
       const none = render(<LiveProvider live={live}><CaseList list={[row(id)]} selectedCaseId={id} verbs={{}} /></LiveProvider>);
-      expect(screen.getByText(/判断面 · ケース版 3/)).toBeInTheDocument();
+      expect(screen.getByText(/選んだケースの内容（第3版）/)).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "責任者として却下" })).toBeNull();
       none.unmount();
       const listed = render(<LiveProvider live={live}><CaseList list={[row(id)]} selectedCaseId={id} verbs={Object.fromEntries([[id, ["reject"]]])} /></LiveProvider>);

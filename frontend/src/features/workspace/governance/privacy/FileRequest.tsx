@@ -54,7 +54,7 @@ export default function FileRequest({ personId, personName }: { personId: string
       <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">請求の内容を確認する</button></div>
     </form>}
     {body && <ConfirmSurface title="2. 請求前の確認"
-      changes={[{ label: "請求の対象", before: "（なし）", after: personName }, { label: "請求の種類", before: "（なし）", after: kindLabel(body.payload.kind) }, { label: "対象と理由", before: "（なし）", after: body.payload.reason }]}
+      changes={[{ label: "請求の対象", before: "（なし）", after: personName }, { label: "請求の種類", before: "（なし）", after: kindLabel(body.payload.kind) }, { label: "対象と理由", before: "（なし）", after: body.payload.reason, verbatim: true }]}
       version={{ from: 0, to: 1 }}
       notified="誰にも通知されません。請求は、本人と管理者のこの画面の一覧に表示されます。受付の記録（操作者・時刻）は監査の履歴に残ります。"
       risk="受付前の時点では検出されていません。請求は新しい記録として追加されるため、ほかの更新とは競合しません。1件の請求だけを記録するため、一部だけが記録されることはありません。請求を記録しただけでは、開示・訂正・利用停止・消去は実施されません。"

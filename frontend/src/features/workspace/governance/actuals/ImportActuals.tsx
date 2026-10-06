@@ -15,6 +15,8 @@ import useUnsavedNavigation from "../../shared/useUnsavedNavigation";
 import { useLive } from "../../shell/WorkspaceRuntime";
 import { governanceApi, type ImportCommitBody, type ImportCommitted, type ImportPreview, type ImportPreviewRow } from "../api";
 import { personName, rowErrorsOf, type RowError } from "./model";
+import WhyDisabled from "../../shared/WhyDisabled";
+import Identifiers from "../../shared/Identifiers";
 
 /** The size the server accepts (it checks again). */
 const LIMIT = 2_000_000;
@@ -93,21 +95,25 @@ export default function ImportActuals({ names, onSaved }: { names: Record<string
   const rowLabel = (row: ImportPreviewRow) => `${row.row}行目 ${personName(names, row.person_id)} ${jstText(row.start)} 〜 ${jstText(row.end)}`;
   return <div className="ideal-v3-record">
     <h3 className="ideal-v3-heading" {...steps.heading("file")}>1. 原本ファイルを選び、サーバーで照合する</h3>
-    <p className="ideal-note">アプリの実績形式（pharmshift-actuals-v1、UTF-8のJSON、2MB・500件以内）の原本を取り込みます。所定内外の区分と原本の改定番号が必要です。ほかの形式を推測して変換することはしません。照合では何も保存しません。</p>
+    <p className="ideal-note">勤怠の原本ファイル（このアプリの実績形式）を選び、保存済みの実績と照らし合わせます。照合では何も保存しません。保存されるのは、次の確認で「この内容で取り込む」を押したときです。</p>
+    <details className="ideal-v3-disclosure ideal-v3-disclosure--info"><summary>取り込めるファイルの形式</summary>
+      <p className="ideal-note">アプリの実績形式（pharmshift-actuals-v1、UTF-8のJSON、2MB・500件以内）の原本です。所定内外の区分と原本の改定番号が必要です。ほかの形式を推測して変換することはしません。</p>
+    </details>
     <div>
       <label className="ideal-file"><FileUp aria-hidden="true" />実績原本ファイル<input ref={picker} id={`${id}-file`} type="file" accept=".json,application/json" disabled={checking || Boolean(preview)} onChange={(event) => void choose(event.target.files?.[0])} /></label>
-      {source && <p className="ideal-note">選んだ原本：{source.name}</p>}
+      {source && <p className="ideal-note">選んだ原本：<span data-verbatim>{source.name}</span></p>}
       {fileProblem && <p className="ideal-note" role="alert">{fileProblem}</p>}
       {!preview && <div className="ideal-actions">
-        <button type="button" className="ideal-button ideal-button--primary" disabled={!source || checking} onClick={() => void check()}>原本と保存済み実績を照合する</button>
+        <button type="button" className="ideal-button ideal-button--primary" disabled={!source || checking} aria-describedby={source ? undefined : `${id}-why`} onClick={() => void check()}>原本と保存済み実績を照合する</button>
         {source && <button type="button" className="ideal-button ideal-button--secondary" disabled={checking} onClick={discard}>取込をやめる</button>}
       </div>}
+      {!preview && <WhyDisabled id={`${id}-why`}>{!source && "実績原本ファイルを選ぶと押せます。"}</WhyDisabled>}
     </div>
     {refusal && !preview && <div>
       <InlineProblem problem={refusal.problem} />
       {refusal.rows.length > 0 && <>
         <p className="ideal-note">保存していません。原本の次の行を修正してください。</p>
-        <ul className="ideal-note-list" aria-label="実績原本の行別エラー">{refusal.rows.map((item, index) => <li key={`${item.row}-${item.code}-${index}`}>{item.row}行目：{item.message}</li>)}</ul>
+        <ul role="list" className="ideal-note-list" aria-label="実績原本の行別エラー">{refusal.rows.map((item, index) => <li key={`${item.row}-${item.code}-${index}`}>{item.row}行目：{item.message}</li>)}</ul>
       </>}
     </div>}
     {source && preview && <ConfirmSurface title="2. 取込前の確認"
@@ -123,15 +129,12 @@ export default function ImportActuals({ names, onSaved }: { names: Record<string
       }))}
       busy={commit.busy} confirmLabel="この内容で取り込む" backLabel="取り込まずに戻る"
       onConfirm={() => void save()} onBack={() => { setPreview(null); setRebased(false); commit.clear(); steps.moveTo("file"); }} onReviewed={reviewed}>
-      <details className="ideal-v3-disclosure"><summary>識別情報</summary>
-        <p className="ideal-note">原本のSHA-256：{preview.source_hash}</p>
-        <ul className="ideal-note-list">{preview.rows.map((row) => <li key={row.row}>{row.row}行目の原本の識別子：{row.external_id}</li>)}</ul>
-      </details>
+      <Identifiers items={[{ key: "source", label: "原本のSHA-256", value: preview.source_hash }, ...preview.rows.map((row) => ({ key: `row:${row.row}`, label: `${row.row}行目の原本の識別子`, value: row.external_id }))]} />
       {rebased && <p className="ideal-note" role="status">現在の保存内容に対する取込として確認し直します。各行の版を確かめて、もう一度操作してください。</p>}
     </ConfirmSurface>}
     <div className="ideal-done" role="status">{done && <>
       <p>{done.count}件を保存しました。取り込んだ実績を含む計画は、再検証の対象になります。</p>
-      <details className="ideal-v3-disclosure"><summary>識別情報</summary><p className="ideal-note">原本のSHA-256：{done.hash}</p></details>
+      <Identifiers items={[{ label: "原本のSHA-256", value: done.hash }]} />
     </>}</div>
   </div>;
 }

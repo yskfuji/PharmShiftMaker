@@ -27,7 +27,7 @@ export default function WithdrawParticipant({ listing }: { listing: FlexListing 
     mutation={(row) => `flex-enrollment:withdraw:${row.entity_id}`}
     send={(row, body, key) => api.withdrawEnrollment(live.scopeId, row.entity_id, { ...body, idempotency_key: key })}
     readCurrent={async (row) => (await api.flexAdoptions(live.scopeId)).enrollments.find((item) => item.entity_id === row.entity_id) ?? null}
-    confirmTitle="取下げ前の確認" confirmLabel="理由を記録して参加を取り下げる" backLabel="取り下げずに戻る"
+    confirmTitle="取下げ前の確認" confirmLabel="理由を記録して参加を取り下げる" confirmTone="danger" backLabel="取り下げずに戻る"
     notified={NOBODY_NOTIFIED} risk={decisionRisk("参加")}
     done={(answer, row) => `${names.person(row.payload.person_id)} の参加を取り下げました（第${answer.revision}版、取下げ済み）。`}
   />;

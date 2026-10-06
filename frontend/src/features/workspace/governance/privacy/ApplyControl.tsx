@@ -14,6 +14,7 @@ import { governanceApi, type Named, type SubjectControl, type SubjectControlAppl
 import InventoryList from "./InventoryList";
 import IrreversibleConfirm from "./IrreversibleConfirm";
 import { blockersText, controlStateLabel, copyName, nameIn } from "./model";
+import StepOutline from "./StepOutline";
 
 /** A read the server refused says so in its own words; anything else may be tried again. */
 export const readProblem = (error: unknown): ProblemModel => problemFrom(error, error instanceof PlanningError && definite(error.status) ? "write" : "read");
@@ -76,6 +77,7 @@ export default function ApplyControl({ people }: { people: Named[] }) {
   const chosenCase = control?.applicable_cases.find((item) => item.case_id === caseId);
   const base = body && control?.applicable_cases.find((item) => item.case_id === body.case_id);
   return <div className="ideal-v3-record">
+    <StepOutline steps={["対象の職員を選ぶ", "いまの状態を確かめ、もとにする判断と理由を入力する"]} last="内容を確かめて、人物制御を適用する">この操作では、記録もコピーも消去しません。手順3で同意にチェックを入れ、赤いボタン「人物制御を適用する」を押すと適用されます。それまでは何も変わりません。適用した後は、解除も変更もできません。</StepOutline>
     <h3 className="ideal-v3-heading" {...steps.heading("target")}>1. 対象の職員を選ぶ</h3>
     <div className="ideal-form">
       <label htmlFor={`${id}-person`}>人物制御の対象職員</label>
@@ -95,16 +97,17 @@ export default function ApplyControl({ people }: { people: Named[] }) {
           <label htmlFor={`${id}-case`}>承認済みの消去判断</label>
           <select id={`${id}-case`} className="ideal-input" required value={caseId} onChange={(event) => setCaseId(event.target.value)}>
             <option value="">選んでください</option>
-            {control.applicable_cases.map((item, index) => <option key={item.case_id} value={item.case_id}>承認済み判断 {index + 1}：{item.reason}（第{item.revision}版）</option>)}
+            {control.applicable_cases.map((item, index) => <option key={item.case_id} value={item.case_id} data-verbatim>承認済み判断 {index + 1}：{item.reason}（第{item.revision}版）</option>)}
           </select>
           <p className="ideal-note">選べる判断は、サーバーがいま人物制御を受け付けると答えたものです。</p>
           <label htmlFor={`${id}-reason`}>人物制御の実施理由</label>
           <textarea id={`${id}-reason`} className="ideal-input" required maxLength={2000} value={reason} onChange={(event) => setReason(event.target.value)} />
           <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">取り消せない操作の確認へ進む</button></div>
+          <p className="ideal-v3-governance-safe">このボタンでは、まだ適用されません。次の確認で、適用される内容と残る記録を確かめます。</p>
         </form>}
     </>}
     {control && body && <IrreversibleConfirm key={attempt} title="3. 取り消せない操作の確認：人物制御の適用"
-      changes={[{ label: `${name}の人物制御`, before: controlStateLabel(control.state), after: "適用済み（コピーの残存あり）" }, { label: "適用する判断", before: "（なし）", after: `${base?.reason ?? ""}（第${body.case_revision}版）` }, { label: "人物制御の実施理由", before: "（なし）", after: body.reason }]}
+      changes={[{ label: `${name}の人物制御`, before: controlStateLabel(control.state), after: "適用済み（コピーの残存あり）" }, { label: "適用する判断", before: "（なし）", after: `${base?.reason ?? ""}（第${body.case_revision}版）`, verbatim: true }, { label: "人物制御の実施理由", before: "（なし）", after: body.reason, verbatim: true }]}
       version={{ from: 0, to: 1 }}
       versionText="人物制御の記録を1件作成します（第1版）。作成した後は、変更も取消しもできません。"
       notified="誰にも通知されません。独立した制御サービスに、この職員の制御が登録されます。操作者・実施理由・判断の版・保存規則の版は、制御記録としてサーバーに残ります。"

@@ -7,6 +7,7 @@ import { useStepFocus } from "../../shared/useStepFocus";
 import { useLive } from "../../shell/WorkspaceRuntime";
 import { governanceApi, type BackfillApplied, type BackfillPreview, type Named } from "../api";
 import { nameIn } from "./model";
+import Identifiers from "../../shared/Identifiers";
 
 type Body = { expected_revision: 0; payload: { preview_hash: string } };
 
@@ -44,13 +45,13 @@ export default function Backfill({ candidates, people, onApplied }: { candidates
   return <div className="ideal-v3-record">
     <h3 className="ideal-v3-heading" {...steps.heading("content")}>1. 追加候補を確かめる</h3>
     <p className="ideal-note">氏名や自由記述からは推測せず、アカウントの対応から人物参照の追加候補を抽出しています。原本・内容の照合値・保存の起算日は変更されません。</p>
-    <dl className="ideal-definition-list">
+    <dl className="ideal-definition-list ideal-v3-governance-facts">
       <div><dt>追加候補</dt><dd>{shown.changes.length}件</dd></div>
       <div><dt>人物対応が未確定の記録</dt><dd>{shown.unresolved_copy_ids.length}件</dd></div>
     </dl>
     {shown.changes.length === 0 ? <p className="ideal-note">サーバーが返した追加候補はありません。</p> : <>
-      <ul className="ideal-note-list" aria-label="操作者参照の追加候補">{shown.changes.map((item, index) => <li key={item.copy_id}>記録 {index + 1}（第{item.revision}版）：追加する職員 {added(item)}</li>)}</ul>
-      <details className="ideal-v3-disclosure"><summary>識別情報</summary><ul className="ideal-note-list">{shown.changes.map((item, index) => <li className="ideal-note" key={item.copy_id}>記録 {index + 1}：{item.copy_id}</li>)}</ul></details>
+      <ul className="ideal-v3-governance-marked" aria-label="操作者参照の追加候補">{shown.changes.map((item, index) => <li key={item.copy_id}><strong>記録 {index + 1}（第{item.revision}版）</strong>：追加する職員 {added(item)}</li>)}</ul>
+      <Identifiers items={shown.changes.map((item, index) => ({ key: item.copy_id, label: `記録 ${index + 1}`, value: item.copy_id }))} />
       {!base && <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--primary" onClick={() => { setDone(null); send.clear(); setRebased(false); setBase(candidates); }}>追加の内容を確認する</button></div>}
     </>}
     {base && <ConfirmSurface title="2. 追加前の確認"

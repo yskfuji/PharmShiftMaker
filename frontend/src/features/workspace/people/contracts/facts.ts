@@ -20,9 +20,9 @@ const employer = (roster: Roster, employerId: string) => (employerId ? employerN
 const weekdays = (days: number[] | undefined) => (days?.length ? days.map((day) => WEEKDAYS[day] ?? "不明").join("・") : NONE);
 const period = (start: string, end: string): Fact[] => [{ label: "適用開始（日本時間）", text: instant(start) }, { label: "適用終了（日本時間）", text: instant(end) }];
 
-export const personFacts = (item: PersonPayload): Fact[] => [{ label: "職員の氏名", text: text(item.name) }];
+export const personFacts = (item: PersonPayload): Fact[] => [{ label: "職員の氏名", text: text(item.name), verbatim: true }];
 
-export const employerFacts = (item: EmployerPayload): Fact[] => [{ label: "雇用主の正式名称", text: text(item.name) }, ...evidenceFacts("原本確認", item.evidence)];
+export const employerFacts = (item: EmployerPayload): Fact[] => [{ label: "雇用主の正式名称", text: text(item.name), verbatim: true }, ...evidenceFacts("原本確認", item.evidence)];
 
 export const establishmentFacts = (roster: Roster, item: EstablishmentPayload): Fact[] => [
   { label: "事業場の雇用主", text: employer(roster, item.employer_id) },
@@ -95,7 +95,7 @@ export function contractFacts(roster: Roster, item: ContractPayload): Fact[] {
     { label: "勤務時間区分", text: TIME_CATEGORY[item.time_category] ?? item.time_category },
     { label: "労働時間制度", text: regimeLabel(item.regime) },
     { label: "勤務できる曜日", text: weekdays(item.allowed_weekdays) },
-    { label: "勤務できる種類", text: item.allowed_kinds?.length ? item.allowed_kinds.join("・") : NONE },
+    { label: "勤務できる種類", text: item.allowed_kinds?.length ? item.allowed_kinds.join("・") : NONE, verbatim: true },
     { label: "対象期間の契約下限", text: durationText(item.period_min_seconds) },
     { label: "対象期間の契約上限", text: durationText(item.period_max_seconds) },
     { label: "週の所定労働時間", text: durationText(item.contractual_week_seconds) },
@@ -103,7 +103,7 @@ export function contractFacts(roster: Roster, item: ContractPayload): Fact[] {
     { label: "最大連続勤務日数", text: `${item.max_consecutive_days}日` },
     { label: "兼業の有無と勤務情報", text: item.external_work_confirmed ? "確認した" : "確認していない" },
     { label: "適用する協定", text: agreement ? agreementLabel(roster, agreement) : item.overtime_agreement_id ? "現在の契約に指定された協定" : NONE },
-    { label: "派遣を認める業務", text: item.dispatch_tasks?.length ? item.dispatch_tasks.join("・") : NONE },
+    { label: "派遣を認める業務", text: item.dispatch_tasks?.length ? item.dispatch_tasks.join("・") : NONE, verbatim: true },
     ...evidenceFacts("原本確認", item.evidence),
     ...evidenceFacts("労働時間制度の確認", item.regime_evidence),
     ...evidenceFacts("派遣の適用根拠", item.dispatch_evidence),
@@ -112,8 +112,8 @@ export function contractFacts(roster: Roster, item: ContractPayload): Fact[] {
 
 export const capabilityFacts = (roster: Roster, item: CapabilityPayload): Fact[] => [
   { label: "対象職員", text: person(roster, item.person_id) },
-  { label: "担当業務", text: text(item.task) },
-  { label: "勤務場所", text: text(item.location) },
+  { label: "担当業務", text: text(item.task), verbatim: true },
+  { label: "勤務場所", text: text(item.location), verbatim: true },
   ...period(item.start, item.end),
   { label: "監督者の配置", text: item.supervision_required ? "必要" : "不要" },
   { label: "同時に監督できる人数", text: `${item.supervisor_capacity}名` },
@@ -125,7 +125,7 @@ export function capabilityAmendmentFacts(roster: Roster, item: CapabilityAmendme
   return [
     { label: "取消・失効の対象資格", text: target ? capabilityLabel(roster, target) : NONE },
     { label: "資格を使用できなくなる日時（日本時間）", text: instant(item.effective_at) },
-    { label: "資格の取消・失効理由", text: text(item.reason) },
+    { label: "資格の取消・失効理由", text: text(item.reason), verbatim: true },
     ...evidenceFacts("原本確認", item.evidence),
   ];
 }
@@ -145,13 +145,14 @@ export const agreementFacts = (roster: Roster, item: AgreementPayload): Fact[] =
 ];
 
 export const ruleReviewFacts = (item: RuleReviewPayload): Fact[] => [
+  // An identifier chosen from the revisions the server names (roster.ruleRevision): nobody typed it.
   { label: "適用を確認する規則版", text: text(item.rule_id) },
   ...period(item.start, item.end),
-  { label: "一次資料のURL", text: text(item.source_url) },
-  { label: "資料の版（改正日など）", text: text(item.document_version) },
-  { label: "取得した資料のSHA-256", text: text(item.source_sha256) },
-  { label: "照合した条項", text: text(item.provision) },
-  { label: "経過措置・非該当の理由", text: text(item.transitional_provision) },
+  { label: "一次資料のURL", text: text(item.source_url), verbatim: true },
+  { label: "資料の版（改正日など）", text: text(item.document_version), verbatim: true },
+  { label: "取得した資料のSHA-256", text: text(item.source_sha256), verbatim: true },
+  { label: "照合した条項", text: text(item.provision), verbatim: true },
+  { label: "経過措置・非該当の理由", text: text(item.transitional_provision), verbatim: true },
   { label: "今回の確認日", text: text(item.reviewed_on) },
   { label: "次回の確認期限", text: text(item.next_review_on) },
   ...evidenceFacts("原本確認", item.evidence),
@@ -183,7 +184,7 @@ export const siteDecisionFacts = (roster: Roster, item: SiteAttributionDecisionP
   { label: "判断の対象とする雇用主", text: employer(roster, item.employer_id) },
   ...period(item.start, item.end),
   { label: "時間外を帰属させる順序", text: READING[item.reading] ?? item.reading },
-  { label: "判断の理由と根拠", text: text(item.reason) },
+  { label: "判断の理由と根拠", text: text(item.reason), verbatim: true },
   ...evidenceFacts("原本確認", item.evidence),
 ];
 
@@ -196,11 +197,11 @@ export const annualCalendarFacts = (roster: Roster, item: AnnualCalendarPayload)
   { label: "確定した労働日と所定時間", text: item.days?.length ? item.days.map((day) => `${day.day} ${durationText(day.seconds)}`).join(" ／ ") : NONE },
   // A removed segment has no line of its own left: the number of segments says it.
   { label: "区分期間の数", text: `${item.segments?.length ?? 0}件` },
-  ...(item.segments ?? []).flatMap((segment, index) => [
+  ...(item.segments ?? []).flatMap((segment, index): Fact[] => [
     { label: `区分期間${index + 1}`, text: `${dayPeriodText(segment.start, segment.end)}・労働日数 ${segment.working_days}日・総労働時間 ${durationText(segment.total_seconds)}・確定日 ${segment.fixed_on ?? "未確定"}` },
     { label: `区分期間${index + 1}の同意`, text: segment.consent
       ? `${EVIDENCE_STATUS[segment.consent.status] ?? segment.consent.status}・資料 ${segment.consent.reference || NONE}・確認責任者 ${segment.consent.verified_by || NONE}・有効期限 ${jstText(segment.consent.valid_until) || "期限なし"}`
-      : "同意の資料なし" },
+      : "同意の資料なし", verbatim: true },
   ]),
   { label: "特定期間", text: item.special_periods?.length ? item.special_periods.map((range) => dayPeriodText(range.start, range.end)).join(" ／ ") : NONE },
   ...evidenceFacts("原本確認", item.evidence),

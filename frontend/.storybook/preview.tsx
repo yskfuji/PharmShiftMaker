@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import '@fontsource-variable/noto-sans-jp';
 import '../src/styles/tokens.css';
 import '../src/app/globals.css';
+import '../src/styles/workspace/index.css';
 import { installFetchMock, type FetchRoute } from './fetchMock';
 
 // The page's body classes (src/app/layout.tsx), so a story renders on the same canvas.

@@ -23,9 +23,19 @@ const figures = (id: string, over: Partial<PlanFigures> = {}): PlanFigures => ({
   preferences_met: 9, preferences_total: 12, work_seconds_total: 288000, work_seconds_spread: 5400, assignment_count: 2, proposal_hash: id, duplicate_of: null, solver: null, ...over,
 });
 const comparison: PlanComparison = {
-  input_hash: "abc", plans: [figures("d1"), figures("d2", { duplicate_of: "d1", changes_from_previous: null }), figures("d3")],
+  input_hash: "abc", plans: [figures("d1"), figures("d2", { duplicate_of: "d1", changes_from_previous: null }), figures("d3", { changes_from_publication: 6 })],
   pairs: [{ a: "d1", b: "d3", differing_duties: 2, affected_people: 2 }], order: ["d3", "d1", "d2"], order_rule: "違反、変更数の順", meaning: "同じ定義の数値だけを比較します。",
 };
+
+// The count against the current publication is the server's own figure, with its own base
+// (every duty of the publication that is current now): it is said under each plan whenever
+// the server returned it, in neutral words, and the browser does not compare it with the
+// table's column. Plan 2 has no previous duties, and still has this figure.
+const PLAN_LINES = [
+  ["案 1", "勤務 2件・公開中の勤務表と異なる勤務 4件", "案 3 とは：異なる勤務 2件、関係する職員 2名"],
+  ["案 2", "勤務 2件・公開中の勤務表と異なる勤務 4件"],
+  ["案 3", "勤務 2件・公開中の勤務表と異なる勤務 6件", "案 1 とは：異なる勤務 2件、関係する職員 2名"],
+];
 
 /** The real typed client over a recording transport, so paths and bodies are the real ones. */
 function api(answer: (call: Call) => unknown) {
@@ -93,9 +103,24 @@ test("the showcase compares three synthetic plans; with no plan chosen the route
   const ready = render(<CognitiveWorkspaceShowcase screen="plan" view="compare" role="LEADER" />);
   const table = await screen.findByRole("region", { name: "案ごとの数値" });
   expect(within(table).getAllByRole("row")).toHaveLength(4);
-  expect(within(table).getAllByRole("row")[1]).toHaveTextContent("案 10・0・01110 / 120.5時間1");
-  expect(screen.getByText("並びの規則：違反、変更数、希望、勤務時間差の順")).toBeInTheDocument();
-  expect(screen.getByText("案 1 と案 2：異なる勤務 2件、関係する職員 2名")).toBeInTheDocument();
+  // The decisive columns come first: the plan, its place, the findings; then the figures.
+  expect(within(table).getAllByRole("columnheader").map((head) => head.textContent)).toEqual(["案", "順位", "違反", "未確認", "未対応", "前回からの変更", "勤務が重なった希望", "勤務時間の差"]);
+  // One story: plan 1 keeps the two published duties and lies on one of two wishes; plan 2
+  // has an unverified finding and is last; plan 3 changes both duties.
+  expect(within(table).getAllByRole("row").slice(1).map((row) => row.textContent)).toEqual(["案 11位0件0件0件0件1 / 2件0時間", "案 23位0件1件0件2件0 / 2件0.5時間", "案 32位0件0件0件4件0 / 2件1時間"]);
+  // The server's two sentences about the order (the synthetic answer has the server's exact
+  // words) are said in this screen's words: no 「review」, no 「コスト」.
+  expect(screen.getByText("順位", { selector: "dt" }).nextElementSibling).toHaveTextContent(/^違反、未確認、未対応、前回からの変更、希望に重なった勤務の数（希望の順位で重みづけ）、勤務時間の差の順に比べ、少ない案が上位です。すべて同じなら、案の番号の順です。$/);
+  expect(document.querySelector(".ideal-v3-planning-meaning")).toHaveTextContent(/^案を1つの点数にまとめた値はありません。順位は確認の手がかりです。公開するには、「確認・編集」の画面でサーバーの検証を通す必要があります。$/);
+  expect(document.body).not.toHaveTextContent(/review|コスト/);
+  expect(within(screen.getByRole("list", { name: "案ごとの勤務の件数とほかの案との違い" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+    "案 1勤務 2件・公開中の勤務表と異なる勤務 0件案 2 とは：異なる勤務 2件、関係する職員 1名案 3 とは：異なる勤務 4件、関係する職員 2名",
+    "案 2勤務 2件・公開中の勤務表と異なる勤務 2件案 1 とは：異なる勤務 2件、関係する職員 1名案 3 とは：異なる勤務 2件、関係する職員 1名",
+    "案 3勤務 2件・公開中の勤務表と異なる勤務 4件案 1 とは：異なる勤務 4件、関係する職員 2名案 2 とは：異なる勤務 2件、関係する職員 1名",
+  ]);
+  // What the wish column counts is the server's: wishes a duty overlaps, so fewer is better.
+  expect(screen.getByText("勤務が重なった希望", { selector: "dt" }).nextElementSibling).toHaveTextContent("勤務を入れないでほしい日時の希望（公休の希望など）のうち、その案の勤務が重なった希望の数 / 希望の総数です。少ないほど希望に沿っています。");
+  expect(screen.getByText("勤務時間の差", { selector: "dt" }).nextElementSibling).toHaveTextContent("その案で割当のある職員のうち、勤務時間の合計がいちばん長い職員と、いちばん短い職員との差です。");
   ready.unmount();
   render(<CognitiveWorkspaceShowcase screen="plan" view="compare" role="LEADER" state="empty" />);
   expect(await screen.findByRole("heading", { level: 2, name: "比較する案が指定されていません" })).toBeInTheDocument();
@@ -108,10 +133,15 @@ test("the comparison the server read is shown without another read; a duplicate 
   const { calls } = await mount(seeded());
   const table = screen.getByRole("region", { name: "案ごとの数値" });
   const rows = within(table).getAllByRole("row");
-  expect(rows[1]).toHaveTextContent("案 10・1・249 / 121.5時間2");
-  expect(rows[2]).toHaveTextContent("案 2（案 1 と同じ）0・1・2—9 / 121.5時間3");
+  expect(rows[1]).toHaveTextContent("案 12位0件1件2件4件9 / 12件1.5時間");
+  expect(rows[2]).toHaveTextContent("案 2（案 1 と同じ）3位0件1件2件—9 / 12件1.5時間");
   expect(within(rows[2]).getByRole("radio")).toBeDisabled();
-  expect(screen.getByText("案 1 と案 3：異なる勤務 2件、関係する職員 2名")).toBeInTheDocument();
+  // Each plan with what the read says of it and how it differs from each other plan it was paired with.
+  expect(within(screen.getByRole("list", { name: "案ごとの勤務の件数とほかの案との違い" })).getAllByRole("listitem").map((item) => Array.from(item.children).map((part) => part.textContent))).toEqual(PLAN_LINES);
+  // A rule and a meaning this code has no words for are the server's own sentences, as it wrote them.
+  expect(screen.getByText("順位", { selector: "dt" }).nextElementSibling).toHaveTextContent(/^サーバーの規則で並べたときの順位です（1位が先頭）。規則：違反、変更数の順$/);
+  expect(document.querySelector(".ideal-v3-planning-meaning")).toHaveTextContent(/^同じ定義の数値だけを比較します。$/);
+  expect(screen.getByText(/このボタンが「選んだ案を確認・編集」に変わります。/)).toBeInTheDocument();
   expect(screen.queryByRole("link", { name: /選んだ案を確認・編集/ })).toBeNull();
   fireEvent.click(within(rows[3]).getByRole("radio"));
   // The display context is kept; the choice replaces the listed plans.

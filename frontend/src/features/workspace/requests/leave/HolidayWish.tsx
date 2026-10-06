@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ConfirmSurface from "../../shared/ConfirmSurface";
+import FieldRow, { Field } from "../../shared/FieldRow";
 import JstDateTimeField from "../../shared/JstDateTimeField";
 import { jstOffsetText } from "../../shared/jst";
 import { changedFacts, type Fact } from "../../shared/records/facts";
@@ -47,8 +48,10 @@ export default function HolidayWish() {
   return <div className="ideal-v3-record">
     <h4 className="ideal-v3-heading" {...steps.heading("content")}>1. 希望する期間を入力する</h4>
     {!confirming && <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); setDone(null); setConfirming(true); }}>
-      <JstDateTimeField label="希望する休みの開始（日本時間）" value={span.start} onChange={(start) => setSpan((old) => ({ ...old, start }))} required />
-      <JstDateTimeField label="希望する休みの終了（日本時間）" value={span.end} onChange={(end) => setSpan((old) => ({ ...old, end }))} required />
+      <FieldRow>
+        <Field><JstDateTimeField label="希望する休みの開始（日本時間）" value={span.start} onChange={(start) => setSpan((old) => ({ ...old, start }))} required /></Field>
+        <Field><JstDateTimeField label="希望する休みの終了（日本時間）" value={span.end} onChange={(end) => setSpan((old) => ({ ...old, end }))} required /></Field>
+      </FieldRow>
       <p className="ideal-note">公休の希望は年休の請求ではありません。勤務案に反映できるかどうかは、計画の作成時に決まります。</p>
       <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">希望の内容を確認する</button></div>
     </form>}

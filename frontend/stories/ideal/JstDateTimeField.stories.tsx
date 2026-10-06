@@ -7,7 +7,7 @@ function Owner({ initial, required }: { initial: string; required?: boolean }) {
   const [value, setValue] = useState(initial);
   return <form className="ideal-form" onSubmit={(event) => event.preventDefault()}>
     <JstDateTimeField label="適用開始（日本時間）" value={value} onChange={setValue} required={required} />
-    <p className="ideal-note">保存される値（UTC）：{value || "未入力"}</p>
+    <p className="ideal-note">保存される値（UTC）：{value ? <code>{value}</code> : "未入力"}</p>
   </form>;
 }
 

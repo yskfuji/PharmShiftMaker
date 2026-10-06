@@ -73,7 +73,7 @@ export default function WithdrawDeclaration({ context }: { context: DeclarationC
       </select>
       {!base && <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary">取下げの内容を確認する</button></div>}
     </form>}
-    {closed.length > 0 && <ul className="ideal-note-list" aria-label="取り下げられない申告">{closed.map((row) => <li key={row.entity_id}>{declarationLabel(row, names)}：{row.actions.change.refusal}</li>)}</ul>}
+    {closed.length > 0 && <ul role="list" className="ideal-note-list" aria-label="取り下げられない申告">{closed.map((row) => <li key={row.entity_id}>{declarationLabel(row, names)}：{row.actions.change.refusal}</li>)}</ul>}
     {base && withdrawn && <ConfirmSurface title="2. 取下げ前の確認"
       changes={changedFacts(facts(base.payload), facts(withdrawn))}
       version={{ from: base.revision, to: base.revision + 1 }}

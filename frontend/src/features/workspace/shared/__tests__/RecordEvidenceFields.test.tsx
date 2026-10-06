@@ -40,9 +40,10 @@ test("a verifier belongs to verified evidence only; a cleared limit is no limit"
 });
 
 test("evidence reads as four lines, and says so when a part is missing", () => {
-  expect(evidenceFacts("原本確認", { reference: "配置表", status: "verified", verified_by: "薬剤部長", valid_until: "2026-12-31T15:00:00.000Z" })).toEqual([
-    { label: "原本確認の資料", text: "配置表" }, { label: "原本確認の状態", text: "確認済み" },
-    { label: "原本確認の確認責任者", text: "薬剤部長" }, { label: "原本確認の有効期限", text: "2027-01-01 00:00" },
+  expect(evidenceFacts("原本確認", { reference: "配置表", status: "verified", verified_by: "薬剤部長", valid_until: "2026-12-31T15:00:00.000Z" })).toStrictEqual([
+    // What a person typed (the reference, the verifier) is marked as typed; the state and the date are the product's words.
+    { label: "原本確認の資料", text: "配置表", verbatim: true }, { label: "原本確認の状態", text: "確認済み" },
+    { label: "原本確認の確認責任者", text: "薬剤部長", verbatim: true }, { label: "原本確認の有効期限", text: "2027-01-01 00:00" },
   ]);
   expect(evidenceFacts("原本確認", EMPTY_RECORD_EVIDENCE).map((fact) => fact.text)).toEqual(["（なし）", "未確認", "（なし）", "期限なし"]);
   expect(evidenceFacts("原本確認", null).map((fact) => fact.text)).toEqual(["（なし）", "（なし）", "（なし）", "期限なし"]);

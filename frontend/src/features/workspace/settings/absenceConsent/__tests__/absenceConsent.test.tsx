@@ -62,6 +62,8 @@ test("the showcase shows the setting and its history; without a history only the
   expect(await screen.findByRole("heading", { level: 2, name: "代わりに入る人の同意" })).toBeInTheDocument();
   expect(within(screen.getByRole("region", { name: "切り替えの履歴" })).getByText("SYNTHETIC-2")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "同意を求めるようにする" })).toBeDisabled();
+  // Why it cannot be pressed yet is its description.
+  expect(screen.getByRole("button", { name: "同意を求めるようにする" })).toHaveAccessibleDescription("理由と参照を3文字以上入力すると押せます。");
   ready.unmount();
   render(<CognitiveWorkspaceShowcase screen="settings" view="absence-consent" role="ADMIN" state="empty" />);
   expect(await screen.findByText(/切り替えは、切り替えた後に作るケースから適用されます/)).toBeInTheDocument();

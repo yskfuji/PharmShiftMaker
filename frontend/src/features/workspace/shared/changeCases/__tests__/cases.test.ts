@@ -1,5 +1,5 @@
 import type { ScheduleChangeCase } from "@/ideal/types";
-import { asksMe, involves, replacements, validationOf } from "../cases";
+import { asksMe, hasUnreadableDuty, involvedNames, involves, ownDutiesText, replacements, validationOf } from "../cases";
 
 const duty = (id: string, person: string) => ({ duty_id: id, person_id: person, kind: "日勤", task: "調剤", location: "中央", start: "2026-10-13T08:30:00+09:00", end: "2026-10-13T17:15:00+09:00" });
 const row = (over: Partial<ScheduleChangeCase>): ScheduleChangeCase => ({
@@ -32,4 +32,30 @@ test("a case involves a person whose duty it removes or adds, and nobody else", 
   expect(involves(c, "p2")).toBe(true);
   // p3's duty is in the proposed roster but is not one the case adds.
   expect(involves(c, "p3")).toBe(false);
+});
+
+test("the people of a case are named once each, in the order of the case, by the names the viewer is given", () => {
+  const c = row({ affected_assignments: [duty("d1", "p1"), duty("d2", "p2")], proposed_assignments: [duty("r1", "p2"), duty("r2", "p1"), duty("keep", "p3")], validation: { replacement_duty_ids: ["r1", "r2"] } });
+  expect(involvedNames(c, (id) => ({ p1: "高橋 葵", p2: "鈴木 悠斗" }[id] ?? "相手の職員"))).toBe("高橋 葵、鈴木 悠斗");
+  // A pharmacist's names: nobody is named who was not named to them.
+  expect(involvedNames(c, (id) => (id === "p1" ? "あなた" : "相手の職員"))).toBe("あなた、相手の職員");
+  expect(involvedNames(row({}), () => "x")).toBe("");
+});
+
+test("a duty with a start or an end that cannot be read is found, on either side of the case", () => {
+  expect(hasUnreadableDuty(row({ affected_assignments: [duty("d1", "p1")], proposed_assignments: [duty("r1", "p2")] }))).toBe(false);
+  expect(hasUnreadableDuty(row({ affected_assignments: [{ ...duty("d1", "p1"), end: "" }] }))).toBe(true);
+  expect(hasUnreadableDuty(row({ proposed_assignments: [{ ...duty("r1", "p2"), start: "soon" }], validation: { replacement_duty_ids: ["r1"] } }))).toBe(true);
+});
+
+test("the viewer's own duties in a case are said with their day and hours: what is removed, then what is added; nobody else's", () => {
+  const later = { ...duty("r2", "p1"), start: "2026-10-13T10:30:00+09:00", end: "2026-10-13T19:30:00+09:00" };
+  const swap = row({ affected_assignments: [duty("d1", "p1"), duty("d2", "p2")], proposed_assignments: [duty("r1", "p2"), later, duty("keep", "p3")], validation: { replacement_duty_ids: ["r1", "r2"] } });
+  expect(ownDutiesText(swap, "p1")).toBe("外す 10月13日（火） 08:30–17:15／入る 10月13日（火） 10:30–19:30");
+  // An absence removes the viewer's duty and adds none of theirs: the two cases read differently.
+  const absence = row({ kind: "ABSENCE", affected_assignments: [duty("d1", "p1")], proposed_assignments: [duty("r1", "p2")], validation: { replacement_duty_ids: ["r1"] } });
+  expect(ownDutiesText(absence, "p1")).toBe("外す 10月13日（火） 08:30–17:15");
+  // A case that holds no duty of the viewer says nothing of them.
+  expect(ownDutiesText(swap, "p3")).toBe("");
+  expect(ownDutiesText(row({}), "p1")).toBe("");
 });

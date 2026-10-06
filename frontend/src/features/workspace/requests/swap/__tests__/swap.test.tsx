@@ -79,6 +79,20 @@ test("the showcase shows the exchange route, and its own words when there are no
   expect(fetchSpy).not.toHaveBeenCalled();
 });
 
+test("the first card is the exchange's own: no pointer to leave, and a way to the new exchange", async () => {
+  Element.prototype.scrollIntoView = jest.fn();
+  await mount([created], () => options);
+  const intro = screen.getByRole("heading", { level: 2, name: "相手の同意と責任者判断" }).closest("section")!;
+  expect(intro.querySelector(".ideal-eyebrow")).toBeNull();
+  expect(intro).toHaveTextContent("勤務の交換は、相手の同意のあと責任者が判断します。");
+  expect(screen.queryByRole("link", { name: "休暇の画面" })).toBeNull();
+  expect(document.body).not.toHaveTextContent("希望休・年休");
+  const task = screen.getByText("新しい勤務交換を依頼", { selector: "summary" }).closest("details")!;
+  expect(task.parentElement).toHaveClass("ideal-v3-task--primary");
+  fireEvent.click(within(intro).getByRole("button", { name: "交換を依頼する" }));
+  expect(task.open).toBe(true);
+});
+
 test("an exchange names a counterpart the server offered; an unknown outcome keeps its key", async () => {
   let attempts = 0;
   const { calls, refresh, show } = await mount([], (call) => {
@@ -113,7 +127,7 @@ test("an exchange names a counterpart the server offered; an unknown outcome kee
   // The new case is listed from what the route reads next.
   expect(screen.queryByRole("list", { name: "ケース一覧" })).toBeNull();
   show([created]);
-  expect(within(screen.getByRole("list", { name: "ケース一覧" })).getByRole("button")).toHaveTextContent("勤務交換 · AWAITING_CONSENT");
+  expect(within(screen.getByRole("list", { name: "ケース一覧" })).getByRole("button")).toHaveTextContent("勤務交換 · 同意待ち");
 });
 
 test("a conflict on a new exchange is shown in the form and keeps the draft", async () => {

@@ -12,6 +12,8 @@ import useUnsavedNavigation from "../../shared/useUnsavedNavigation";
 import { useLive } from "../../shell/WorkspaceRuntime";
 import { governanceApi, type CopyRegistered, type CopyRegistrationBody, type Named } from "../api";
 import { ANCHORS, anchorLabel, nameIn } from "./model";
+import WhyDisabled from "../../shared/WhyDisabled";
+import Identifiers from "../../shared/Identifiers";
 
 type Entry = { destination: string; anchor: string; at: string; reference: string; reviewer: string; verified: boolean; people: string[] };
 const EMPTY: Entry = { destination: "", anchor: "last_activity", at: "", reference: "", reviewer: "", verified: false, people: [] };
@@ -91,10 +93,13 @@ export default function RegisterExternalCopy({ people }: { people: Named[] }) {
   return <div className="ideal-v3-record">
     <h3 className="ideal-v3-heading" {...steps.heading("content")}>1. 受け渡したファイルと受渡し先を入力する</h3>
     {!body && <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); review(); }}>
-      <p className="ideal-note">対象のファイルは、この端末でハッシュ（SHA-256）を計算します。ファイルの本文は送信しません。管理ファイルとバックアップは、作成の経路が自動で登録します。外部の印刷物や複製先も、処理の確認を記録するまでは残存として扱われます。</p>
+      <p className="ideal-note">対象のファイルは、この端末でハッシュ（SHA-256）を計算します。ファイルの本文は送信しません。</p>
+      <details className="ideal-v3-disclosure ideal-v3-disclosure--info"><summary>ここで登録するものと、自動で登録されるもの</summary>
+        <p className="ideal-note">管理ファイルとバックアップは、作成の経路が自動で登録します。外部の印刷物や複製先も、処理の確認を記録するまでは残存として扱われます。</p>
+      </details>
       <div>
         <label className="ideal-file"><FileUp aria-hidden="true" />受け渡した原本ファイル<input ref={picker} id={`${id}-file`} type="file" onChange={(event) => void hash(event.target.files?.[0])} /></label>
-        <p className="ideal-note" role="status">{file ? (file.hash ? `${file.name}：SHA-256 ${file.hash}` : `${file.name}：ハッシュを計算しています。`) : "原本は選ばれていません。"}</p>
+        <p className="ideal-note" role="status">{file ? <><span data-verbatim>{file.name}</span>{file.hash ? `：SHA-256 ${file.hash}` : "：ハッシュを計算しています。"}</> : "原本は選ばれていません。"}</p>
         {fileProblem && <p className="ideal-note" role="alert">{fileProblem}</p>}
       </div>
       <fieldset className="ideal-fieldset"><legend>ファイルに含む対象職員</legend>
@@ -113,16 +118,17 @@ export default function RegisterExternalCopy({ people }: { people: Named[] }) {
       <label htmlFor={`${id}-reviewer`}>確認者</label>
       <input id={`${id}-reviewer`} className="ideal-input" required={entry.verified} value={entry.reviewer} onChange={(event) => setEntry({ ...entry, reviewer: event.target.value })} />
       <CheckField label="原本と全対象者・受渡し先を照合した" checked={entry.verified} onChange={(verified) => setEntry({ ...entry, verified })} />
-      <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={!file?.hash}>登録の内容を確認する</button></div>
+      <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={!file?.hash} aria-describedby={file ? undefined : `${id}-why`}>登録の内容を確認する</button></div>
+      <WhyDisabled id={`${id}-why`}>{!file && "受け渡した原本ファイルを選ぶと押せます。"}</WhyDisabled>
     </form>}
     {body && <ConfirmSurface title="2. 登録前の確認"
       changes={[
-        { label: "受け渡したファイル", before: "（なし）", after: `${file?.name ?? ""}（本文は送信せず、SHA-256だけを登録）` },
+        { label: "受け渡したファイル", before: "（なし）", after: `${file?.name ?? ""}（本文は送信せず、SHA-256だけを登録）`, verbatim: true },
         { label: "ファイルに含む対象職員", before: "（なし）", after: body.payload.person_ids.map((person) => nameIn(people, person)).join("、") },
-        { label: "受渡し先・管理場所", before: "（なし）", after: body.payload.relative_path },
+        { label: "受渡し先・管理場所", before: "（なし）", after: body.payload.relative_path, verbatim: true },
         { label: "保存期間の起算", before: "（なし）", after: `${anchorLabel(body.payload.anchor)}・${jstText(body.payload.anchor_at)}` },
-        { label: "対象者一覧の確認", before: "（なし）", after: body.payload.subject_status === "VERIFIED" ? `確認済み（確認者 ${body.payload.evidence.verified_by}）` : "未確認" },
-        { label: "確認根拠", before: "（なし）", after: body.payload.evidence.reference },
+        { label: "対象者一覧の確認", before: "（なし）", after: body.payload.subject_status === "VERIFIED" ? `確認済み（確認者 ${body.payload.evidence.verified_by}）` : "未確認", verbatim: true },
+        { label: "確認根拠", before: "（なし）", after: body.payload.evidence.reference, verbatim: true },
       ]}
       version={{ from: 0, to: 1 }}
       notified="誰にも通知されません。登録の記録（保存物・操作者・時刻）は監査の履歴に残ります。"
@@ -130,7 +136,7 @@ export default function RegisterExternalCopy({ people }: { people: Named[] }) {
       outcome={conflictOutcome(send.outcome, () => ({ currentRevision: null, rows: [] }))}
       busy={send.busy} confirmLabel="この内容で外部コピーを登録する"
       onConfirm={() => void save()} onBack={() => { setBody(null); send.clear(); steps.moveTo("content"); }} onReviewed={() => { setBody(null); send.clear(); }}>
-      <details className="ideal-v3-disclosure"><summary>識別情報</summary><p className="ideal-note">SHA-256：{body.payload.content_hash}／保存物の識別子：{body.payload.copy_id}</p></details>
+      <Identifiers items={[{ label: "SHA-256", value: body.payload.content_hash }, { label: "保存物の識別子", value: body.payload.copy_id }]} />
     </ConfirmSurface>}
     <p className="ideal-done" role="status">{done ?? ""}</p>
   </div>;

@@ -8,7 +8,7 @@ const facts = (minimum: number, target: number, reference: string, status = "未
   { label: "業務", text: "調剤" }, { label: "場所", text: "薬剤部" },
   { label: "必須の配置人数", text: `${minimum}名` }, { label: "希望する配置人数", text: `${target}名` },
   { label: "適用開始", text: "2026-10-05 09:00" }, { label: "適用終了", text: "2026-10-05 17:00" },
-  { label: "原本確認の資料", text: reference }, { label: "原本確認の状態", text: status },
+  { label: "原本確認の資料", text: reference, verbatim: true }, { label: "原本確認の状態", text: status },
 ];
 const base = facts(1, 2, "合成配置表 A");
 const proposed = facts(2, 2, "合成配置表 B", "確認済み");
@@ -44,3 +44,5 @@ export const Sending: Story = { name: "04 送信中", args: { busy: true } };
 export const Conflict: Story = { name: "05 競合（三者比較）", args: { outcome: { kind: "conflict", rows: threeWayRows(base, facts(1, 3, "合成配置表 A"), proposed), currentRevision: 4 } } };
 export const UnknownOutcome: Story = { name: "06 結果不明（同じ内容を再送）", args: { outcome: { kind: "unknown", problem: unknown } } };
 export const Refused: Story = { name: "07 サーバーが拒否", args: { outcome: { kind: "refused", problem: refused, fields: [{ field: "input_hash", message: "String should match pattern '^[a-f0-9]{64}$'" }] } } };
+export const Irreversible: Story = { name: "08 取り消せない操作（確定のボタンは危険色）", args: { title: "終了前の確認", confirmTone: "danger", confirmLabel: "理由を記録して終了する", backLabel: "終了せずに戻る", changes: [{ label: "採用の期間", before: "2027-01-01 〜 2028-03-31", after: "2027-01-01 〜 2027-06-30" }], version: { from: 2, to: 3 } } };
+export const HeldBack: Story = { name: "09 確定できない理由を言う（所有者が止めている間）", args: { confirmDisabled: true, confirmDisabledReason: "対象の日時を読み取れないため、確定できません。一覧を読み直してから、もう一度確認してください。" } };

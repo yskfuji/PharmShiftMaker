@@ -19,12 +19,22 @@ export const privacyOf = (listing: PrivacyListing): PrivacyData => ({
   rules: listing.rules, holds: listing.holds, people: listing.people,
 });
 
+/** The `id` of the task that decides a request: the header's count leads to it. It is
+ * declared here, outside the client island, so that the route's Server Component and the
+ * island read the same plain string. */
+export const DECIDE_TASK = "privacy-task-decide";
+
 const NONE = "（なし）";
 const labelOf = (table: Record<string, string>) => (code: string) => table[code] ?? code;
 
 export const KINDS: Record<string, string> = { access: "開示", rectify: "訂正", restrict: "利用停止", erase: "消去" };
 export const kindLabel = labelOf(KINDS);
 export const statusLabel = labelOf({ REQUESTED: "受付", VERIFIED: "本人確認済み", APPROVED: "実施承認", COMPLETED: "実施完了", REJECTED: "理由を付して不承認", RELEASED: "利用停止を解除" });
+/** The stage of a request as a tone, by its status code: a table fixed here, never worked
+ * out from what the request allows next. A stage is always said in words as well; the
+ * tone only keeps two different stages from looking the same. Unknown codes are neutral. */
+const STATUS_TONE: Record<string, "neutral" | "good" | "warn" | "info"> = { REQUESTED: "warn", VERIFIED: "info", APPROVED: "good", COMPLETED: "neutral", REJECTED: "neutral", RELEASED: "neutral" };
+export const statusTone = (code: string) => STATUS_TONE[code] ?? "neutral";
 export const CATEGORIES: Record<string, string> = { planning_history: "勤務表と入力履歴", compliance: "契約・勤務・休暇の管理記録", identity: "本人・アカウント対応", audit: "監査と通知", privacy_cases: "本人対応の記録", exports: "出力物", backups: "バックアップ", control: "消去・保全・復元制御" };
 export const categoryLabel = labelOf(CATEGORIES);
 export const ANCHORS: Record<string, string> = { period_end: "対象期間の終了", last_activity: "最終更新・受渡し", case_closed: "本人対応の終了", backup_created: "バックアップ作成" };
@@ -56,15 +66,15 @@ export const nextLabel = (item: PrivacyCase) => (item.allowed_next.length ? item
 export const caseFacts = (item: PrivacyCase, people: Named[]): Fact[] => [
   { label: "対象の職員", text: nameIn(people, item.payload.person_id) },
   { label: "請求の種類", text: kindLabel(item.payload.kind) },
-  { label: "請求の内容", text: item.payload.reason },
+  { label: "請求の内容", text: item.payload.reason, verbatim: true },
   { label: "状態", text: statusLabel(item.status) },
 ];
 export const decisionFacts = (decision: Pick<CaseDecision, "status" | "reason" | "result_reference" | "identity_evidence">): Fact[] => [
   { label: "状態", text: statusLabel(decision.status) },
-  { label: "判断理由", text: decision.reason },
-  { label: "本人確認の根拠", text: decision.identity_evidence.reference },
-  { label: "本人確認者", text: decision.identity_evidence.verified_by ?? NONE },
-  { label: "実施結果の参照", text: decision.result_reference ?? NONE },
+  { label: "判断理由", text: decision.reason, verbatim: true },
+  { label: "本人確認の根拠", text: decision.identity_evidence.reference, verbatim: true },
+  { label: "本人確認者", text: decision.identity_evidence.verified_by ?? NONE, verbatim: true },
+  { label: "実施結果の参照", text: decision.result_reference ?? NONE, verbatim: true },
 ];
 
 /** The newest revision of each rule (one data kind and one anchor), as the server lists them. */
@@ -81,23 +91,23 @@ export const ruleOf = (rules: RetentionRule[], category: string, anchor: string)
 export const ruleFacts = (policy: RetentionPolicy): Fact[] => [
   { label: "対象データ種別", text: categoryLabel(policy.category) },
   { label: "保存期間の起算", text: anchorLabel(policy.anchor) },
-  { label: "利用目的", text: policy.purpose },
+  { label: "利用目的", text: policy.purpose, verbatim: true },
   { label: "保存日数", text: `${policy.retention_days}日` },
   { label: "法定の最低保存日数", text: `${policy.legal_minimum_days}日` },
   { label: "適用開始日", text: policy.effective_from },
   { label: "適用終了日（この日を含まない）", text: policy.effective_until },
-  { label: "更新担当者", text: policy.owner },
+  { label: "更新担当者", text: policy.owner, verbatim: true },
   { label: "次回確認日", text: policy.next_review },
-  { label: "保存根拠・条項", text: policy.evidence.reference },
+  { label: "保存根拠・条項", text: policy.evidence.reference, verbatim: true },
   { label: "保存根拠の状態", text: proofLabel(policy.evidence.status) },
-  { label: "保存根拠の確認者", text: policy.evidence.verified_by ?? NONE },
+  { label: "保存根拠の確認者", text: policy.evidence.verified_by ?? NONE, verbatim: true },
 ];
 
 export const holdLabel = (hold: LegalHold, people: Named[]) => `${nameIn(people, hold.person_id)}：${hold.active ? "保全中" : "解除済み"}（第${hold.revision}版）`;
 export const holdFacts = (hold: { person_id: string | null; active: boolean; reason: string }, people: Named[]): Fact[] => [
   { label: "保全の対象", text: nameIn(people, hold.person_id) },
   { label: "保全の状態", text: hold.active ? "保全中" : "解除済み" },
-  { label: "判断理由", text: hold.reason || NONE },
+  { label: "判断理由", text: hold.reason || NONE, verbatim: true },
 ];
 
 /** One copy by its place in the server's list and where it is kept. */

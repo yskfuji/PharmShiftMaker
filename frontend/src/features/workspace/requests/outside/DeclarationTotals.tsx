@@ -1,14 +1,15 @@
 import type { DeclarationPayload } from "../api";
 import { declaredTotals, hoursText, type DeclaredTotal } from "./model";
+import TableScrollCue from "../../shared/TableScrollCue";
 
 function Totals({ caption, rows }: { caption: string; rows: DeclaredTotal[] }) {
-  return <div className="ideal-table-wrap" role="region" aria-label={caption} tabIndex={0}><table className="ideal-table">
+  return <><TableScrollCue /><div className="ideal-table-wrap" role="region" aria-label={caption} tabIndex={0}><table className="ideal-table">
     <caption>{caption}</caption>
     <thead><tr><th scope="col">期間</th><th scope="col">所定</th><th scope="col">所定外</th><th scope="col">うち他社の法定休日</th></tr></thead>
     <tbody>{rows.length
       ? rows.map((row) => <tr key={row.period}><th scope="row">{row.period}</th><td>{hoursText(row.scheduled)}</td><td>{hoursText(row.extra)}</td><td>{hoursText(row.holiday)}</td></tr>)
       : <tr><td colSpan={4}>記載された区間はありません。</td></tr>}</tbody>
-  </table></div>;
+  </table></div></>;
 }
 
 /** The declared intervals of one declaration added up for comparison with the other

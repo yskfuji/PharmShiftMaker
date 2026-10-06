@@ -1,6 +1,7 @@
 import {expect, test, type Page, type TestInfo} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {allOptical, textSpacing} from '../visual/lib/optical';
+import {attachStructure, structureLines} from '../visual/lib/structure';
 
 const API = process.env.PHARMSHIFT_E2E_API_URL ?? 'https://127.0.0.1:18540';
 const SCOPE = 'hospital/pharmacy';
@@ -78,7 +79,13 @@ async function finishAudit(page: Page, info: TestInfo, id: string, width: number
   await info.attach(`${id}-optical`, {body: JSON.stringify(optical), contentType: 'application/json'});
   expect(optical.findings, `${id}: optical findings`).toEqual([]);
   expect(optical.skipped, `${id}: unmeasured optical checks`).toEqual([]);
-  await page.screenshot({path: info.outputPath(`${id}-${width}.png`), fullPage: true});
+  // What the optical checks do not measure: squeezed labels, bare headings, tables and lists, text
+  // under 12px, link colours, machine values. Advisories and metrics are attached and never fail.
+  const shape = structureLines(await attachStructure(page, info, `${id}-${width}`, width));
+  expect(shape, `${id}: structural findings\n${shape.slice(0, 40).join('\n')}`).toEqual([]);
+  // In CSS pixels: at twice that (WebKit's device) a long page at phone width is taller than
+  // the 32,767 pixels one screenshot can hold, and the capture itself fails.
+  await page.screenshot({path: info.outputPath(`${id}-${width}.png`), fullPage: true, scale: 'css'});
 }
 
 function matrix(
@@ -349,7 +356,7 @@ matrix('ideal-deep-u20-contracts', async (page, info, width) => {
 
   // First the state, the next step and the history. No form is open and nobody is chosen.
   for (const name of ['現在の状態', '次の操作', '履歴']) await expect(page.getByRole('heading', {level: 2, name, exact: true})).toBeVisible();
-  await expect(page.getByText('サーバーの検証で不整合なし', {exact: true})).toBeVisible();
+  await expect(page.getByText('記録の検証：不整合なし', {exact: true})).toBeVisible();
   const overview = page.getByRole('region', {name: 'この部署の契約の一覧'});
   await expect(overview.getByRole('row').filter({hasText: '合成職員・長い氏名・薬剤部の画面評価'})).toHaveText(/直接雇用常勤一般制2024-12-01 00:00 〜 2027-02-16 00:00確認済み確認済み第1版$/);
   // The two people of the input and the person whose contract has ended, under the heading.
@@ -361,7 +368,7 @@ matrix('ideal-deep-u20-contracts', async (page, info, width) => {
   }
   await expect(surface).toHaveCount(0);
   await expect(page.getByRole('link', {name: '監査の履歴を開く', exact: true})).toHaveAttribute('href', /^\/workspace\/governance\/audit/);
-  await expect(page.getByText(/以前の版の内容は、APIが返さないため、この画面では表示できません。/)).toBeVisible();
+  await expect(page.getByText(/いつ・どの役割が記録を変更したかは、この画面には表示されません。監査の履歴で確認できます。/)).toBeVisible();
 
   // A contract is revised: chosen, changed, confirmed, saved.
   const contract = await openTask(page, ROSTER_TASKS.contract);
@@ -820,9 +827,9 @@ matrix('ideal-deep-u22-flextime', async (page, info, width) => {
   // server says so on the record, the screen shows its words and offers no control for it.
   const mine = (await listingOf()).adoptions.find((row) => row.entity_id === adoptionId)!;
   expect(mine).toMatchObject({revision: 1, payload: {status: 'registered', created_by: 'admin'}, actions: {confirm: {allowed: false, refusal: SELF}}});
-  const card = page.getByRole('region', {name: new RegExp(`${period.start} から`)});
+  const card = page.getByRole('region', {name: new RegExp(`採用の期間 ${period.start} 〜`)});
   await expect(card).toContainText('確認待ち');
-  await expect(card).toContainText('登録：あなた／確認：まだ確認されていません');
+  await expect(card.locator('dt:text-is("登録") + dd, dt:text-is("確認") + dd')).toHaveText(['あなた', 'まだ確認されていません']);
   await expect(card).toContainText(`この採用の確認について、サーバーの回答：${SELF}`);
   const confirmTask = await openTask(page, '採用を確認する（影響の確認）');
   await expect(confirmTask.getByText('あなたが確認できる採用はありません。', {exact: true})).toBeVisible();
@@ -856,7 +863,7 @@ matrix('ideal-deep-u22-flextime', async (page, info, width) => {
   expect(confirmation.request().postDataJSON()).toMatchObject({expected_revision: 1, impact_hash: impact.impact_hash});
   await expect(confirmAgain.getByRole('status')).toContainText('採用を確認しました（第2版、採用中）。');
   await expect(card).toContainText('採用中');
-  await expect(card).toContainText('登録：別の管理者／確認：あなた');
+  await expect(card.locator('dt:text-is("登録") + dd, dt:text-is("確認") + dd')).toHaveText(['別の管理者', 'あなた']);
   await expect(card).toContainText('Person 0');
   const after = await listingOf();
   expect(after.adoptions.find((row) => row.entity_id === adoptionId)).toMatchObject({revision: 2, payload: {status: 'confirmed', created_by: 'admin', reviewed_by: 'developer'}});
@@ -882,7 +889,7 @@ matrix('ideal-deep-u22-flextime', async (page, info, width) => {
   expect(endResponse.status()).toBe(200);
   expect(endResponse.request().postDataJSON()).toMatchObject({expected_revision: 1, end_on: '2026-02-01', reason: '合成の清算期間境界で終了'});
   await expect(endTask.getByRole('status')).toContainText('採用を 2026-02-01 で終了します（第2版）。');
-  const ended = page.getByRole('region', {name: /2026-01-01 から 2026-01-31 まで/});
+  const ended = page.getByRole('region', {name: /採用の期間 2026-01-01 〜 2026-01-31/});
   await expect(ended).toHaveCount(1);
   await expect(ended).toContainText(`終了確認 ${info.project.name} ${width}`);
   await expect(ended).toContainText('終了：あなた（合成の清算期間境界で終了）');
@@ -941,7 +948,7 @@ matrix('ideal-deep-u23-actuals', async (page, info, width) => {
   // First the state, the next step and the history. No form is open.
   for (const name of ['現在の状態', '次の操作', '履歴']) await expect(page.getByRole('heading', {level: 2, name, exact: true})).toBeVisible();
   await expect(registered.getByRole('row').filter({hasText: '第1版'}).filter({hasText: '未記録'})).toHaveCount(1);
-  await expect(page.getByText(/サーバーが返したあなたの権限：部署管理者。実績の取込・記録・訂正と、照合内容の記録ができます。/)).toBeVisible();
+  await expect(page.getByText(/あなたは「部署管理者」として登録されています。この画面では、実績の取込・記録・訂正と、照合内容の記録ができます。/)).toBeVisible();
   await expect(page.getByLabel('実績原本ファイル')).toBeHidden();
   await expect(page.getByRole('link', {name: '監査の履歴を開く'})).toBeVisible();
 
@@ -1059,7 +1066,7 @@ matrix('ideal-deep-u23-actuals', async (page, info, width) => {
   await signIn(page, 'leader');
   await openWorkspace(page, '/workspace/governance/actuals', 'ガバナンス');
   expect(await contextOf()).toMatchObject({role: 'LEADER', can_correct_actuals: false});
-  await expect(page.getByText(/サーバーが返したあなたの権限：部署責任者。照合内容の記録ができます。/)).toBeVisible();
+  await expect(page.getByText(/あなたは「部署責任者」として登録されています。この画面では、照合内容の記録ができます。/)).toBeVisible();
   await expect(page.getByText('実績の取込・記録・訂正は、サーバーが管理者にだけ許可しています。あなたは照合内容を記録できます。', {exact: true})).toBeVisible();
   await expect(page.getByText('実績原本のファイルを取り込む', {exact: true})).toHaveCount(0);
   await expect(page.getByText('登録済みの実績を訂正する', {exact: true})).toHaveCount(0);
@@ -1102,7 +1109,7 @@ matrix('ideal-deep-u24-outside', async (page, info, width) => {
   await expect(page.getByText('現在の申告はありません。', {exact: true})).toBeVisible();
   await expect(page.getByLabel('編集する対象')).toBeHidden();
   await expect(page.getByText('申告を他社資料と照合する（管理者）', {exact: true})).toHaveCount(0);
-  await expect(page.getByText(/この画面が受け取るのは現在の版だけ/)).toBeVisible();
+  await expect(page.getByText(/この画面に表示できるのは現在の版の内容だけ/)).toBeVisible();
 
   // The task opens from the next step.
   await page.getByText('申告を登録・訂正する', {exact: true}).click();

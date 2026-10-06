@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+// The workspace's own presentation layer; every selector in it starts with .ideal-v3-app.
+import "../../styles/workspace/index.css";
 
 /**
  * Server-only route boundary for the cognitive workspace. The authenticated, request-time

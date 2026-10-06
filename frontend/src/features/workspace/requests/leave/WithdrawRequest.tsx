@@ -11,7 +11,10 @@ import { requestFacts, requestLabel } from "./model";
 import { requestOutcome, requestRisk } from "./RequestChange";
 
 /** Withdraws one of the viewer's own requests: choose it, then confirm. The server decides
- * whether it can still be withdrawn (a request already in a published plan, for example). */
+ * whether it can still be withdrawn (a request already in a published plan, for example).
+ * The server has no operation by which the person takes a withdrawal back (routers/planning.py,
+ * withdraw: the request becomes CANCELLED), so the confirmation is the destructive one; a new
+ * wish or claim for the same day is a new request and is reviewed anew. */
 export default function WithdrawRequest({ requests }: { requests: LeaveRequestRow[] }) {
   const live = useLive();
   const api = requestsApi(live.client);
@@ -66,7 +69,7 @@ export default function WithdrawRequest({ requests }: { requests: LeaveRequestRo
       notified="誰にも通知されません。取下げ後の状態は、本人と管理者・責任者のこの画面の一覧に表示されます。取下げの記録は監査の履歴に残ります。"
       risk={requestRisk(base.version)}
       outcome={requestOutcome(send.outcome, facts, base, withdrawn)} busy={send.busy}
-      confirmLabel="この申請を取り下げる" backLabel="取り下げずに戻る"
+      confirmLabel="この申請を取り下げる" confirmTone="danger" backLabel="取り下げずに戻る"
       onConfirm={() => void save()} onBack={leave} onReviewed={reviewed}>
       {rebased && <p className="ideal-note" role="status">現在の第{base.version}版に対する取下げとして確認し直します。内容を確認して、もう一度操作してください。</p>}
     </ConfirmSurface>}

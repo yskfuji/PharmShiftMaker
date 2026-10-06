@@ -1,0 +1,15 @@
+/* The workspace's (v3) presentation layer. Loaded by app/workspace/layout.tsx and by
+   Storybook only. Every selector in these files starts with .ideal-v3-app, which exists
+   in the workspace's shell and nowhere else, so no other page can match one of them; and
+   each is one class more specific than the rule of globals.css it answers, so the order
+   in which the two files reach the page does not matter. */
+@import "./scale.css";
+@import "./primitives.css";
+@import "./shell.css";
+@import "./people.css";
+@import "./people-contracts.css";
+@import "./planning.css";
+@import "./governance.css";
+@import "./requests.css";
+@import "./settings.css";
+@import "./home-schedule-operations.css";

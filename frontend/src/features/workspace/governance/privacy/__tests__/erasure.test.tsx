@@ -73,6 +73,9 @@ describe("applying the person control", () => {
     await enter();
     const confirmation = surface(TASK)!;
     expect(within(confirmation).getByRole("heading", { name: "3. 取り消せない操作の確認：人物制御の適用" })).toHaveFocus();
+    // The destructive surface of the shared confirmation: its confirming button is the danger one.
+    expect(confirmation).toHaveClass("ideal-confirm--danger");
+    expect(Array.from(confirmation.querySelectorAll(":scope > .ideal-actions > button")).map((button) => button.className)).toEqual(["ideal-button ideal-button--danger", "ideal-button ideal-button--secondary"]);
     expect(changes(TASK)).toEqual(["合成 一の人物制御：未適用 → 適用済み（コピーの残存あり）", "適用する判断：（なし） → 本人確認済みの消去判断（第1版）", "人物制御の実施理由：（なし） → 承認を照合して制御する"]);
     expect(line(TASK, "作成される版")).toHaveTextContent("人物制御の記録を1件作成します（第1版）。作成した後は、変更も取消しもできません。");
     expect(line(TASK, "通知")).toHaveTextContent(`${NOBODY}独立した制御サービスに、この職員の制御が登録されます。操作者・実施理由・判断の版・保存規則の版は、制御記録としてサーバーに残ります。`);

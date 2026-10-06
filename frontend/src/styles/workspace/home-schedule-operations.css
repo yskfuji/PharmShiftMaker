@@ -1,0 +1,331 @@
+/* Home, schedule, same-day operations and the change case they share (also shown by the
+   two request routes). Layout of these routes only; what a heading, a button, a pill or a
+   note looks like is in primitives.css. */
+
+/* 1. A change case in words (shared/changeCases) ------------------------------------------ */
+.ideal-v3-app .ideal-case-summary__head small { color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); }
+/* One duty per line: what happens to it, then whose it is and when. The date keeps its
+   weekday, and the hours stay whole; the two part only where a line has no room for both. */
+.ideal-v3-app .ideal-duty-list { display: grid; gap: var(--space-1); margin: 0; }
+.ideal-v3-app .ideal-duty-list li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); align-items: baseline; gap: 0 var(--space-2); padding: 0; }
+.ideal-v3-app .ideal-duty-list li > span:first-child { min-width: 0; margin: 0; }
+.ideal-v3-app .ideal-duty-list .ideal-v3-case-duty { display: block; min-width: 0; margin: 0; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-duty-list .ideal-v3-case-duty strong { margin-inline-end: .6em; font-weight: var(--ideal-v3-weight-label); }
+@media (max-width: 520px) {
+  /* At phone width a name of any length is a line of its own, so every duty reads the same
+     way: whose it is, then when. */
+  .ideal-v3-app .ideal-duty-list .ideal-v3-case-duty strong { display: block; margin-inline-end: 0; }
+}
+.ideal-v3-app .ideal-duty-list .ideal-v3-case-duty .sr-only { min-width: 0; margin: -1px; }
+.ideal-v3-app .ideal-duty-list :is(.ideal-v3-case-when, .ideal-v3-case-when > span) { display: inline; min-width: 0; margin: 0; color: inherit; font-size: inherit; }
+.ideal-v3-app .ideal-duty-list .ideal-v3-case-when > span { white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* How far the consents are: a fact of the case, not small print. */
+.ideal-v3-app .ideal-case-summary .ideal-v3-case-consent { min-height: 0; margin: 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-case-consent strong { color: rgb(var(--color-fg)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-case-summary .ideal-note { min-height: 0; margin: 0; font-size: var(--ideal-v3-text-sm); }
+
+/* The actions of a case: what moves it forward, then, in a group of its own under them,
+   what ends it. The group is named, says in words that the case cannot be reopened, and is
+   framed in the danger colour (a frame and words, never a fill); its buttons are the
+   destructive outline. */
+.ideal-v3-app .ideal-case-actions .ideal-actions { align-items: center; }
+.ideal-v3-app .ideal-v3-case-closing { display: grid; gap: var(--space-2); max-width: var(--ideal-v3-measure); margin-top: var(--space-3); padding: var(--space-3); border: 1px solid rgb(var(--color-danger) / .5); border-radius: var(--radius-control); }
+.ideal-v3-app .ideal-v3-case-closing__label, .ideal-v3-app .ideal-panel .ideal-v3-case-closing__label { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); max-width: none; margin: 0; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-case-actions .ideal-v3-case-closing .ideal-actions { margin-top: 0; }
+/* In a group of nothing but such buttons none is pushed to the row's end. */
+.ideal-v3-app .ideal-case-actions .ideal-v3-case-closing .ideal-actions > .ideal-button--danger { margin-inline-start: 0; }
+.ideal-v3-app .ideal-case-actions .ideal-v3-case-effect__final { margin-inline-end: var(--space-1); color: rgb(var(--color-danger)); font-weight: var(--ideal-v3-weight-heading); }
+@media (min-width: 521px) {
+  /* The frame is as wide as what it holds: one verb does not get a frame a line wide. */
+  .ideal-v3-app .ideal-v3-case-closing { width: fit-content; max-width: min(100%, var(--ideal-v3-measure)); }
+}
+/* The evidence asked for before a change: as wide as a line reads, and close to its case. */
+.ideal-v3-app .ideal-case-actions form { max-width: var(--ideal-v3-measure); margin-top: 0; }
+@media (max-width: 520px) {
+  /* At phone width every action is a full row. */
+  .ideal-v3-app .ideal-case-actions .ideal-actions { flex-direction: column; align-items: stretch; }
+}
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-case-closing { border-color: CanvasText; }
+}
+
+/* The decision on a change case (shared/changeCases, shown by the request routes, by
+   operations and by the first screen): before the buttons, one line for each action the
+   server offers this viewer — its name as on the button, then what it does. */
+.ideal-v3-app .ideal-v3-case-effects { display: grid; gap: var(--space-2); min-width: 0; max-width: var(--ideal-v3-measure); margin: 0 0 var(--space-3); font-size: var(--ideal-v3-text-sm); line-height: var(--line-height-heading); }
+.ideal-v3-app .ideal-v3-case-effects > div { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; min-width: 0; padding-inline-start: var(--space-3); border-inline-start: 3px solid rgb(var(--color-line-strong)); }
+.ideal-v3-app .ideal-v3-case-effects dt { color: rgb(var(--color-fg)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-case-effects dd { margin: 0; color: rgb(var(--color-fg)); overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-case-actions .ideal-v3-case-effect { max-width: var(--ideal-v3-measure); margin: 0 0 var(--space-2); color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-case-actions > .ideal-v3-callout { margin: 0 0 var(--space-3); }
+/* Where a case is a card of a list (the first screen): the actions now carry their
+   explanations, so they take the row under the summary instead of a narrow column beside it. */
+.ideal-v3-app .ideal-case-list article:only-child > .ideal-case-actions:has(.ideal-v3-case-effects) { grid-column: 1 / -1; }
+/* Who a case of the list is about, under its kind and state. */
+.ideal-v3-app .ideal-v3-master button .ideal-v3-case-who { color: rgb(var(--color-fg)); }
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-case-effects > div { border-color: CanvasText; }
+}
+
+/* The surface on which a case is decided: its facts, what a decision leads to, the actions. */
+.ideal-v3-app .ideal-v3-case-decision > .ideal-v3-detail { display: grid; align-content: start; gap: var(--space-3); }
+.ideal-v3-app .ideal-v3-case-decision > .ideal-v3-detail > .ideal-note { margin: 0; }
+.ideal-v3-app .ideal-v3-case-decision .ideal-case-actions .ideal-actions { margin-top: 0; }
+
+/* 2. Home ----------------------------------------------------------------------------------- */
+/* Today, and what waits for the viewer: the largest words of the route. Beside them, only
+   when the publication needs attention, the sentence that says so. */
+.ideal-v3-app .ideal-home-summary { align-items: flex-start; padding: 0 0 var(--space-1); }
+.ideal-v3-app .ideal-home-summary h2 { margin: 0 0 var(--space-1); font-size: var(--ideal-v3-text-xl); letter-spacing: -.01em; }
+.ideal-v3-app .ideal-home-summary p { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-home-summary > .ideal-v3-callout { flex: 0 1 26rem; margin: 0; font-size: var(--ideal-v3-text-sm); }
+@media (max-width: 820px) {
+  .ideal-v3-app .ideal-home-summary { flex-direction: column; gap: var(--space-2); }
+  .ideal-v3-app .ideal-home-summary > .ideal-v3-callout { flex: 0 0 auto; }
+}
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-home-summary h2 { font-size: var(--ideal-v3-text-lg); }
+}
+
+/* A pharmacist's next duty: where and what it is stands clear of its day and hours. */
+.ideal-v3-app .ideal-home-band > h3 + p { margin-top: var(--space-2); }
+
+/* A panel inside a band is a part of the band, not a card of its own: no second frame. Its
+   heading is one step below the band's, and a rule parts it from the part before it. */
+.ideal-v3-app .ideal-home-band .ideal-panel { padding: 0; border: 0; border-radius: var(--ideal-v3-radius-flat); background: transparent; box-shadow: none; }
+.ideal-v3-app .ideal-home-band .ideal-panel + .ideal-panel { padding-top: var(--space-4); border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-home-band .ideal-panel h2 { font-size: var(--ideal-v3-text-md); letter-spacing: 0; }
+.ideal-v3-app .ideal-home-band .ideal-panel__head { margin-bottom: var(--space-3); }
+.ideal-v3-app .ideal-home-band .ideal-panel > .ideal-note { margin: 0 0 var(--space-2); }
+
+/* The heading of a part and its count stay on one line at every width. */
+.ideal-v3-app .ideal-home-band .ideal-panel__head { flex-direction: row; flex-wrap: wrap; align-items: center; }
+
+/* The cases that ask for the viewer's consent: one column for one case, two where two fit.
+   Where one case has the whole band, its actions stand beside its facts. */
+.ideal-v3-app .ideal-case-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--space-3); }
+.ideal-v3-app .ideal-case-list article { display: grid; align-content: start; gap: var(--space-3); min-width: 0; padding: var(--space-4); border-radius: var(--radius-control); }
+.ideal-v3-app .ideal-case-list article > .ideal-case-actions { display: block; min-width: 0; }
+.ideal-v3-app .ideal-case-list .ideal-case-actions .ideal-actions { margin-top: 0; }
+@media (min-width: 821px) {
+  .ideal-v3-app .ideal-case-list article:only-child { grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: var(--space-6); }
+  .ideal-v3-app .ideal-case-list article:only-child > .ideal-case-actions:has(form) { grid-column: 1 / -1; }
+}
+
+/* The open cases by the state they wait in. A state that has cases is a row that leads to
+   them (hover fill, chevron); a state without any is a plain row. */
+.ideal-v3-app .ideal-priority-list li { display: block; padding: 0; }
+.ideal-v3-app .ideal-v3-home-waiting { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr) auto 1.25rem; align-items: center; gap: var(--space-1) var(--space-3); min-height: 56px; padding: var(--space-3) var(--space-2); border-radius: var(--radius-control); color: rgb(var(--color-fg)); text-decoration: none; }
+.ideal-v3-app a.ideal-v3-home-waiting:hover { background: rgb(var(--color-surface-sunken)); }
+.ideal-v3-app .ideal-v3-home-waiting > svg { width: 1.15rem; height: 1.15rem; color: rgb(var(--ideal-teal-text)); }
+.ideal-v3-app .ideal-v3-home-waiting .ideal-priority-list__number { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-lg); font-weight: var(--ideal-v3-weight-heading); font-variant-numeric: tabular-nums; line-height: var(--line-height-dense); text-align: center; }
+.ideal-v3-app div.ideal-v3-home-waiting .ideal-priority-list__number { color: rgb(var(--color-fg-muted)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-home-waiting strong { font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-home-waiting p { margin: 0; }
+/* Who does what next: a note of the state, set as text beside a dot. Nothing here is pressed
+   but the row. */
+.ideal-v3-app .ideal-v3-home-next { display: inline-flex; align-items: center; gap: var(--space-2); color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-home-next .ideal-dot { flex: 0 0 auto; }
+.ideal-v3-app a.ideal-v3-home-waiting .ideal-v3-home-next { color: rgb(var(--color-fg)); }
+@media (max-width: 520px) {
+  /* The note of the next step goes under the text; the chevron keeps the row's end. */
+  .ideal-v3-app .ideal-v3-home-waiting { grid-template-columns: 1.75rem minmax(0, 1fr) 1.25rem; padding-inline: 0; }
+  .ideal-v3-app .ideal-v3-home-waiting > .ideal-v3-home-next { grid-column: 2; grid-row: 2; }
+  .ideal-v3-app .ideal-v3-home-waiting > svg { grid-column: 3; grid-row: 1 / span 2; }
+}
+
+/* Figures as tiles: the name, the figure at the size of the page's title, what it counts
+   and, where a route shows it, the way there on the tile's last line. */
+.ideal-v3-app .ideal-home-band .ideal-metric { display: grid; grid-template-rows: auto auto 1fr auto; align-content: start; min-height: 0; padding: var(--space-3) var(--space-4); box-shadow: none; }
+.ideal-v3-app .ideal-home-band .ideal-metric > p { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-home-band .ideal-metric > span { text-wrap: balance; }
+.ideal-v3-app .ideal-home-band .ideal-metric strong { margin: var(--space-1) 0; font-size: var(--ideal-v3-text-xl); letter-spacing: -.02em; line-height: var(--line-height-heading); }
+.ideal-v3-app .ideal-home-band .ideal-metric > .ideal-link { justify-self: start; margin-top: var(--space-1); padding-inline: 0; }
+@media (max-width: 1180px) {
+  .ideal-v3-app .ideal-home-band .ideal-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  /* At phone width a tile is a row: the figure, then its name, what it counts and its way. */
+  .ideal-v3-app .ideal-home-band .ideal-grid--4, .ideal-v3-app .ideal-home-band .ideal-grid--3 { grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+  .ideal-v3-app .ideal-home-band .ideal-metric { grid-template-columns: minmax(3.5rem, auto) minmax(0, 1fr); grid-template-rows: auto; align-items: center; column-gap: var(--space-3); }
+  .ideal-v3-app .ideal-home-band .ideal-metric > p { grid-column: 2; grid-row: 1; align-self: end; text-wrap: balance; }
+  .ideal-v3-app .ideal-home-band .ideal-metric > strong { grid-column: 1; grid-row: 1 / span 2; margin: 0; }
+  .ideal-v3-app .ideal-home-band .ideal-metric > span { grid-column: 2; grid-row: 2; align-self: start; }
+  .ideal-v3-app .ideal-home-band .ideal-metric > .ideal-link { grid-column: 2; grid-row: 3; }
+}
+
+/* A band's heading keeps its line: at phone width what stands beside it (a way out, the
+   time to the next duty) goes under it. */
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-home-band__head { flex-wrap: wrap; gap: var(--space-1) var(--space-3); }
+  .ideal-v3-app .ideal-home-band__head > div:first-child { flex: 1 0 100%; }
+  .ideal-v3-app .ideal-home-band__head > .ideal-link { padding-inline: 0; }
+}
+
+/* Recent records: the window, how many, and the days they fell on, on one line each. */
+.ideal-v3-app .ideal-home-band .ideal-stability { display: block; max-width: none; margin: 0 0 var(--space-3); color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-home-band .ideal-stability strong { font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-heading); letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.ideal-v3-app .ideal-home-band .ideal-stability span { color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-home-changes { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); margin: 0 0 var(--space-3); padding: 0; list-style: none; }
+.ideal-v3-app .ideal-v3-home-changes li { display: flex; align-items: baseline; gap: var(--space-3); padding: var(--space-1) var(--space-3); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); color: rgb(var(--color-fg)); background: rgb(var(--color-surface)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-home-changes strong { font-weight: var(--ideal-v3-weight-label); font-variant-numeric: tabular-nums; }
+
+/* 3. Schedule ------------------------------------------------------------------------------- */
+/* The head: what is shown, the viewer's own ways out beside it, the department's below. */
+.ideal-v3-app .ideal-v3-schedule-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-3) var(--space-4); }
+.ideal-v3-app .ideal-v3-schedule-head > .ideal-actions { margin-top: 0; }
+/* The month shown, and the ways to the month before and after, on one line. */
+.ideal-v3-app .ideal-v3-schedule-month { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); }
+.ideal-v3-app .ideal-v3-schedule-month > h2 { margin: 0; }
+.ideal-v3-app .ideal-v3-schedule-month > nav { display: flex; gap: var(--space-2); }
+.ideal-v3-app .ideal-v3-schedule-month > nav .ideal-button { min-height: 44px; padding-inline: var(--space-3); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-schedule-month > nav svg { width: 1rem; height: 1rem; }
+.ideal-v3-app .ideal-v3-schedule-head > .ideal-department-export { grid-column: 1 / -1; }
+.ideal-v3-app .ideal-v3-schedule-head .ideal-schedule-summary { gap: var(--space-1) var(--space-4); margin-top: var(--space-2); padding: 0; border: 0; border-radius: var(--ideal-v3-radius-flat); background: transparent; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-schedule-head .ideal-schedule-summary__push { margin-left: 0; }
+.ideal-v3-app .ideal-department-export > div { display: grid; gap: var(--space-2); padding: 0 var(--space-4) var(--space-4); }
+.ideal-v3-app .ideal-department-export > div > .ideal-note { margin: 0; }
+/* Up to 1100px (beside the side navigation the card is under 800px wide there) the month
+   with its two ways and the viewer's two ways out do not fit one line: the ways out go under
+   the month, in a row, and in a column at phone width. */
+@media (max-width: 1100px) {
+  .ideal-v3-app .ideal-v3-schedule-head { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-schedule-head { align-items: stretch; }
+}
+
+/* The filters: the two fields have one height, so their names stand on one line, and the
+   count of the people shown is on the line of the controls, not under it. In a column
+   (phone width) a field is as tall as its content: the basis that shares the row's width
+   would otherwise become a height. */
+.ideal-v3-app .ideal-v3-schedule-filters { align-items: end; }
+.ideal-v3-app .ideal-v3-schedule-filters .ideal-input { box-sizing: border-box; height: 44px; min-height: 44px; }
+.ideal-v3-app .ideal-v3-schedule-filters .ideal-switch { min-height: 44px; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+/* How many people the filters leave: a statement, in the quiet ink and weight of a note (in a
+   label's weight at the row's end it read as a control). */
+.ideal-v3-app .ideal-v3-schedule-filters .ideal-v3-filter-count { display: inline-flex; align-items: center; min-height: 44px; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-sm); font-weight: 400; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-schedule-filters { align-items: stretch; }
+  .ideal-v3-app .ideal-v3-schedule-filters > label:not(.ideal-switch) { flex: 0 0 auto; }
+  .ideal-v3-app .ideal-v3-schedule-filters .ideal-v3-filter-count { min-height: 0; }
+}
+
+/* The selected duty, said above the table and the agenda: what it is, its facts, where a
+   change is asked for, and the control that brings its day into view. */
+.ideal-v3-app .ideal-v3-schedule-selected { grid-template-columns: auto auto minmax(0, 1fr) auto; gap: var(--space-2) var(--space-4); border-radius: var(--radius-card); }
+.ideal-v3-app .ideal-v3-schedule-selected > .ideal-button { min-height: 44px; }
+/* Why this duty is the one selected to begin with. */
+.ideal-v3-app .ideal-v3-schedule-why { display: block; margin-top: var(--space-1); color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); }
+@media (max-width: 1180px) {
+  .ideal-v3-app .ideal-v3-schedule-selected { grid-template-columns: minmax(0, 1fr) auto; }
+  .ideal-v3-app .ideal-v3-schedule-selected > :is(.ideal-detail__facts, p) { grid-column: 1 / -1; }
+  .ideal-v3-app .ideal-v3-schedule-selected > .ideal-button { grid-column: 2; grid-row: 1; align-self: center; }
+}
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-schedule-selected { grid-template-columns: minmax(0, 1fr); }
+  .ideal-v3-app .ideal-v3-schedule-selected > .ideal-button { grid-column: 1; grid-row: auto; justify-self: start; }
+}
+
+/* The month as a dense table. A day is a narrow column (its date over its weekday; a duty's
+   name over its two times), 2.75rem wide so that a time ("10:30") stands clear of the cell's
+   rules; a whole month does not fit beside the names at any width a desk screen has (31 days
+   would leave under 29px a day), so about three weeks are in sight there and under two on a
+   small one, and the line before the table says from which day it runs on. The table is shown from 601px (a tablet shows the month, with a
+   narrower column of names); up to 600px the day agenda takes its place. */
+@media (min-width: 601px) and (max-width: 1180px) {
+  .ideal-v3-app .ideal-schedule-table-wrap { display: block; }
+  .ideal-v3-app .ideal-agenda { display: none; }
+}
+.ideal-v3-app .ideal-schedule-table :is(th, td) { min-width: 2.75rem; }
+.ideal-v3-app .ideal-schedule-table thead th { padding: var(--space-2) 0; line-height: var(--line-height-dense); text-align: center; white-space: nowrap; }
+.ideal-v3-app .ideal-schedule-table thead th :is(strong, span, em) { display: block; font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-schedule-table thead th strong { font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); font-variant-numeric: tabular-nums; }
+.ideal-v3-app .ideal-schedule-table thead th strong span { display: inline; color: inherit; font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-schedule-table thead th > span { color: rgb(var(--color-fg-muted)); }
+/* The names stay while the days scroll under them: a fixed width, and a firmer edge. The
+   same 10rem at every width the table is shown: beside the initial that leaves a name about
+   six and a half characters a line, so a name of seventeen takes three lines and is not
+   pressed into a column of characters (at 9rem it was four a line). */
+.ideal-v3-app .ideal-schedule-table .ideal-schedule-table__person { width: 10rem; min-width: 10rem; max-width: 10rem; border-inline-end: 1px solid rgb(var(--color-control)); }
+.ideal-v3-app .ideal-schedule-table thead .ideal-schedule-table__person { padding-inline: var(--space-3); text-align: left; }
+.ideal-v3-app .ideal-schedule-table .ideal-person { min-height: 3.75rem; padding: var(--space-2) var(--space-3); }
+.ideal-v3-app .ideal-schedule-table .ideal-person > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+/* A weekend: its weekday in the accent colour and a faint band down the column (the text
+   colour, thinned: a shade darker than the surface in light, a shade lighter in dark, and
+   never louder than a duty). Today: the word, a rule under the head and a band. */
+.ideal-v3-app .ideal-schedule-table thead th.is-weekend { background: rgb(var(--color-surface-sunken)); }
+.ideal-v3-app .ideal-schedule-table thead th.is-weekend > span { color: rgb(var(--color-primary)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-schedule-table td.is-weekend { background: rgb(var(--color-fg) / .045); }
+.ideal-v3-app .ideal-schedule-table thead th.is-today { box-shadow: inset 0 -3px 0 rgb(var(--ideal-teal)); }
+.ideal-v3-app .ideal-schedule-table thead th.is-today em { color: rgb(var(--ideal-teal-text)); font-style: normal; font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-schedule-table td.is-today { background: rgb(var(--ideal-teal-soft) / .55); }
+/* A duty is its whole cell: the cell's own rules draw the grid, and the press and the mark
+   of the selected duty take the cell. Its two times stand one over the other. A day without
+   a duty is a quiet dash, so the duties are what the eye meets. */
+.ideal-v3-app .ideal-shift { width: 100%; min-height: 3.75rem; padding: var(--space-1) 0; align-content: center; justify-items: center; gap: 0; border: 0; line-height: var(--line-height-dense); }
+.ideal-v3-app .ideal-shift > span { display: grid; justify-items: center; }
+.ideal-v3-app .ideal-shift > span > span { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-shift.is-empty strong { color: rgb(var(--color-fg-muted)); font-weight: 400; }
+/* A duty the server lists among the changes: a filled corner of its cell (and of its row in
+   the agenda), drawn by an element that is read out as 「変更」, and explained once in the
+   note under the table. It is a shape that is there or not, never a colour of the text, and
+   it takes no line of the cell. The dot of globals.css is not drawn as well. */
+.ideal-v3-app .ideal-shift.is-changed::after { content: none; }
+.ideal-v3-app .ideal-v3-schedule-mark { display: block; flex: 0 0 auto; width: .7rem; height: .7rem; background: rgb(var(--color-primary)); clip-path: polygon(0 0, 100% 0, 100% 100%); }
+.ideal-v3-app .ideal-shift > .ideal-v3-schedule-mark { position: absolute; inset: 0 0 auto auto; }
+.ideal-v3-app .ideal-v3-schedule-legend, .ideal-v3-app .ideal-panel .ideal-v3-schedule-legend { display: flex; align-items: flex-start; gap: var(--space-2); max-width: none; margin: 0; color: rgb(var(--color-fg-muted)); }
+.ideal-v3-app .ideal-v3-schedule-legend > .ideal-v3-schedule-mark { margin-top: .25rem; }
+.ideal-v3-app .ideal-v3-schedule-legend strong { color: rgb(var(--color-fg)); font-weight: var(--ideal-v3-weight-label); }
+/* The mark is a filled corner and nothing else: under forced colours a fill is replaced by
+   the canvas, and the mark (in a duty, and in the line that explains it) would be gone. It
+   keeps its own drawing there, in the system's text colour. */
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-schedule-mark { forced-color-adjust: none; background: CanvasText; }
+}
+/* The table and the line that says its days run on: one item of the page's stack, so the
+   line stands on the table. Up to 600px neither is drawn (the agenda takes their place). */
+.ideal-v3-app .ideal-v3-schedule-month-table { display: grid; gap: var(--space-1); min-width: 0; }
+.ideal-v3-app .ideal-v3-schedule-month-table > .ideal-v3-scroll-cue { margin: 0; }
+@media (max-width: 600px) {
+  .ideal-v3-app .ideal-v3-schedule-month-table { display: none; }
+}
+/* In the agenda the initial and the state keep their own shape and colour. */
+.ideal-v3-app .ideal-agenda__item { padding-inline: var(--space-2); }
+.ideal-v3-app .ideal-agenda__item .ideal-avatar { display: grid; color: rgb(var(--ideal-teal-text)); }
+.ideal-v3-app .ideal-agenda__item .ideal-pill { display: inline-flex; color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-agenda__item .ideal-pill--good { color: rgb(var(--color-success)); }
+/* The day is chosen between the two buttons, by the one list of days. */
+.ideal-v3-app .ideal-agenda__head { gap: var(--space-2); margin-bottom: var(--space-2); }
+.ideal-v3-app .ideal-agenda__head .ideal-agenda__select { box-sizing: border-box; height: 44px; margin-block: 0; border-radius: var(--radius-control); font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-label); }
+/* A row's duty: its name as a pill over its hours, at the row's end. */
+.ideal-v3-app .ideal-agenda__item { position: relative; }
+.ideal-v3-app .ideal-agenda__item .ideal-v3-agenda-duty { display: grid; justify-items: end; gap: .15rem; }
+.ideal-v3-app .ideal-agenda__item .ideal-v3-agenda-duty > span:not(.ideal-pill) { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-xs); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ideal-v3-app .ideal-agenda__item .ideal-v3-schedule-mark { position: absolute; inset: 0 0 auto auto; }
+
+/* 4. Same-day operations: today ------------------------------------------------------------- */
+/* Four counts as tiles: the name, the figure at the size of the page's title, and what it
+   counts. At phone width a tile is a row: the figure, then its name and what it counts. */
+.ideal-v3-app .ideal-v3-today-counts { gap: var(--space-3); }
+/* The tiles stand inside the card of the figures: the second plane, without a shadow of their own. */
+.ideal-v3-app .ideal-v3-today-counts .ideal-metric { display: grid; align-content: start; min-height: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); box-shadow: none; }
+.ideal-v3-app .ideal-v3-today-counts .ideal-metric > p { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-today-counts .ideal-metric > strong { margin: var(--space-1) 0; font-size: var(--ideal-v3-text-xl); letter-spacing: -.02em; line-height: var(--line-height-heading); white-space: nowrap; }
+.ideal-v3-app .ideal-v3-today-counts .ideal-metric > span { text-wrap: balance; }
+/* The way from a figure to the route that shows what it counts, as on the first screen. */
+.ideal-v3-app .ideal-v3-today-counts .ideal-metric > .ideal-link { justify-self: start; margin-top: var(--space-1); padding-inline: 0; }
+/* Under the tiles, in their card: the line about the last tile, then the reveal of the server's notes. */
+.ideal-v3-app .ideal-v3-today-note, .ideal-v3-app .ideal-panel .ideal-v3-today-note { max-width: var(--ideal-v3-measure); margin: var(--space-3) 0 0; }
+.ideal-v3-app .ideal-v3-today-summary > .ideal-v3-disclosure { margin-top: var(--space-1); }
+@media (max-width: 1180px) {
+  .ideal-v3-app .ideal-v3-today-counts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-today-counts { grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+  .ideal-v3-app .ideal-v3-today-counts .ideal-metric { grid-template-columns: minmax(3.5rem, auto) minmax(0, 1fr); align-items: center; column-gap: var(--space-3); }
+  .ideal-v3-app .ideal-v3-today-counts .ideal-metric > p { grid-column: 2; grid-row: 1; align-self: end; }
+  .ideal-v3-app .ideal-v3-today-counts .ideal-metric > strong { grid-column: 1; grid-row: 1 / span 2; margin: 0; }
+  .ideal-v3-app .ideal-v3-today-counts .ideal-metric > span { grid-column: 2; grid-row: 2; align-self: start; }
+  .ideal-v3-app .ideal-v3-today-counts .ideal-metric > .ideal-link { grid-column: 2; grid-row: 3; }
+}

@@ -1,38 +1,51 @@
-# Verification record — 2026-10-06
+# Verification record — 2026-10-07
 
 All browser fixtures, exported artifacts and screenshots use synthetic people,
 facilities and work records. A passing automated row is evidence for that row
 only; it is not a WCAG conformance claim, a security proof or a real-user result.
+It is also not a statement that the screens were looked at and found in order:
+in the third run the automated audits reported no finding on screens that the
+owner of the product then found to look unstyled (see "Visual repair of the
+workspace and the fourth formal run" below).
 
-The table gives the results for the final application source of the 2026-10-05
-restructuring (third formal run, 2026-10-06; see "Browser verification of the
-restructured source" below for the two runs before it). A row that was not run
-again says so and keeps the earlier figure, which describes an earlier source.
+The table gives the results for the final application source after the visual
+repair of 2026-10-06 (fourth formal run, 2026-10-07; commit `587e6c34` of the
+pull-request branch). Dates in this document are Japan time unless a time is
+marked UTC. Where the fourth run changed a figure, the row also keeps the
+figure of the third run (2026-10-06), which describes the final source of the
+2026-10-05 restructuring, before the visual repair; "Browser verification of
+the restructured source" below describes that run and the two before it. A row
+that was not run again says so and keeps the earlier figure, which describes an
+earlier source. One step of the fourth run failed: `npm audit`, in the
+dependency row.
 
 | Check | Result |
 |---|---|
-| Python unit/API/PostgreSQL regression | Final application source: 1,492 passed and 17 conditional skips; failures 0 (isolated PostgreSQL). |
-| Frontend Jest | Final application source: 104 suites, 932 tests and 8 snapshots passed. |
-| TypeScript | `tsc --noEmit` passed. |
-| Frontend ESLint | 0 errors and 0 warnings. |
+| Python unit/API/PostgreSQL regression | Fourth run: 1,558 passed and 17 conditional skips; failures 0, errors 0 (isolated PostgreSQL). Third run, before the visual repair: 1,492 passed and 17 skips. |
+| Frontend Jest | Fourth run: 115 suites, 1,052 tests and 8 snapshots passed. Third run, before the visual repair: 104 suites, 932 tests and 8 snapshots. |
+| TypeScript | `tsc --noEmit` passed (fourth run). |
+| Frontend ESLint | 0 errors and 0 warnings (fourth run). |
 | Next.js production build | Node 24.21.0, Next.js 16.3.8, React 19.3; Webpack production build passed, on the workstation and in the Linux container whose build the browser matrices used. |
-| Static Storybook | Storybook 10.6.0; offline build passed with 256 v3 stories (52 role-route, 150 route-state, 31 representative and 23 for shared parts). |
-| Public API contracts | 31 OpenAPI/Pydantic models match their normalized TypeScript declarations. |
-| Structure, contract and diagram tests | 130 passed: `tests/test_workspace_v3_structure.py` (every rule and its mutations), the use-case contract, the regenerated ER/state/screen-API/sequence diagrams and the navigation graph. |
+| Static Storybook | Storybook 10.6.0; offline build passed with 267 v3 stories (52 role-route, 150 route-state, 31 representative and 34 for shared parts). Third run, before the visual repair: 256 v3 stories, of which 23 for shared parts. |
+| Public API contracts | 31 OpenAPI/Pydantic models match their normalized TypeScript declarations (fourth run). |
+| Structure, contract, diagram and wording tests | Fourth run: 196 passed in eight test files: `tests/test_workspace_v3_structure.py` (every rule and its mutations, now with the stylesheet and link rules described below), `tests/test_workspace_v3_labels.py` (new), the use-case contract, the regenerated ER/state/screen-API/sequence diagrams, the navigation graph and the public-tree policy. Third run, before the visual repair: 130 passed. |
 | ORM/PostgreSQL ER comparison | 41 business ORM tables and 41 observed business tables; observed PostgreSQL also has the expected `alembic_version` table; semantic difference count 0. Recorded before the 2026-10-05 restructuring; the observation of PostgreSQL was not re-run on the final commit. |
-| U01–U29 complete browser journeys | 261/261 first attempts passed: 29 journeys × Chromium/Firefox/WebKit × 320/768/1440px, real API and one disposable PostgreSQL schema per case; retry 0, source/contract/build drift 0. |
+| U01–U29 complete browser journeys | Fourth run: 261/261 first attempts passed: 29 journeys × Chromium/Firefox/WebKit × 320/768/1440px, real API and one disposable PostgreSQL schema per case; retry 0, source/contract/build drift 0. The audits inside the journeys (369 audits, 123 per engine, each with axe, the optical audit and, new in this run, the structural checks) reported 0 axe violations, 0 optical findings, 0 undetermined checks and 0 structural findings. The third run, before the visual repair, was also 261/261, without the structural checks. |
 | U25 and U29 destructive journeys | Part of the matrix above, 9/9 each: U25 erases a dedicated synthetic person, U29 erases planning inputs past their retention; each journey checks the erasure through the API afterwards. |
 | U26 restore boundary | The browser journey (read-only UI) is part of the matrix above, 9/9. The separate isolated PostgreSQL drill (13 checks, `PASS_WITH_STATED_SCOPE`) was recorded before the 2026-10-05 restructuring and was not re-run. |
-| Established product unchanged | The base commit of the restructuring and the final source were built and photographed under the same conditions: 114 images of the established screens, difference 0, and the same tests pass and fail as on the base (five visual tests fail on both, see below). |
-| Existing flag-OFF matrix | 267/267 selected legacy cases passed against the frozen source and production build; retry 0, failed/unexecuted 0, source/build drift 0. |
-| Flag-ON entry | 9/9 cases passed (the entry of `/workspace` with `IDEAL_UI=1`, three widths, three engines). |
-| Role-route optical matrix | 155/156 role-route tests passed. Each test covers four appearances at 320/768/1440px: 1,862 of 1,872 conditions audited. Optical findings, undetermined checks, skips and flaky results 0. The one failure is the full-page capture of one Chromium test and is a limit of the test environment (its `/tmp` filled up), as established below; a supplementary run of the whole matrix with a larger `/tmp` passed 156/156 with all 1,872 conditions audited. It is not counted as the formal result. |
-| Route-state stories | 150/150 generated stories (25 routes × 6 common states) passed the Chromium presence and semantic-label check. This is not a full optical audit. |
-| Representative stories | 75/75 passed (25 stories × 3 engines), 900 conditions; findings, skips and flaky results 0. |
-| Static review gallery | 233 synthetic stories × 390/1024/1920px = 699 Chromium images; automated axe and horizontal-overflow findings 0. Recorded before the 2026-10-05 restructuring; the gallery was not regenerated, and it does not show the rebuilt screens. Representative human review remains pending. |
-| Dependency vulnerability audit | Registry-backed `pip-audit` of the 46 locked Python packages: 0 known vulnerabilities. `npm audit` of the production graph (threshold moderate) and of the full graph (threshold high): 0 findings. |
+| Established product unchanged | Fourth run: the base commit of the restructuring and the final source were built and photographed under the same conditions: 114 images of the established screens, difference 0, and the same tests pass and fail as on the base (five visual tests fail on both, with the same messages, see below; because of them the visual runner itself exited with status 1 in all nine of its runs, on the base as on the final source). The third run had the same result on its source. |
+| Existing flag-OFF matrix | Fourth run: 267/267 selected legacy cases passed against the frozen source and production build; retry 0, failed/unexecuted 0, source/build drift 0. |
+| Flag-ON entry | Fourth run: 9/9 cases passed (the entry of `/workspace` with `IDEAL_UI=1`, three widths, three engines). |
+| Role-route optical matrix | Fourth run: 156/156 role-route tests passed, in 24 invocations (eight per engine, see "Fourth formal run" below). Each test covers four appearances at 320/768/1440px: 1,872 of 1,872 conditions audited. Optical findings, undetermined checks, structural findings, skips and flaky results 0. Third run, before the visual repair and without the structural checks: 155/156, with 1,862 of 1,872 conditions audited; the one failure was the full-page capture of one Chromium test, a limit of the test environment (its `/tmp` filled up), as established below; a supplementary run of the whole matrix with a larger `/tmp` passed 156/156 with all 1,872 conditions audited and was not counted as the formal result of that run. |
+| Route-state stories | Fourth run: 450/450 (150 generated stories, 25 routes × 6 common states, in each of the three engines) passed the presence and semantic-label check at 390px; the two states that show the route's own content (ready and empty, 50 per engine) also passed the structural checks. This is not a full optical audit. Third run: 150/150 in Chromium only, without the structural checks. |
+| Representative stories | Fourth run: 75/75 passed (25 stories × 3 engines), 900 conditions, in 12 invocations; optical findings, undetermined checks, structural findings, skips and flaky results 0. Third run: 75/75, without the structural checks. |
+| Shared-part stories (new) | Fourth run: 27/27 tests passed (9 per engine), in 9 invocations: the 34 stories of the workspace's shared parts at four appearances and three widths, 408 conditions per engine; optical findings, undetermined checks and structural findings 0. |
+| Routes with every task open (new) | Fourth run: 25/25 passed in Chromium; the 50 tests of the other two engines are skipped by design. 50 conditions (25 routes × 320 and 1440px, light theme); across them `<details>` elements were opened 144 times, none stayed closed and no read went unanswered; optical findings, undetermined checks and structural findings 0. No focus check, nothing typed or submitted. |
+| Counter-examples of the detectors (new) | Fourth run: 99/99 passed (33 per engine, five spec files): for each failing check a page that has the defect must be reported and its correction must not. |
+| Static review gallery | 233 synthetic stories × 390/1024/1920px = 699 Chromium images; automated axe and horizontal-overflow findings 0. Recorded before the 2026-10-05 restructuring; the gallery was not regenerated, and it shows neither the rebuilt nor the repaired screens. Representative human review remains pending. |
+| Dependency vulnerability audit | Fourth run: registry-backed `pip-audit` of the 46 locked Python packages: 0 known vulnerabilities. **`npm audit` failed**: both invocations exited with status 1 (production graph, threshold moderate: 2 high advisories; full graph, threshold high: the same 2 high and 21 moderate). Open at the time of this record; the dependency update is tracked separately. See "Fourth formal run" below. Third run (2026-10-05 19:29 UTC), same commands and same lockfile: 0 findings. |
 | Dependency license audit | 46 Python distributions and the npm lockfile graph were classified; no unclassified license remained in the recorded reports. Recorded before the 2026-10-05 restructuring; not re-run on the final commit. |
-| Independent review | Of the state before the restructuring: 0 high, 0 medium and 1 low finding (the displayed role in the anonymous audit timeline; see `independent-review-v3.md`). Of the restructuring: four rounds by a separate reviewing agent, see "Independent review of the restructuring" below; at the end 0 high and 0 medium findings were open. |
+| Independent review | Of the state before the restructuring: 0 high, 0 medium and 1 low finding (the displayed role in the anonymous audit timeline; see `independent-review-v3.md`). Of the restructuring: four rounds by a separate reviewing agent, see "Independent review of the restructuring" below; at the end 0 high and 0 medium findings were open. Of the visual repair: three looks at screenshots and four code reviews, all by AI review agents and none by a person, see "Reviews of the repair" below; the last two commits of the repair were not reviewed, and no screenshots were looked at independently after the fourth round. |
 
 The three paragraphs below describe the runs of 2026-10-04, before the
 restructuring. They are kept as history and do not describe the table above.
@@ -67,7 +80,10 @@ restructuring of 2026-10-05. The inspection of 2026-10-04 below is kept as
 history. The structure test is evidence about the source only; the browser
 evidence for the restructured source and the independent review are in the
 two sections "Browser verification of the restructured source" and
-"Independent review of the restructuring" below.
+"Independent review of the restructuring" below. Those two sections describe
+the first three formal runs. The visual repair that followed, the fourth formal
+run and what the first three runs did not show are in "Visual repair of the
+workspace and the fourth formal run".
 
 ### What the inspection of 2026-10-04 found (history)
 
@@ -199,7 +215,11 @@ WebKit of Playwright 1.56.1 in a Linux container. The journeys use the real API
 and one disposable PostgreSQL schema per engine and width; the Storybook
 matrices and the comparison below use fixed synthetic data.
 
-There were three formal runs, each on a different source.
+There were three formal runs, each on a different source. (Added 2026-10-07: a
+fourth formal run followed the visual repair, on a fourth source; it is
+described in "Fourth formal run" below and is not part of this list. In this
+section and the next, "the final source" means the final source of the
+restructuring, the source of the third run.)
 
 1. First candidate (2026-10-05). The comparison with the base passed. The
    journeys failed: 245/261 (Chromium 87/87, Firefox 81/87, WebKit 77/87). Two
@@ -278,6 +298,15 @@ that compares them (`frontend/tests/visual/ideal.pw.ts`) is not part of the
 evidence. The workspace is checked visually by the Storybook matrices (fixed
 synthetic data) and by the optical audit at the end of every journey.
 
+Correction, 2026-10-07: "checked visually" in the sentence above overstated
+what those checks do. They measure contrast, focus indicators, target size,
+overflow at 320px and text spacing, and the journeys add axe. They do not judge
+how a screen looks, and until the visual repair the Storybook matrices judged
+nothing inside a closed `<details>`. In the third run none of them reported a
+finding on the screens that the owner of the product then reported as looking
+unstyled. See "What the owner saw, and what the earlier record did not show"
+below.
+
 Not verified in a browser: Safari and Firefox on macOS (all runs used the Linux
 builds of the engines); the operations that only Jest covers, namely five tasks
 of `governance/privacy` (registering an external copy, confirming a processor's
@@ -285,6 +314,11 @@ handling, the preservation decision, the joint erasure decision and reconciling
 an operator reference; the fixture has no shared or external copy), some
 administrator forms of `requests/leave`, ten of the fourteen record editors of
 `people/contracts` and the enrolment forms of `settings/flextime`.
+
+Added 2026-10-07: this list still holds after the fourth run. The new matrix
+that opens every task renders these forms in Chromium and audits them as they
+stand when opened, but it types nothing and submits nothing, so the operations
+themselves remain covered by Jest only.
 
 ### Independent review of the restructuring
 
@@ -409,6 +443,13 @@ reviewer.
 The test also does not show that a screen works, is usable or is accessible.
 Class names chosen through a lookup table are not read by the class-name rule.
 
+Added 2026-10-07: nor does it show that a screen looks finished. The rules
+added to the same file during the visual repair (a stylesheet rule for every
+class, the scope and the scale of the workspace's stylesheets, no value read by
+a Server Component from a client module, links only to declared transitions)
+and what each of them cannot see are described in "Checks added by the repair"
+below.
+
 ### Known limits found in review and not changed
 
 - `GET /planning/compliance/erasure-candidates` recomputes the inventory for
@@ -469,6 +510,10 @@ Class names chosen through a lookup table are not read by the class-name rule.
   React omits a property of that name when it hands the server's names to the
   browser. Nothing is mis-attributed, and the server-side reads are unaffected.
 
+Added 2026-10-07: the limits found during the visual repair and the fourth
+formal run are listed in "Known limits found in the repair and not changed"
+below. The limits above were not changed by the repair.
+
 ### Conditions for describing the workspace as independent
 
 - No transitive dependency from the workspace on an established screen
@@ -489,12 +534,568 @@ Class names chosen through a lookup table are not read by the class-name rule.
   erasure, role-route and optical checks pass without retry: journeys 261/261,
   flag-OFF 267/267, role-route 155/156 on the final source, each in
   one attempt; see "Browser verification of the restructured source" for the
-  two runs before it and for what was not verified.
+  two runs before it and for what was not verified. (Added 2026-10-07: "the
+  final source" here is that of the third run. On the final source after the
+  visual repair the fourth run had journeys 261/261, flag-OFF 267/267 and
+  role-route 156/156, each in one attempt, and its `npm audit` step failed; see
+  "Fourth formal run".)
 - The ER, state, screen/API and sequence diagrams regenerate from the
   implementation, and routes, roles, states, transitions and test identifiers
   are generated from `usecases.json` rather than edited by hand: checked by
   `tests/test_er_fresh.py`, `tests/test_ideal_usecase_contract.py` and
   `tests/test_navigation_graph.py`.
+
+## Visual repair of the workspace and the fourth formal run
+
+Status: **repaired on the pull-request branch; the fourth formal run was made
+once on the final source (commit `587e6c34`); one step of that run, `npm audit`,
+failed and is open.** The repair changes how the 25 workspace routes look and
+how each screen is arranged. Every review named in this section was made by an
+AI review agent that was given artefacts (screenshots, or a diff and the
+files), not by a person. This record contains no assessment of the repaired
+screens by a person.
+
+### What the owner saw, and what the earlier record did not show
+
+After the third formal run the owner of the product looked at the workspace and
+reported that parts of the screens looked unstyled, "like text typed into a word
+processor", beginning with the four people routes (`people/directory`,
+`people/memberships`, `people/lifecycle` and `people/contracts`). No automated
+audit of the third run had reported a finding on those routes. (The one failed
+test of that run was on `people/contracts`, and it was a failed capture, not a
+finding.)
+
+Before anything was changed, an AI agent of the repair work looked at
+screenshots of all 25 routes (light theme at 1440 and 320px; dark at 1440px for
+seven routes). Among the things it reported:
+
+- buttons whose label wrapped one character per line (`people/lifecycle`);
+- headings at body weight, and tables without a frame or a header fill;
+- 16px text beside tables and notes of 12–13px in the same panel;
+- values shown as the server wrote them: enumeration codes such as
+  `AWAITING_CONSENT` and `LEADER`, and ISO 8601 timestamps;
+- the button that cancels a publication, shown as plain text.
+
+It graded the routes D (broken) 1, C (looks unfinished) 8, B (rough spots) 16
+and A 0. The D was `people/lifecycle`. The grades are that agent's own scale
+for the look of a screen; they are not a usability result.
+
+The cause in the code had two parts. The workspace wrote class names for which
+no stylesheet had a rule: six were found (`ideal-button--danger`,
+`ideal-confirm`, `ideal-field-label`, `ideal-partial-problems`,
+`ideal-case-summary` and `ideal-v3-case-decision`), and their elements kept the
+defaults of the browser reset. And elements relied on rules that the shared
+stylesheet scopes to another frame of the product and that therefore do not
+apply inside the workspace: the stepper of the planning routes, for example,
+got its five columns only under `.ideal-app`.
+
+Why the audits had not reported any of this. The optical audit measures text
+and non-text contrast, focus indicators, 24px targets, overflow at 320px and
+text spacing; the journeys add axe. None of these judges whether a layout is
+well formed, whether the text sizes follow one scale, whether related things
+are grouped, or whether a heading agrees with what stands under it. What is
+inside a closed `<details>` is not rendered, and the workspace keeps its forms
+inside closed `<details>`, so a form was audited only where a journey opened
+it. The workspace was not compared with baseline images either (they were
+withdrawn, see above).
+
+Limit of the earlier record, stated plainly: wherever this document, the
+acceptance matrix, the README or the changelog says of the first three runs
+that the optical audit had zero findings, or that the role-route, state or
+representative matrix passed, it means that the measured conditions passed. It
+did not mean that anyone had looked at the screens, and it was not evidence
+that they looked finished.
+
+### What was changed
+
+The owner set the scope: all 25 routes; the look and the arrangement inside
+each screen; no new route and no change to the API or to a business rule.
+
+- **Backend:** unchanged. The diff of `src/` between the source of the third
+  formal run and the final source is empty.
+- **Routes and use cases:** still 25 routes and 29 use cases; no route was
+  added or removed and no route's roles changed. In the use-case contract the
+  short label or the description of 15 routes was reworded, and 10 transitions
+  were added to 7 use cases for links that the screens have (see the link rule
+  below). The API client modules (`frontend/src/ideal/api`, `frontend/src/lib`)
+  are unchanged.
+- **Stylesheets:** a new set, `frontend/src/styles/workspace/*.css` (11 files),
+  loaded by the workspace layout and by Storybook only. `scale.css` defines
+  five text sizes, two weights and one measure; `primitives.css` gives
+  headings, facts, tables, buttons, links, callouts, pills and disclosures
+  their look; the other files lay out the shell and one purpose each. Every
+  selector starts with `.ideal-v3-app`, the workspace's frame. In the shared
+  `globals.css` only rules of the workspace's shell (`.ideal-v3-…`) were
+  changed.
+- **Shared parts** under `frontend/src/features/workspace/shared/`: a task
+  (a `<details>`) now declares a tone (primary, routine, information only, or
+  cannot be undone), a one-line hint and, required for a task that cannot be
+  undone, a tag in words, so that the tone is not told by colour alone; a
+  button that leads from a count in a header to the task that answers it
+  (`TaskJump`) and buttons to the sections of a long route (`SectionNav`); a
+  line above a table that says which columns run on, only while they do
+  (`TableScrollCue`); dates that are not broken inside themselves (`DateText`)
+  and names joined by a slash that break between the names (`SoftBreaks`);
+  short fields side by side (`FieldRow`); one form for identifiers
+  (`Identifiers`); a sentence under a button that cannot be pressed yet
+  (`WhyDisabled`); and `format.ts` and `labels.ts`, which word a code or a time
+  for a reader and show a code they do not know as 「未対応の値」 instead of
+  the code.
+- **Screens:** all 25 routes were reworked, in four rounds; the reviews made
+  after each round are listed below. The planning routes lost their second, in-view stepper
+  (the shell's process navigation is the only one). The month table of the
+  schedule is now shown from 601px (before: from 1181px); below that the day
+  view is shown.
+- **Size of the change:** 116 commits and 250 files between the commit that
+  recorded the third run in these documents and the final source, 202 of the
+  files under `frontend/src/features/workspace` (48 of those are tests and
+  fixtures). Between the source of the third run and that commit only documents
+  and a secret-scan allowlist had changed.
+
+What is more than look and arrangement: the links the screens gained (for
+example from a count to what it counts, and from a notice to the schedule it
+names), the width at which the month table appears, and the corrections of
+behaviour listed under "Defects found during the repair". Request bodies,
+idempotency keys and expected-version fields were reported unchanged by code
+reviews 3 and 4 for the ranges they read (rounds 3 and 4); the correction of
+the draft re-check, made after code review 4, deliberately changes which
+version that request names. For rounds 1 and 2 this record has no such
+statement, because the notes of code reviews 1 and 2 were not kept.
+
+### Checks added by the repair
+
+The aim was that the class of defect the owner saw now fails a test. The checks
+report computed facts. They do not judge whether a screen is usable or well
+composed.
+
+**Structural checks in the browser** (`frontend/tests/visual/lib/structure.ts`),
+one read-only evaluation of the rendered workspace frame. A report of one of
+these fails the calling test:
+
+| Check | Fails when |
+|---|---|
+| `squeezed-label`, `squeezed-text` | a text is laid out on three or more lines that average at most three characters, or an unspaced text averages at most one and a half characters per line; or a button narrower than 6em has a wrapped label |
+| `bare-heading` | a heading in the route's content has a font weight below 600 |
+| `bare-table` | a table has neither a frame (three bordered sides) nor a header fill unlike its rows, or stands less than 8px under the previous table |
+| `bare-list` | a list of two or more items has no marker, no row gap of its own and no item with a border, padding, fill or layout of its own |
+| `bare-definition-list` | all terms and values of a definition list are equal in colour, weight and size |
+| `variantless-button` | a workspace button has a transparent background and no border, or another button in the route's content cannot be told from the text around it |
+| `text-floor` | reading text in the route's content is smaller than 12px |
+| `link-colour` | a link that is not a button, a row or a card has another colour than the workspace's link colour |
+| `machine-value` | a text contains an ISO 8601 date and time, an `UPPER_SNAKE` value, one of a fixed list of enumeration words, or the word "API" |
+
+Recorded as advisories and metrics, which never fail a test: a label that wraps
+without being squeezed, narrow text, a heading less than 4px from what follows,
+more than four sizes of running text in a panel, a fourth nested surface, a
+page longer than three viewports at 1440px or eight at 320px, and content that
+starts below 420px at 320px.
+
+What these checks do not detect:
+
+- Meaning. A heading that names the wrong section, two cards that say the same
+  thing, a sentence that is hard to read or untrue, or the order of things on a
+  screen are invisible to them.
+- Alignment, empty space, rhythm, and where a line breaks. Only the squeeze
+  thresholds above are measured; a line that begins with a closing bracket or a
+  long-vowel mark is not reported.
+- Anything inside a closed `<details>` (see the open-task matrix below).
+- Machine values outside the patterns: `YYYY-MM-DD`, `YYYY-MM-DD HH:MM` and
+  `HH:MM` are accepted as the format of the record tables; an event kind such
+  as `schedule.published` and an unknown capital word are advisories only;
+  text inside `code`, inside a disclosure that exists to show identifiers, and
+  inside an element marked `data-verbatim` (what a person typed, shown back) is
+  not judged.
+- Text under 12px in the cells of the timetable and in the shell, and a light
+  heading in the shell, are advisories, not failures.
+
+Where the structural checks run:
+
+| Spec | What it judges | Engines |
+|---|---|---|
+| `storybook-v3-roles.pw.ts`, `storybook-v3.pw.ts` | the 52 role-route and 25 representative stories, closed, four appearances × three widths: the optical audit and, new, the structural checks | Chromium, Firefox, WebKit |
+| `storybook-v3-states.pw.ts` | 150 state stories at 390px: presence and labels; the structural checks for the ready and empty states only | Chromium, Firefox, WebKit |
+| `storybook-v3-parts.pw.ts` (new) | every story under "Ideal UI v3/Parts/", read from the build's index: the optical audit and the structural checks, four appearances × three widths | Chromium, Firefox, WebKit |
+| `storybook-v3-open.pw.ts` (new) | the 25 routes with every `<details>` opened: contrast, target size, overflow at 320px, text spacing and the structural checks, light theme, 320 and 1440px | Chromium only, by design |
+| `structure-counter.pw.ts` (new) | for each failing check, a page with the defect that must be reported and its correction that must not; the designed markup, which must pass whole | Chromium, Firefox, WebKit |
+| `optical-pinned.pw.ts` (new) | counter-examples for the change to the optical audit described below | Chromium, Firefox, WebKit |
+| the three journey specs (`finishAudit`) | the screen at the end of each journey: axe, the optical audit and, new, the structural checks | Chromium, Firefox, WebKit |
+
+Limits of the open-task matrix, which the spec states itself: Chromium only,
+the light theme, 320 and 1440px; no keyboard walk, so the focus check is not
+run in the opened state; nothing is typed or submitted, so a confirmation
+surface, a refusal and a saved state are not reached; a read that the stories'
+synthetic transport cannot answer leaves its task without a form and is an
+advisory naming the path, not a pass. In Firefox and WebKit the opened state is
+audited only where a journey opens a task.
+
+The optical audit itself was changed in one respect. Text under a
+`position: sticky` cell of the same table, when the table's own scroll region
+has been scrolled, used to be reported as undetermined, which blocked every
+audit of a scrolled table above 820px. It is now treated as not shown, like
+text scrolled out of its region, and is judged where a part of it still shows
+beside the pinned cell. Every other covering is still undetermined.
+
+**Static rules** in `tests/test_workspace_v3_structure.py`, each with mutations
+or counter-strings in the same file:
+
+- Every class the workspace writes has a rule: a selector in `globals.css` or
+  in a workspace stylesheet names it, and a class built from a template has a
+  rule for each declared value. Not seen: a class glued to an interpolation,
+  and whether a rule that exists is enough to make the element look finished.
+- Every selector of a workspace stylesheet starts with `.ideal-v3-app` (or the
+  document-level forms of it) and does not leave the frame through a sibling
+  combinator; `font-size` and `border-radius` take only variables of the scale
+  or `inherit` (a radius also `50%`), declared in `scale.css` alone; `@import`
+  is `index.css`'s alone. Not seen: a selector that leaves the frame through
+  `:has()` on the document, which is allowed by design; the values that
+  `scale.css` itself declares; `@keyframes` blocks and the values of other
+  properties.
+- A module without `"use client"` takes only components from a module with it
+  and only renders them. In a Server Components build a constant read that way
+  is a reference to the module, not the value, although Jest and Storybook show
+  it working; one such read (the target of a jump button) was found and moved
+  during the repair. Not seen, among others: a value named like a component
+  that is only handed on, a use through another local name, `require()` and
+  `import()`.
+- A link from one route to another names a transition that the use-case
+  contract declares. Not seen: a link in a shared part. The rule is loose in
+  two ways that code review 3 noted and that were not changed: it does not look
+  at the direction, and it accepts a link when one use case names both ends,
+  even if neither is that use case's own route. The 10 transitions were added
+  to the contract during the repair, in which the screens also gained links;
+  code review 3 remarked of three of them that the contract had been fitted to
+  links that existed. The rule therefore binds the code to the contract less
+  than its name suggests.
+
+`tests/test_workspace_v3_labels.py` (new) compares the frontend's words for
+recorded events with the server: every area and first part of a kind the
+server knows has a word, and every kind worded in the frontend occurs in the
+server's code. It is also loose, as code review 3 noted: it takes every string
+literal of the server's code that has the form of a kind as one the server
+emits, so it does not prove that a kind is emitted.
+
+### Reviews of the repair
+
+All of these were made by AI review agents. None was made by a person.
+
+Looks at screenshots. The screenshots were diagnostic captures of synthetic
+stories in a local Chromium, not of a verified build. By the plan of the
+repair a reviewer was given the screenshots of the state after a round, a
+checklist and the purpose of each route, and not the images from before the
+repair, the code or the author's grades. The third reviewer also had the notes
+of the second look and reported the state of each of its findings.
+
+| Look | After | Grades of the 25 routes | What the reviewer saw |
+|---|---|---|---|
+| 1 | round 1 | A 0, B 9, C 16, D 0 | light theme at 1440 and 320px for all routes; dark at 1440px for 14 routes; 768px for 10 routes |
+| 2 | round 2 | A 3, B 14, C 8, D 0 | light theme at 1440 and 320px for all routes (a few short tiles unread); the opened state of the 15 routes that have one; dark at 1440px for 12 routes; 768px for 11 routes |
+| 3 | round 3 | A 3, B 12, C 10, D 0 | 135 of the 600 image files; no full-page image; dark for the four people routes and the schedule only; 768px for the people routes and two others |
+
+The grades are not one series. The grades before the repair (D 1, C 8, B 16)
+came from an agent of the repair work; the three looks came from separate
+agents with their own instructions, and the third applied a stricter rule than
+the second: a route with any finding the reviewer rated "should fix" is a C.
+The fall from 14 B to 12 B between looks 2 and 3 is therefore not evidence that
+the screens got worse, and the rise before it is not a measurement either.
+
+On the owner's original point, the third look reported for each of the four
+people routes that no unstyled part remained. It graded `people/directory` and
+`people/lifecycle` B and `people/memberships` and `people/contracts` C.
+`people/contracts` had the only finding of that look rated "must fix": at 320px
+a table that is closed by default had lines holding only a dash or a bracket.
+Round 4 answered that finding and others of the third look. **No independent
+look of this kind (all routes, graded) was made after round 4.** After round 4
+the author agent looked at Chromium captures of its own changes, and AI agents
+of the second pre-flight looked at captures in Firefox and WebKit for
+differences between the engines (see the limits below).
+
+Code reviews of the repair. Each reviewer was given a diff and the files and
+could not change the source.
+
+| Review | Range | Findings | Outcome |
+|---|---|---|---|
+| 1 | round 1 | The notes were not kept; the counts by severity cannot be stated | A commit made after it closes gaps that "an independent review found" in two of the static rules (stylesheet scope and scale; values read from client modules). What else the review reported is not recorded |
+| 2 | round 2 | The notes were not kept. The commits that answer it carry 13 labels: High 1, Medium 3, Low 9; whether the review listed more is not recorded | Each of the 13 has a commit. The High finding is the first defect in the next section; the Medium findings were statements on screen that did not match what the server does |
+| 3 | round 3 (121 files) | High 1, Medium 3, Low 10 | The High (four text pins of journey U22 not updated after a rewording), the three Medium and eight Low findings were corrected. Left: the looseness of the two test rules described above, and one unverified note about server code that this work does not change, which is outside this record |
+| 4 | round 4 (64 files) | High 0, Medium 2, Low 11 | Both Medium and nine Low findings were answered in one commit (`b716dffe`). Left: a step's number tag is not drawn once its task is open, and the looseness of the two test rules |
+
+Review 3 read the whole diff and ran the two Python test files and the type
+check; it ran neither Jest nor a browser. Review 4 also ran the workspace's
+Jest suites (63 suites, 745 tests) in a copy and reproduced four of its
+findings there against a stand-in server; it ran no browser. **The last two
+commits of the repair** (`b716dffe`, which answers review 4, and `587e6c34`,
+which answers the second pre-flight) **were not reviewed by a separate agent.**
+They were checked by the author's own gates and by the fourth formal run.
+
+### Defects found during the repair
+
+These are defects of behaviour or of statement, not of look. Each was verified
+in the history of the branch.
+
+- **The comparison of plans named a figure by the opposite of what it counts.**
+  Before the repair the column was headed 「希望」 and showed the server's
+  `preferences_met` / total, and the route's description called it wishes
+  fulfilled; round 2 of the repair added an explanation that said "wishes that
+  came true". The server counts a preference when an assigned duty overlaps it,
+  and the preferences are wishes not to work: fewer is better. Code review 2
+  found it. Since round 3 the column is 「勤務が重なった希望」 and says that
+  fewer is better.
+- **A server validation that returned findings was shown as an unknown
+  outcome.** In the draft editor a re-check that the server answered with
+  findings was passed through the path for a request whose answer never came.
+  This was so before the repair. Since round 4 it is shown as the server's
+  answer, with the number of findings.
+- **The re-check of a draft plan checked the server's current version, not the
+  version on the screen.** The defect was in the restructured source, before
+  the repair. If someone else had saved the plan since the screen read it, the
+  re-check read and validated the newer version, and the screen then offered
+  to publish under the table of the older one. The server still required the
+  version and the review hash of the publication request to match the plan, so
+  what would have been published was a version the server had validated, but
+  not the one shown. Code review 4 found it and reproduced it in Jest against
+  a stand-in server, not on a running server with two people. Corrected in
+  `b716dffe`: the re-check names the version on the screen; when the server
+  refuses that version, the plan is read again and shown, unchecked. The same
+  commit withdraws an earlier confirmation when a later check finds something
+  (a state introduced by the correction of the previous item, in which the
+  screen said both "cannot be published" and offered to publish). The
+  corrections are covered by Jest; the journeys press the re-check only where
+  nobody else has saved, and no journey covers the concurrent case.
+- **A file refused in the browser on import was shown as an unknown outcome.**
+  A file over 5MB, or one that is not JSON, never leaves the browser, but the
+  refusal was shown as a change whose outcome is unknown. It is now said as a
+  refusal of the file. A file still being read when another is chosen no
+  longer sets the confirmation or the refusal.
+- **An approval notice lost its publication during round 3 and got it back in
+  round 4.** Before the repair a notice that carried a publication showed that
+  publication's version. Round 2 made it a link to that version's schedule.
+  Round 3 restricted version and link to the notice of a publication, on the
+  premise that no other notice carries one. The server puts the publication
+  that an approval creates into the approval's notice, so a person who receives
+  only that notice (someone the approval took off duty, with no duty in the new
+  version) lost the version and the way to the changed schedule. Code review 3
+  found it; round 4 restored it.
+
+### Pre-flight runs (not formal)
+
+Two runs were made before the formal one, to find what would fail. They are
+development checks and are not counted as formal results.
+
+1. On commit `9933f996` (after round 3). Journeys 252/261: all nine cases of
+   U22 failed, in every engine and width, at the same place. The repair had
+   reworded the heading and two rows of a flextime card and the journey's four
+   text pins had not followed (code review 3 found the same by reading the
+   diff). With the four pins corrected in a temporary copy, U22 passed 8/9 and failed
+   in WebKit at 320px for another reason: WebKit's device takes screenshots at
+   twice the CSS size, and the page, 17,075 CSS px tall at 320px, then exceeds
+   the 32,767px one screenshot can hold. The capture failed, not a check. The
+   other steps of this pre-flight passed: flag-OFF 267/267, flag-ON 9/9, the
+   comparison with the base (114 images, difference 0), the Storybook matrices
+   in a separate container with a 3GB `/tmp`, Jest (114 suites, 1,032 tests)
+   and the full Python suite (1,558 passed, 17 skipped). Fixes, in round 4: the
+   four pins, and the journeys' evidence screenshot is taken in CSS pixels.
+2. On commit `34d79106` (after round 4). Journeys 261/261 in the three engines,
+   U22 included. Storybook matrices in a separate container with a 3GB `/tmp`:
+   role-route 156/156, representative 75/75, parts 27/27, states 450/450, open
+   25/25, counter-examples 99/99. Not run in this pre-flight: flag-OFF, flag-ON,
+   the comparison with the base, the gates and the Python suite. This pre-flight
+   also captured the routes in the Linux builds of WebKit and Firefox and had
+   them looked at by AI agents (see the limits below), and it measured how much
+   of `/tmp` each matrix needs (see the split below). Two changes followed it:
+   the answer to code review 4 (`b716dffe`) and break opportunities in names
+   joined by a slash (`587e6c34`).
+
+### Fourth formal run
+
+Source: commit `587e6c34`, the final application source. Time: 2026-10-06
+15:10–19:00 UTC (2026-10-07 in Japan). Rules as for the earlier runs: each step
+once, no retry, a failure is recorded as a failure. Browsers: the Chromium,
+Firefox and WebKit of Playwright 1.56.1 in a Linux container. All data is
+synthetic.
+
+| Step | Result |
+|---|---|
+| Jest | 115 suites, 1,052 tests, 8 snapshots passed |
+| `tsc --noEmit`, ESLint | passed, no output |
+| Structure, contract, diagram and wording tests (eight files) | 196 passed |
+| ruff, black (430 files), mypy (127 source files) | passed |
+| Public API contracts | 31 models match |
+| Markdown link check | passed (41 files) |
+| Full Python suite, isolated PostgreSQL | 1,558 passed, 17 skipped, failures 0, errors 0 |
+| Linux build for the matrices, Storybook build, production build | passed; 309 stories in the build, 267 of them v3 |
+| Established product against the base commit of the restructuring | 114 images, difference 0; same passing and failing tests and same failure messages on both sides |
+| Journeys U01–U29 | 261/261 (29 use cases × 3 engines × 3 widths), 87 per engine and per width, retry 0, drift 0 |
+| Flag-OFF matrix | 267/267, failed 0, unexecuted 0, drift 0 |
+| Flag-ON entry | 9/9 |
+| Storybook: role-route | 156/156; 1,872 conditions audited |
+| Storybook: representative | 75/75; 900 conditions |
+| Storybook: shared parts | 27/27; 1,224 conditions |
+| Storybook: states | 450/450; structural checks on 150 of them |
+| Storybook: every task open | 25/25 in Chromium; 50 skipped by design in Firefox and WebKit |
+| Storybook: counter-examples | 99/99 |
+| `pip-audit` (46 locked packages) | no known vulnerabilities |
+| **`npm audit`** | **failed: both invocations exited with status 1** |
+
+Across the Storybook matrices and the journeys: optical findings 0,
+undetermined checks 0, structural findings 0, axe violations 0, failed tests 0,
+flaky 0. Not failures, and recorded: axe reported "incomplete" items in the
+journeys (7 in Chromium, 7 in Firefox, 9 in WebKit; the journeys judge
+violations only), and the structural checks recorded advisories, for example
+in the role-route matrix 44 wrapped labels and 16 page lengths per engine and
+48, 112 and 48 headings close to their content in Chromium, Firefox and
+WebKit. The Firefox surplus was not analysed in this run; in the first
+pre-flight the whole surplus was a gap measured as 4.0px against the limit of
+4px.
+
+The `npm audit` failure. `npm audit --omit=dev --audit-level=moderate` reported
+two advisories of severity high in the production graph: `sharp` below 0.35.5
+(installed 0.35.4, an optional dependency of Next.js; GHSA-wq5f-xc86-pv6w) and
+`source-map-js` 1.0.0–1.2.1 (installed 1.2.1; GHSA-68fv-2mgg-jv7q).
+`npm audit --audit-level=high` over the full graph reported the same two and 21
+of severity moderate in development-only dependencies of Jest. Both commands
+exited with status 1 and were not run again. `frontend/package.json` and the
+lockfile are identical on the base commit and on the final source, and the same
+two commands reported zero findings in the third run (2026-10-05 19:29 UTC). So
+the installed dependencies are the same and the advisory data changed; when
+the advisories were published was not checked. This work did not introduce
+them and did not fix them. They are open at the time of this record; the
+dependency update is tracked separately.
+
+The Storybook matrices were split into 48 invocations of the visual runner:
+role-route in eight parts per engine (24), representative in four per engine
+(12), shared parts in three per engine (9), and states, open and
+counter-examples in one each. The reason is the limit found after the third
+run: the browser container's `/tmp` is a 512MiB tmpfs, the browser server keeps
+the trace records of a connection there until the connection ends, and on this
+source one connection needs about 0.8–1.2GiB for the role-route matrix and
+0.4–0.7GiB for the representative matrix, depending on the engine (measured in
+the second pre-flight). `/tmp` is released when a connection ends. In the
+fourth run it peaked at 225MiB. A completeness check compared the tests of the
+48 invocations with the list of each matrix taken without a split: for all six
+matrices no test was missing, none was extra and none ran twice; each test has
+one result; all 48 invocations report the same source hashes and no drift.
+
+The five visual tests that fail on the base and on the final source are the
+ones named for the earlier runs: the text-spacing check of the sign-in page at
+320px, the established planning flow, and the three tests of the v1/v2
+showcase and `/preview`. They are outside this result. Of those three, the two
+showcase tests take no image before they fail, on either side, so this
+comparison contains no image of the showcase; the five images of `/preview`
+are identical on both sides. The audit helpers under
+`frontend/tests/visual` are not identical on the two sides (the optical audit
+changed, as described above); the audit attachments of the established screens
+were therefore compared as well and are identical on both sides (396
+attachments, and 10 of `/preview`).
+
+Deviations from "each step once, in one piece", recorded as they happened:
+
+- A smoke step ran first and is not formal: 12 journeys in Chromium and 3 in
+  WebKit at 320px, all passed. They are not counted in any figure above.
+- The production build that the journey runner uses was the one made for the
+  smoke step from the same commit a few minutes earlier; it was not built
+  again. Its fingerprint (317 files) was the same before and after the
+  production-build gate that ran in between, and the journey runner recorded
+  the same build identity before and after the journeys and no drift.
+- The gate script was stopped by the agent running it after Jest had finished,
+  to stay within a time limit of the tooling, and started again from the type
+  check. The Jest result is that of the one completed run. The type check had
+  run for five seconds without output when it was stopped and was started
+  again; every later gate ran once.
+- The first start of the flag-OFF step was stopped before any case ran: the
+  frontend server did not start, because the development TLS files it reads
+  from a temporary location were gone. They were copied again from the
+  repository's development certificate (compared and identical), the step was
+  started again, and the copy was deleted afterwards.
+- For the comparison with the base, the base's dependencies were cloned from
+  the final source's installed copy instead of installed with `npm ci`, after
+  checking that `package.json` and the lockfile are identical. The second and
+  third runs had used `npm ci`.
+- Not run again in the fourth run, as in the third: the observation of
+  PostgreSQL for the ER comparison, the isolated restore drill, the licence
+  audit and the static review gallery.
+
+### Journey assertions changed since the third formal run
+
+The three journey specs changed in the lines below and in no other. The
+classification is that of code review 4, checked against the diff of
+`frontend/tests/remediation-e2e` between the source of the third formal run
+and the final source. No assertion about behaviour was changed.
+
+| Journey | Change | Kind |
+|---|---|---|
+| all (`finishAudit` in the three specs) | the structural findings of the final screen must be empty | assertion added |
+| all (`finishAudit` in the three specs) | the evidence screenshot is taken in CSS pixels (`scale: 'css'`) | evidence only |
+| U15 | the day view replaces the month table at 600px and below, before at 1180px and below | layout pin, follows a deliberate change of the layout |
+| U16 | 「ケース版 N」 → 「第N版」 | wording pin |
+| U18 | heading 「外観と動き」 → 「配色」 | wording pin |
+| U20 | 「サーバーの検証で不整合なし」 → 「記録の検証：不整合なし」; the sentence about earlier versions, which named the API, replaced by one that points to the audit history | wording pins (2) |
+| U22 | the name of the adoption card (two pins); "registered by / confirmed by" read from two rows instead of one line (two pins, stricter: number and order are now checked) | wording pins (4) |
+| U23 | the sentence about the viewer's permission, for two roles | wording pins (2) |
+| U24 | 「この画面が受け取るのは現在の版だけ」 → 「この画面に表示できるのは現在の版の内容だけ」 | wording pin |
+
+### Known limits found in the repair and not changed
+
+- **No human evaluation.** The moderated evaluation with 30 participants, the
+  VoiceOver and NVDA sessions and the performance measurement under realistic
+  conditions have still not been done. Nothing in this section shows that the
+  workspace is usable or accessible. `IDEAL_UI` stays OFF by default.
+- **The last state was not reviewed independently.** No graded look at the
+  screenshots of all routes after round 4, and no code review of the last two
+  commits.
+- **Firefox and WebKit are the Linux builds in a container** (Playwright
+  1.56.1). Safari and Firefox on macOS were not checked.
+- **Line breaking in Firefox and WebKit.** The workspace asks the browser to
+  break headings, summaries and button labels between phrases; only Chromium
+  does that. In the other two engines lines break inside words more often, and
+  short last lines are common. The second pre-flight found, at 320px, lines
+  that began with a long-vowel mark or held a closing bracket alone in tables
+  of `requests/leave` and `people/contracts`. The last commit offers a break
+  after each slash and before each opening bracket in such names. A long name
+  without a slash or a bracket in a narrow cell can still break before a
+  long-vowel mark (seen in Firefox in the account-link table). This record has
+  no capture of the routes in Firefox and WebKit after the last commit, and the
+  automated matrices do not measure where a line breaks.
+- **Other differences seen in the Linux builds in the second pre-flight**, by
+  AI agents looking at captures: in WebKit the date and time fields are empty
+  boxes without a format hint, a `select` keeps a look close to the engine's
+  default, and at 320px the text of two process tabs touches the tab's border;
+  in Firefox the header row and the first column of a table do not appear
+  bold, and at 320px the end of a date-and-time field does not fit its box.
+  None of these was changed. No horizontal overflow was measured in any of the
+  186 captured conditions.
+- **The opened state is audited by the detectors in Chromium only**, in the
+  light theme at 320 and 1440px, without a focus check and without typing.
+- **Several pages are long, and some grew.** Heights of the closed route in
+  diagnostic captures (local Chromium, light theme, synthetic stories), before
+  the repair → on the final source:
+
+  | Route | 1440px | 320px |
+  |---|---|---|
+  | `people/contracts` | 4,345 → 3,692px | 5,639 → 6,829px |
+  | `people/memberships` | 900 → 1,098px | 1,125 → 1,652px |
+  | `governance/privacy` | 2,225 → 2,926px | 3,171 → 4,401px |
+  | `settings/flextime` | 2,765 → 3,047px | 4,178 → 5,596px |
+  | `plan/compare` | 970 → 1,471px | 1,435 → 2,701px |
+
+  With every task open, the three longest routes on the final source are
+  between 7,572 and 8,177px at 1440px and between 11,523 and 11,602px at
+  320px. Page length is an advisory of the structural checks, not a failure.
+- **Items of the reviews that were deliberately left:**
+  - `governance/audit` shows the record type of each event as the server's
+    code (for example `schedule.published`) beside its words;
+  - periods and times are written in two forms (`2026-10-12 08:30` in record
+    tables, 「10月12日（月）08:30–17:30」 elsewhere);
+  - on `plan/publications` the filled primary button is the export;
+  - on `people/contracts` the number tag of a step is not drawn once the task
+    it leads to is open;
+  - the two test rules described above (links to declared transitions; kinds
+    the server emits) can be satisfied loosely.
+- **Lists.** The workspace's note lists have `list-style: none` and carry
+  `role="list"`, because Safari with VoiceOver is reported not to announce a
+  list without a marker as a list. This was not checked with a screen reader.
+- **The draft re-check under concurrent saving** is covered by Jest only (see
+  "Defects found during the repair").
+- **`npm audit`:** two high advisories are open (see "Fourth formal run").
 
 ## Pending evaluations
 
@@ -516,5 +1117,11 @@ restructured source. The review of the restructuring itself is the section
 agent, and a final release review by a person remains open.
 Exact-export and package results are recorded in the
 accompanying manifests rather than inferred from this source-tree report.
+
+The visual repair of 2026-10-06 and the fourth formal run change nothing in
+this list. The reviews of the repair were made by AI review agents from
+screenshots and diffs; none of them is one of the evaluations above, and no
+person's assessment of the repaired screens is recorded. The two high `npm
+audit` advisories reported in the fourth run are open.
 
 `IDEAL_UI` therefore remains OFF by default.

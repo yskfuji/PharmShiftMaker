@@ -96,13 +96,16 @@ test("first the current state, the next step and the versions; the form is not o
   const rows = within(screen.getByRole("region", { name: "登録されている必要配置" })).getAllByRole("row");
   expect(rows.slice(1).map((item) => item.textContent)).toEqual([
     "病棟・本館2026-10-05 09:00 〜 2026-10-05 17:001名2名未確認第3版",
-    "調剤・薬剤部2026-10-06 09:00 〜 2026-10-06 17:002名2名未確認未登録（入力版の値）",
+    "調剤・薬剤部2026-10-06 09:00 〜 2026-10-06 17:002名2名未確認保存なし（入力版にある値）",
   ]);
   expect(next().open).toBe(false);
   expect(field("編集する対象")).not.toBeVisible();
   expect(within(next()).queryByLabelText("配置する業務")).toBeNull();
   const history = screen.getByRole("heading", { level: 3, name: "版と履歴" }).closest("section")!;
-  expect(history).toHaveTextContent("対象の入力版入力版 12登録されている記録2件（最も新しい版は第3版）");
+  // One of the two is a saved record; the other is a value only the input version holds.
+  expect(history).toHaveTextContent("対象の入力版入力版 第12版保存済みの記録1件（最も新しい版は第3版）。ほかに、入力版にだけある値が1件あります");
+  // The state of the evidence is a mark of its own in the row.
+  expect(rows.slice(1).map((item) => item.querySelector(".ideal-pill")?.className)).toEqual(["ideal-pill ideal-pill--warn", "ideal-pill ideal-pill--warn"]);
   expect(within(history).getByRole("link", { name: /監査の履歴を開く/ })).toHaveAttribute("href", "/workspace/governance/audit");
   expect(screen.queryByRole("alert")).toBeNull();
   // Reading is the route's; the section itself asks for nothing.
@@ -158,7 +161,7 @@ test("a new demand: entered, confirmed with the four statements, then saved with
   ]);
   expect(row("作成される版")).toHaveTextContent("新規登録（第1版を作成）");
   expect(row("通知")).toHaveTextContent("誰にも通知されません。保存の記録（操作した役割・版・時刻）は監査の履歴に残ります。");
-  expect(row("競合・部分失敗")).toHaveTextContent("保存前の時点では検出されていません。保存時にサーバーが、この記録がまだ登録されていないことと、入力版 12 が最新であることを照合します。");
+  expect(row("競合・部分失敗")).toHaveTextContent("保存前の時点では検出されていません。保存時にサーバーが、この記録がまだ登録されていないことと、入力版 第12版が最新であることを照合します。");
   expect(within(next()).queryByLabelText("配置する業務")).toBeNull();
   await act(async () => { press("この内容で保存する"); });
   // The body the established form sent for the same entries (checked against it when this

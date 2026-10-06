@@ -11,7 +11,7 @@ import { LiveProvider, liveFrom } from "../../../shell/WorkspaceRuntime";
 import CognitiveWorkspaceShowcase from "../../../showcase/CognitiveWorkspaceShowcase";
 import { syntheticContext } from "../../../showcase/synthetic/context";
 import type { AdoptionPayload, AdoptionRow, EnrollmentPayload, EnrollmentRow, FlexImpact, FlexListing, FlexSettlements } from "../../api";
-import { adoptionLabel, flexNames, type FlextimeData } from "../model";
+import { adoptionLabel, findingParts, flexNames, type FlextimeData } from "../model";
 import { entrySlips, emptyForm, refusedRegistration } from "../registration";
 import route from "../route";
 
@@ -151,15 +151,35 @@ test("first the current state with the settlement, the next step and the history
   expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual(["採用の状態と次の操作", "現在の状態", "次の操作", "履歴"]);
   expect(screen.getByText("確認待ちの採用 1件")).toBeInTheDocument();
   // Withdrawn adoptions are history; an adoption with an end date is still in effect.
-  const waiting = within(panel("現在の状態")).getByRole("region", { name: `${SITE}：2027-04-01 から 2028-03-31 まで 確認待ち` });
-  expect(waiting).toHaveTextContent("登録：あなた／確認：まだ確認されていません");
+  // A card is a region named by its state, its period and, for assistive technology, its
+  // site; on screen the site, with its own period, is the card's first fact.
+  const waiting = within(panel("現在の状態")).getByRole("region", { name: `確認待ち 採用の期間 2027-04-01 〜 2028-03-31 、${SITE}` });
+  expect(waiting.querySelector("h3 > .sr-only")).toHaveTextContent(`、${SITE}`);
+  const facts = (card: HTMLElement) => Array.from(card.querySelectorAll(".ideal-v3-flextime-facts > div")).map((row) => `${row.querySelector("dt")!.textContent}：${row.querySelector("dd")!.textContent!.replace(/\s+/g, " ").trim()}`);
+  expect(facts(waiting).slice(0, 1)).toEqual([`事業場：${SITE}`]);
+  // What the journey U22 locates and reads (ideal-deep-u19-u27.spec.ts): exactly one region
+  // whose name holds 「採用の期間 <first day> 〜」 (the site's own period follows a bracket, so
+  // it is never taken for the adoption's), and, in it, the one `dd` that follows the `dt`
+  // 「登録」 and the one that follows the `dt` 「確認」, each with exactly the account's name.
+  const regions = (name: RegExp) => within(panel("現在の状態")).queryAllByRole("region", { name });
+  expect(regions(/採用の期間 2027-04-01 〜/)).toEqual([waiting]);
+  expect(regions(/採用の期間 2024-12-01 〜/)).toHaveLength(0);
+  const after = (card: HTMLElement, term: string) => Array.from(card.querySelectorAll("dt")).filter((item) => item.textContent === term).map((item) => (item.nextElementSibling?.tagName === "DD" ? item.nextElementSibling.textContent : null));
+  expect([after(waiting, "登録"), after(waiting, "確認")]).toEqual([["あなた"], ["まだ確認されていません"]]);
   expect(waiting).toHaveTextContent(`この採用の確認について、サーバーの回答：${SELF}`);
   expect(waiting).toHaveTextContent("参加者はいません。");
-  const active = within(panel("現在の状態")).getByRole("region", { name: `${SITE}：2027-01-01 から 2027-06-30 まで 採用中` });
-  expect(active).toHaveTextContent("登録：あなた／確認：別の管理者");
+  const active = within(panel("現在の状態")).getByRole("region", { name: `採用中 採用の期間 2027-01-01 〜 2027-06-30 、${SITE}` });
+  expect(regions(/採用の期間 2027-01-01 〜 2027-06-30/)).toEqual([active]);
+  expect([after(active, "登録"), after(active, "確認")]).toEqual([["あなた"], ["別の管理者"]]);
+  // The evidence says its state in words, as pills; every pair of facts has a neighbour.
+  expect(Array.from(active.querySelectorAll(".ideal-v3-flextime-marks .ideal-pill")).length).toBeGreaterThanOrEqual(2);
+  expect(active.querySelectorAll(".ideal-v3-flextime-facts > div:not(.ideal-v3-flextime-facts__wide)").length % 2).toBe(0);
   expect(active).toHaveTextContent("終了：あなた（合成の終了理由）。2027-07-01 から採用しません。");
-  expect(within(active).getAllByRole("listitem").map((item) => item.textContent?.trim())).toEqual(["薬剤師一：2027-06-01 から（採用中・登録 別の管理者・確認 あなた）", "薬剤師二：2027-06-01 から（取下げ済み・登録 別の管理者・取下げの理由 本人の申出）"]);
-  expect(within(panel("現在の状態")).queryByRole("region", { name: /2026-04-01 から/ })).toBeNull();
+  // The participants: a row each of the name, the day, the state as a pill and who recorded it.
+  expect(within(within(active).getByRole("list", { name: "参加者" })).getAllByRole("listitem").map((item) => Array.from(item.children).filter((part) => !part.classList.contains("sr-only")).map((part) => part.textContent))).toEqual([
+    ["薬剤師一", "2027-06-01 から", "採用中", "登録 別の管理者・確認 あなた"], ["薬剤師二", "2027-06-01 から", "取下げ済み", "登録 別の管理者・取下げの理由 本人の申出"],
+  ]);
+  expect(within(panel("現在の状態")).queryByRole("region", { name: /採用の期間 2026-04-01 〜/ })).toBeNull();
   // The settlement, with the server's numbers and findings.
   expect(within(screen.getByRole("region", { name: "職員別・清算期間別の清算" })).getAllByRole("row").map((item) => item.textContent)).toEqual([
     "職員清算期間総枠実労働各月の時間外（週平均50時間超）最終月に加える時間外割り当てられない時間外",
@@ -167,14 +187,30 @@ test("first the current state with the settlement, the next step and the history
     "薬剤師二2027-04-01 〜 2027-04-15（途中入社・退職の部分）80:0081:00—1:00—",
   ]);
   expect(within(screen.getByRole("list", { name: "清算で確認が必要な点" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
-    "未確認：雇用条件 emp-1：フレックスタイム制の就業規則・労使協定の根拠が、確認済みではありません。", "違反：An untranslated message",
+    "未確認：雇用条件（※1）：フレックスタイム制の就業規則・労使協定の根拠が、確認済みではありません。", "違反：An untranslated message",
   ]);
-  expect(within(screen.getByRole("region", { name: "取り下げた採用・終了した採用" })).getAllByRole("row").slice(1).map((item) => item.textContent)).toEqual([
-    `${SITE}：2027-01-01 〜 2027-06-30・開始済みの採用（採用中）終了合成の終了理由あなた第2版`, `${SITE}：2026-04-01 〜 2027-03-31・薬剤部の薬剤師（取下げ済み）取下げ協定を見直すため別の管理者第1版`,
+  // The key of the record a finding names is not in the sentence on screen: it stands, with
+  // the sentence's mark, among the identifiers that open on request.
+  expect(panel("現在の状態")).toHaveTextContent("※の付いた記録の識別子は、この下の「清算の識別情報」で確認できます。");
+  const keys = screen.getByText("清算の識別情報").closest("details")!;
+  expect(keys.open).toBe(false);
+  expect(Array.from(keys.querySelectorAll(".ideal-v3-identifiers > div")).map((row) => [row.querySelector("dt")!.textContent, row.querySelector("dd code")!.textContent])[0]).toEqual(["※1 雇用条件の識別子：", "emp-1"]);
+  expect(screen.getByRole("list", { name: "清算で確認が必要な点" })).not.toHaveTextContent("emp-1");
+  // One fact per column: the period names the row; the site and the scope have their own columns.
+  expect(within(screen.getByRole("region", { name: "取り下げた採用・終了した採用" })).getAllByRole("row").map((item) => item.textContent)).toEqual([
+    "採用の期間事業場対象労働者の範囲区分理由記録した管理者版",
+    `2027-01-01 〜 2027-06-30${SITE}開始済みの採用終了合成の終了理由あなた第2版`, `2026-04-01 〜 2027-03-31${SITE}薬剤部の薬剤師取下げ協定を見直すため別の管理者第1版`,
   ]);
   expect(within(screen.getByRole("list", { name: "取り下げた参加" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["薬剤師二：2027-06-01 から（取下げ済み）：本人の申出（記録 別の管理者）"]);
   expect(within(panel("履歴")).getByRole("link", { name: "監査の履歴を開く" })).toHaveAttribute("href", "/workspace/governance/audit");
   for (const summary of TASKS) expect(task(summary).open).toBe(false);
+  // What cannot be undone has the danger tone and says so in words; nothing else has either.
+  const frame = (summary: string) => task(summary).closest(".ideal-v3-task")!;
+  for (const summary of TASKS) {
+    const final = [WITHDRAW_PERSON, END, WITHDRAW].includes(summary);
+    expect(frame(summary).classList.contains("ideal-v3-task--danger")).toBe(final);
+    expect(within(frame(summary) as HTMLElement).queryAllByText("取り消せません").length).toBe(final ? 1 : 0);
+  }
   expect(within(task(REGISTER)).getByLabelText("事業場")).not.toBeVisible();
   expect(screen.queryByRole("alert")).toBeNull();
   expect(calls).toEqual([]);
@@ -182,7 +218,37 @@ test("first the current state with the settlement, the next step and the history
   expect(document.body.innerHTML).not.toMatch(/class="[^"]*\b(ui-|workflow-|ideal-v3-purpose)/);
   // Identifiers and status codes are folded away or worded.
   expect(waiting.querySelector("dl")).not.toHaveTextContent(/site-hospital|flex-1|registered|confirmed/);
-  expect(within(waiting).getByText("識別情報").closest("details")).toHaveTextContent("採用の識別子：flex-1／事業場の識別子：site-hospital／雇用主の識別子：hospital／登録したアカウント：admin");
+  expect(within(waiting).getByText("識別情報").closest("details")).toHaveTextContent("採用の識別子：flex-1事業場の識別子：site-hospital雇用主の識別子：hospital登録したアカウント：admin");
+});
+
+test("a finding's sentence is split at the record it names, and is never changed", () => {
+  const id = (text: string) => ({ text, identifier: true });
+  const said = (text: string) => ({ text, identifier: false });
+  expect(findingParts("雇用条件 emp-1：2026-10-01 から始まる清算期間の全体が、入力に含まれていません。")).toEqual([said("雇用条件 "), id("emp-1"), said("：2026-10-01 から始まる清算期間の全体が、入力に含まれていません。")]);
+  expect(findingParts("雇用条件 emp-1 の清算期間・総枠の条件が、確認済みの採用 flex-1 と一致しません。")).toEqual([said("雇用条件 "), id("emp-1"), said(" の清算期間・総枠の条件が、確認済みの採用 "), id("flex-1"), said(" と一致しません。")]);
+  expect(findingParts("採用 flex-1 の協定届の提出日が、採用の開始日より後です。")).toEqual([said("採用 "), id("flex-1"), said(" の協定届の提出日が、採用の開始日より後です。")]);
+  // A sentence that names no record in that form, and one that is not translated, are one piece.
+  for (const whole of ["フレックスタイム制の職員は始業・終業の時刻を自分で決めるため、時刻付きの勤務を計画できません。", "An untranslated message", ""]) expect(findingParts(whole)).toEqual(whole ? [said(whole)] : []);
+  for (const sentence of ["契約 c-1：フレックスタイム制では時刻付きの勤務を割り当てないため、計画上の最低時間を設定できません。", "施設の採用と本人の参加が、雇用条件 emp-9 を覆っていません。"]) expect(findingParts(sentence).map((part) => part.text).join("")).toBe(sentence);
+});
+
+test("each record the findings name has one mark, in the order it is first named; its key is listed once among the identifiers", async () => {
+  await mount(data(listing(), { available: true, result: { ...SETTLED, input_hash: null, findings: [
+    { rule_id: "a", status: "violation", message: "Flextime settlement terms differ from the confirmed adoption flex-1: emp-1" },
+    { rule_id: "b", status: "unverified", message: "Flextime work rules or agreement unverified: emp-1" },
+    { rule_id: "c", status: "violation", message: "A flextime contract cannot require planned minimum hours: c-1" },
+    { rule_id: "d", status: "violation", message: "Flextime settlement overtime has no work in the final month to be attributed to" },
+  ] } }));
+  expect(within(screen.getByRole("list", { name: "清算で確認が必要な点" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+    "違反：雇用条件（※1）の清算期間・総枠の条件が、確認済みの採用（※2）と一致しません。",
+    "未確認：雇用条件（※1）：フレックスタイム制の就業規則・労使協定の根拠が、確認済みではありません。",
+    "違反：契約（※3）：フレックスタイム制では時刻付きの勤務を割り当てないため、計画上の最低時間を設定できません。",
+    "違反：清算期間の総枠を超えた時間を、最終月の労働に割り当てられません。",
+  ]);
+  // Without an input hash the reveal still holds the keys the marks stand for.
+  expect(Array.from(screen.getByText("清算の識別情報").closest("details")!.querySelectorAll(".ideal-v3-identifiers > div")).map((row) => [row.querySelector("dt")!.textContent, row.querySelector("dd code")!.textContent])).toEqual([
+    ["※1 雇用条件の識別子：", "emp-1"], ["※2 採用の識別子：", "flex-1"], ["※3 契約の識別子：", "c-1"],
+  ]);
 });
 
 test("what cannot be shown or managed is said in the route's or the server's own words", async () => {
@@ -206,11 +272,13 @@ test("the showcase shows an administrator the adoptions, the settlement and the 
   const ready = render(<CognitiveWorkspaceShowcase screen="settings" view="flextime" role="ADMIN" />);
   expect(await screen.findByRole("heading", { level: 2, name: "現在の状態" })).toBeInTheDocument();
   expect(within(panel("現在の状態")).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
-    "事業場1（2026-04-01 〜 2028-03-31）：2026-04-01 から 2027-03-31 まで 採用中", "事業場1（2026-04-01 〜 2028-03-31）：2027-04-01 から 2028-03-31 まで 確認待ち", "フレックスタイム制の清算",
+    "採用中採用の期間 2026-04-01 〜 2027-03-31、事業場1（2026-04-01 〜 2028-03-31）", "確認待ち採用の期間 2027-04-01 〜 2028-03-31、事業場1（2026-04-01 〜 2028-03-31）", "フレックスタイム制の清算",
   ]);
-  expect(panel("現在の状態")).toHaveTextContent("鈴木 悠斗：2026-11-01 から（確認待ち・登録 あなた）");
+  expect(panel("現在の状態")).toHaveTextContent("鈴木 悠斗：2026-11-01 から確認待ち登録 あなた");
   expect(within(screen.getByRole("region", { name: "職員別・清算期間別の清算" })).getAllByRole("row")[1]).toHaveTextContent("高橋 葵2026-09-01 〜 2026-09-30171:25174:000:002:34—");
-  expect(screen.getByRole("list", { name: "清算で確認が必要な点" })).toHaveTextContent("未確認：雇用条件 synthetic-employment-1：2026-10-01 から始まる清算期間の全体が、入力に含まれていません。");
+  expect(screen.getByRole("list", { name: "清算で確認が必要な点" })).toHaveTextContent("未確認：雇用条件（※1）：2026-10-01 から始まる清算期間の全体が、入力に含まれていません。");
+  expect(screen.getByRole("list", { name: "清算で確認が必要な点" })).not.toHaveTextContent("synthetic-employment-1");
+  expect(screen.getByText("清算の識別情報").closest("details")).toHaveTextContent("※1 雇用条件の識別子：synthetic-employment-1");
   expect(screen.getByRole("region", { name: "取り下げた採用・終了した採用" })).toHaveTextContent("対象範囲を見直すため（合成）別の管理者");
   for (const summary of TASKS) expect(screen.getByText(summary, { selector: "summary" })).toBeInTheDocument();
   // What the synthetic answer says the viewer may do is what the tasks offer.
@@ -223,7 +291,7 @@ test("the showcase shows an administrator the adoptions, the settlement and the 
   ready.unmount();
   // The settings screen without a view is the appearance route for every role.
   const index = render(<CognitiveWorkspaceShowcase screen="settings" role="ADMIN" />);
-  expect(await screen.findByRole("heading", { name: "外観と動き" })).toBeInTheDocument();
+  expect(await screen.findByRole("heading", { name: "配色" })).toBeInTheDocument();
   index.unmount();
   render(<CognitiveWorkspaceShowcase screen="settings" view="flextime" role="ADMIN" state="empty" />);
   expect(await screen.findByText(/採用していません（既定）。/)).toBeInTheDocument();
@@ -268,7 +336,7 @@ describe("registering an adoption", () => {
     press(REGISTER, "入力内容を確認する");
     expect(calls).toEqual([]);
     expect(within(surface(REGISTER)).getByRole("heading", { level: 3, name: "2. 登録前の確認" })).toHaveFocus();
-    expect(within(surface(REGISTER)).getAllByRole("term").map((term) => term.textContent)).toEqual(["変更内容", "作成される版", "通知", "競合・部分失敗"]);
+    expect(within(surface(REGISTER)).getAllByRole("term").filter((term) => !term.closest(".ideal-v3-identifiers")).map((term) => term.textContent)).toEqual(["変更内容", "作成される版", "通知", "競合・部分失敗"]);
     expect(changes(REGISTER)).toEqual([
       `事業場：（なし） → ${SITE}`, "対象労働者の範囲：（なし） → 薬剤部の薬剤師", "清算期間：（なし） → 1か月", "起算日（採用の開始日）：（なし） → 2027-04-01", "採用の最終日：（なし） → 2028-12-31",
       "総労働時間の定め：（なし） → 法定の枠（清算期間の暦日数 ÷ 7 × 40時間）", "協定で定めた総労働時間：（なし） → 清算期間の暦日数 ÷ 7 × 40時間", "標準となる1日の労働時間：（なし） → 8:00",
@@ -624,6 +692,9 @@ describe("participants", () => {
     expect(hasUnsavedChanges()).toBe(true);
     press(WITHDRAW_PERSON, "内容を確認する");
     expect(changes(WITHDRAW_PERSON)).toEqual(["状態：確認待ち → 取下げ済み", "取下げの理由：（なし） → 本人の申出", "取下げを記録した管理者：（なし） → あなた"]);
+    // The server has no step that takes a withdrawal back: the confirming button is the destructive one.
+    expect(surface(WITHDRAW_PERSON)).toHaveClass("ideal-confirm--danger");
+    expect(within(surface(WITHDRAW_PERSON)).getByRole("button", { name: "理由を記録して参加を取り下げる" })).toHaveClass("ideal-button--danger");
     await confirm(WITHDRAW_PERSON, "理由を記録して参加を取り下げる");
     expect(posts(calls)[0]).toEqual({ method: "POST", path: enrollmentPath("flex-run-p0", "withdraw"), body: { expected_revision: 1, reason: "本人の申出", idempotency_key: "idempotency-key-1" } });
     expect(within(within(surface(WITHDRAW_PERSON)).getByRole("region", { name: "三つの内容の比較" })).getAllByRole("row")[1]).toHaveTextContent("状態確認待ち採用中取下げ済みあり");
@@ -670,6 +741,7 @@ describe("ending and withdrawing an adoption", () => {
     expect(line(END, "作成される版")).toHaveTextContent("第2版 → 第3版");
     expect(line(END, "通知")).toHaveTextContent(NOBODY);
     expect(line(END, "競合・部分失敗")).toHaveTextContent("この採用の記録が第2版のままであることを照合します。違っていれば何も変更せず、競合として知らせます。終了日以降に始まる参加は、同じ処理で取り下げられます。");
+    expect(within(surface(END)).getByRole("button", { name: "理由を記録して終了する" })).toHaveClass("ideal-button--danger");
     await confirm(END, "理由を記録して終了する");
     expect(calls).toEqual([{ method: "POST", path: adoptionPath("flex-run", "end"), body: { expected_revision: 2, end_on: "2027-07-01", reason: "合成の清算期間境界で終了", idempotency_key: "idempotency-key-1" } }]);
     expect(refresh).toHaveBeenCalledTimes(1);
@@ -704,6 +776,7 @@ describe("ending and withdrawing an adoption", () => {
     set(WITHDRAW, "取り下げる理由（必須）", "協定を見直すため");
     press(WITHDRAW, "内容を確認する");
     expect(changes(WITHDRAW)).toEqual(["状態：確認待ち → 取下げ済み", "取下げ・終了の理由：（なし） → 協定を見直すため", "取下げ・終了を記録した管理者：（なし） → あなた"]);
+    expect(within(surface(WITHDRAW)).getByRole("button", { name: "理由を記録して取り下げる" })).toHaveClass("ideal-button--danger");
     expect(surface(WITHDRAW)).toHaveTextContent("取り下げた採用は元に戻せません。");
     await confirm(WITHDRAW, "理由を記録して取り下げる");
     expect(calls).toEqual([{ method: "POST", path: adoptionPath("flex-1", "withdraw"), body: { expected_revision: 1, reason: "協定を見直すため", idempotency_key: "idempotency-key-1" } }]);

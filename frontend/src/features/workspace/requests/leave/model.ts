@@ -16,8 +16,11 @@ export const periodText = (start: unknown, end: unknown) => `${jstText(start) ||
 export const amountText = (row: Pick<LeaveRequestRow, "payload">) =>
   (row.payload.unit ? `${row.payload.quantity ?? ""}${row.payload.unit === "hour" ? "時間" : row.payload.unit === "half_day" ? "回（半日）" : "日"}` : "—");
 export const daysText = (value: { numerator: number; denominator: number }) => (value.denominator === 1 ? `${value.numerator}` : `${value.numerator}/${value.denominator}`);
-export const grantText = (item: Pick<LeaveBalance, "person_name" | "employer_name" | "granted_on">) =>
-  `${item.person_name || "職員名未確認"}／${item.employer_name || "雇用主名未登録"}／付与日 ${item.granted_on || "未確認"}`;
+/** Whose grant it is, and its day: the two parts of a grant's name. A table keeps the day
+ * on one line; a sentence joins the two. */
+export const grantOwner = (item: Pick<LeaveBalance, "person_name" | "employer_name">) => `${item.person_name || "職員名未確認"}／${item.employer_name || "雇用主名未登録"}`;
+export const grantDay = (item: Pick<LeaveBalance, "granted_on">) => `付与日 ${item.granted_on || "未確認"}`;
+export const grantText = (item: Pick<LeaveBalance, "person_name" | "employer_name" | "granted_on">) => `${grantOwner(item)}／${grantDay(item)}`;
 
 /** A request as the lines a person reads (the confirmation and the three-way review). */
 export const requestFacts = (row: LeaveRequestRow, person: (personId: string) => string): Fact[] => [
@@ -26,7 +29,7 @@ export const requestFacts = (row: LeaveRequestRow, person: (personId: string) =>
   { label: "期間（日本時間）", text: periodText(row.payload.start, row.payload.end) },
   { label: "単位・数量", text: amountText(row) },
   { label: "状態", text: requestStatus(row.status) },
-  { label: "判断の記録", text: row.decision?.reference || "（なし）" },
+  { label: "判断の記録", text: row.decision?.reference || "（なし）", verbatim: true },
 ];
 export const requestLabel = (row: LeaveRequestRow, person: (personId: string) => string) =>
   `${person(row.person_id)}・${requestKind(row.kind)} ${periodText(row.payload.start, row.payload.end)}（${requestStatus(row.status)}）`;

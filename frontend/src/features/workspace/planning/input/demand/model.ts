@@ -45,8 +45,8 @@ export const newDemand = (demandId: string): DemandPayload =>
 
 /** A demand as the lines a person reads (the confirmation and the three-way review). */
 export const demandFacts = (demand: DemandPayload): Fact[] => [
-  { label: "業務", text: demand.task || "（なし）" },
-  { label: "場所", text: demand.location || "（なし）" },
+  { label: "業務", text: demand.task || "（なし）", verbatim: true },
+  { label: "場所", text: demand.location || "（なし）", verbatim: true },
   { label: "必須の配置人数", text: `${demand.minimum}名` },
   { label: "希望する配置人数", text: `${demand.target}名` },
   { label: "適用開始（日本時間）", text: jstText(demand.start) || "（なし）" },
@@ -55,4 +55,4 @@ export const demandFacts = (demand: DemandPayload): Fact[] => [
 ];
 
 export const demandLabel = (record: DemandRecord): string =>
-  `${record.payload.task}・${record.payload.location} ${jstText(record.payload.start)}〜（${record.revision ? `第${record.revision}版` : "未登録"}）`;
+  `${record.payload.task}・${record.payload.location} ${jstText(record.payload.start)}〜（${record.revision ? `第${record.revision}版` : "保存なし"}）`;

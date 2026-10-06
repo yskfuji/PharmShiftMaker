@@ -31,6 +31,7 @@ export default function DeclarationEditor({ context }: { context: DeclarationCon
   const open = context.declarations.filter((row) => row.actions.change.allowed);
   const closed = context.declarations.filter((row) => !row.actions.change.allowed);
   return <>
+    <p className="ideal-note">新しく申告するときは、下の「編集する対象」で「新しい申告を登録する」を選びます。出してある申告を直すときは、その申告を選びます。直した申告は「照合待ち」に戻ります。</p>
     <RecordEditor<DeclarationPayload, DeclarationSaved>
       noun="申告" contentTitle="申告の内容を入力する" level={3}
       records={open.map((row) => ({ key: row.entity_id, revision: row.revision, payload: row.payload, label: declarationLabel(row, names) }))}
@@ -50,7 +51,7 @@ export default function DeclarationEditor({ context }: { context: DeclarationCon
       risk={declarationRisk}
       saved={(result) => `申告を第${result.revision}版として記録しました（${STATUS_LABEL[result.status] ?? result.status}）。`}
     />
-    {closed.length > 0 && <ul className="ideal-note-list" aria-label="変更できない申告">{closed.map((row) => <li key={row.entity_id}>{declarationLabel(row, names)}：{row.actions.change.refusal}</li>)}</ul>}
+    {closed.length > 0 && <ul role="list" className="ideal-note-list" aria-label="変更できない申告">{closed.map((row) => <li key={row.entity_id}>{declarationLabel(row, names)}：{row.actions.change.refusal}</li>)}</ul>}
     <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--secondary" onClick={() => void live.refresh()}>勤務先の候補と申告を読み直す</button></div>
   </>;
 }

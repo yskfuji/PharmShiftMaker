@@ -14,6 +14,7 @@ import { readProblem } from "./ApplyControl";
 import InventoryList from "./InventoryList";
 import IrreversibleConfirm from "./IrreversibleConfirm";
 import JointReview from "./JointReview";
+import StepOutline from "./StepOutline";
 import { controlStateLabel, erasureLines, inventoryFacts, nameIn, splitTargets } from "./model";
 
 type PlanBody = { expected_revision: number };
@@ -109,6 +110,8 @@ export default function ErasurePlan({ people }: { people: Named[] }) {
   // The flags of the plan that will be executed; the inventory's own for a copy it does not name.
   const lines = control ? erasureLines(splitTargets(control.inventory, plan?.targets)) : null;
   return <div className="ideal-v3-record">
+    <StepOutline steps={["対象の職員を選ぶ", "人物制御が適用済みかを確かめる", "消去計画を作る（いまの残存を記録するだけです）", { step: "消去されるものと残るものを確かめる", mark: "取り下げられない記録を含むことがあります" }]} last="同意して、消去できる分を消去する"
+      more={["手順4で共有の管理ファイルに「共同消去判断」を記録すると、その判断は記録として残ります。記録し直せますが、取り下げる操作はありません。"]}>手順1〜4では、何も消去されません。消去されるのは、手順5で同意にチェックを入れ、赤いボタン「この計画の実行可能分を消去する」を押したときだけです。消去した記録は復元できません。</StepOutline>
     <h3 className="ideal-v3-heading" {...steps.heading("target")}>1. 対象の職員を選ぶ</h3>
     <div className="ideal-form">
       <label htmlFor={`${id}-person`}>消去計画の対象職員</label>
@@ -123,7 +126,10 @@ export default function ErasurePlan({ people }: { people: Named[] }) {
       <h3 className="ideal-v3-heading" {...steps.heading("content")}>2. 人物制御の状態を確かめ、消去計画を作成する</h3>
       <p className="ideal-note">{name}の人物制御：{controlStateLabel(control.state)}（サーバーの回答）。</p>
       {control.state === "NOT_APPLIED" ? <p className="ideal-note">人物制御は未適用です。消去計画は、人物制御を適用した後に作成できます。</p>
-        : <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--primary" onClick={() => { setDone(null); setNote(null); planning.clear(); setStage("plan"); }}>消去計画の作成内容を確認する</button></div>}
+        : <>
+          <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--primary" onClick={() => { setDone(null); setNote(null); planning.clear(); setStage("plan"); }}>消去計画の作成内容を確認する</button></div>
+          <p className="ideal-v3-governance-safe">このボタンでは、何も消去されません。消去計画は、いま何が消去でき、何がなぜ残るかをサーバーに記録した一覧です。</p>
+        </>}
       {note && <p className="ideal-note" role="status">{note}</p>}
     </>}
     {control && stage === "plan" && <ConfirmSurface title="3. 消去計画の作成前の確認"
@@ -153,6 +159,7 @@ export default function ErasurePlan({ people }: { people: Named[] }) {
         <button type="button" className="ideal-button ideal-button--primary" onClick={() => { executing.clear(); setAttempt((count) => count + 1); setStage("execute"); }}>取り消せない操作の確認へ進む</button>
         <button type="button" className="ideal-button ideal-button--secondary" onClick={() => forgetPlan("この計画は実行していません。")}>実行せずに計画を破棄する</button>
       </div>
+      <p className="ideal-v3-governance-safe">「取り消せない操作の確認へ進む」を押しても、まだ何も消去されません。次の確認で、消去されるものと残るものを確かめてから実行します。</p>
     </>}
     {control && plan && lines && stage === "execute" && ready && <IrreversibleConfirm key={attempt} title="5. 取り消せない操作の確認：消去計画の実行"
       changes={lines.changes}

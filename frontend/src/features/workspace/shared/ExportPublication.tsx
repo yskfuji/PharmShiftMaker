@@ -9,7 +9,7 @@ import type { ExportFormat } from "./api";
 import { advanceExport, attemptFor, sameTarget, saveFile, type ExportAttempt, type ExportTarget } from "./publicationExport";
 
 const FORMATS: ReadonlyArray<{ value: ExportFormat; label: string }> = [
-  { value: "json", label: "JSON（機械連携）" },
+  { value: "json", label: "JSON（他システム用）" },
   { value: "csv", label: "CSV（勤務区間）" },
   { value: "csv-wide", label: "CSV（日別一覧）" },
 ];
@@ -27,7 +27,7 @@ type ExportState =
 type Resend = "no-answer" | "not-verified" | "not-usable";
 const RESEND: Record<Resend, string> = {
   "no-answer": "応答を受け取れませんでした。通信断のときは、形式を変えずにもう一度押してください。同じ出力として送り直すため、二重には登録されません。",
-  "not-verified": "保存を止めました。受渡し記録が無いか、受け取った内容のSHA-256が登録済みの値と一致しません。もう一度押すと、同じ出力を受け取り直します。",
+  "not-verified": "保存を止めました。受渡し記録が無いか、受け取った内容が、サーバーに残した内容と一致しません。もう一度押すと、同じ出力を受け取り直します。",
   // The answer arrived; what failed is this browser reading, checking or saving the file.
   "not-usable": "ファイルは保存していません。サーバーの応答は届きましたが、このブラウザーでは受け取ったファイルを検証または保存できませんでした。受渡しは既に記録されている可能性があります。形式を変えずにもう一度押すと、同じ出力として受け取り直します（二重には登録されません）。",
 };
@@ -36,8 +36,11 @@ const RESEND: Record<Resend, string> = {
  * Saves one publication of the scope as a file, in the format chosen here. The requests and
  * their order are the protocol's (publicationExport.ts); this island keeps the chosen format
  * and what the last press led to, both bound to the publication and format they belong to.
+ * Order: the format, the one action, then (closed) what the formats are and how the transfer
+ * is recorded, then the outcome. `actionTone` is the owner's static choice: `primary` where
+ * exporting is the main action of its place, `secondary` (the default) where it is not.
  */
-export default function ExportPublication({ scope, publication, version }: { scope: string; publication: string; version: number }) {
+export default function ExportPublication({ scope, publication, version, actionTone = "secondary" }: { scope: string; publication: string; version: number; actionTone?: "primary" | "secondary" }) {
   const live = useLive();
   const id = useId();
   const [format, setFormat] = useState<ExportFormat>("json");
@@ -72,9 +75,12 @@ export default function ExportPublication({ scope, publication, version }: { sco
     <select id={`${id}-format`} className="ideal-input" aria-describedby={`${id}-formats`} value={format} disabled={sending} onChange={(event) => setFormat(event.target.value as ExportFormat)}>
       {FORMATS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
     </select>
-    <p id={`${id}-formats`} className="ideal-note">JSONは他のシステムとの連携用で、元の識別子をそのまま含みます。CSVは人が読むための形式で、勤務区間ごと、または日別の一覧です。</p>
-    <p className="ideal-note">サーバーが出力を管理領域に登録し、受渡しを記録してから渡します。受け取った内容は、登録済みのSHA-256と一致したときだけ保存します。</p>
-    <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--secondary" disabled={sending} onClick={() => void press()}>{sending ? "出力しています…" : "この公開版を出力"}</button></div>
+    <div className="ideal-actions"><button type="button" className={actionTone === "primary" ? "ideal-button ideal-button--primary" : "ideal-button ideal-button--secondary"} disabled={sending} onClick={() => void press()}>{sending ? "出力しています…" : "この公開版を出力"}</button></div>
+    <details className="ideal-v3-disclosure ideal-v3-disclosure--info">
+      <summary>出力形式と受渡しの記録について</summary>
+      <p id={`${id}-formats`} className="ideal-note">JSONは、ほかのシステムに読み込ませるための形式です。職員や勤務を見分ける記号（ID）も、そのまま入ります。CSVは人が読むための形式で、勤務区間ごと、または日別の一覧です。</p>
+      <p className="ideal-note">出力するたびに、ファイルを渡す前に、その内容と受け渡しの記録を残します。受け取ったファイルは、残した内容と同じだと確かめられたときだけ保存します。</p>
+    </details>
     {shown?.kind === "refused" && <InlineProblem problem={shown.problem} />}
     {/* Always present, so that what is put into it is announced. */}
     <p className={shown?.kind === "resend" ? "ideal-note" : "ideal-done"} role="status">{said}</p>

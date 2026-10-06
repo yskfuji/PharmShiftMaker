@@ -11,6 +11,8 @@ import { useLive } from "../../shell/WorkspaceRuntime";
 import { governanceApi, type JointReview as Review, type JointReviewBody, type Named } from "../api";
 import { readProblem } from "./ApplyControl";
 import { nameIn } from "./model";
+import WhyDisabled from "../../shared/WhyDisabled";
+import Identifiers from "../../shared/Identifiers";
 
 const ownersText = (review: Review | null, people: Named[]) => (review ? review.context.owners.map((owner) => nameIn(people, owner)).join("、") : "（なし）");
 
@@ -60,15 +62,18 @@ export default function JointReview({ copyId, label, people, onRecorded }: { cop
       {!body && <div className="ideal-actions"><button type="button" className="ideal-button ideal-button--secondary" disabled={reading} onClick={() => void load()}>全所有者と現在の判断を取得する</button></div>}
       {problem && <InlineProblem problem={problem} />}
       {review && !body && <form className="ideal-form" onSubmit={(event) => { event.preventDefault(); if (!entry.compared) return; setDone(null); send.clear(); setBody({ expected_revision: review.revision, source_hash: review.source_hash, context_hash: review.context_hash, shared_text_reviewed: true, reason: entry.reason, evidence: { reference: entry.reference, verified_by: entry.reviewer, status: "verified" } }); }}>
-        <ul className="ideal-note-list" aria-label="全所有者と本人対応判断">{review.context.owners.map((owner) => {
+        <ul role="list" className="ideal-note-list" aria-label="全所有者と本人対応判断">{review.context.owners.map((owner) => {
           const participant = review.context.participants.find((item) => item.person_id === owner);
-          return <li key={owner}>{nameIn(people, owner)}：{participant?.case_reason ?? "判断理由は原本で照合してください"}（判断 {participant ? `第${participant.case_revision}版` : "未確認"}）</li>;
+          return <li key={owner}>{nameIn(people, owner)}：{participant?.case_reason != null ? <span data-verbatim>{participant.case_reason}</span> : "判断理由は原本で照合してください"}（判断 {participant ? `第${participant.case_revision}版` : "未確認"}）</li>;
         })}</ul>
-        <p className="ideal-note">現在の保存規則：{review.context.policy_purpose ?? "利用目的は原本で照合してください"}（第{review.context.policy_revision}版）</p>
-        <details className="ideal-v3-disclosure"><summary>識別情報</summary>
-          <ul className="ideal-note-list">{review.context.participants.map((item) => <li className="ideal-note" key={item.person_id}>{nameIn(people, item.person_id)}：人物参照 {item.person_id}／本人対応参照 {item.case_id}／判断の照合値 {item.case_hash}／制御の照合値 {item.control_hash}</li>)}</ul>
-          <p className="ideal-note">規則参照 {review.context.policy_key}／規則の照合値 {review.context.policy_hash}／原本の照合値 {review.source_hash}</p>
-        </details>
+        <p className="ideal-note">現在の保存規則：{review.context.policy_purpose != null ? <span data-verbatim>{review.context.policy_purpose}</span> : "利用目的は原本で照合してください"}（第{review.context.policy_revision}版）</p>
+        <Identifiers items={[
+          ...review.context.participants.flatMap((item) => { const name = nameIn(people, item.person_id); return [
+            { key: `${item.person_id}:person`, label: `${name}の人物参照`, value: item.person_id }, { key: `${item.person_id}:case`, label: `${name}の本人対応参照`, value: item.case_id },
+            { key: `${item.person_id}:case-hash`, label: `${name}の判断の照合値`, value: item.case_hash }, { key: `${item.person_id}:control-hash`, label: `${name}の制御の照合値`, value: item.control_hash },
+          ]; }),
+          { key: "policy", label: "規則参照", value: review.context.policy_key }, { key: "policy-hash", label: "規則の照合値", value: review.context.policy_hash }, { key: "source", label: "原本の照合値", value: review.source_hash },
+        ]} />
         <label htmlFor={`${id}-reason`}>共同消去の判断理由</label>
         <textarea id={`${id}-reason`} className="ideal-input" required maxLength={2000} value={entry.reason} onChange={(event) => setEntry({ ...entry, reason: event.target.value })} />
         <label htmlFor={`${id}-reference`}>全所有者と原本を照合した資料</label>
@@ -76,10 +81,11 @@ export default function JointReview({ copyId, label, people, onRecorded }: { cop
         <label htmlFor={`${id}-reviewer`}>共同消去の確認者</label>
         <input id={`${id}-reviewer`} className="ideal-input" required value={entry.reviewer} onChange={(event) => setEntry({ ...entry, reviewer: event.target.value })} />
         <CheckField label="全所有者・現在の判断・保存規則・共同自由記述を原本と照合した" checked={entry.compared} onChange={(compared) => setEntry({ ...entry, compared })} />
-        <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={!entry.compared}>共同判断の内容を確認する</button></div>
+        <div className="ideal-actions"><button type="submit" className="ideal-button ideal-button--primary" disabled={!entry.compared} aria-describedby={entry.compared ? undefined : `${id}-why`}>共同判断の内容を確認する</button></div>
+        <WhyDisabled id={`${id}-why`}>{!entry.compared && "上の照合にチェックを入れると押せます。"}</WhyDisabled>
       </form>}
       {review && body && <ConfirmSurface title={`${label}の共同判断：記録前の確認`} level={4}
-        changes={[{ label: "共同消去の判断", before: "（なし）", after: `全所有者（${ownersText(review, people)}）の判断を原本と照合済みとして記録` }, { label: "共同消去の判断理由", before: "（なし）", after: body.reason }, { label: "照合した資料", before: "（なし）", after: body.evidence.reference }, { label: "共同消去の確認者", before: "（なし）", after: body.evidence.verified_by ?? "" }]}
+        changes={[{ label: "共同消去の判断", before: "（なし）", after: `全所有者（${ownersText(review, people)}）の判断を原本と照合済みとして記録` }, { label: "共同消去の判断理由", before: "（なし）", after: body.reason, verbatim: true }, { label: "照合した資料", before: "（なし）", after: body.evidence.reference, verbatim: true }, { label: "共同消去の確認者", before: "（なし）", after: body.evidence.verified_by ?? "", verbatim: true }]}
         version={{ from: review.revision, to: review.revision }}
         versionText={`保存物（第${review.revision}版）に、共同消去の判断を1件記録します。保存物は消去されません。`}
         notified="誰にも通知されません。共同判断の記録（操作者・時刻）は監査の履歴に残ります。"

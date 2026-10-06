@@ -16,3 +16,12 @@ test("three-way rows follow the edited record's lines", () => {
     { label: "場所", base: "（なし）", current: "（なし）", proposed: "薬剤部" },
   ]);
 });
+
+test("a line a person typed stays marked as typed in the changes and in the three-way rows; the others carry no mark", () => {
+  const typed: Fact[] = [{ label: "業務", text: "調剤" }, { label: "理由", text: "合成判断 VERIFIED（API）", verbatim: true }];
+  expect(changedFacts(null, typed)).toStrictEqual([{ label: "業務", before: "（なし）", after: "調剤" }, { label: "理由", before: "（なし）", after: "合成判断 VERIFIED（API）", verbatim: true }]);
+  expect(threeWayRows(typed, null, typed)).toStrictEqual([
+    { label: "業務", base: "調剤", current: "（なし）", proposed: "調剤" },
+    { label: "理由", base: "合成判断 VERIFIED（API）", current: "（なし）", proposed: "合成判断 VERIFIED（API）", verbatim: true },
+  ]);
+});

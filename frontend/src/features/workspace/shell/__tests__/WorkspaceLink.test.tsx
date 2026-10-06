@@ -77,3 +77,16 @@ test("there is no free destination: only the paths of the generated contract are
   // @ts-expect-error -- there is no href
   render(<WorkspaceLink route={routeOf("home/index").route} href="/dashboard">x</WorkspaceLink>);
 });
+
+test("a link to another month leaves the publication and the case of the month on screen behind", () => {
+  const onScreen = { scope: "s/d", period: "2026-10", publication: "pub-12", case: "case-1", person: "p1" };
+  // The same month, or no month named: everything on screen travels, as before.
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, {}, onScreen)).toBe("/workspace/schedule?scope=s%2Fd&period=2026-10&publication=pub-12&case=case-1&person=p1");
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-10" }, onScreen)).toBe("/workspace/schedule?period=2026-10&scope=s%2Fd&publication=pub-12&case=case-1&person=p1");
+  // Another month: the server would refuse this publication with it (409), so it is not carried.
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-11" }, onScreen)).toBe("/workspace/schedule?period=2026-11&scope=s%2Fd&person=p1");
+  // A publication the link names itself is the link's own, and travels.
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-11", publication: "pub-13" }, onScreen)).toBe("/workspace/schedule?period=2026-11&publication=pub-13&scope=s%2Fd&person=p1");
+  // A month that is not well-formed names none: nothing is left behind for it.
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "next" }, onScreen)).toBe("/workspace/schedule?scope=s%2Fd&publication=pub-12&case=case-1&person=p1");
+});

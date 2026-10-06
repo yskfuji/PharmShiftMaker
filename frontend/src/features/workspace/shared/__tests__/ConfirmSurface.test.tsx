@@ -108,3 +108,62 @@ test("while the owner's consent is missing nothing can be sent, a resend include
   fireEvent.click(within(agreed.section).getByRole("button", { name: "この内容で保存する" }));
   expect(agreed.onConfirm).toHaveBeenCalledTimes(1);
 });
+
+test("the confirming button is the primary one; of what cannot be undone it is the destructive one, a resend included", () => {
+  const problem = { kind: "unknown" as const, code: "503", title: "結果を確認できません", body: "応答を受け取れませんでした。", action: "最新の内容を取得" };
+  const routine = surface({ title: "通常の確認" });
+  expect(routine.section).not.toHaveClass("ideal-confirm--danger");
+  expect(within(routine.section).getByRole("button", { name: "この内容で保存する" })).toHaveClass("ideal-button", "ideal-button--primary");
+  const final = surface({ title: "取り消せない操作の確認", confirmTone: "danger", confirmLabel: "理由を記録して終了する" });
+  expect(final.section).toHaveClass("ideal-confirm", "ideal-confirm--danger");
+  const button = within(final.section).getByRole("button", { name: "理由を記録して終了する" });
+  expect(button).toHaveClass("ideal-button", "ideal-button--danger");
+  expect(button).not.toHaveClass("ideal-button--primary");
+  // The way back is never the destructive one.
+  expect(within(final.section).getByRole("button", { name: "入力に戻る" })).toHaveClass("ideal-button--secondary");
+  fireEvent.click(button);
+  expect(final.onConfirm).toHaveBeenCalledTimes(1);
+  const resend = surface({ title: "取り消せない操作の再送", confirmTone: "danger", outcome: { kind: "unknown", problem } });
+  expect(within(resend.section).getByRole("button", { name: "同じ内容を再送する" })).toHaveClass("ideal-button--danger");
+});
+
+test("a confirming button that cannot be pressed says why, as its description; while sending and while it can be pressed there is no note", () => {
+  const idle = surface();
+  expect(screen.getByRole("button", { name: "この内容で保存する" })).not.toHaveAttribute("aria-describedby");
+  expect(idle.section.querySelector(".ideal-v3-why-disabled")).toBeNull();
+  // After a conflict this part knows the reason itself: the three contents have to be reviewed first.
+  const conflict = surface({ title: "競合の確認", outcome: { kind: "conflict", rows: threeWayRows(base, base, proposed), currentRevision: 4 } });
+  const held = within(conflict.section).getByRole("button", { name: "この内容で保存する" });
+  expect(held).toBeDisabled();
+  expect(held).toHaveAccessibleDescription("競合した内容を確かめる必要があります。上の「三つの内容を確認し、現在の版に対して確認し直す」を押すと、もう一度押せるようになります。");
+  const note = conflict.section.querySelector(".ideal-v3-why-disabled")!;
+  expect(note.previousElementSibling).toBe(held.parentElement);
+  // The owner's own reason, only while the owner holds the button back.
+  const waiting = surface({ title: "同意の確認", confirmDisabled: true, confirmDisabledReason: "上の確認にチェックを入れると押せます。" });
+  expect(within(waiting.section).getByRole("button", { name: "この内容で保存する" })).toHaveAccessibleDescription("上の確認にチェックを入れると押せます。");
+  const given = surface({ title: "同意済みの確認", confirmDisabled: false, confirmDisabledReason: "上の確認にチェックを入れると押せます。" });
+  expect(within(given.section).getByRole("button", { name: "この内容で保存する" })).toBeEnabled();
+  expect(given.section.querySelector(".ideal-v3-why-disabled")).toBeNull();
+  // Held back without a reason given: nothing is invented.
+  const silent = surface({ title: "理由のない確認", confirmDisabled: true });
+  expect(within(silent.section).getByRole("button", { name: "この内容で保存する" })).toBeDisabled();
+  expect(silent.section.querySelector(".ideal-v3-why-disabled")).toBeNull();
+  // Being sent is not a reason to explain.
+  const sending = surface({ title: "送信中の確認", busy: true, confirmDisabled: true, confirmDisabledReason: "上の確認にチェックを入れると押せます。" });
+  expect(sending.section.querySelector(".ideal-v3-why-disabled")).toBeNull();
+});
+
+test("a line its owner marked as typed by a person is shown as typed: data-verbatim on that line and on its three values, and on nothing else", () => {
+  const typed = (reason: string): Fact[] => [{ label: "業務", text: "調剤" }, { label: "理由", text: reason, verbatim: true }];
+  const { section, row } = surface({ changes: changedFacts([{ label: "業務", text: "監査" }, ...typed("旧 VERIFIED").slice(1)], typed("合成判断 VERIFIED（API）")),
+    outcome: { kind: "conflict", rows: threeWayRows(typed("旧 VERIFIED"), typed("別の理由"), typed("合成判断 VERIFIED（API）")), currentRevision: 4 } });
+  const lines = within(row("変更内容")).getAllByRole("listitem");
+  expect(lines.map((item) => [item.textContent, item.hasAttribute("data-verbatim")])).toEqual([["業務：監査 → 調剤", false], ["理由：旧 VERIFIED → 合成判断 VERIFIED（API）", true]]);
+  const cells = within(within(section).getByRole("region", { name: "三つの内容の比較" })).getAllByRole("row").slice(1).map((line) => Array.from(line.children).map((cell) => [cell.textContent, cell.hasAttribute("data-verbatim")]));
+  expect(cells).toEqual([
+    [["理由", false], ["旧 VERIFIED", true], ["別の理由", true], ["合成判断 VERIFIED（API）", true], ["あり", false]],
+    [["業務", false], ["調剤", false], ["調剤", false], ["調剤", false], ["なし", false]],
+  ]);
+  // Nothing but those elements carries the mark: not the surface, not the table, not its region.
+  expect(Array.from(section.querySelectorAll("[data-verbatim]")).map((element) => element.tagName)).toEqual(["LI", "TD", "TD", "TD"]);
+});

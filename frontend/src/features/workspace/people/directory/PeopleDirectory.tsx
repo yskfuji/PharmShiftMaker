@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import type { LifecycleCase, MembershipRevision } from "@/ideal/types";
+import { labelOf } from "../../shared/labels";
 import { useLive } from "../../shell/WorkspaceRuntime";
 import { ROLE } from "../labels";
 import { recordsOf, type DirectorySummary } from "./model";
@@ -23,9 +24,16 @@ export default function PeopleDirectory({ list, cases, records, selected, onSele
   if (!current) return selected
     ? <section className="ideal-note" role="alert"><h3>指定された職員を表示できません</h3><p>この施設・部署で参照できないか、所属状態が変わりました。</p>{people[0] && <button type="button" className="ideal-button ideal-button--secondary" onClick={() => onSelect(people[0].person_id)}>職員一覧から選び直す</button>}</section>
     : <p className="ideal-note">表示できる職員はいません。</p>;
-  return <div className="ideal-v3-master-detail">
-    <div><label className="ideal-field-label" htmlFor="people-directory-search">職員を検索</label><input id="people-directory-search" type="search" className="ideal-input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="氏名又は職員ID" /><p role="status">{filtered.length}名を表示</p>
-      <ul className="ideal-v3-master" aria-label="職員一覧">{filtered.map((item) => { const membership = list.find((row) => row.person_id === item.person_id && row.active); return <li key={item.person_id}><button type="button" aria-pressed={item.person_id === current.person_id} onClick={() => onSelect(item.person_id)}><span className="ideal-avatar">{item.name.slice(0, 1)}</span><span><strong>{item.name}</strong><small>{membership ? `${ROLE[membership.role]} · 有効` : "本人アカウント未紐付け"}</small></span><ChevronRight aria-hidden="true" /></button></li>; })}</ul></div>
+  return <div className="ideal-v3-master-detail ideal-v3-people-directory">
+    <div className="ideal-v3-people-finder">
+      <label className="ideal-field-label" htmlFor="people-directory-search">職員を検索</label>
+      <input id="people-directory-search" type="search" className="ideal-input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="氏名又は職員ID" />
+      <p className="ideal-note" role="status">{filtered.length}名を表示</p>
+      <ul className="ideal-v3-master" aria-label="職員一覧">{filtered.map((item) => {
+        const membership = list.find((row) => row.person_id === item.person_id && row.active);
+        return <li key={item.person_id}><button type="button" aria-pressed={item.person_id === current.person_id} onClick={() => onSelect(item.person_id)}><span className="ideal-avatar">{item.name.slice(0, 1)}</span><span><strong>{item.name}</strong><small className={membership ? undefined : "is-unlinked"}>{membership ? `${labelOf(ROLE, membership.role)} · 有効` : "本人アカウント未紐付け"}</small></span><ChevronRight aria-hidden="true" /></button></li>;
+      })}</ul>
+    </div>
     <PersonDetail
       person={current}
       memberships={list.filter((item) => item.person_id === current.person_id)}

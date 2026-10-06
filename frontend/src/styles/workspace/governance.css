@@ -1,0 +1,102 @@
+/* Route layout of governance: audit, actuals, privacy and recovery. Selectors start with .ideal-v3-app; class names are ideal-v3-<purpose>-*. */
+
+/* An identifier (a hash, a record key) where one has to be shown: set as code, at the size
+   of the text around it, and broken anywhere so that 64 characters never widen a phone. */
+.ideal-v3-app .ideal-v3-governance-code { font-size: inherit; overflow-wrap: anywhere; word-break: break-all; }
+
+/* A few counted facts inside a task: the value stays next to its term instead of at the far
+   side of a wide task. */
+.ideal-v3-app .ideal-v3-governance-facts { max-width: var(--ideal-v3-measure); }
+.ideal-v3-app .ideal-v3-governance-facts div, .ideal-v3-app .ideal-v3-record > .ideal-v3-governance-facts div { grid-template-columns: minmax(8rem, 20rem) minmax(0, 1fr); }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-governance-facts div, .ideal-v3-app .ideal-v3-record > .ideal-v3-governance-facts div { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* The retention rules: a day (the next review) is never broken at one of its hyphens. */
+.ideal-v3-app [aria-label="保存規則"] .ideal-table td:nth-child(6) { white-space: nowrap; }
+
+/* A marked list: each record of a short list (a legal hold, a copy, a candidate) is a line
+   with a rule at its start, in the text colour — not a faint note. The rule says which
+   record a line belongs to; what a record's state is, is said in words. */
+.ideal-v3-app .ideal-v3-governance-marked { display: grid; gap: var(--space-2); margin: 0; padding: 0; list-style: none; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-governance-marked > li { min-width: 0; padding: var(--space-1) 0 var(--space-1) var(--space-3); border-inline-start: 3px solid rgb(var(--color-line-strong)); color: rgb(var(--color-fg)); overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-v3-governance-marked > li > strong { font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-governance-marked > li > .ideal-pill { margin-inline: var(--space-2); vertical-align: .05rem; }
+.ideal-v3-app .ideal-v3-governance-marked__reason { display: block; margin-top: var(--space-1); color: rgb(var(--color-fg-muted)); }
+.ideal-v3-app .ideal-v3-governance-marked > li > .ideal-v3-disclosure { margin-top: var(--space-2); }
+/* A hold that is in force, and what an irreversible operation erases. */
+.ideal-v3-app .ideal-v3-governance-marked > li.is-active { border-inline-start-color: rgb(var(--color-warning)); }
+.ideal-v3-app .ideal-v3-governance-marked--erased > li { border-inline-start-color: rgb(var(--color-danger)); font-weight: var(--ideal-v3-weight-label); }
+
+/* The decisions recorded for each request: the request, then its versions in order, each
+   as "version, decision, reason" in columns. */
+.ideal-v3-app .ideal-v3-governance-history { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: var(--space-3) var(--space-6); margin: 0; padding: 0; list-style: none; font-size: var(--ideal-v3-text-sm); }
+@media (min-width: 1100px) {
+  .ideal-v3-app .ideal-v3-governance-history { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* One request: a framed record (whose request, then its decisions as rows with a rule
+   between them: the version, the state as a pill, the reason), the look every list of
+   records has, not a column held by a rule at its start. */
+.ideal-v3-app .ideal-v3-governance-history > li { min-width: 0; padding: var(--space-3) var(--space-4); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-v3-governance-history > li > strong { display: block; color: rgb(var(--color-fg)); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-governance-history__steps { display: grid; margin: var(--space-2) 0 0; padding: 0; border-top: 1px solid rgb(var(--color-line)); list-style: none; }
+.ideal-v3-app .ideal-v3-governance-history__steps > li { display: grid; grid-template-columns: 4.5em minmax(0, 11em) minmax(0, 1fr); align-items: baseline; justify-items: start; gap: var(--space-1) var(--space-3); padding: var(--space-2) 0; color: rgb(var(--color-fg)); overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-v3-governance-history__steps > li + li { border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-governance-history__steps > li > :first-child { color: rgb(var(--color-fg-muted)); }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-governance-history__steps > li { grid-template-columns: 4.5em minmax(0, 1fr); }
+  .ideal-v3-app .ideal-v3-governance-history__steps > li > :nth-child(3) { grid-column: 1 / -1; }
+}
+
+/* The tasks done to one person's records follow one another (the control, then the plan):
+   one column at every width, so that their order is the order of reading. */
+.ideal-v3-app .ideal-v3-task-list.ideal-v3-governance-sequence { grid-template-columns: minmax(0, 1fr); }
+
+/* The confirmation of an operation that cannot be undone (privacy/IrreversibleConfirm). Its
+   edge and its confirming button are the destructive ones of shared/ConfirmSurface
+   (primitives.css); here, what it erases is marked, and that there is no way back is a
+   statement marked by a rule in the danger colour (a rule, not a fourth surface inside the
+   panel, the task and the confirmation). */
+.ideal-v3-app .ideal-v3-governance-irreversible .ideal-note-list { color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-confirm .ideal-v3-governance-no-return { max-width: none; margin: 0; padding: var(--space-1) 0 var(--space-1) var(--space-3); border-inline-start: 4px solid rgb(var(--color-danger)); color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-confirm .ideal-v3-governance-no-return > strong { color: rgb(var(--color-danger)); font-weight: var(--ideal-v3-weight-heading); }
+/* The consent stands apart from what it consents to, in the weight of a label (that its box
+   stays beside its sentence is the rule of every check: primitives.css). */
+.ideal-v3-app .ideal-confirm:has(> .ideal-v3-governance-irreversible) > .ideal-inline-field { margin-top: var(--space-2); font-weight: var(--ideal-v3-weight-label); }
+
+/* The steps of a task that cannot be undone, before its first field (privacy/StepOutline):
+   numbered in the order of the task's own headings, the last one in the danger colour and
+   named in words. A rule at its start, not another surface inside the task. */
+.ideal-v3-app .ideal-v3-governance-outline { display: grid; gap: var(--space-2); max-width: var(--ideal-v3-measure); padding: var(--space-1) 0 var(--space-1) var(--space-3); border-inline-start: 3px solid rgb(var(--color-line-strong)); }
+.ideal-v3-app .ideal-v3-governance-outline__title, .ideal-v3-app .ideal-panel .ideal-v3-governance-outline__title { margin: 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-governance-outline__steps { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); line-height: var(--line-height-heading); }
+.ideal-v3-app .ideal-v3-governance-outline__steps > li { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-governance-outline__steps > li > span:nth-child(2) { flex: 0 1 auto; min-width: 0; }
+.ideal-v3-app .ideal-v3-governance-outline__number { flex: none; min-width: 1.5em; color: rgb(var(--color-fg-muted)); font-weight: var(--ideal-v3-weight-heading); font-variant-numeric: tabular-nums; text-align: center; }
+.ideal-v3-app .ideal-v3-governance-outline__steps > li.is-final, .ideal-v3-app .ideal-v3-governance-outline__steps > li.is-final > .ideal-v3-governance-outline__number { color: rgb(var(--color-danger)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-governance-outline__note, .ideal-v3-app .ideal-panel .ideal-v3-governance-outline__note { max-width: none; margin: 0; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+/* What a marked step leaves behind, on request: a reveal that starts at the outline's edge. */
+.ideal-v3-app .ideal-v3-governance-outline > .ideal-v3-disclosure--info > .ideal-v3-governance-outline__note + .ideal-v3-governance-outline__note { margin-top: var(--space-2); }
+@media (max-width: 520px) {
+  /* At phone width a step is two columns: its number, and beside it the step with its mark
+     under it. The number never stands on a line of its own above a step that wraps. */
+  .ideal-v3-app .ideal-v3-governance-outline__steps > li { display: grid; grid-template-columns: 1.5em minmax(0, 1fr); }
+  .ideal-v3-app .ideal-v3-governance-outline__steps > li > span:nth-child(2) { text-wrap: balance; word-break: auto-phrase; }
+  .ideal-v3-app .ideal-v3-governance-outline__steps > li > :nth-child(n+3) { grid-column: 2; justify-self: start; }
+}
+/* Beside a button that leads towards an erasure but erases nothing itself: said in the text
+   colour, directly under the button. */
+.ideal-v3-app .ideal-v3-governance-safe, .ideal-v3-app .ideal-panel .ideal-v3-governance-safe { margin: 0; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+/* The words a group of tasks uses, explained once above the tasks, in a reveal with how the
+   tasks depend on one another. */
+.ideal-v3-app .ideal-v3-governance-sequence-notes > .ideal-note-list { max-width: var(--ideal-v3-measure); margin-block: 0 var(--space-2); }
+.ideal-v3-app .ideal-v3-record > section > .ideal-v3-governance-sequence-notes { margin-block: 0 var(--space-2); }
+.ideal-v3-app .ideal-v3-governance-terms { max-width: var(--ideal-v3-measure); }
+.ideal-v3-app .ideal-v3-governance-terms div, .ideal-v3-app .ideal-v3-record > section > .ideal-v3-governance-terms div { grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr); }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-governance-terms div, .ideal-v3-app .ideal-v3-record > section > .ideal-v3-governance-terms div { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-governance-marked > li, .ideal-v3-app .ideal-v3-governance-history > li, .ideal-v3-app .ideal-confirm .ideal-v3-governance-no-return, .ideal-v3-app .ideal-v3-governance-outline { border-color: CanvasText; }
+}

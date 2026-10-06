@@ -84,9 +84,9 @@ export default function AmendmentShell<T, P extends AmendmentCommon>({ ledger, o
   const basisFacts: Fact[] = [
     { label: "外部人事の原本改定", text: `第${chain.revision + 1}改定` },
     { label: "訂正を把握した日時（日本時間）", text: jstText(basis.recorded) || "（なし）" },
-    { label: "訂正理由", text: basis.reason || "（なし）" },
-    { label: "照合した人事資料の参照", text: basis.reference || "（なし）" },
-    { label: "根拠の確認者", text: basis.verifier || "（なし）" },
+    { label: "訂正理由", text: basis.reason || "（なし）", verbatim: true },
+    { label: "照合した人事資料の参照", text: basis.reference || "（なし）", verbatim: true },
+    { label: "根拠の確認者", text: basis.verifier || "（なし）", verbatim: true },
   ];
   const before = [...shown.before, { label: "外部人事の原本改定", text: chain.revision ? `第${chain.revision}改定` : "未登録" }];
   const after = [...shown.after, ...basisFacts];
@@ -139,7 +139,7 @@ export default function AmendmentShell<T, P extends AmendmentCommon>({ ledger, o
       risk={`保存前の時点では検出されていません。保存時にサーバーが、外部人事の原本が第${chain.revision}改定のままであること、根拠、訂正後の残高を照合します。合わなければ記録せず、理由を知らせます。訂正の記録1件だけを追加するため、一部だけが保存されることはありません。`}
       outcome={conflictOutcome(sender.outcome, (now) => ({ currentRevision: null, rows: [
         { label: "外部人事の原本改定", base: `第${chain.revision}改定`, current: now ? `第${now.revision}改定` : "（なし）", proposed: `第${chain.revision + 1}改定として追加` },
-        ...shown.after.map((fact) => ({ label: fact.label, base: shown.before.find((item) => item.label === fact.label)?.text ?? "（なし）", current: "（読み直した台帳を確認してください）", proposed: fact.text })),
+        ...shown.after.map((fact) => ({ label: fact.label, base: shown.before.find((item) => item.label === fact.label)?.text ?? "（なし）", current: "（読み直した台帳を確認してください）", proposed: fact.text, ...(fact.verbatim && { verbatim: true as const }) })),
       ] }))} busy={sender.busy}
       confirmLabel={confirmLabel}
       onConfirm={() => void save()} onBack={() => { sender.clear(); setConfirming(false); setRebased(false); steps.moveTo("content"); }}

@@ -16,7 +16,7 @@ export default function EndAdoption({ listing }: { listing: FlexListing }) {
   const names = flexNames(listing);
   return <DecisionSteps<AdoptionRow, End, { expected_revision: number; end_on: string; reason: string }, AdoptionEnded>
     targetTitle="終了する採用を選ぶ" targetLabel="終了する採用" noneText="終了できる採用はありません。" refusedLabel="終了できない採用"
-    rows={listing.adoptions} action={(row) => row.actions.end} label={(row) => adoptionLabel(row, names)}
+    rows={listing.adoptions} action={(row) => row.actions.end} label={(row) => adoptionLabel(row, names)} typedLabel
     content={{ title: "終了日と理由を入力する", empty: { end_on: "", reason: "" }, fields: ({ row, value, onChange, id }) => <>
       <label htmlFor={`${id}-end`}>終了日（この日から採用しない）</label>
       <select id={`${id}-end`} className="ideal-input" required value={value.end_on} onChange={(event) => onChange({ end_on: event.target.value })}>
@@ -33,7 +33,7 @@ export default function EndAdoption({ listing }: { listing: FlexListing }) {
     mutation={(row) => `flex-adoption:end:${row.entity_id}`}
     send={(row, body, key) => api.endAdoption(live.scopeId, row.entity_id, { ...body, idempotency_key: key })}
     readCurrent={async (row) => (await api.flexAdoptions(live.scopeId)).adoptions.find((item) => item.entity_id === row.entity_id) ?? null}
-    confirmTitle="終了前の確認" confirmLabel="理由を記録して終了する" backLabel="終了せずに戻る"
+    confirmTitle="終了前の確認" confirmLabel="理由を記録して終了する" confirmTone="danger" backLabel="終了せずに戻る"
     notified={NOBODY_NOTIFIED} risk={decisionRisk("採用", "終了日以降に始まる参加は、同じ処理で取り下げられます。")}
     note={<p className="ideal-note">始まっている清算期間は最後まで清算します。参加者の雇用条件は、終了日から通常の労働時間制で登録し直してください。</p>}
     done={(answer, _row, value) => `採用を ${value.end_on} で終了します（第${answer.revision}版）。${answer.withdrawn_enrollments.length ? `終了日以降に始まる参加 ${answer.withdrawn_enrollments.length}件を取り下げました。` : ""}参加者の雇用条件を、終了日から通常の労働時間制で登録し直してください。`}

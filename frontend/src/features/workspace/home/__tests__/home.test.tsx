@@ -107,25 +107,44 @@ test("the showcase shows a planner's home, and zero and 'nothing' where there is
   const fetchSpy = jest.fn(() => { throw new Error("no network"); });
   global.fetch = fetchSpy as never;
   const shown = render(<CognitiveWorkspaceShowcase screen="home" role="LEADER" />);
-  expect(await screen.findByRole("heading", { level: 2, name: "公開版 v12 を表示しています" })).toBeInTheDocument();
-  expect(screen.getByText("2026年10月12日 · 月曜日")).toBeInTheDocument();
+  // The largest heading of the route is today, with what waits for the viewer under it. The
+  // publication on screen and its verification are the frame's to say: the route repeats neither.
+  expect(await screen.findByRole("heading", { level: 2, name: "2026年10月12日（月）" })).toBeInTheDocument();
+  expect(panel("2026年10月12日（月）")).toHaveTextContent("あなたへの同意の依頼が1件、承認を待つケースが1件あります。");
+  const content = document.querySelector(".ideal-v3-content")!;
+  expect(content).not.toHaveTextContent("公開版 v12");
+  expect(content).not.toHaveTextContent(/検証済み|最終検証/);
   // The leader is asked for a consent, and sees the open cases by state.
   expect(within(panel("同意が必要な勤務")).getByText("1件")).toBeInTheDocument();
   expect(within(panel("次に判断すること")).getAllByRole("listitem").map((item) => item.textContent?.slice(0, 5))).toEqual(["1承認待ち", "0別担当の", "1同意待ち", "0指摘あり"]);
   expect(within(panel("次に判断すること")).getByRole("link", { name: "当日運用で開く" })).toHaveAttribute("href", "/workspace/operations/cases");
+  // A state that has cases is a row that leads to them; a state without any leads nowhere.
+  expect(within(panel("次に判断すること")).getAllByRole("link").slice(1).map((link) => [link.textContent?.slice(0, 5), link.getAttribute("href")])).toEqual([["1承認待ち", "/workspace/operations/cases"], ["1同意待ち", "/workspace/operations/cases"]]);
+  // The note of a row says in plain words who does what next: text beside a dot, not a pill
+  // (only the row is pressed).
+  expect(within(panel("次に判断すること")).getAllByRole("listitem").map((item) => item.querySelector(".ideal-v3-home-next")?.textContent)).toEqual(["責任者が承認する", "別の責任者が承認する", "関係者の返事を待つ", "取り下げて作り直す"]);
+  expect(panel("次に判断すること").querySelector(".ideal-pill")).toBeNull();
+  // Each figure is named by what it counts; the cases of the day are the two open cases,
+  // both about a duty of the day, so the tile and the rows above agree.
   expect(within(panel("今日把握すること")).getAllByRole("article").map((item) => item.textContent)).toEqual([
-    "本日の予定勤務2件在席・出勤実績ではありません", "判断待ち0件欠勤・交換・申請", "未達通知1件配信処理の状態", "検証公開時に検証済み入力が更新されると再検証が必要です",
+    "本日の予定勤務2件在席・出勤実績ではありません今日の予定を開く ", "今日の勤務に関わるケース2件進行中の欠勤・交換のうち、今日の勤務が対象のもの欠勤・交換を開く ",
+    "確認待ちの申請1件2026年10月にかかる申請だけの件数（休暇の画面は全期間の申請を表示）休暇の申請を開く ", "送信待ちの記録1件監査の送付先へまだ送られていない操作の記録（通知を含む・部署全体）。送付は運用の処理が行います",
   ]);
-  expect(panel("最近変わったこと")).toHaveTextContent("2件公開 2回");
-  expect(screen.getByLabelText("過去14日間の変更件数").querySelectorAll(".is-change")).toHaveLength(2);
+  // A figure leads to the route that shows what it counts.
+  expect(within(panel("今日把握すること")).getAllByRole("link").map((link) => [link.textContent?.trim(), link.getAttribute("href")])).toEqual([["今日の予定を開く", "/workspace/operations/today"], ["欠勤・交換を開く", "/workspace/operations/cases"], ["休暇の申請を開く", "/workspace/requests/leave"]]);
+  expect(panel("最近変わったこと")).toHaveTextContent("過去14日間 欠勤・交換の記録 5件 · 公開 2回");
+  expect(within(panel("最近変わったこと")).getByRole("link", { name: "勤務表で変更された勤務を見る" })).toHaveAttribute("href", "/workspace/schedule");
+  // The days on which something was recorded, with their dates; a day without is not listed.
+  expect(within(screen.getByRole("list", { name: "記録があった日" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["10月11日（日）4件", "10月12日（月）1件"]);
   shown.unmount();
   render(<CognitiveWorkspaceShowcase screen="home" role="LEADER" state="empty" />);
   expect(await screen.findByRole("heading", { level: 2, name: "次に判断すること" })).toBeInTheDocument();
   expect(screen.queryByRole("heading", { name: "同意が必要な勤務" })).toBeNull();
   expect(within(panel("次に判断すること")).getAllByRole("listitem").map((item) => item.textContent?.slice(0, 1))).toEqual(["0", "0", "0", "0"]);
   expect(within(panel("今日把握すること")).getAllByRole("article")[0]).toHaveTextContent("本日の予定勤務0件");
-  expect(panel("最近変わったこと")).toHaveTextContent("0件公開 0回");
-  expect(screen.getByLabelText("過去14日間の変更件数").children).toHaveLength(0);
+  expect(panel("最近変わったこと")).toHaveTextContent("過去14日間 欠勤・交換の記録 0件 · 公開 0回");
+  expect(screen.queryByRole("list", { name: "記録があった日" })).toBeNull();
+  expect(panel("2026年10月12日（月）")).toHaveTextContent("あなたへの依頼も、承認を待つケースもありません。");
   expect(fetchSpy).not.toHaveBeenCalled();
 });
 
@@ -137,7 +156,8 @@ test("the showcase shows a pharmacist their own next duty and no one else's name
   expect(panel("次の勤務")).toHaveTextContent("今日出勤まで 1時間");
   expect(panel("次の勤務")).toHaveTextContent("本館 · 日勤 · 病棟");
   expect(screen.getByText("あなたに同意を求めている申請はありません。")).toBeInTheDocument();
-  expect(panel("自分の予定と休暇")).toHaveTextContent("公開版の自分の勤務1件公開版 v12");
+  expect(panel("自分の勤務")).toHaveTextContent("公開版の自分の勤務1件公開版 v12");
+  expect(within(panel("自分の勤務")).getByRole("link", { name: "勤務表で見る" })).toHaveAttribute("href", "/workspace/schedule");
   expect(screen.queryByRole("heading", { name: "次に判断すること" })).toBeNull();
   const content = document.querySelector(".ideal-v3-content")!;
   expect(content).not.toHaveTextContent("鈴木 悠斗");
@@ -146,7 +166,7 @@ test("the showcase shows a pharmacist their own next duty and no one else's name
   render(<CognitiveWorkspaceShowcase screen="home" role="PHARMACIST" state="empty" />);
   expect(await screen.findByRole("heading", { level: 3, name: "予定されている勤務はありません" })).toBeInTheDocument();
   expect(screen.getByText("あなたに同意を求めている申請はありません。")).toBeInTheDocument();
-  expect(panel("自分の予定と休暇")).toHaveTextContent("公開版の自分の勤務0件");
+  expect(panel("自分の勤務")).toHaveTextContent("公開版の自分の勤務0件");
   expect(fetchSpy).not.toHaveBeenCalled();
 });
 

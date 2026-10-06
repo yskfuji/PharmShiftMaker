@@ -128,8 +128,11 @@ test("first the current state, the next step and the history; no form is open an
     "薬剤師二2026-01-05 09:002026-01-05 09:00 〜 2026-01-05 17:002026-01-05 12:00 〜 2026-01-05 13:00第3版現在の版に記録あり",
   ]);
   expect(screen.getByText("照合の記録がない実績 1件")).toBeInTheDocument();
-  expect(panel("現在の状態")).toHaveTextContent("サーバーが返したあなたの権限：部署管理者。実績の取込・記録・訂正と、照合内容の記録ができます。");
-  expect(panel("履歴")).toHaveTextContent("以前の版の内容は、APIが返さないため、この画面では表示できません。");
+  expect(panel("現在の状態")).toHaveTextContent("あなたは「部署管理者」として登録されています。この画面では、実績の取込・記録・訂正と、照合内容の記録ができます。");
+  // What stands comes first; what the viewer may do follows it.
+  expect(panel("現在の状態").lastElementChild).toHaveTextContent("あなたは「部署管理者」として登録されています。");
+  expect(panel("履歴")).toHaveTextContent("いつ・どの役割が実績を変更したかは、この画面には表示されません。監査の履歴で確認できます。");
+  expect(panel("履歴")).not.toHaveTextContent("API");
   expect(panel("履歴")).toHaveTextContent("2件（最も新しい版は第3版）");
   expect(within(panel("履歴")).getByRole("link", { name: "監査の履歴を開く" })).toHaveAttribute("href", "/workspace/governance/audit");
   for (const summary of [IMPORT, CORRECT, FROM_DUTY, UNPLANNED, REVIEW]) expect(task(summary).open).toBe(false);
@@ -140,7 +143,35 @@ test("first the current state, the next step and the history; no form is open an
   expect(document.body.innerHTML).not.toMatch(/class="[^"]*\b(ui-|workflow-|ideal-v3-purpose)/);
   // Identifiers are folded away; the table names people and times.
   expect(screen.getByRole("region", { name: "登録済みの実績" })).not.toHaveTextContent(/clock-|p1|d1/);
-  expect(within(panel("現在の状態")).getByText("識別情報").closest("details")).toHaveTextContent("薬剤師一 2026-01-05 09:00：原本の識別子 clock-1");
+  expect(within(panel("現在の状態")).getByText("識別情報").closest("details")).toHaveTextContent("薬剤師一 2026-01-05 09:00 の原本の識別子：clock-1");
+});
+
+test("next is two groups, reconciling first; every task says in a line what it does, and the header's count leads to the reconciling task", async () => {
+  Element.prototype.scrollIntoView = jest.fn();
+  const { calls, show } = await mount(serve(), context({ actuals: [actual(), actual({ external_id: "clock-2", reviewed: true })] }));
+  const next = panel("次の操作");
+  expect(Array.from(next.querySelectorAll(":scope > .ideal-v3-record > section > h3")).map((heading) => heading.textContent)).toEqual(["照合する", "実績を登録・訂正する（管理者）"]);
+  expect(Array.from(next.querySelectorAll(".ideal-v3-task > details > summary")).map((summary) => summary.textContent)).toEqual([REVIEW, IMPORT, CORRECT, FROM_DUTY, UNPLANNED]);
+  // The look is fixed where the tasks are declared: one primary, the rest ordinary, none without its line.
+  expect(Array.from(next.querySelectorAll(".ideal-v3-task")).map((frame) => frame.className)).toEqual(["ideal-v3-task ideal-v3-task--primary", ...Array(4).fill("ideal-v3-task ideal-v3-task--routine")]);
+  for (const summary of [REVIEW, IMPORT, CORRECT, FROM_DUTY, UNPLANNED]) {
+    const described = screen.getByText(summary, { selector: "summary" });
+    expect(described.textContent).toBe(summary);
+    expect(described).toHaveAccessibleDescription(/します。/);
+  }
+  expect(screen.getByText(REVIEW, { selector: "summary" })).toHaveAccessibleDescription("実績と公開した勤務を比べた内容と、差の理由を記録します。");
+  // From the count to its task: a button of the page, which opens the task and reads nothing.
+  const jump = screen.getByRole("button", { name: "照合を記録する" });
+  expect(jump.closest("section")).toBe(screen.getByText("照合の記録がない実績 1件").closest("section"));
+  fireEvent.click(jump);
+  expect(task(REVIEW).open).toBe(true);
+  expect(screen.getByText(REVIEW, { selector: "summary" })).toHaveFocus();
+  for (const summary of [IMPORT, CORRECT, FROM_DUTY, UNPLANNED]) expect(task(summary).open).toBe(false);
+  expect(calls).toEqual([]);
+  // Nothing is waiting: the count says so and there is nothing to lead to.
+  show(context({ actuals: [actual({ reviewed: true })] }));
+  expect(screen.getByText("すべての実績に照合の記録あり")).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "照合を記録する" })).toBeNull();
 });
 
 test("the showcase shows an administrator and a leader what the API gives each, ready and empty", async () => {
@@ -157,7 +188,7 @@ test("the showcase shows an administrator and a leader what the API gives each, 
   admin.unmount();
   const leader = render(<CognitiveWorkspaceShowcase screen="governance" view="actuals" role="LEADER" />);
   expect(await screen.findByRole("region", { name: "登録済みの実績" })).toBeInTheDocument();
-  expect(panel("現在の状態")).toHaveTextContent("サーバーが返したあなたの権限：部署責任者。照合内容の記録ができます。実績の取込・記録・訂正は、管理者にだけ許可されています。");
+  expect(panel("現在の状態")).toHaveTextContent("あなたは「部署責任者」として登録されています。この画面では、照合内容の記録ができます。実績の取込・記録・訂正ができるのは、管理者だけです。");
   for (const summary of [IMPORT, CORRECT, FROM_DUTY, UNPLANNED]) expect(screen.queryByText(summary)).toBeNull();
   expect(panel("次の操作")).toHaveTextContent("実績の取込・記録・訂正は、サーバーが管理者にだけ許可しています。");
   expect(screen.getByText(REVIEW)).toBeInTheDocument();
@@ -560,8 +591,10 @@ describe("importing a source file", () => {
     });
     task(IMPORT).open = true;
     expect(within(task(IMPORT)).getByRole("button", { name: "原本と保存済み実績を照合する" })).toBeDisabled();
+    expect(within(task(IMPORT)).getByRole("button", { name: "原本と保存済み実績を照合する" })).toHaveAccessibleDescription("実績原本ファイルを選ぶと押せます。");
     const invalid = JSON.stringify({ format: "pharmshift-actuals-v1", events: [{}, {}] });
     await choose(file(invalid, "invalid.json"));
+    expect(within(task(IMPORT)).getByRole("button", { name: "原本と保存済み実績を照合する" })).not.toHaveAttribute("aria-describedby");
     expect(task(IMPORT)).toHaveTextContent("選んだ原本：invalid.json");
     expect(hasUnsavedChanges()).toBe(true);
     await confirm(IMPORT, "原本と保存済み実績を照合する");
@@ -575,7 +608,7 @@ describe("importing a source file", () => {
     await confirm(IMPORT, "原本と保存済み実績を照合する");
     expect(calls[1]).toEqual({ method: "POST", path: PREVIEW, body: { source_text: SOURCE } });
     expect(within(surface(IMPORT)).getByRole("heading", { level: 3, name: "2. 取込前の確認" })).toHaveFocus();
-    expect(within(surface(IMPORT)).getAllByRole("term").map((term) => term.textContent)).toEqual(["変更内容", "作成される版", "通知", "競合・部分失敗"]);
+    expect(within(surface(IMPORT)).getAllByRole("term").filter((term) => !term.closest(".ideal-v3-identifiers")).map((term) => term.textContent)).toEqual(["変更内容", "作成される版", "通知", "競合・部分失敗"]);
     expect(changes(IMPORT)).toEqual(["1行目 薬剤師一 2026-01-05 09:00 〜 2026-01-05 17:00：第1版 → 第2版"]);
     expect(line(IMPORT, "作成される版")).toHaveTextContent("実績 1件のそれぞれに、上の「変更内容」の版を作成します。行ごとの所定区分の記録も保存します。");
     expect(line(IMPORT, "通知")).toHaveTextContent(`${NOBODY}取込の記録（件数・原本の照合値・操作した役割・時刻）は監査の履歴に残ります。`);
