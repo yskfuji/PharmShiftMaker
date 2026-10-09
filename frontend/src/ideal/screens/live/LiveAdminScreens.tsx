@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { ChevronRight } from "lucide-react";
-import ContextLink from "@/features/workspace/shared/ContextLink";
+import ContextLink from "@/components/ContextLink";
 import type { LiveApi } from "../../live/context";
 import { stamp } from "../../live/format";
 import { ActionStatus, EMPTY_EVIDENCE, EvidenceFields, evidenceReady, Loaded, useAction } from "../../live/parts";

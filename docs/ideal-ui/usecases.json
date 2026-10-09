@@ -16,27 +16,27 @@
     {"screen": "schedule", "view": "index", "route": "/workspace/schedule", "label": "勤務表", "short": "月間計画と自分の予定", "description": "公開版、直前版との差分、職員・資格ごとの勤務を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
     {"screen": "plan", "view": "input", "route": "/workspace/plan/input", "label": "前提・取込", "short": "入力の確定", "description": "契約・資格・必要配置と入力版を確認します。", "roles": ["ADMIN", "LEADER"]},
     {"screen": "plan", "view": "generate", "route": "/workspace/plan/generate", "label": "候補生成", "short": "3案を作成", "description": "同じ前提から探索条件だけを変えた勤務案を作ります。", "roles": ["ADMIN", "LEADER"]},
-    {"screen": "plan", "view": "compare", "route": "/workspace/plan/compare", "label": "案の比較", "short": "差を比較", "description": "違反・変更数・希望充足・勤務時間差を同じ定義で比較します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "plan", "view": "compare", "route": "/workspace/plan/compare", "label": "案の比較", "short": "差を比較", "description": "違反・変更数・勤務が重なった希望・勤務時間の差を同じ数え方で比較します。", "roles": ["ADMIN", "LEADER"]},
     {"screen": "plan", "view": "drafts", "route": "/workspace/plan/drafts", "label": "確認・編集", "short": "検証する", "description": "割当を確認・編集し、サーバー検証と競合解決を行います。", "roles": ["ADMIN", "LEADER"]},
-    {"screen": "plan", "view": "publications", "route": "/workspace/plan/publications", "label": "公開版", "short": "通知まで確認", "description": "公開前の影響、公開履歴、取消と通知状態を確認します。", "roles": ["ADMIN", "LEADER"]},
-    {"screen": "operations", "view": "today", "route": "/workspace/operations/today", "label": "今日の予定", "short": "予定と充足", "description": "予定上の勤務と充足状態を、観測時刻とともに確認します。", "roles": ["ADMIN", "LEADER"]},
-    {"screen": "operations", "view": "cases", "route": "/workspace/operations/cases", "label": "欠勤・交換", "short": "判断と通知", "description": "候補・同意・独立承認・通知を一つの判断面で扱います。", "roles": ["ADMIN", "LEADER"]},
-    {"screen": "requests", "view": "mine", "route": "/workspace/requests/mine", "label": "自分の申請", "short": "履歴と次の操作", "description": "自分に関係する申請の状態と、次に必要な操作を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "plan", "view": "publications", "route": "/workspace/plan/publications", "label": "公開版", "short": "通知まで確認", "description": "公開版の出力と取消を行い、公開通知の状態を確認します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "operations", "view": "today", "route": "/workspace/operations/today", "label": "今日の予定", "short": "予定とケース", "description": "今日の予定上の勤務と、それに関わる進行中のケースの件数を、数えた時刻とともに確認します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "operations", "view": "cases", "route": "/workspace/operations/cases", "label": "欠勤・交換", "short": "判断と通知", "description": "欠勤・交換のケースを選び、同意と承認の状況を確かめて、次の操作を行います。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "requests", "view": "mine", "route": "/workspace/requests/mine", "label": "自分の申請", "short": "状態と新しい申請", "description": "自分に関係する申請の状態と、次に必要な操作を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
     {"screen": "requests", "view": "leave", "route": "/workspace/requests/leave", "label": "休暇", "short": "残高・予約・取得", "description": "休暇の残高、予約、実取得を分けて申請・確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "requests", "view": "swap", "route": "/workspace/requests/swap", "label": "勤務交換", "short": "相手と責任者", "description": "依頼、相手の同意、責任者の判断を段階ごとに確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "requests", "view": "swap", "route": "/workspace/requests/swap", "label": "勤務交換", "short": "相手と責任者", "description": "交換の依頼と、相手の同意・責任者の判断の進み具合を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
     {"screen": "requests", "view": "outside", "route": "/workspace/requests/outside", "label": "兼業・外部勤務", "short": "申告と照合", "description": "本人の申告と管理者による原本照合を分けて記録します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
     {"screen": "people", "view": "directory", "route": "/workspace/people/directory", "label": "職員一覧", "short": "検索と詳細", "description": "職員を検索し、所属・契約・資格・手続きを一人ずつ確認します。", "roles": ["ADMIN"]},
     {"screen": "people", "view": "memberships", "route": "/workspace/people/memberships", "label": "本人アカウント", "short": "紐付けと無効化", "description": "本人アカウントの紐付けと無効化を確認付きで行います。", "roles": ["ADMIN"]},
-    {"screen": "people", "view": "lifecycle", "route": "/workspace/people/lifecycle", "label": "入職・退職", "short": "長期タスク", "description": "システム判定と手動証跡を分けたタスクリストで進めます。", "roles": ["ADMIN"]},
+    {"screen": "people", "view": "lifecycle", "route": "/workspace/people/lifecycle", "label": "入職・退職", "short": "手続きの確認", "description": "自動で判定する確認と、担当者が確かめて記録する確認を、手続きごとに進めます。", "roles": ["ADMIN"]},
     {"screen": "people", "view": "contracts", "route": "/workspace/people/contracts", "label": "契約・資格", "short": "原本と改訂", "description": "契約・資格・必要配置の原本確認と改訂履歴を扱います。", "roles": ["ADMIN"]},
-    {"screen": "governance", "view": "audit", "route": "/workspace/governance/audit", "label": "監査", "short": "匿名化イベント", "description": "氏名や職員IDを含めず、役割・人数・版・時刻を追跡します。", "roles": ["ADMIN"]},
-    {"screen": "governance", "view": "actuals", "route": "/workspace/governance/actuals", "label": "実績照合", "short": "取込から確定", "description": "実績原本の取込、行エラー、差分、確定を順に確認します。", "roles": ["ADMIN", "LEADER"]},
-    {"screen": "governance", "view": "privacy", "route": "/workspace/governance/privacy", "label": "個人情報", "short": "請求・保留・消去", "description": "本人請求、法的保留、残存データ、不可逆性を分けて確認します。", "roles": ["ADMIN", "PHARMACIST"]},
-    {"screen": "governance", "view": "recovery", "route": "/workspace/governance/recovery", "label": "復旧", "short": "状態と証跡", "description": "復旧後の状態と照合証跡を閲覧します。Webから復元は実行しません。", "roles": ["ADMIN"]},
-    {"screen": "settings", "view": "appearance", "route": "/workspace/settings/appearance", "label": "外観", "short": "個人設定", "description": "配色と動きの設定を端末設定と合わせて選びます。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "settings", "view": "notifications", "route": "/workspace/settings/notifications", "label": "通知", "short": "本人宛て", "description": "本人宛ての通知と確認状態を管理します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "settings", "view": "absence-consent", "route": "/workspace/settings/absence-consent", "label": "欠勤の同意", "short": "scope設定", "description": "代替者の同意要否、適用範囲、版、変更履歴を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "settings", "view": "flextime", "route": "/workspace/settings/flextime", "label": "フレックス", "short": "二者確認", "description": "第一管理者の登録と別管理者の確認を別の状態として扱います。", "roles": ["ADMIN"]}
+    {"screen": "governance", "view": "audit", "route": "/workspace/governance/audit", "label": "監査", "short": "操作の記録", "description": "氏名や職員IDを含めず、役割・人数・版・時刻を追跡します。", "roles": ["ADMIN"]},
+    {"screen": "governance", "view": "actuals", "route": "/workspace/governance/actuals", "label": "実績照合", "short": "取込と照合の記録", "description": "勤怠の原本から実績を取り込み、公開した勤務と照らし合わせた結果を記録します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "governance", "view": "privacy", "route": "/workspace/governance/privacy", "label": "個人情報", "short": "請求・保全・消去", "description": "本人からの請求、法的保全、消去と、消去の後に残るものを分けて確認します。", "roles": ["ADMIN", "PHARMACIST"]},
+    {"screen": "governance", "view": "recovery", "route": "/workspace/governance/recovery", "label": "復旧", "short": "復元後の状態", "description": "バックアップから復元した後の状態を確認します。この画面から復元は実行しません。", "roles": ["ADMIN"]},
+    {"screen": "settings", "view": "appearance", "route": "/workspace/settings/appearance", "label": "外観", "short": "配色", "description": "配色を選びます。動きやコントラストは、端末の設定に従います。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "settings", "view": "notifications", "route": "/workspace/settings/notifications", "label": "通知", "short": "届いた通知", "description": "本人宛ての通知と確認状態を管理します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "settings", "view": "absence-consent", "route": "/workspace/settings/absence-consent", "label": "欠勤の同意", "short": "同意を求めるか", "description": "代替者の同意要否、適用範囲、版、変更履歴を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "settings", "view": "flextime", "route": "/workspace/settings/flextime", "label": "フレックス", "short": "登録と確認", "description": "管理者が採用を登録し、別の管理者が確認してから有効になります。", "roles": ["ADMIN"]}
   ],
   "use_cases": [
     {
@@ -52,6 +52,8 @@
       "route": "/workspace/home",
       "transitions": [
         "/workspace/operations/cases",
+        "/workspace/operations/today",
+        "/workspace/requests/leave",
         "/workspace/schedule"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--today",
@@ -125,7 +127,8 @@
         "/workspace/plan/compare",
         "/workspace/plan/drafts",
         "/workspace/plan/publications",
-        "/workspace/schedule"
+        "/workspace/schedule",
+        "/workspace/settings/notifications"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--plan-compare",
       "apis": [
@@ -524,6 +527,8 @@
       "route": "/workspace/home",
       "transitions": [
         "/workspace/operations/cases",
+        "/workspace/operations/today",
+        "/workspace/requests/leave",
         "/workspace/schedule"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--today",
@@ -596,7 +601,8 @@
       "transitions": [
         "/workspace/home",
         "/workspace/schedule",
-        "/workspace/governance/audit"
+        "/workspace/governance/audit",
+        "/workspace/operations/cases"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--operations-today",
       "apis": [
@@ -631,6 +637,8 @@
       "route": "/workspace/home",
       "transitions": [
         "/workspace/operations/cases",
+        "/workspace/operations/today",
+        "/workspace/requests/leave",
         "/workspace/schedule"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--today",
@@ -669,7 +677,8 @@
         "/workspace/settings/appearance",
         "/workspace/settings/notifications",
         "/workspace/settings/absence-consent",
-        "/workspace/settings/flextime"
+        "/workspace/settings/flextime",
+        "/workspace/schedule"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--settings-appearance",
       "apis": [
@@ -702,7 +711,8 @@
       "route": "/workspace/requests/leave",
       "transitions": [
         "/workspace/schedule",
-        "/workspace/operations/cases"
+        "/workspace/operations/cases",
+        "/workspace/plan/input"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-leave",
       "apis": [
@@ -713,7 +723,14 @@
         "GET /planning/compliance/workflow-context",
         "GET /planning/compliance/leave-report",
         "POST /planning/compliance/leave-events",
-        "POST /planning/compliance/grant-amendments"
+        "POST /planning/compliance/grant-amendments",
+        "POST /planning/requests/{request_id}/withdraw",
+        "POST /planning/compliance/leave-requests",
+        "GET /planning/compliance/records",
+        "POST /planning/compliance/leave-amendments",
+        "GET /planning/compliance/grant-assessments/context",
+        "POST /planning/compliance/grant-assessments",
+        "POST /planning/compliance/records/{kind}"
       ],
       "entities": [
         "planning_requests",
@@ -748,12 +765,16 @@
         "/workspace/people/directory",
         "/workspace/people/memberships",
         "/workspace/people/lifecycle",
-        "/workspace/people/contracts"
+        "/workspace/people/contracts",
+        "/workspace/plan/input",
+        "/workspace/settings/flextime",
+        "/workspace/governance/audit"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--people-contracts",
       "apis": [
         "GET /planning/compliance/workflow-context",
-        "POST /planning/compliance/records/{kind}"
+        "POST /planning/compliance/records/{kind}",
+        "GET /planning/compliance/rule-impact/{review_id}"
       ],
       "entities": [
         "compliance_entities",
@@ -820,7 +841,9 @@
         "/workspace/settings/appearance",
         "/workspace/settings/notifications",
         "/workspace/settings/absence-consent",
-        "/workspace/settings/flextime"
+        "/workspace/settings/flextime",
+        "/workspace/people/contracts",
+        "/workspace/governance/audit"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--settings-flextime",
       "apis": [
@@ -868,7 +891,8 @@
         "/workspace/governance/audit",
         "/workspace/governance/actuals",
         "/workspace/governance/privacy",
-        "/workspace/governance/recovery"
+        "/workspace/governance/recovery",
+        "/workspace/plan/input"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-actuals",
       "apis": [
@@ -907,7 +931,8 @@
       "route": "/workspace/requests/outside",
       "transitions": [
         "/workspace/schedule",
-        "/workspace/operations/cases"
+        "/workspace/operations/cases",
+        "/workspace/governance/audit"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-outside",
       "apis": [
@@ -944,22 +969,39 @@
         "/workspace/governance/audit",
         "/workspace/governance/actuals",
         "/workspace/governance/privacy",
-        "/workspace/governance/recovery"
+        "/workspace/governance/recovery",
+        "/workspace/people/directory"
       ],
       "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-privacy",
       "apis": [
+        "GET /planning/compliance/privacy",
         "POST /planning/compliance/privacy/requests",
         "POST /planning/compliance/privacy/cases/{case_id}",
+        "POST /planning/compliance/retention-rules",
+        "POST /planning/compliance/holds",
         "GET /planning/compliance/subject-controls/{person_id}",
         "POST /planning/compliance/subject-controls/{person_id}",
         "POST /planning/compliance/subject-controls/{person_id}/plans",
-        "POST /planning/compliance/subject-controls/{person_id}/execute"
+        "POST /planning/compliance/subject-controls/{person_id}/execute",
+        "GET /planning/compliance/copies/{copy_id}/joint-review",
+        "POST /planning/compliance/copies/{copy_id}/joint-review",
+        "GET /planning/compliance/copies/account-backfill",
+        "POST /planning/compliance/copies/account-backfill",
+        "GET /planning/compliance/copies",
+        "POST /planning/compliance/copies/{operation}",
+        "GET /planning/compliance/copies/{copy_id}/projection"
       ],
       "entities": [
         "privacy_cases",
+        "retention_rules",
+        "legal_holds",
         "compliance_entities",
         "compliance_revisions",
         "erased_subjects",
+        "managed_copies",
+        "copy_subjects",
+        "copy_erasures",
+        "preserved_archives",
         "planning_receipts"
       ],
       "states": [
@@ -970,8 +1012,15 @@
         "residual"
       ],
       "audit_events": [
-        "privacy.requested",
-        "erasure.executed"
+        "privacy.request",
+        "privacy.decision",
+        "retention.rule",
+        "privacy.hold",
+        "copy.preview",
+        "copy.erasure_queued",
+        "copy.external_confirmed",
+        "copy.preservation_review",
+        "copy.register"
       ],
       "e2e": "ideal-u25-privacy-erasure",
       "deep_e2e": "ideal-deep-u25-privacy-erasure"
@@ -1059,6 +1108,94 @@
       ],
       "e2e": "ideal-u27-advanced-planning",
       "deep_e2e": "ideal-deep-u27-advanced-planning"
+    },
+    {
+      "id": "U28",
+      "title": "半日・時間単位の年休請求",
+      "screen": "requests",
+      "view": "leave",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/requests/leave",
+      "transitions": [
+        "/workspace/schedule",
+        "/workspace/operations/cases",
+        "/workspace/plan/input"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-leave",
+      "apis": [
+        "GET /planning/requests",
+        "GET /planning/compliance/records",
+        "GET /planning/compliance/leave-report",
+        "POST /planning/compliance/leave-requests",
+        "POST /planning/requests/{request_id}/decision"
+      ],
+      "entities": [
+        "planning_requests",
+        "compliance_entities"
+      ],
+      "states": [
+        "ready",
+        "pending",
+        "approved",
+        "validation",
+        "unknown"
+      ],
+      "audit_events": [
+        "leave.request",
+        "request.decision"
+      ],
+      "e2e": "ideal-u28-partial-day-leave",
+      "deep_e2e": "ideal-deep-u28-partial-day-leave"
+    },
+    {
+      "id": "U29",
+      "title": "保存期限を過ぎた旧勤務入力の消去",
+      "screen": "governance",
+      "view": "privacy",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/governance/privacy",
+      "transitions": [
+        "/workspace/governance/audit",
+        "/workspace/governance/actuals",
+        "/workspace/governance/privacy",
+        "/workspace/governance/recovery"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-privacy",
+      "apis": [
+        "GET /planning/compliance/privacy",
+        "GET /planning/compliance/erasure-candidates",
+        "POST /planning/compliance/erasure-preview",
+        "POST /planning/compliance/erasure-execute"
+      ],
+      "entities": [
+        "planning_inputs",
+        "planning_input_heads",
+        "retention_rules",
+        "legal_holds",
+        "erasure_plans",
+        "erasure_markers",
+        "planning_outbox",
+        "planning_receipts"
+      ],
+      "states": [
+        "ready",
+        "blocked",
+        "executed",
+        "conflict",
+        "unknown"
+      ],
+      "audit_events": [
+        "erasure.preview",
+        "erasure.executed"
+      ],
+      "e2e": "ideal-u29-expired-input-erasure",
+      "deep_e2e": "ideal-deep-u29-expired-input-erasure"
     }
   ]
 }

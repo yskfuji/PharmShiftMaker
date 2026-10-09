@@ -1,7 +1,13 @@
 """The ideal-UI browser acceptance flow (frontend/tests/remediation-e2e/
-ideal-workspace.spec.ts), proved at the API on the same synthetic fixture and accounts as
-scripts/remediation_test_server.py with PHARMSHIFT_E2E_PUBLICATION=1: consent on, an
-absence covered by the pharmacist, consent, approval, a refusal and a withdrawal."""
+ideal-workspace.spec.ts), proved at the API on the synthetic fixture and accounts that
+scripts/remediation_test_server.py builds with PHARMSHIFT_E2E_PUBLICATION=1 and
+PHARMSHIFT_E2E_INDEPENDENT_APPROVER=1: consent on, an absence covered by the pharmacist,
+consent, approval, a refusal and a withdrawal.
+
+The approval is by `developer`, the administrator who is neither person on the schedule.
+The test server links that account only when a journey asks for it (the flag above, or the
+deep and flex fixtures); its default fixture has the three links admin, pharmacist and
+leader. `initial()` below adds the same four links itself."""
 
 from __future__ import annotations
 
@@ -26,7 +32,8 @@ EVIDENCE = {"reason": "合成の受入", "reference": "E2E-1"}
 
 
 def initial(db, data):
-    """Accounts, input and the first publication, as scripts/remediation_test_server.py."""
+    """Accounts, input and the first publication, as scripts/remediation_test_server.py
+    builds them with the independent approver and the publication requested."""
     with db.begin() as session:
         for subject, person, role in (
             ("admin", "p0", "ADMIN"),

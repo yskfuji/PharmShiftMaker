@@ -66,10 +66,18 @@ LANDING = """<!doctype html><html lang="ja"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>PharmShiftMaker 認知中心UI v3</title>
 <style>body{font-family:system-ui,sans-serif;max-width:58rem;margin:8vh auto;padding:1.5rem;color:#17344a;background:#f5f7f5}main{background:white;border:1px solid #dce3ec;border-radius:1.2rem;padding:2rem}a{display:inline-flex;min-height:44px;align-items:center;margin:.3rem;padding:.5rem 1rem;border-radius:.6rem;color:white;background:#0e6f69}small{color:#526176}</style>
 <main><small>合成データ・評価用 / OFFLINE PACKAGE</small><h1>PharmShiftMaker 認知中心UI v3</h1>
-<p>実在する職員・施設・患者の情報を含まない、認知中心の8画面・25子画面・27業務系列レビュー用ショーケースです。</p>
+<p>実在する職員・施設・患者の情報を含まない、認知中心の8画面・25子画面・<!-- USE_CASES -->業務系列レビュー用ショーケースです。</p>
 <a href="storybook/index.html">Storybookを開く</a><!-- GALLERY --><a href="docs/ideal-ui/README.md">プレビュー手順</a>
-<a href="docs/architecture/er/usecase-sequences.md">27系列の図とテキスト表</a>
+<a href="docs/architecture/er/usecase-sequences.md"><!-- USE_CASES -->系列の図とテキスト表</a>
 <p><small>公開・外部デプロイは行っていません。MANIFEST.sha256で内容を検証できます。自動検査は人間評価やWCAG適合認定の代替ではありません。</small></p></main></html>"""
+
+
+def use_case_count() -> int:
+    """How many use cases the screen contract holds (docs/ideal-ui/usecases.json)."""
+    contract = json.loads(
+        (ROOT / "docs/ideal-ui/usecases.json").read_text(encoding="utf-8")
+    )
+    return len(contract["use_cases"])
 
 
 def digest(path: Path) -> str:
@@ -336,7 +344,7 @@ def source_manifest(node_binary: Path | None) -> dict[str, Any]:
         "scope": {
             "primary_pages": 8,
             "child_routes": 25,
-            "use_cases": 27,
+            "use_cases": use_case_count(),
             "data": "synthetic only",
             "deployment": False,
         },
@@ -416,7 +424,10 @@ def package(
         root.mkdir()
         gallery_link = '<a href="gallery/index.html">画面ギャラリー</a>'
         (root / "index.html").write_text(
-            LANDING.replace("<!-- GALLERY -->", gallery_link), encoding="utf-8"
+            LANDING.replace("<!-- GALLERY -->", gallery_link).replace(
+                "<!-- USE_CASES -->", str(use_case_count())
+            ),
+            encoding="utf-8",
         )
         shutil.copytree(storybook, root / "storybook")
         for relative in PACKAGE_IDEAL_UI_FILES:

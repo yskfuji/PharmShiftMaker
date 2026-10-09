@@ -1,0 +1,30 @@
+/* The workspace's scale: five text sizes, two weights, one measure. Spacing and radii are
+   the tokens of styles/tokens.css (--space-1…8, --radius-control, --radius-card,
+   --radius-pill); that file is generated and is not edited here. */
+.ideal-v3-app {
+  --ideal-v3-text-xs: .75rem;                            /* eyebrow, pill, meta: the floor */
+  --ideal-v3-text-sm: var(--font-size-dense);            /* tables, facts, notes, labels, hints */
+  --ideal-v3-text-md: var(--font-size-body);             /* body, inputs, buttons, task titles, h3 */
+  --ideal-v3-text-lg: var(--font-size-heading-section);  /* h2 */
+  --ideal-v3-text-xl: var(--font-size-heading-page);     /* h1 */
+  --ideal-v3-weight-label: 600;
+  --ideal-v3-weight-heading: 700;
+  --ideal-v3-measure: 48rem;
+  --ideal-v3-radius-flat: 0px;
+  --ideal-v3-radius-check: .25rem;                       /* the corner of a check box */
+  /* How much of its ink a disabled button keeps. Dark thins it: there the muted ink is
+     nearly as bright as an enabled button's. */
+  --ideal-v3-disabled-ink: 1;
+  /* How strongly a soft status colour fills a pill or a button. Dark softens it. */
+  --ideal-v3-tint: 1;
+  --ideal-amber: 174 106 10;
+  /* The quiet supporting surface. In dark the sunken colour is the canvas's own, so a band
+     takes the work surface's colour there, thinned the same way. */
+  --ideal-v3-band: var(--color-surface-sunken);
+  /* The fill of a table's header row. In dark the sunken colour is nearly the surface's own
+     (a header then differs from its rows by its rule and its weight only), so the header
+     takes a lighter step of the same hue there. */
+  --ideal-v3-table-head: var(--color-surface-sunken);
+}
+:root[data-theme="dark"] .ideal-v3-app { --ideal-v3-tint: .45; --ideal-amber: 240 176 72; --ideal-v3-band: var(--color-surface); --ideal-v3-disabled-ink: .62; --ideal-v3-table-head: 48 66 89; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ideal-v3-app { --ideal-v3-tint: .45; --ideal-amber: 240 176 72; --ideal-v3-band: var(--color-surface); --ideal-v3-disabled-ink: .62; --ideal-v3-table-head: 48 66 89; } }

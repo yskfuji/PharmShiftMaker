@@ -10,28 +10,9 @@ import WorkspaceIndexPage from '@/app/workspace/page';
 // With IDEAL_UI=1 the ideal UI is the entry: its home is the landing page, it is listed
 // first in the primary navigation, and /workspace/<screen> exists. Off, none of it does.
 jest.mock('@/components/IdentityProvider', () => ({ IdentityDisplay: () => <span>合成 花子</span> }));
-jest.mock('@/ideal/api/serverInitial', () => ({
-  loadInitialWorkspace: jest.fn(async () => ({
-    requestedPeriod: '2026-10',
-    selectedPublicationId: null,
-    selectedCaseId: null,
-    selectedPersonId: null,
-    observedAt: '2026-10-01T00:00:00.000Z',
-    viewerName: '合成 花子',
-    scopes: [],
-    scope: null,
-    selectionRequired: false,
-    problem: null,
-    publications: [],
-    names: {},
-    calendar: null,
-    dashboard: null,
-    daily: null,
-    stability: null,
-    notifications: [],
-    partialProblems: [],
-  })),
-}));
+// The per-route pipeline reads on the server (cookies, server-side fetch); this test is about
+// the flag and the routing, so the pipeline itself is replaced.
+jest.mock('@/features/workspace/shell/WorkspaceRoutePage', () => ({ __esModule: true, default: () => null }));
 jest.mock('next/navigation', () => ({
   notFound: () => { throw new Error('NEXT_NOT_FOUND'); },
   redirect: (to: string) => { throw new Error(`REDIRECT ${to}`); },

@@ -1,0 +1,182 @@
+/* Route layout of planning: input, generate, compare, drafts and publications. Selectors start with .ideal-v3-app; class names are ideal-v3-<purpose>-*. */
+
+/* 1. The head of a planning card ------------------------------------------------------------ */
+/* What the card is for, in one line under its title. */
+.ideal-v3-app .ideal-v3-planning-head p { margin: var(--space-1) 0 0; }
+.ideal-v3-app .ideal-v3-planning-head { margin-bottom: var(--space-4); }
+
+/* 2. plan/input ----------------------------------------------------------------------------- */
+/* The premises as figures side by side, not as a list down a wide card: the term above its
+   value. The period is the long one and takes two places. */
+.ideal-v3-app .ideal-definition-list.ideal-v3-planning-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-4); }
+.ideal-v3-app .ideal-definition-list.ideal-v3-planning-facts div { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 0; padding: 0 0 0 var(--space-3); border-top: 0; border-inline-start: 2px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-definition-list.ideal-v3-planning-facts div:first-child { grid-column: span 2; }
+.ideal-v3-app .ideal-definition-list.ideal-v3-planning-facts dt { font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-definition-list.ideal-v3-planning-facts dd { font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-heading); line-height: var(--line-height-heading); font-variant-numeric: tabular-nums; }
+/* Between phone and desk: the period is a row of its own, and the five counts stand under
+   it in one row, so no count stands under another's edge. */
+@media (min-width: 521px) and (max-width: 1099px) {
+  .ideal-v3-app .ideal-definition-list.ideal-v3-planning-facts { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .ideal-v3-app .ideal-definition-list.ideal-v3-planning-facts div:first-child { grid-column: 1 / -1; }
+}
+@media (min-width: 1100px) {
+  .ideal-v3-app .ideal-definition-list.ideal-v3-planning-facts { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+.ideal-v3-app .ideal-v3-planning-facts + .ideal-v3-callout { margin: var(--space-4) 0 0; }
+/* The two ways an administrator makes a new input version: side by side where there is room,
+   so that neither form is stretched across the page. */
+.ideal-v3-app .ideal-v3-planning-pair { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: var(--space-4); min-width: 0; }
+@media (min-width: 1100px) {
+  .ideal-v3-app .ideal-v3-planning-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.ideal-v3-app .ideal-v3-planning-pair .ideal-panel > p { margin: 0 0 var(--space-3); }
+.ideal-v3-app .ideal-v3-planning-pair .ideal-confirm .ideal-actions { margin-top: 0; }
+/* In half a row the term stands above its value. */
+.ideal-v3-app .ideal-v3-planning-pair .ideal-confirm .ideal-definition-list div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+/* The way on to the next step: the last line of the route, its button as wide as its label. */
+.ideal-v3-app .ideal-v3-planning-next { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-2) var(--space-4); min-width: 0; }
+.ideal-v3-app .ideal-v3-planning-next > .ideal-note { margin: 0; }
+
+/* 2b. plan/generate ------------------------------------------------------------------------- */
+/* The three jobs: a row each, the name, the state, and the way to stop it at the end. */
+.ideal-v3-app .ideal-job-list.ideal-v3-planning-jobs { max-width: 34rem; margin: var(--space-3) 0 0; padding: 0; }
+.ideal-v3-app .ideal-v3-planning-jobs li { flex-wrap: wrap; gap: var(--space-1) var(--space-3); min-height: 3.25rem; padding: var(--space-1) 0; border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-planning-jobs li:last-child { border-bottom: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-planning-jobs li > span:first-child { flex: 0 0 9rem; font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-planning-jobs li > .ideal-button { margin-inline-start: auto; }
+@media (max-width: 520px) {
+  /* The name takes a line; the state and the way to stop it share the next. */
+  .ideal-v3-app .ideal-v3-planning-jobs li > span:first-child { flex-basis: 100%; }
+}
+
+/* 3. plan/compare --------------------------------------------------------------------------- */
+/* The choice and the way on are one group: the action sits under the table it acts on. */
+.ideal-v3-app .ideal-v3-planning-choice > .ideal-actions { margin-top: var(--space-2); }
+.ideal-v3-app .ideal-v3-planning-choice > .ideal-table-wrap { margin-block: 0; }
+/* The comparison's columns stand in the order a plan is chosen by (the plan, its place, the
+   three counts of findings, then the figures), and a column is as narrow as its figure: at
+   phone width the plan, its place and two counts are in view before the table scrolls. */
+.ideal-v3-app .ideal-v3-planning-choice .ideal-table :is(th, td), .ideal-v3-app .ideal-v3-planning-choice .ideal-table tbody th[scope="row"] { min-width: 0; }
+.ideal-v3-app .ideal-v3-planning-choice .ideal-table thead th { white-space: nowrap; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-planning-choice .ideal-table :is(th, td) { padding-inline: var(--space-2); }
+}
+/* How to read the figures, and how the plans differ: notes under the choice. */
+.ideal-v3-app .ideal-v3-planning-notes { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-planning-notes > section { min-width: 0; }
+.ideal-v3-app .ideal-v3-planning-notes .ideal-note-list { margin: var(--space-2) 0 0; }
+/* Under the columns' meanings: what the order is not, and what publishing still needs. */
+.ideal-v3-app .ideal-panel .ideal-v3-planning-notes .ideal-v3-planning-meaning { margin: var(--space-3) 0 0; }
+@media (min-width: 1100px) {
+  .ideal-v3-app .ideal-v3-planning-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
+}
+
+/* 4. plan/drafts ---------------------------------------------------------------------------- */
+/* Where the edit stands among saving, the server's check and publishing. The state of a
+   step is written beside its name. */
+.ideal-v3-app .ideal-v3-planning-process { margin: 0 0 var(--space-4); }
+.ideal-v3-app .ideal-v3-planning-process li { gap: var(--space-2); min-width: 0; min-height: 3rem; padding: var(--space-2) var(--space-3); font-size: var(--ideal-v3-text-sm); line-height: var(--line-height-dense); }
+.ideal-v3-app .ideal-v3-planning-process li > span { font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-planning-process li > strong { font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-planning-process li > small { margin-inline-start: auto; font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-v3-planning-process li.is-current > strong { font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-planning-process li.is-current > span { border: 2px solid rgb(var(--ideal-teal-text)); color: rgb(var(--ideal-teal-text)); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-planning-process li.is-done > span { color: rgb(var(--color-success)); }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-planning-process { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+  .ideal-v3-app .ideal-v3-planning-process li { min-height: 2.75rem; border-top-width: 0; border-inline-start: 3px solid rgb(var(--color-line)); }
+  .ideal-v3-app .ideal-v3-planning-process li.is-current { border-inline-start-color: rgb(var(--ideal-teal)); }
+  .ideal-v3-app .ideal-v3-planning-process li.is-done { border-inline-start-color: rgb(var(--color-success)); }
+}
+/* The column of the tick is as wide as the tick. */
+.ideal-v3-app .ideal-v3-planning-draft .ideal-table :is(th, td):first-child { min-width: 0; width: 4.5rem; }
+.ideal-v3-app .ideal-v3-planning-draft .ideal-check-target { vertical-align: middle; }
+.ideal-v3-app .ideal-v3-planning-draft > .ideal-actions { margin-top: var(--space-3); }
+.ideal-v3-app .ideal-v3-planning-draft .ideal-confirm .ideal-actions { margin-top: 0; }
+/* The mark of the final confirmation stands beside its title, not above it. */
+.ideal-v3-app .ideal-v3-planning-draft .ideal-confirm { grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-2); align-items: center; }
+.ideal-v3-app .ideal-v3-planning-draft .ideal-confirm > * { grid-column: 1 / -1; }
+.ideal-v3-app .ideal-v3-planning-draft .ideal-confirm > svg { grid-column: 1; }
+.ideal-v3-app .ideal-v3-planning-draft .ideal-confirm > h3 { grid-column: 2; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-planning-draft .ideal-table :is(th, td):first-child { width: 3.25rem; }
+}
+/* Another person saved the same plan: what to know, the three states, and the way on. */
+.ideal-v3-app .ideal-v3-planning-conflict { display: grid; gap: var(--space-2); justify-items: start; margin: 0 0 var(--space-4); }
+.ideal-v3-app .ideal-v3-planning-conflict > :is(p, h3) { margin: 0; }
+.ideal-v3-app .ideal-v3-planning-conflict > p { color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-v3-planning-conflict > dl { justify-self: stretch; }
+.ideal-v3-app .ideal-v3-planning-conflict > .ideal-actions { margin-top: 0; }
+
+/* 5. plan/publications ---------------------------------------------------------------------- */
+/* One publication: a card of its own with a head and two zones. globals.css styles the rows
+   of .ideal-record-list as li and turns every span in them small and grey; an article is
+   neither, and the pill of its head is a span, so both are answered here. */
+.ideal-v3-app .ideal-record-list > .ideal-v3-planning-publication { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-record-list > .ideal-v3-planning-publication + .ideal-v3-planning-publication { margin-top: var(--space-4); }
+.ideal-v3-app .ideal-v3-planning-publication span:not(.ideal-pill) { color: inherit; font-size: inherit; }
+.ideal-v3-app .ideal-v3-planning-publication .ideal-pill { font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-v3-planning-publication .ideal-pill--good { color: rgb(var(--color-success)); }
+.ideal-v3-app .ideal-v3-planning-publication .ideal-pill--warn { color: rgb(var(--color-warning)); }
+.ideal-v3-app .ideal-v3-planning-publication__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-1) var(--space-4); min-width: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); }
+.ideal-v3-app .ideal-v3-planning-publication__head > div { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); min-width: 0; }
+.ideal-v3-app .ideal-v3-planning-publication__head h3 { margin: 0; font-size: var(--ideal-v3-text-lg); }
+.ideal-v3-app .ideal-v3-planning-publication__head p { margin: 0; color: rgb(var(--color-fg)); font-variant-numeric: tabular-nums; }
+/* A zone: what can be done with the publication, named at its start. */
+.ideal-v3-app .ideal-v3-planning-zone { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); min-width: 0; padding: var(--space-4); border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-planning-zone > p { margin: 0; }
+.ideal-v3-app .ideal-v3-planning-zone > .ideal-v3-planning-zone__label { color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-planning-zone > .ideal-actions, .ideal-v3-app .ideal-v3-planning-zone .ideal-confirm .ideal-actions { margin-top: 0; }
+.ideal-v3-app .ideal-v3-planning-zone .ideal-actions > .ideal-button--danger { margin-inline-start: 0; }
+@media (min-width: 821px) {
+  .ideal-v3-app .ideal-v3-planning-zone { grid-template-columns: 5rem minmax(0, 1fr); column-gap: var(--space-4); }
+  .ideal-v3-app .ideal-v3-planning-zone > :not(.ideal-v3-planning-zone__label) { grid-column: 2; }
+}
+/* Cancelling is confirmed where it was asked for; the surface is marked as what it is. */
+.ideal-v3-app .ideal-v3-planning-zone .ideal-confirm { margin-top: var(--space-2); border-inline-start-color: rgb(var(--color-danger)); }
+.ideal-v3-app .ideal-v3-planning-zone .ideal-confirm textarea { min-height: 5rem; max-width: var(--ideal-v3-measure); }
+.ideal-v3-app .ideal-v3-planning-zone .ideal-confirm > .ideal-note { margin: 0; }
+/* A long label on two lines breaks into two even ones, not into a line and a character. */
+.ideal-v3-app .ideal-v3-planning-zone .ideal-confirm .ideal-button { text-wrap: balance; }
+/* What cancelling does, said before the button: the workspace's list, in the text colour. */
+.ideal-v3-app .ideal-v3-planning-zone .ideal-v3-planning-effects { max-width: var(--ideal-v3-measure); margin: 0; color: rgb(var(--color-fg)); }
+/* The card is inside .ideal-record-list, whose rows are flex lines with a rule above: these are the items of the list of notes. */
+.ideal-v3-app .ideal-v3-planning-zone .ideal-v3-planning-effects li { display: block; padding-block: 0; border-top: 0; }
+/* plan/drafts: the three steps are this view's own, named so above them (the plan's five
+   steps are the navigation of the screen). */
+.ideal-v3-app .ideal-v3-planning-draft .ideal-v3-planning-process__caption { max-width: none; margin: 0 0 var(--space-1); color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-planning-draft > .ideal-note { margin: 0 0 var(--space-2); }
+/* plan/compare: what each column counts, and each plan with how it differs from the others. */
+.ideal-v3-app .ideal-v3-planning-notes .ideal-v3-planning-columns div { grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr); }
+.ideal-v3-app .ideal-v3-planning-plans { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin: var(--space-2) 0 0; padding: 0; list-style: none; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-planning-plans > li { display: grid; gap: var(--space-1); min-width: 0; padding-inline-start: var(--space-3); border-inline-start: 3px solid rgb(var(--color-line-strong)); color: rgb(var(--color-fg)); overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-v3-planning-plans > li > strong { font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-planning-plans + .ideal-note { margin: var(--space-3) 0 0; }
+.ideal-v3-app .ideal-v3-planning-choice > .ideal-actions + .ideal-note { margin: var(--space-2) 0 0; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-planning-notes .ideal-v3-planning-columns div { grid-template-columns: minmax(0, 1fr); }
+}
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-planning-plans > li { border-color: CanvasText; }
+}
+
+
+/* === Package r3: plan/input and plan/generate (nothing above this line is this package's) === */
+/* plan/input: the server's word on the input version, under what the version holds. */
+.ideal-v3-app .ideal-v3-planning-input-verdict { margin: var(--space-4) 0 0; color: rgb(var(--color-fg)); }
+/* plan/input: the required staffing is a part of the premises and is in sight without being
+   opened; its note is as wide as a line reads. */
+.ideal-v3-app .ideal-v3-planning-input-demand { min-width: 0; }
+.ideal-v3-app .ideal-v3-planning-input-demand > .ideal-note { max-width: var(--ideal-v3-measure); margin: 0 0 var(--space-4); }
+.ideal-v3-app .ideal-v3-planning-input-demand .ideal-table .ideal-pill { white-space: nowrap; }
+/* plan/generate: the input the plans are made from, and what pressing the action does. */
+.ideal-v3-app .ideal-v3-planning-generate-input { max-width: var(--ideal-v3-measure); margin: 0 0 var(--space-4); }
+.ideal-v3-app .ideal-v3-planning-generate-steps { max-width: var(--ideal-v3-measure); margin: 0 0 var(--space-4); color: rgb(var(--color-fg)); }
+
+/* Under the draft's three buttons, while it has not been checked: the check is made with the
+   button named 「再検証」, the first time too. */
+.ideal-v3-app .ideal-panel .ideal-v3-planning-first-check { margin: var(--space-2) 0 0; color: rgb(var(--color-fg)); }
+/* The server's answer to a check that found something: said where the outcome of a step is said. */
+.ideal-v3-app .ideal-panel .ideal-v3-planning-found { margin: var(--space-3) 0 0; }
+/* The callout over the table of required staffing stands a step above it. */
+.ideal-v3-app .ideal-v3-planning-input-demand > .ideal-v3-callout { margin-bottom: var(--space-3); }

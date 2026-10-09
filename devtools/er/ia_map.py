@@ -16,11 +16,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "frontend" / "src"
 OUT = ROOT / "docs" / "architecture" / "er"
+# A relative import may climb any number of directories (`../../shell/routeTypes`).
 IMPORT = re.compile(
-    r"""import\s+(?:type\s+)?(?:[\w{},\s*]+\s+from\s+)?['"](@/(?:components|hooks|lib|ideal)/[\w/]+|\./[\w/]+|\.\./[\w/]+)['"]"""
+    r"""import\s+(?:type\s+)?(?:[\w{},\s*]+\s+from\s+)?['"](@/(?:components|hooks|lib|ideal|features)/[\w/]+|\./[\w/]+|(?:\.\./)+[\w/]+)['"]"""
 )
 # `${API}/planning/...` in template literals, and the request('/…') helper of the planning
-# transport (prefix /planning) in files that create one (PlanningWorkspace, ideal/api).
+# transport (prefix /planning) in files that create one (PlanningWorkspace, ideal/api) and in
+# the purpose adapters of the workspace (features/workspace/**/api.ts), which call it on the
+# client they are given.
 API_CALL = re.compile(r"\$\{(?:API|API_BASE_URL|API_BASE|BASE_URL)\}(/[\w\-/{}.$]+)")
 PLANNING_READ = re.compile(r"""planningRead(?:<[^>]*>)?\(\s*[`'"](/[\w\-/{}.$]+)""")
 REQUEST = re.compile(r"""request(?:<[^>]*>)?\(\s*[`'"](/[\w\-/{}.$]+)""")
@@ -38,6 +41,7 @@ def _resolve(base: Path, spec: str) -> Path | None:
         target.with_suffix(".tsx"),
         target.with_suffix(".ts"),
         target / "index.tsx",
+        target / "index.ts",
     ):
         if candidate.exists():
             return candidate.resolve()
@@ -65,7 +69,10 @@ def graph() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
         }
         found = {_normalise(p) for p in API_CALL.findall(text)}
         found |= {_normalise("/planning" + p) for p in PLANNING_READ.findall(text)}
-        if "PlanningWorkspace" in name or "createPlanningTransport(" in text:
+        adapter = (
+            file.name == "api.ts" and SRC / "features" / "workspace" in file.parents
+        )
+        if "PlanningWorkspace" in name or "createPlanningTransport(" in text or adapter:
             found |= {_normalise("/planning" + p) for p in REQUEST.findall(text)}
         calls[name] = {p for p in found if p}
     return imports, calls
@@ -100,11 +107,20 @@ def _match(call: str, table: dict[tuple[str, str], str]) -> list[str]:
     if "{…}" in call:
         return []  # A dynamic template cannot prove a particular HTTP operation.
     pattern = re.compile("^" + re.escape(call).replace(re.escape("{…}"), "[^/]+") + "$")
+    exact = {
+        f"{m} {h}"
+        for (m, p), h in table.items()
+        if pattern.match(re.sub(r"\{[^}]+\}", "x", p)) or p == call
+    }
+    if exact:
+        return sorted(exact)
+    # A literal call names one value of a path parameter (records/demand for records/{kind}).
     return sorted(
         {
             f"{m} {h}"
             for (m, p), h in table.items()
-            if pattern.match(re.sub(r"\{[^}]+\}", "x", p)) or p == call
+            if "{" in p
+            and re.fullmatch(re.sub(r"\\\{[^}]+\\\}", "[^/]+", re.escape(p)), call)
         }
     )
 

@@ -1,0 +1,130 @@
+/* Route layout of people: directory, memberships and lifecycle. Selectors start with .ideal-v3-app; class names are ideal-v3-<purpose>-*. */
+
+/* 1. The head of a people panel -------------------------------------------------------------- */
+/* What the panel is for (its heading, and a line where the heading needs one), and beside it the controls that act on the
+   whole panel: a count, the way to its task, the "inactive too" choice. */
+.ideal-v3-app .ideal-v3-people-head > div:first-child { min-width: 0; }
+.ideal-v3-app .ideal-v3-people-head p { margin: var(--space-1) 0 0; }
+.ideal-v3-app .ideal-v3-people-tools { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: flex-end; gap: var(--space-1) var(--space-4); flex: 0 0 auto; max-width: 100%; }
+.ideal-v3-app .ideal-v3-people-switch { display: grid; justify-items: start; max-width: 18rem; }
+.ideal-v3-app .ideal-v3-people-switch .ideal-switch { font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-people-switch small { padding-inline-start: 2rem; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); line-height: var(--line-height-heading); }
+/* The task of a people panel, under what the panel shows. */
+.ideal-v3-app .ideal-v3-people-tasks { margin-top: var(--space-4); }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-people-tools { justify-content: flex-start; }
+}
+
+/* 2. Directory: find a person, read the summary, go on ----------------------------------------- */
+/* Two units side by side: the list to choose from and the chosen person. The detail is on
+   its own surface, so that it reads as one thing; the list is framed and scrolls in itself. */
+.ideal-v3-app .ideal-v3-people-directory { align-items: start; gap: var(--space-4); }
+.ideal-v3-app .ideal-v3-people-finder { display: grid; align-content: start; min-width: 0; }
+.ideal-v3-app .ideal-v3-people-finder > .ideal-note { margin: var(--space-2) 0; }
+.ideal-v3-app .ideal-v3-people-finder > .ideal-v3-master { padding: var(--space-1); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-v3-detail.ideal-v3-people-detail { padding: var(--space-4); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); }
+.ideal-v3-app .ideal-v3-detail.ideal-v3-people-detail h3 { margin: var(--space-1) 0 var(--space-2); overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-v3-people-detail > .ideal-v3-disclosure { margin-top: var(--space-1); }
+/* What can be done with the person: a line that says so, then the three ways on. */
+.ideal-v3-app .ideal-v3-people-next { display: grid; gap: var(--space-2); margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-people-next > h4 { margin: 0; }
+/* The ways on are four: two rows of two of one width (not three and one), each with its
+   arrow at its end; one column at phone width. */
+.ideal-v3-app .ideal-v3-detail.ideal-v3-people-detail nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); max-width: 34rem; margin-top: 0; }
+.ideal-v3-app .ideal-v3-detail.ideal-v3-people-detail nav a { justify-content: space-between; }
+/* A person without an active link in the list: said in the text colour and a label's
+   weight, so that it is not read past as one more role. */
+.ideal-v3-app .ideal-v3-master button small.is-unlinked { color: rgb(var(--color-fg)); font-weight: var(--ideal-v3-weight-label); }
+@media (min-width: 521px) {
+  .ideal-v3-app .ideal-v3-people-detail .ideal-definition-list div { grid-template-columns: minmax(7rem, 10rem) minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-detail.ideal-v3-people-detail { padding: var(--space-3); }
+  .ideal-v3-app .ideal-v3-detail.ideal-v3-people-detail nav { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 3. Memberships: the table of links ------------------------------------------------------------ */
+/* Why a link cannot be deactivated: a note under its state, as wide as a short paragraph. */
+.ideal-v3-app .ideal-note.ideal-v3-people-reason { display: block; min-width: 11em; max-width: 22em; margin-top: var(--space-1); font-size: var(--ideal-v3-text-xs); line-height: var(--line-height-heading); word-break: normal; }
+.ideal-v3-app .ideal-v3-people-none { color: rgb(var(--color-fg-muted)); }
+/* An account is an identifier of any length: it may break anywhere, but its cell is never
+   narrower than eighteen characters (an address after its @ then stays on one line), so a
+   long one takes two or three lines and not nine.
+   Where the five columns do not fit their region the table scrolls in it (the line above it
+   says which columns run on): a row is not crushed to keep the action in view. */
+.ideal-v3-app .ideal-table .ideal-v3-people-account { display: inline-block; min-width: 18em; overflow-wrap: anywhere; }
+/* The evidence of a deactivation, asked in the row it belongs to: as wide as a short form,
+   and never wider than the table's region at phone width. */
+.ideal-v3-app .ideal-v3-people-deactivate { display: grid; gap: var(--space-2); width: min(20rem, calc(100vw - 5.5rem)); }
+.ideal-v3-app .ideal-v3-people-deactivate .ideal-fieldset { margin: 0; }
+.ideal-v3-app .ideal-v3-people-deactivate .ideal-actions { margin-top: 0; }
+@media (min-width: 521px) {
+  /* Five short columns: the table is fitted to its region (its cells wrap down to their
+     minimum widths) before it scrolls, so the action column is in view wherever the
+     columns can fit. */
+  .ideal-v3-app [aria-label="紐付けの一覧"] > .ideal-table { max-width: 100%; }
+}
+/* On a tablet the five columns fit their region: the cells are closer, an account wraps
+   after ten characters instead of eighteen, and the reason under a state is a narrower
+   paragraph. The action is in view without scrolling, and the reason is never cut. */
+@media (min-width: 521px) and (max-width: 1099px) {
+  .ideal-v3-app [aria-label="紐付けの一覧"] > .ideal-table :is(th, td) { min-width: 3.5em; padding-inline: var(--space-2); }
+  .ideal-v3-app [aria-label="紐付けの一覧"] > .ideal-table :is(th, td):first-child { padding-inline-start: var(--space-3); }
+  .ideal-v3-app [aria-label="紐付けの一覧"] > .ideal-table .ideal-v3-people-account { min-width: 10em; }
+  .ideal-v3-app [aria-label="紐付けの一覧"] > .ideal-table .ideal-note.ideal-v3-people-reason { min-width: 9em; }
+}
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-note.ideal-v3-people-reason { max-width: 15em; }
+}
+/* Under the table: the people who have no active link, and the way to the task that links
+   one. A quiet framed block, not a second table. */
+.ideal-v3-app .ideal-v3-people-unlinked { display: grid; justify-items: start; gap: var(--space-1); margin-top: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid rgb(var(--color-line)); border-inline-start: 3px solid rgb(var(--color-warning)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-v3-people-unlinked > .ideal-v3-heading { margin: 0; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-people-unlinked > .ideal-note-list { margin: 0; color: rgb(var(--color-fg)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-panel .ideal-v3-people-unlinked > .ideal-note { margin: 0; }
+/* What deactivating does, said in the row's own form before the evidence is asked. */
+.ideal-v3-app .ideal-v3-people-deactivate > .ideal-note { margin: 0; color: rgb(var(--color-fg)); white-space: normal; }
+/* Under a field of the link form: what to enter. */
+.ideal-v3-app .ideal-v3-people-tasks .ideal-form > input + .ideal-note { margin: calc(var(--space-1) * -1) 0 var(--space-1); }
+
+/* 4. Lifecycle: one card per case ----------------------------------------------------------------- */
+/* A card is a summary (who, which procedure, since when, how far) and the checklist. Side
+   by side where there is room, the summary first otherwise; never centred on each other. */
+.ideal-v3-app .ideal-lifecycle-list { display: grid; gap: var(--space-3); }
+.ideal-v3-app .ideal-lifecycle-list article { grid-template-columns: minmax(0, 1fr); align-items: start; gap: var(--space-3); padding: var(--space-4); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-v3-lifecycle-summary { display: grid; gap: var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-lifecycle-who { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-3); }
+.ideal-v3-app .ideal-v3-lifecycle-who > div { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-lifecycle-who h3 { margin: 0; font-size: var(--ideal-v3-text-md); overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-v3-lifecycle-summary > p { margin: 0; }
+/* The bar and the same fact in words. */
+.ideal-v3-app .ideal-v3-lifecycle-progress { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); font-variant-numeric: tabular-nums; }
+.ideal-v3-app .ideal-v3-lifecycle-progress .ideal-progress { width: 100%; height: .5rem; margin-top: 0; border-radius: var(--radius-pill); }
+/* A task: mark | what it is and how it stands | what can be done. The action keeps its own
+   width, so its label is never pressed into the track of the mark. */
+.ideal-v3-app .ideal-v3-lifecycle-tasks { min-width: 0; }
+.ideal-v3-app .ideal-v3-lifecycle-tasks .ideal-task-list li { grid-template-columns: 1.7rem minmax(0, 1fr) auto; align-items: start; gap: var(--space-1) var(--space-3); padding: var(--space-3) 0; }
+.ideal-v3-app .ideal-v3-lifecycle-tasks .ideal-task-list li:not(.is-done) strong { color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-v3-lifecycle-tasks .ideal-task-list .ideal-v3-lifecycle-blocked { margin-top: var(--space-1); color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-v3-lifecycle-action { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; align-self: center; gap: var(--space-2) var(--space-3); }
+.ideal-v3-app .ideal-v3-lifecycle-action .ideal-inline-link { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 44px; font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); white-space: nowrap; }
+/* The evidence of the task being confirmed: its own row across the task, on the surface of
+   a confirmation in place. */
+.ideal-v3-app .ideal-v3-lifecycle-attest { display: grid; grid-column: 1 / -1; gap: var(--space-2); min-width: 0; margin-top: var(--space-2); padding: var(--space-3); border: 1px solid rgb(var(--color-line-strong)); border-inline-start: 4px solid rgb(var(--ideal-teal)); border-radius: var(--radius-control); color: rgb(var(--color-fg)); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-v3-lifecycle-attest .ideal-fieldset { margin: 0; }
+.ideal-v3-app .ideal-v3-lifecycle-attest .ideal-actions { margin-top: 0; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-lifecycle-list article { padding: var(--space-3); }
+  .ideal-v3-app .ideal-v3-lifecycle-attest { padding: var(--space-2); }
+  .ideal-v3-app .ideal-v3-lifecycle-tasks .ideal-task-list li { grid-template-columns: 1.7rem minmax(0, 1fr); }
+  .ideal-v3-app .ideal-v3-lifecycle-action { grid-column: 2; justify-content: flex-start; }
+}
+@media (min-width: 1100px) {
+  .ideal-v3-app .ideal-lifecycle-list article { grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); gap: var(--space-6); }
+  .ideal-v3-app .ideal-v3-lifecycle-tasks { padding-inline-start: var(--space-6); border-inline-start: 1px solid rgb(var(--color-line)); }
+  .ideal-v3-app .ideal-v3-lifecycle-tasks .ideal-task-list li:first-child { padding-top: 0; border-top: 0; }
+  .ideal-v3-app .ideal-v3-lifecycle-tasks .ideal-task-list li:last-child { padding-bottom: 0; }
+}
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-lifecycle-list article, .ideal-v3-app .ideal-v3-lifecycle-attest, .ideal-v3-app .ideal-v3-detail.ideal-v3-people-detail, .ideal-v3-app .ideal-v3-people-finder > .ideal-v3-master, .ideal-v3-app .ideal-v3-people-unlinked { border-color: CanvasText; }
+}

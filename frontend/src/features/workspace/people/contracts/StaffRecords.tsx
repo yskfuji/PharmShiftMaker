@@ -1,0 +1,101 @@
+"use client";
+
+import { useId, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
+import { regimeLabel, workingTimeSystemLabel } from "@/lib/regimeLabels";
+import { useEnteredBeforeMount } from "../../shared/hydration";
+import TaskJump from "../../shared/TaskJump";
+import { routeOf } from "../../shell/routeTypes";
+import WorkspaceLink from "../../shell/WorkspaceLink";
+import { useLive } from "../../shell/WorkspaceRuntime";
+import { evidenceState } from "./CurrentRecords";
+import { ENGAGEMENT, TIME_CATEGORY, employerName, ofPerson, siteCell, versionText, type Roster } from "./model";
+import { KindTables, type RecordKind } from "./RecordKinds";
+import { Period } from "./RecordTable";
+import { STEPS_HEADING } from "./tasks";
+import { useSelectedPerson } from "./Selection";
+import Identifiers from "../../shared/Identifiers";
+
+/**
+ * The people of the scope and, for the one chosen, the employment revisions, contracts
+ * and qualifications registered for them: a table for each kind that has records, and one
+ * list of the kinds that have none. While nobody is chosen the detail says what choosing
+ * does and leads to the steps of adding a person who is not in the list yet. The search
+ * text is the only thing kept here; the chosen person is the route's. While the chosen
+ * person is the one the URL names, clearing the choice is the link that names nobody
+ * (the document is loaded again, as from the band); a person chosen in the list is
+ * cleared in place.
+ * Nothing is judged: each record is shown as registered.
+ */
+export default function StaffRecords({ roster }: { roster: Roster }) {
+  const id = useId();
+  const { personId, choose } = useSelectedPerson();
+  const named = useLive().selectedPersonId;
+  const [query, setQuery] = useState("");
+  const search = useRef<HTMLInputElement>(null);
+  // Text typed into the search field of the server HTML raised no event here.
+  useEnteredBeforeMount(search, (field) => setQuery((field as HTMLInputElement).value));
+  if (!roster.people.length) return <div className="ideal-v3-contracts-pick">
+    <p className="ideal-note">登録されている職員はいません。「次の操作」の「職員を登録・氏名を訂正する」から登録します。</p>
+    <TaskJump target={STEPS_HEADING}>新しい職員を追加する手順へ</TaskJump>
+  </div>;
+  const wanted = query.trim().toLocaleLowerCase("ja-JP");
+  const listed = roster.people.filter((item) => item.payload.name.toLocaleLowerCase("ja-JP").includes(wanted));
+  const current = roster.people.find((item) => item.key === personId);
+  const count = (records: Array<{ payload: { person_id: string } }>, person: string) => records.filter((item) => item.payload.person_id === person).length;
+  const kinds: RecordKind[] = current ? [
+    { title: "雇用関係", label: `${current.payload.name}の雇用関係`, empty: "登録されている雇用関係はありません。", columns: ["雇用主・事業場", "適用期間（日本時間）", "労働時間制度", "兼業申告の確認", "版"],
+      rows: ofPerson(roster.employments, current.key).map((item) => ({ key: item.key, cells: [
+        item.payload.establishment_id ? siteCell(roster, item.payload.establishment_id) : employerName(roster, item.payload.employer_id), <Period key="period" start={item.payload.start} end={item.payload.end} />,
+        workingTimeSystemLabel(item.payload.working_time_system), evidenceState(item.payload.declaration), versionText(item.revision),
+      ] })) },
+    { title: "契約", label: `${current.payload.name}の契約`, empty: "登録されている契約はありません。", columns: ["雇用主", "適用期間（日本時間）", "雇用・勤務区分", "制度", "原本確認", "制度の根拠", "版"],
+      rows: ofPerson(roster.contracts, current.key).map((item) => ({ key: item.key, cells: [
+        employerName(roster, item.payload.employer_id), <Period key="period" start={item.payload.start} end={item.payload.end} />, `${ENGAGEMENT[item.payload.engagement] ?? "未登録の区分"}・${TIME_CATEGORY[item.payload.time_category] ?? "未登録の区分"}`,
+        regimeLabel(item.payload.regime), evidenceState(item.payload.evidence), evidenceState(item.payload.regime_evidence, "regime"), versionText(item.revision),
+      ] })) },
+    { title: "資格", label: `${current.payload.name}の資格`, empty: "登録されている資格はありません。", columns: ["業務（場所）", "適用期間（日本時間）", "監督", "原本確認", "版"],
+      rows: ofPerson(roster.capabilities, current.key).map((item) => ({ key: item.key, cells: [
+        `${item.payload.task}（${item.payload.location}）`, <Period key="period" start={item.payload.start} end={item.payload.end} />,
+        item.payload.supervision_required ? "監督者の配置が必要" : `監督者は不要（監督できる人数 ${item.payload.supervisor_capacity}名）`, evidenceState(item.payload.evidence), versionText(item.revision),
+      ] })) },
+  ] : [];
+  return <div className="ideal-v3-master-detail ideal-v3-contracts-staff">
+    <div>
+      <label className="ideal-field-label" htmlFor={`${id}-search`}>職員を検索</label>
+      <input ref={search} id={`${id}-search`} type="search" className="ideal-input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="氏名" />
+      <p className="ideal-note" role="status">{listed.length}名を表示</p>
+      <p className="ideal-note">版が「保存なし（入力版にある値）」の職員は、入力版にある値だけで、この画面で保存した記録がありません。</p>
+      <ul className="ideal-v3-master" aria-label="職員一覧">{listed.map((item) => <li key={item.key}>
+        <button type="button" aria-pressed={item.key === personId} onClick={() => choose(item.key)}>
+          <span className="ideal-avatar">{item.payload.name.slice(0, 1)}</span>
+          <span><strong>{item.payload.name || "氏名未登録の職員"}</strong><small className="ideal-v3-contracts-tally"><span>雇用関係 {count(roster.employments, item.key)}件</span>・<span>契約 {count(roster.contracts, item.key)}件</span>・<span>資格 {count(roster.capabilities, item.key)}件</span></small></span>
+          <ChevronRight aria-hidden="true" />
+        </button>
+      </li>)}</ul>
+    </div>
+    {current ? <article className="ideal-v3-detail ideal-v3-contracts-detail" aria-live="polite">
+      <div className="ideal-v3-contracts-detail__head">
+        <div><span className="ideal-eyebrow">選択中の職員</span><h4 className="ideal-v3-heading">{current.payload.name || "氏名未登録の職員"}（{versionText(current.revision)}）</h4></div>
+        {named && personId === named
+          ? <WorkspaceLink className="ideal-button ideal-button--secondary" route={routeOf("people/contracts").route} context={{ person: null }}>職員の選択を解除する</WorkspaceLink>
+          : <button type="button" className="ideal-button ideal-button--secondary" onClick={() => choose("")}>職員の選択を解除する</button>}
+      </div>
+      <KindTables kinds={kinds} missingLabel="この職員の記録のうち未登録の項目" Heading="h5" />
+      <Identifiers items={[{ label: "職員の識別子", value: current.key }]} />
+      <nav aria-label="選択職員の詳細">
+        <WorkspaceLink className="ideal-button ideal-button--secondary" route={routeOf("people/memberships").route} context={{ person: personId }}>本人アカウント</WorkspaceLink>
+        <WorkspaceLink className="ideal-button ideal-button--secondary" route={routeOf("people/lifecycle").route} context={{ person: personId }}>入職・退職</WorkspaceLink>
+      </nav>
+    </article> : <div className={personId ? "ideal-v3-detail" : "ideal-v3-detail ideal-v3-contracts-pick"} aria-live="polite">
+      {personId
+        ? <p className="ideal-v3-callout ideal-v3-callout--warn" role="alert">指定された職員は、現在の入力版と記録にありません。職員一覧から選び直してください。</p>
+        : <>
+          <strong>職員一覧から職員を選んでください</strong>
+          <p className="ideal-note">職員を選ぶと、その職員の雇用関係・契約・資格を表示し、「次の操作」の手順と記録をその職員に絞ります。</p>
+          <p className="ideal-note">一覧にない新しい職員は、手順に沿って登録します。</p>
+          <TaskJump target={STEPS_HEADING}>新しい職員を追加する手順へ</TaskJump>
+        </>}
+    </div>}
+  </div>;
+}

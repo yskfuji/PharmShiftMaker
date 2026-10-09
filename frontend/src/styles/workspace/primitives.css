@@ -1,0 +1,451 @@
+/* Primitives of the workspace (v3): what a heading, a paragraph, a list of facts, a table,
+   a button, a link, a callout and a task look like on every route. They answer the rules
+   of globals.css on the existing markup; no view is rewritten for them.
+
+   Written so that the optical audit can judge every text: colours are tokens, a tint is
+   rgb(var(--token) / alpha), and nothing is painted behind text by a gradient or a
+   pseudo-element. Sizes and radii are custom properties only. */
+
+/* 1. Headings ------------------------------------------------------------------------- */
+.ideal-v3-app .ideal-v3-title-block h1 { font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-content :is(h2, h3, h4, h5) { font-weight: var(--ideal-v3-weight-heading); line-height: var(--line-height-heading); }
+.ideal-v3-app :is(.ideal-panel, .ideal-toolbar, .ideal-home-band__head, .ideal-governance-card, .ideal-partial-problems) h2 { font-size: var(--ideal-v3-text-lg); letter-spacing: -.01em; }
+/* A panel that starts with its heading alone (現在の状態／次の操作／履歴): a rule below it,
+   so the heading does not sit on the first line of the content. */
+.ideal-v3-app .ideal-panel > h2 { margin: 0 0 var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-panel > h2 + .ideal-v3-record { margin-top: 0; }
+.ideal-v3-app .ideal-panel > h2 + :is(.ideal-record-list, .ideal-timeline, .ideal-priority-list, .ideal-task-list) > li:first-child { border-top: 0; }
+.ideal-v3-app .ideal-v3-heading { font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-heading); letter-spacing: 0; }
+.ideal-v3-app :is(h4, h5).ideal-v3-heading { font-size: var(--ideal-v3-text-sm); }
+/* The third level under a record's section: the size of the fourth, the weight of a label. */
+.ideal-v3-app h5.ideal-v3-heading { font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-record > section > h4.ideal-v3-heading:not(:first-child) { margin-top: var(--space-3); }
+.ideal-v3-app :is(.ideal-form, .ideal-confirm, .ideal-case-list, .ideal-detail) h3 { font-size: var(--ideal-v3-text-md); }
+.ideal-v3-app .ideal-v3-detail h3, .ideal-v3-app .ideal-home-band > h3 { font-size: var(--ideal-v3-text-lg); }
+/* The sections of a record: a rule between them, and what a section holds is set in from
+   its heading where there is room. */
+.ideal-v3-app .ideal-v3-record > section + section { padding-top: var(--space-4); border-top: 1px solid rgb(var(--color-line)); }
+@media (min-width: 821px) {
+  .ideal-v3-app .ideal-v3-record > section > :not(h3) { margin-inline-start: var(--space-3); }
+}
+
+/* The head of a card: its text (a heading and what the card is for) and what stands beside
+   it (a count, the way to its task). The text is never pressed by what stands beside it:
+   it keeps the full width of the head up to 24rem, and where the two do not fit one row
+   (a tablet, a long note beside the heading) the rest goes to a line of its own under it. */
+@media (min-width: 521px) {
+  /* Only where the head is a row: at phone width it is a column (globals.css), and a basis
+     there would be a height. */
+  .ideal-v3-app .ideal-v3-content :is(.ideal-toolbar, .ideal-panel__head) { flex-wrap: wrap; }
+  .ideal-v3-app .ideal-v3-content :is(.ideal-toolbar, .ideal-panel__head) > :first-child:not(:only-child) { flex: 1 1 24rem; min-width: min(100%, 24rem); }
+}
+
+/* 2. Running text, notes and small print ------------------------------------------------ */
+/* An eyebrow is written as its text is: 「公開版 v12」 is not 「公開版 V12」. */
+.ideal-v3-app .ideal-eyebrow { font-size: var(--ideal-v3-text-xs); text-transform: none; }
+.ideal-v3-app :is(.ideal-panel, .ideal-toolbar, .ideal-home-summary, .ideal-home-band, .ideal-governance-card) p { max-width: var(--ideal-v3-measure); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app :is(.ideal-note, .ideal-note-list, .ideal-job-list, .ideal-done, .ideal-duty-list, .ideal-inline-field, .ideal-radio, .ideal-switch, .ideal-file, .ideal-link) { font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-inline-problem p { font-size: var(--ideal-v3-text-sm); }
+/* The workspace's list of notes, reasons or steps (.ideal-note-list), on every route. An
+   unordered one is a row for each item, marked at its start by a short rule in the line
+   colour and set a step apart: not a column of black bullets. An ordered one keeps its
+   numbers (the order is what it says), in the muted colour of a label. */
+.ideal-v3-app ul.ideal-note-list { display: grid; gap: var(--space-2); padding-inline-start: 0; list-style: none; }
+.ideal-v3-app ul.ideal-note-list > li { min-width: 0; padding-inline-start: var(--space-3); border-inline-start: 2px solid rgb(var(--color-line-strong)); }
+.ideal-v3-app ol.ideal-note-list { display: grid; gap: var(--space-2); padding-inline-start: 1.6rem; list-style: decimal; }
+.ideal-v3-app ol.ideal-note-list > li::marker { color: rgb(var(--color-fg-muted)); font-weight: var(--ideal-v3-weight-label); }
+/* A list of one item is a note: no mark and no indent (a single mark reads as a list that
+   lost its other items). :where() keeps this at the weight of the rule above, so a route's
+   own framed list keeps the padding of its rows. */
+.ideal-v3-app ul.ideal-note-list:where(:has(> li:only-child)) > li { padding-inline-start: 0; border-inline-start: 0; }
+/* The small print of a row: never below the floor of the scale. */
+.ideal-v3-app :is(.ideal-timeline, .ideal-priority-list, .ideal-case-list, .ideal-lifecycle-list__main, .ideal-detail, .ideal-metric) p,
+.ideal-v3-app :is(.ideal-timeline time, .ideal-priority-list__number, .ideal-case-list small, .ideal-lifecycle-list__main small, .ideal-task-list small, .ideal-detail__facts span, .ideal-metric span, .ideal-stability span, .ideal-duty-list li span, .ideal-option span small, .ideal-hero__seal span, .ideal-hero__time span, .ideal-v3-filter-count, .ideal-schedule-summary, .ideal-avatar) { font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-task-list li > :first-child { font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-v3-filters > label:not(.ideal-switch) { font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app :is(.ideal-timeline, .ideal-task-list) strong { font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-priority-list strong { font-size: var(--ideal-v3-text-md); }
+.ideal-v3-app .ideal-v3-measure { max-width: var(--ideal-v3-measure); }
+/* The quiet supporting surfaces (a row of filters, the home's last band): the band colour
+   of the scale, which in dark is not the canvas's own. */
+.ideal-v3-app .ideal-v3-filters, .ideal-v3-app .ideal-home-band--quiet { background: rgb(var(--ideal-v3-band) / .5); }
+/* An identifier (an account, a record key, a hash): quiet, at the size of a note, and broken
+   anywhere so that a long one never widens its row. :where() keeps this below a route's own
+   class for a code element. */
+.ideal-v3-app :where(.ideal-v3-content) code { padding: .05rem .3rem; border-radius: var(--radius-control); color: rgb(var(--color-fg)); background: rgb(var(--color-surface-sunken) / .7); font-size: var(--ideal-v3-text-sm); overflow-wrap: anywhere; }
+
+/* 3. Facts: a term and its value ---------------------------------------------------------- */
+.ideal-v3-app .ideal-definition-list { margin: 0; }
+.ideal-v3-app .ideal-definition-list div { grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr); gap: var(--space-1) var(--space-4); padding: var(--space-2) 0; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-confirm .ideal-definition-list div, .ideal-v3-app .ideal-v3-record > section > .ideal-definition-list div { font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-definition-list div:first-child, .ideal-v3-app .ideal-v3-confirm .ideal-definition-list div:first-child, .ideal-v3-app .ideal-v3-record > section > .ideal-definition-list div:first-child { border-top: 0; }
+.ideal-v3-app .ideal-definition-list dt { color: rgb(var(--color-fg-muted)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-definition-list dd { margin: 0; color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-definition-list dd > ul { margin: 0; padding-left: 1.1rem; list-style: disc; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-definition-list div { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Identifiers (shared/Identifiers): the one form the workspace has for them. What each is
+   the identifier of, then the identifier as code; several of one kind follow one another
+   and wrap. Rows are closer than the facts of a record: these are looked up, not read. */
+.ideal-v3-app .ideal-v3-identifiers div { grid-template-columns: minmax(8rem, 20rem) minmax(0, 1fr); padding: var(--space-1) 0; }
+.ideal-v3-app .ideal-v3-identifiers dd { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-identifiers dd > span { min-width: 0; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-identifiers div { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 4. Fields ------------------------------------------------------------------------------- */
+.ideal-v3-app label.ideal-field-label { display: block; margin-bottom: var(--space-1); color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-form > label, .ideal-v3-app .ideal-fieldset > label:not(.ideal-option):not(.ideal-radio), .ideal-v3-app .ideal-fieldset legend, .ideal-v3-app .ideal-v3-export > label { font-size: var(--ideal-v3-text-sm); }
+/* The note of a field ("3文字以上") stays in one piece: beside its label where both fit, on a
+   line of its own under the label where they do not. It is never a column of characters. */
+.ideal-v3-app .ideal-fieldset > label:not(.ideal-option):not(.ideal-radio) { flex-wrap: wrap; }
+.ideal-v3-app .ideal-fieldset > label > span { flex: 0 0 auto; white-space: nowrap; }
+/* A field never makes its form wider than the screen (a date and time under wider letter
+   spacing, a long option): the column of a form may be narrower than a field's own content. */
+.ideal-v3-app .ideal-form, .ideal-v3-app .ideal-fieldset { grid-template-columns: minmax(0, 1fr); }
+/* A check and its sentence (shared/records/fields CheckField and the like): the box stays
+   beside the sentence at every width, at its first line, and the sentence wraps beside it. */
+.ideal-v3-app .ideal-inline-field:has(> .ideal-check-target) { flex-wrap: nowrap; align-items: flex-start; }
+.ideal-v3-app .ideal-inline-field:has(> .ideal-check-target) > label { min-width: 0; padding-top: .1rem; }
+/* A check box and a radio button: one drawing for every one of them, in both themes and
+   wherever it stands (a check target, a switch, a choice of a table row, a bare input). The
+   browser's own drawing fills an empty box grey in dark, so empty and chosen could not be told
+   apart there. Empty: the surface inside a frame in the colour of a control's boundary.
+   Chosen: the frame and its fill in the link teal (dark teal on light, light teal on dark),
+   with a tick in the surface colour, or a dot inside a ring. 24px each way, so the box is a
+   target of its own whatever its label is. The ring of a chosen radio is its padding (the
+   fill is clipped to the content box): no shadow is used, so the focus halo stays the frame's. */
+.ideal-v3-app input:is([type="checkbox"], [type="radio"]) { appearance: none; -webkit-appearance: none; display: inline-grid; place-content: center; flex: 0 0 auto; width: 1.5rem; height: 1.5rem; margin: 0; padding: 0; border: 2px solid rgb(var(--color-control)); background-color: rgb(var(--color-surface)); accent-color: rgb(var(--ideal-teal-text)); vertical-align: middle; cursor: pointer; }
+.ideal-v3-app input[type="checkbox"] { border-radius: var(--ideal-v3-radius-check); }
+.ideal-v3-app input[type="radio"] { border-radius: 50%; }
+.ideal-v3-app :where(input:is([type="checkbox"], [type="radio"])):not(:focus-visible) { box-shadow: none; }
+.ideal-v3-app input[type="checkbox"]::before { content: ""; width: .85rem; height: .85rem; background: rgb(var(--color-surface)); clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0, 43% 62%); transform: scale(0); }
+.ideal-v3-app input[type="checkbox"]:checked { border-color: rgb(var(--ideal-teal-text)); background-color: rgb(var(--ideal-teal-text)); }
+.ideal-v3-app input[type="checkbox"]:checked::before { transform: scale(1); }
+.ideal-v3-app input[type="radio"]:checked { padding: .25rem; border-color: rgb(var(--ideal-teal-text)); background-color: rgb(var(--ideal-teal-text)); background-clip: content-box; }
+.ideal-v3-app input:is([type="checkbox"], [type="radio"]):disabled { border-style: dashed; background-color: rgb(var(--color-surface-sunken)); cursor: not-allowed; }
+.ideal-v3-app input:is([type="checkbox"], [type="radio"]):disabled:checked { border-color: rgb(var(--color-control)); background-color: rgb(var(--color-fg-muted)); }
+/* A form is one column of fields, and a field is not as wide as the card it happens to be
+   in: a time, a date or a name in a box a thousand pixels wide reads as a banner. Every
+   form ends at the measure, so its fields, its groups and its buttons share one edge. */
+.ideal-v3-app .ideal-form { max-width: var(--ideal-v3-measure); }
+.ideal-v3-app .ideal-input { min-width: 0; max-width: 100%; font-size: var(--ideal-v3-text-md); }
+.ideal-v3-app .ideal-fieldset legend { max-width: 100%; overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-file { color: rgb(var(--ideal-teal-text)); }
+/* Short fields side by side (shared/FieldRow): two or three to a row from 900px, where a
+   form is as wide as the measure; the single column of the form below that. A field is its
+   label over its control, with the form's own label; the controls of a row share a baseline
+   when one label takes two lines. */
+.ideal-v3-app .ideal-v3-field-row { display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: var(--space-2) var(--space-4); min-width: 0; }
+.ideal-v3-app .ideal-v3-field { display: grid; gap: var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-field > label { display: flex; justify-content: space-between; gap: var(--space-2); color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+@media (min-width: 900px) {
+  .ideal-v3-app .ideal-v3-field-row { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+}
+/* Saving a publication as a file (shared/ExportPublication): a part of the place it is in
+   (a zone of a card, the body of a reveal), not a card of its own. The format and the
+   button follow one another and share a line where there is room; what the export does is
+   a reveal under them. */
+.ideal-v3-app .ideal-v3-export { padding: 0; border: 0; background: transparent; }
+@media (min-width: 521px) {
+  .ideal-v3-app .ideal-v3-export { grid-template-columns: minmax(0, 22rem) auto minmax(0, 1fr); column-gap: var(--space-3); align-items: end; }
+  .ideal-v3-app .ideal-v3-export > * { grid-column: 1 / -1; }
+  .ideal-v3-app .ideal-v3-export > .ideal-input { grid-column: 1; }
+  .ideal-v3-app .ideal-v3-export > .ideal-actions { grid-column: 2; }
+}
+
+/* 5. Callouts ----------------------------------------------------------------------------- */
+/* Something to know before acting (info), and something that needs attention (warn). Only
+   the block margins are set: inside a record's section a callout is set in with the rest. */
+.ideal-v3-app .ideal-v3-callout, .ideal-v3-app .ideal-panel .ideal-v3-callout {
+  max-width: none; margin-block: 0 var(--space-3); padding: var(--space-3) var(--space-4);
+  border: 1px solid rgb(var(--color-line)); border-inline-start: 4px solid rgb(var(--ideal-teal)); border-radius: var(--radius-control);
+  color: rgb(var(--color-fg)); background: rgb(var(--color-surface-sunken) / .5); font-size: var(--ideal-v3-text-sm);
+}
+.ideal-v3-app .ideal-v3-callout--warn, .ideal-v3-app .ideal-panel .ideal-v3-callout--warn { border-color: rgb(var(--color-warning) / .55); border-inline-start-color: rgb(var(--color-warning)); background: rgb(var(--color-surface)); }
+/* The band of the person a URL names (shared/SelectedPersonBand): three short lines in one
+   callout, each a paragraph of its own, the last one the way out. */
+.ideal-v3-app .ideal-v3-callout.ideal-v3-selected-person { display: grid; gap: var(--space-1); }
+.ideal-v3-app .ideal-v3-selected-person > p { margin: 0; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+/* The way out is one sentence: at phone width it takes two lines of about the same length,
+   broken between phrases (as a button's label is), never a single character alone. */
+.ideal-v3-app .ideal-v3-selected-person__clear { display: inline-block; min-height: 24px; text-wrap: balance; word-break: auto-phrase; }
+.ideal-v3-app .ideal-partial-problems, .ideal-v3-app section.ideal-note[role="alert"] {
+  display: grid; gap: var(--space-2); justify-items: start; margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4);
+  border: 1px solid rgb(var(--color-warning) / .55); border-inline-start: 4px solid rgb(var(--color-warning)); border-radius: var(--radius-control);
+  color: rgb(var(--color-fg)); background: rgb(var(--color-surface)); font-size: var(--ideal-v3-text-sm);
+}
+.ideal-v3-app .ideal-partial-problems :is(h2, h3), .ideal-v3-app section.ideal-note[role="alert"] :is(h2, h3) { margin: 0; font-size: var(--ideal-v3-text-md); }
+.ideal-v3-app .ideal-partial-problems p, .ideal-v3-app section.ideal-note[role="alert"] p { margin: 0; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-partial-problems ul { margin: 0; padding-left: 1.1rem; list-style: disc; overflow-wrap: anywhere; }
+/* A confirmation in place. With .ideal-v3-confirm (shared/ConfirmSurface) the surface is
+   already drawn; alone (the planning confirmations) it is drawn here. */
+.ideal-v3-app .ideal-confirm { display: grid; gap: var(--space-2); min-width: 0; padding: var(--space-3); border: 1px solid rgb(var(--color-line-strong)); border-inline-start: 4px solid rgb(var(--ideal-teal)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+/* The confirmation of something that cannot be undone (shared/ConfirmSurface, confirmTone). */
+.ideal-v3-app .ideal-confirm.ideal-confirm--danger { border-color: rgb(var(--color-danger)); }
+.ideal-v3-app .ideal-confirm:not(.ideal-v3-confirm) { justify-items: start; margin-top: var(--space-3); }
+.ideal-v3-app .ideal-confirm > svg { width: 1.25rem; height: 1.25rem; color: rgb(var(--ideal-teal-text)); }
+.ideal-v3-app .ideal-confirm > h3 { margin: 0; }
+.ideal-v3-app .ideal-confirm > p { margin: 0; }
+.ideal-v3-app .ideal-confirm > :is(label, dl) { justify-self: stretch; }
+.ideal-v3-app .ideal-confirm > label { display: grid; gap: var(--space-1); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+/* Nothing to show yet, and the way to where there is: the surface of a panel, read from its
+   start like every other card (globals.css centres it in the middle of the screen). */
+.ideal-v3-app .ideal-empty { display: grid; justify-items: start; gap: var(--space-2); max-width: none; margin: 0; padding: clamp(1rem, 2vw, 1.4rem); border-inline-start: 4px solid rgb(var(--ideal-teal)); border-radius: var(--radius-card); text-align: start; }
+.ideal-v3-app .ideal-empty h2 { margin: 0; font-size: var(--ideal-v3-text-lg); letter-spacing: -.01em; }
+.ideal-v3-app .ideal-empty p { max-width: var(--ideal-v3-measure); margin: 0; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-empty .ideal-button { margin-top: var(--space-2); }
+/* A change case in words, and the surface on which it is decided. */
+.ideal-v3-app .ideal-case-summary { display: grid; gap: var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-case-decision > .ideal-v3-detail { padding: var(--space-4); border-radius: var(--radius-control); background: rgb(var(--color-surface-sunken) / .5); }
+
+/* 6. Tables ------------------------------------------------------------------------------- */
+/* A table stays a table at every width: its region is framed and scrolls, the header row
+   is filled, and where there is room a row's header stays in view while the columns scroll
+   under it. */
+.ideal-v3-app .ideal-table-wrap { margin-block: var(--space-2) var(--space-4); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-v3-record .ideal-table-wrap, .ideal-v3-app .ideal-table-wrap:last-child { margin-bottom: 0; }
+.ideal-v3-app .ideal-v3-record .ideal-table-wrap { margin-top: 0; }
+/* As wide as its columns read on one line, and never narrower than its region. Where that
+   is wider than the region, the cells wrap to fit it, but the table is not pressed below
+   60rem: in a narrower region it scrolls instead of being squeezed. What a cell holds breaks
+   only where its words do (keep-all), never inside one: a column is at least as wide as its
+   longest word. */
+.ideal-v3-app .ideal-table { width: max-content; min-width: 100%; max-width: max(100%, 60rem); border-collapse: separate; border-spacing: 0; font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-table :is(th, td) { min-width: 7.5em; max-width: 28em; padding: .6rem .75rem; word-break: keep-all; overflow-wrap: break-word; }
+.ideal-v3-app .ideal-table .ideal-pill { white-space: nowrap; }
+.ideal-v3-app .ideal-table thead th { border-top: 0; border-bottom: 1px solid rgb(var(--color-control)); color: rgb(var(--color-fg)); background: rgb(var(--ideal-v3-table-head)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-table tbody tr:first-child > :is(th, td) { border-top: 0; }
+.ideal-v3-app .ideal-table tbody tr:nth-child(even) > td { background: rgb(var(--color-surface-sunken) / .5); }
+.ideal-v3-app .ideal-table tbody th[scope="row"] { min-width: 7.5em; max-width: 16em; border-inline-end: 1px solid rgb(var(--color-line)); color: rgb(var(--color-fg)); background: rgb(var(--color-surface)); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-table:has(tbody th[scope="row"]) thead th:first-child { border-inline-end: 1px solid rgb(var(--color-line)); }
+/* One policy for every table: a row's header is pinned only above 820px. Up to there a
+   region is narrow, a pinned column would lie over the cells that carry a row's value or
+   its only action, and the first column scrolls with the table instead. */
+@media (min-width: 821px) {
+  .ideal-v3-app .ideal-table tbody th[scope="row"] { position: sticky; left: 0; z-index: 1; }
+  .ideal-v3-app .ideal-table:has(tbody th[scope="row"]) thead th:first-child { position: sticky; left: 0; z-index: 2; }
+}
+/* A date and time written as <time> never breaks inside itself. A cell's plain text can: a
+   browser may break "2028-04-01" after a hyphen whatever word-break says, and no property
+   forbids it for a part of a text, so a view marks the dates of a cell that may wrap. */
+.ideal-v3-app .ideal-v3-content time { white-space: nowrap; }
+/* A piece of a text that is never broken (shared/DateText: a date with the dash or the
+   bracket that touches it). A column is then at least as wide as the piece. */
+.ideal-v3-app .ideal-v3-unbroken { white-space: nowrap; }
+/* The line above a table whose columns run on past its region (shared/TableScrollCue): said
+   only while they do. At the right edge, where the columns leave. Once the region of a table
+   has been moved from its start the line keeps its place and is not drawn, so the table does
+   not move under the hand that scrolls it and nothing is said that is no longer exact. */
+.ideal-v3-app .ideal-v3-scroll-cue, .ideal-v3-app .ideal-panel .ideal-v3-scroll-cue { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0 var(--space-2); max-width: none; margin: var(--space-2) 0 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-label); line-height: var(--line-height-heading); }
+.ideal-v3-app .ideal-v3-scroll-cue[hidden] { display: none; }
+.ideal-v3-app .ideal-v3-scroll-cue.is-scrolled { visibility: hidden; }
+/* Its two sentences are two items: the second goes to a line of its own before either is
+   broken, and a sentence wider than the region (wider letter spacing at phone width) still
+   wraps inside it. */
+.ideal-v3-app .ideal-v3-scroll-cue > span { min-width: 0; max-width: 100%; text-align: end; text-wrap: balance; }
+.ideal-v3-app .ideal-v3-scroll-cue > svg { flex: 0 0 auto; width: .9rem; height: .9rem; color: rgb(var(--ideal-teal-text)); }
+@media (max-width: 520px) {
+  /* At phone width the line is one short line that starts where the reading starts: the
+     columns that follow and the arrow. That the region scrolls is what the arrow says. A
+     line too long for the region (many columns, or wider letter spacing) wraps beside the
+     arrow, which never goes to a line of its own, into two lines of about the same length
+     and not a full one and a character. */
+  .ideal-v3-app .ideal-v3-scroll-cue, .ideal-v3-app .ideal-panel .ideal-v3-scroll-cue { flex-wrap: nowrap; justify-content: flex-start; }
+  .ideal-v3-app .ideal-v3-scroll-cue > span { text-align: start; }
+  .ideal-v3-app .ideal-v3-scroll-cue > span + span { display: none; }
+}
+.ideal-v3-app .ideal-v3-scroll-cue:not([hidden]) + .ideal-table-wrap { margin-top: var(--space-1); }
+@media (max-width: 520px) {
+  /* At phone width a table of several columns scrolls in any case: it keeps its natural
+     width there, so a row stays one line. */
+  .ideal-v3-app .ideal-table { max-width: none; }
+  /* Wide enough for a long given name on one line (ten letters and the padding): a name
+     then breaks between its two parts and not inside one. */
+  .ideal-v3-app .ideal-table tbody th[scope="row"] { max-width: 12em; }
+}
+
+/* 7. Buttons and links ---------------------------------------------------------------------- */
+/* A <button> inherits the page's font (globals.css) and an <a> does not: one weight for both. */
+.ideal-v3-app .ideal-button { min-height: 44px; max-width: 100%; border-radius: var(--radius-control); font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-label); line-height: var(--line-height-dense); white-space: nowrap; }
+.ideal-v3-app .ideal-button svg { flex: 0 0 auto; }
+/* The way to something destructive is an outline in both themes (a soft danger fill reads as a
+   filled button in dark); the filled destructive button is only the one that confirms: the
+   confirming button of a confirmation surface, or the last button of a form that asks for
+   the evidence in place (`is-final`). */
+.ideal-v3-app .ideal-button--danger { border: 1px solid rgb(var(--color-danger)); color: rgb(var(--color-danger)); background: rgb(var(--color-surface)); }
+.ideal-v3-app .ideal-confirm .ideal-button--danger, .ideal-v3-app .ideal-button--danger.is-final { color: rgb(var(--color-danger-fg)); background: rgb(var(--color-danger)); }
+/* Disabled is a shape (a dashed frame on the sunken fill), and it is quieter than a button
+   that can be pressed: in dark the muted ink and the control colour are nearly as bright as an
+   enabled button's, so both are thinned there (--ideal-v3-disabled-ink, scale.css). The
+   label stays readable: what cannot be pressed still has to be named. */
+.ideal-v3-app .ideal-button:disabled, .ideal-v3-app .ideal-confirm .ideal-button:disabled { border: 1px dashed rgb(var(--color-control) / var(--ideal-v3-disabled-ink)); color: rgb(var(--color-fg-muted) / var(--ideal-v3-disabled-ink)); background: rgb(var(--color-surface-sunken)); box-shadow: none; opacity: 1; }
+/* Why a button cannot be pressed yet, said under its row (shared/ConfirmSurface): a note,
+   tied to the button as its description. */
+.ideal-v3-app .ideal-v3-why-disabled, .ideal-v3-app .ideal-panel .ideal-v3-why-disabled { max-width: var(--ideal-v3-measure); margin: 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-sm); }
+/* Outside a form that spaces its own rows, the sentence stands a step under the buttons it is about. */
+.ideal-v3-app :not(form, .ideal-form) > .ideal-actions + .ideal-v3-why-disabled { margin-top: var(--space-2); }
+/* A label is never squeezed: on one line its box is as wide as the label, whatever track
+   or row it was put in; at phone width it may wrap, but not below eight characters. */
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-button { min-width: 8em; white-space: normal; }
+}
+@media (min-width: 521px) {
+  .ideal-v3-app .ideal-button { min-width: max-content; }
+  /* What cannot be undone stands apart from the other actions of its row. */
+  .ideal-v3-app .ideal-actions > .ideal-button--danger { margin-inline-start: auto; }
+  /* Not in a confirmation: there it is the confirming button and leads its row. Nor in a
+     group of nothing but such actions. */
+  .ideal-v3-app .ideal-confirm .ideal-actions > .ideal-button--danger, .ideal-v3-app .ideal-actions > .ideal-button--danger.is-final, .ideal-v3-app .ideal-actions > .ideal-button--danger:first-child { margin-inline-start: 0; }
+}
+/* One colour for a link in text and for a link-like button. */
+.ideal-v3-app .ideal-inline-link, .ideal-v3-app .ideal-link { color: rgb(var(--ideal-teal-text)); text-decoration: underline; text-underline-offset: 3px; }
+.ideal-v3-app .ideal-link { font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-inline-link svg, .ideal-v3-app .ideal-link svg { display: inline; width: 1rem; height: 1rem; vertical-align: -.15rem; }
+/* The destinations of a selected record: the shape of a button. Without a button class the
+   text keeps the link colour; with one, the button's own colours are restored over the
+   blue of globals.css. */
+.ideal-v3-app .ideal-v3-detail nav a { min-height: 44px; padding: .58rem .9rem; border: 1px solid rgb(var(--color-control)); border-radius: var(--radius-control); color: rgb(var(--ideal-teal-text)); background: rgb(var(--color-surface)); font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-label); line-height: var(--line-height-dense); }
+.ideal-v3-app .ideal-v3-detail nav a.ideal-button--secondary { color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-v3-detail nav a.ideal-button--primary { border-color: rgb(var(--ideal-teal)); color: rgb(var(--color-primary-fg)); background: rgb(var(--ideal-teal)); }
+.ideal-v3-app .ideal-v3-detail nav a:not(.ideal-button--primary):hover { background: rgb(var(--color-surface-sunken)); }
+/* A count in a header and the control that leads to its task. */
+.ideal-v3-app .ideal-v3-badge-action { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-1) var(--space-3); flex: 0 0 auto; max-width: 100%; }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-v3-badge-action { justify-content: flex-start; }
+}
+
+/* 8. Pills and dots --------------------------------------------------------------------------- */
+.ideal-v3-app .ideal-pill { border-radius: var(--radius-pill); font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-pill--neutral { border-color: rgb(var(--color-line)); color: rgb(var(--color-fg)); background: rgb(var(--color-surface-sunken)); }
+.ideal-v3-app .ideal-pill--good { background: rgb(var(--color-success-soft) / var(--ideal-v3-tint)); }
+.ideal-v3-app .ideal-pill--warn { background: rgb(var(--color-warning-soft) / var(--ideal-v3-tint)); }
+.ideal-v3-app .ideal-pill--danger { background: rgb(var(--color-danger-soft) / var(--ideal-v3-tint)); }
+.ideal-v3-app .ideal-pill--info { background: rgb(var(--color-primary-soft) / var(--ideal-v3-tint)); }
+@media (min-width: 521px) {
+  .ideal-v3-app .ideal-pill { white-space: nowrap; }
+}
+.ideal-v3-app .ideal-dot--neutral { background: rgb(var(--color-line-strong)); }
+.ideal-v3-app .ideal-dot--danger { background: rgb(var(--color-danger)); }
+.ideal-v3-app .ideal-dot--info { border: 2px solid rgb(var(--color-primary)); background: transparent; }
+.ideal-v3-app .ideal-metric--neutral::before { background: rgb(var(--color-line-strong)); }
+
+/* 9. Lists of records ------------------------------------------------------------------------- */
+/* A name breaks between its parts (family name, given name) before it breaks inside one. */
+.ideal-v3-app .ideal-v3-master button strong { font-size: var(--ideal-v3-text-sm); word-break: keep-all; overflow-wrap: break-word; }
+.ideal-v3-app .ideal-v3-master button small { font-size: var(--ideal-v3-text-xs); }
+/* A row of a name and a value: the name is never squeezed by a long value; the value goes
+   below it when the two do not fit. */
+.ideal-v3-app .ideal-record-list li { flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+.ideal-v3-app .ideal-record-list li > strong { flex: 0 0 auto; max-width: 100%; }
+.ideal-v3-app .ideal-record-list li > span { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 520px) {
+  /* A dated entry at phone width: the time goes under the text, not beside it. */
+  .ideal-v3-app .ideal-timeline li { grid-template-columns: auto minmax(0, 1fr); }
+  .ideal-v3-app .ideal-timeline li > :nth-child(n+3) { grid-column: 2; justify-self: start; }
+}
+/* The day agenda and the timetable: their small print at the floor of the scale. */
+.ideal-v3-app .ideal-agenda__item span, .ideal-v3-app .ideal-person small, .ideal-v3-app .ideal-shift span, .ideal-v3-app .ideal-shift em, .ideal-v3-app .ideal-schedule-table thead th span, .ideal-v3-app .ideal-schedule-table thead .ideal-schedule-table__person, .ideal-v3-app .ideal-schedule-table thead th strong { font-size: var(--ideal-v3-text-xs); }
+.ideal-v3-app .ideal-agenda__item strong, .ideal-v3-app .ideal-person strong, .ideal-v3-app .ideal-shift strong { font-size: var(--ideal-v3-text-sm); }
+
+/* 10. Disclosures and tasks --------------------------------------------------------------------- */
+/* Anything that opens shows that it opens: a chevron drawn with two borders in the text
+   colour (no image), turned when open. The start edge of the frame is 3px in every state,
+   so that opening (the edge turns teal) moves nothing. */
+.ideal-v3-app .ideal-v3-disclosure { border-inline-start-width: 3px; border-radius: var(--radius-control); }
+.ideal-v3-app .ideal-v3-disclosure > summary { min-height: 48px; padding: var(--space-2) var(--space-4); border-radius: var(--radius-control); font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-label); line-height: var(--line-height-heading); list-style: none; }
+.ideal-v3-app .ideal-v3-disclosure > summary::-webkit-details-marker { display: none; }
+.ideal-v3-app .ideal-v3-disclosure > summary::before { content: ""; flex: 0 0 auto; width: .5rem; height: .5rem; margin-inline: .15rem .45rem; border-inline-end: 2px solid currentColor; border-block-end: 2px solid currentColor; transform: rotate(-45deg); transition: transform var(--motion-feedback); }
+.ideal-v3-app .ideal-v3-disclosure[open] > summary::before { transform: translateY(-.12rem) rotate(45deg); }
+.ideal-v3-app .ideal-v3-disclosure > summary:hover { background: rgb(var(--color-surface-sunken)); }
+.ideal-v3-app .ideal-v3-disclosure[open] > summary { margin-bottom: var(--space-3); border-bottom: 1px solid rgb(var(--color-line)); border-end-start-radius: var(--ideal-v3-radius-flat); border-end-end-radius: var(--ideal-v3-radius-flat); background: rgb(var(--color-surface-sunken)); }
+.ideal-v3-app .ideal-v3-disclosure[open] { border-inline-start-color: rgb(var(--ideal-teal)); }
+.ideal-v3-app .ideal-table-wrap + .ideal-v3-disclosure { margin-top: var(--space-3); }
+
+/* A task of "next": the frame is the wrapper, so a line of explanation and a tag can sit
+   beside the summary without being part of it. The wrapper is the grid item that must not
+   grow to a table inside the task (see .ideal-v3-content .ideal-v3-disclosure in
+   globals.css), hence min-width: 0. */
+.ideal-v3-app .ideal-v3-task { min-width: 0; border: 1px solid rgb(var(--color-line)); border-inline-start-width: 3px; border-radius: var(--radius-control); background: rgb(var(--color-surface)); scroll-margin-top: 5.5rem; }
+.ideal-v3-app .ideal-v3-task > .ideal-v3-disclosure, .ideal-v3-app .ideal-v3-task > .ideal-v3-disclosure[open] { border: 0; background: transparent; }
+.ideal-v3-app .ideal-v3-task:has(> .ideal-v3-disclosure[open]) { border-inline-start-color: rgb(var(--ideal-teal)); }
+.ideal-v3-app .ideal-v3-task__hint, .ideal-v3-app .ideal-panel .ideal-v3-task__hint { max-width: none; margin: calc(var(--space-1) * -1) 0 0; padding: 0 var(--space-4) var(--space-3) calc(var(--space-4) + 1.1rem); color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-sm); line-height: var(--line-height-heading); }
+.ideal-v3-app .ideal-v3-task__hint > .ideal-pill { margin-inline-end: var(--space-2); vertical-align: .05rem; }
+@media (min-width: 521px) {
+  /* Beside a tag the line is shorter than its card, and balanced lines would part a word
+     (「働／く事業場」): there the line breaks between phrases where the browser can. */
+  .ideal-v3-app .ideal-v3-task__hint:has(> .ideal-pill) { word-break: auto-phrase; }
+}
+@media (max-width: 520px) {
+  /* At phone width the line starts under the summary's mark, so it takes two lines and not
+     three. */
+  .ideal-v3-app .ideal-v3-task__hint, .ideal-v3-app .ideal-panel .ideal-v3-task__hint { padding-inline: var(--space-4) var(--space-3); }
+  /* A tag stands on a line of its own above the line it tags: the sentence starts at the
+     edge, and its first words (「手順2：…」) are not parted by the tag's width. */
+  .ideal-v3-app .ideal-v3-task__hint:has(> .ideal-pill), .ideal-v3-app .ideal-panel .ideal-v3-task__hint:has(> .ideal-pill) { display: grid; justify-items: start; gap: var(--space-1); }
+  .ideal-v3-app .ideal-v3-task__hint > .ideal-pill { margin-inline-end: 0; }
+}
+/* Open, the task explains itself: the line beside its summary (description and tag) is not
+   drawn. What cannot be undone says so as the first line of what the task holds, in a strip
+   under the summary's band (shared/TaskDisclosure, TaskWarning): the tag is on screen once
+   in either state, and nothing stands above the summary. The strip meets the band because
+   the open summary of a danger task has no margin under it: the strip is never pulled up
+   by a negative margin, so it cannot lie over the summary's text. */
+.ideal-v3-app .ideal-v3-task:has(> .ideal-v3-disclosure[open]) > .ideal-v3-task__hint { display: none; }
+.ideal-v3-app .ideal-v3-task--danger > .ideal-v3-disclosure[open] > summary { margin-bottom: 0; }
+.ideal-v3-app .ideal-v3-task__warning, .ideal-v3-app .ideal-panel .ideal-v3-task__warning { max-width: none; margin: 0 0 var(--space-3); padding: var(--space-2) var(--space-4); border-bottom: 1px solid rgb(var(--color-danger) / .4); color: rgb(var(--color-fg)); background: rgb(var(--color-danger-soft) / var(--ideal-v3-tint)); font-size: var(--ideal-v3-text-sm); line-height: var(--line-height-heading); }
+.ideal-v3-app .ideal-v3-task__warning > strong { margin-inline-end: var(--space-1); color: rgb(var(--color-danger)); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-task--primary { border-color: rgb(var(--ideal-teal)); }
+.ideal-v3-app .ideal-v3-task--primary > .ideal-v3-disclosure > summary { font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-task--danger, .ideal-v3-app .ideal-v3-task--danger:has(> .ideal-v3-disclosure[open]) { border-color: rgb(var(--color-danger)); }
+.ideal-v3-app .ideal-v3-task--danger > .ideal-v3-disclosure > summary::before { color: rgb(var(--color-danger)); }
+
+/* A reveal of supporting information (identifiers, a full list, a read-only lookup): a
+   line of text that opens, not a bar. */
+.ideal-v3-app .ideal-v3-disclosure.ideal-v3-disclosure--info, .ideal-v3-app .ideal-v3-task.ideal-v3-task--info { border: 0; background: transparent; }
+.ideal-v3-app :is(.ideal-v3-disclosure--info, .ideal-v3-task--info > .ideal-v3-disclosure) > summary { display: inline-flex; min-height: 44px; padding-inline: 0 var(--space-2); color: rgb(var(--ideal-teal-text)); font-size: var(--ideal-v3-text-sm); text-decoration: underline; text-underline-offset: 3px; }
+.ideal-v3-app :is(.ideal-v3-disclosure--info, .ideal-v3-task--info > .ideal-v3-disclosure)[open] > summary { margin-bottom: var(--space-1); border-bottom: 0; background: transparent; }
+.ideal-v3-app :is(.ideal-v3-disclosure--info, .ideal-v3-task--info > .ideal-v3-disclosure) > summary:hover { background: transparent; text-decoration-thickness: 2px; }
+.ideal-v3-app :is(.ideal-v3-disclosure--info, .ideal-v3-task--info > .ideal-v3-disclosure) > :not(summary) { margin-inline: 1.1rem 0; }
+.ideal-v3-app :is(.ideal-v3-disclosure--info, .ideal-v3-task--info > .ideal-v3-disclosure) > :last-child { margin-bottom: 0; }
+.ideal-v3-app .ideal-v3-task--info > .ideal-v3-task__hint, .ideal-v3-app .ideal-panel .ideal-v3-task--info > .ideal-v3-task__hint { padding-inline: 1.1rem 0; }
+
+/* The tasks of one group: side by side where there is room; an open task takes the row. */
+.ideal-v3-app .ideal-v3-task-list { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: var(--space-2); min-width: 0; }
+@media (min-width: 1100px) {
+  .ideal-v3-app .ideal-v3-task-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ideal-v3-app .ideal-v3-task-list > .ideal-v3-task:has(> .ideal-v3-disclosure[open]), .ideal-v3-app .ideal-v3-task-list > .ideal-v3-task:only-child, .ideal-v3-app .ideal-v3-task-list > :not(.ideal-v3-task) { grid-column: 1 / -1; }
+}
+
+/* 11. Line breaks ------------------------------------------------------------------------------- */
+/* A summary, a heading, a task's line and a button's label that take two lines take two of
+   about the same length, not a full one and a character (「…訂正す／る」). A label (a
+   summary, a heading, a button) also breaks between phrases and not inside one where the
+   browser can (auto-phrase; elsewhere that declaration is dropped and the lines are only
+   balanced; where neither is known the text wraps as before). A task's line of description
+   and the warning of an open danger task are sentences: they are balanced only, so they take
+   no more lines than they would (at phone width the warning is three lines; broken between
+   phrases it would be four). */
+.ideal-v3-app .ideal-v3-content :is(h2, h3, h4, h5, summary, .ideal-button, .ideal-v3-task__hint, .ideal-v3-task__warning) { text-wrap: balance; }
+.ideal-v3-app .ideal-v3-content :is(h2, h3, h4, h5, summary, .ideal-button) { word-break: auto-phrase; }
+/* No line starts with a long-vowel mark or a small kana (「センタ／ー」), in any browser: a
+   browser that cannot break between phrases still keeps these to the character before. */
+.ideal-v3-app .ideal-v3-content { line-break: strict; }
+
+/* 12. Forced colours ---------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-task, .ideal-v3-app .ideal-v3-disclosure, .ideal-v3-app .ideal-table-wrap, .ideal-v3-app .ideal-v3-callout, .ideal-v3-app .ideal-confirm, .ideal-v3-app .ideal-partial-problems { border-color: CanvasText; }
+  .ideal-v3-app .ideal-v3-task--danger { border-width: 3px; }
+  .ideal-v3-app .ideal-v3-disclosure > summary::before { border-color: CanvasText; }
+  .ideal-v3-app .ideal-v3-task:has(> .ideal-v3-disclosure[open]), .ideal-v3-app .ideal-v3-task--primary, .ideal-v3-app .ideal-v3-disclosure[open] { border-inline-start-color: Highlight; }
+  .ideal-v3-app .ideal-button:disabled { border: 1px dashed GrayText; color: GrayText; }
+  /* The system draws a check and a radio in its own colours. */
+  .ideal-v3-app input:is([type="checkbox"], [type="radio"]) { appearance: auto; -webkit-appearance: auto; padding: 0; background-clip: border-box; }
+  .ideal-v3-app input[type="checkbox"]::before { display: none; }
+  .ideal-v3-app .ideal-v3-task__warning { border-bottom-color: CanvasText; }
+  .ideal-v3-app .ideal-table tbody th[scope="row"] { border-inline-end: 1px solid CanvasText; }
+  .ideal-v3-app ul.ideal-note-list > li { border-inline-start-color: CanvasText; }
+}

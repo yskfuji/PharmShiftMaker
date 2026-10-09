@@ -4,7 +4,7 @@
 画面を移す箇所（リンク、ページの読み込み、サーバーの転送、プロキシのサインイン転送、共通の導線の一覧）をソースから抜き出し、行き先を実在するルートの型と照合した。画面の中の開閉（ダイアログ・開閉の欄・段階の切替）は、E2E で確かめる。
 
 - ルート：17 件
-- 遷移の箇所：53 件
+- 遷移の箇所：108 件
 - 行き先が実在しない箇所：0 件
 
 ## ルート
@@ -43,9 +43,16 @@
 | `app/schedule/[year]/[month]/page.tsx:93` | server-redirect | `/login?redirectTo=${encodeURIComponent(currentPath)}` | `/login` |
 | `app/schedule/page.tsx:7` | server-redirect | `/schedule/${year}/${month}` | `/schedule/[year]/[month]` |
 | `app/showcase/page.tsx:8` | server-redirect | `/showcase/home` | `/showcase/[screen]` |
-| `app/workspace/page.tsx:8` | server-redirect | `/workspace/home` | `/workspace/[screen]` |
+| `app/workspace/error.tsx:20` | link | `/` | `/` |
+| `app/workspace/not-found.tsx:23` | link | `/` | `/` |
+| `app/workspace/not-found.tsx:28` | link | `/workspace/home` | `/workspace/[screen]` |
+| `app/workspace/page.tsx:9` | server-redirect | `/workspace/home` | `/workspace/[screen]` |
 | `components/BusinessWorkflow.tsx:38` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/BusinessWorkflow.tsx:41` | link | `/planning/workflows` | `/planning/workflows` |
+| `components/ContractWorkflow.tsx:204` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
+| `components/ContractWorkflow.tsx:247` | link | `/settings` | `/settings` |
+| `components/FlexAdoptionSettings.tsx:194` | link | `/planning` | `/planning` |
+| `components/NewStaffTaskList.tsx:48` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
 | `components/ScheduleWorkspace.tsx:136` | link | `/planning` | `/planning` |
 | `components/SessionControls.tsx:21` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:20` | document | `/login?redirectTo=<current page>` | `/login` |
@@ -60,13 +67,58 @@
 | `components/ideal/IdealWorkspace.tsx:124` | link | `/workspace/settings/notifications` | `/workspace/[screen]/[view]` |
 | `components/ideal/IdealWorkspace.tsx:125` | link | `/workspace/${current}/${item.key}` | `/workspace/[screen]/[view]` |
 | `components/ideal/IdealWorkspace.tsx:130` | document | `/workspace/home` | `/workspace/[screen]` |
-| `features/workspace/people/ContractWorkflow.tsx:204` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
-| `features/workspace/people/ContractWorkflow.tsx:247` | link | `/settings` | `/settings` |
-| `features/workspace/people/NewStaffTaskList.tsx:48` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
-| `features/workspace/planning/PlanningRouteViews.tsx:52` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
-| `features/workspace/planning/PlanningRouteViews.tsx:76` | link | `/workspace/plan/compare` | `/workspace/[screen]/[view]` |
-| `features/workspace/settings/FlexTimeSettings.tsx:194` | link | `/planning` | `/planning` |
-| `features/workspace/shell/WorkspaceContent.tsx:27` | document | `/workspace/home` | `/workspace/[screen]` |
+| `features/workspace/governance/actuals/ActualEditor.tsx:25` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
+| `features/workspace/governance/actuals/ActualsView.tsx:62` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
+| `features/workspace/governance/privacy/PrivacyView.tsx:121` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
+| `features/workspace/governance/privacy/PrivacyView.tsx:51` | link | `/workspace/governance/privacy` | `/workspace/[screen]/[view]` |
+| `features/workspace/governance/privacy/PrivacyView.tsx:52` | link | `/workspace/people/directory` | `/workspace/[screen]/[view]` |
+| `features/workspace/home/HomeQueue.tsx:29` | link | `/workspace/operations/cases` | `/workspace/[screen]/[view]` |
+| `features/workspace/home/HomeQueue.tsx:38` | link | `/workspace/operations/cases` | `/workspace/[screen]/[view]` |
+| `features/workspace/home/PersonalHome.tsx:16` | link | `/workspace/schedule` | `/workspace/[screen]` |
+| `features/workspace/home/TeamHome.tsx:10` | link | `/workspace/schedule` | `/workspace/[screen]` |
+| `features/workspace/home/TeamHome.tsx:11` | link | `/workspace/operations/cases` | `/workspace/[screen]/[view]` |
+| `features/workspace/home/TeamHome.tsx:12` | link | `/workspace/operations/today` | `/workspace/[screen]/[view]` |
+| `features/workspace/home/TeamHome.tsx:13` | link | `/workspace/requests/leave` | `/workspace/[screen]/[view]` |
+| `features/workspace/operations/today/TodayView.tsx:50` | link | `/workspace/operations/cases` | `/workspace/[screen]/[view]` |
+| `features/workspace/operations/today/TodayView.tsx:54` | link | `/workspace/schedule` | `/workspace/[screen]` |
+| `features/workspace/people/contracts/ContractsView.tsx:43` | link | `/workspace/people/contracts` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/History.tsx:38` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/NewStaffSteps.tsx:75` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/NextActions.tsx:76` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/StaffRecords.tsx:81` | link | `/workspace/people/contracts` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/StaffRecords.tsx:87` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/StaffRecords.tsx:88` | link | `/workspace/people/lifecycle` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/editors/EmploymentEditor.tsx:111` | link | `/workspace/settings/flextime` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/editors/parts.tsx:21` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/directory/PersonDetail.tsx:32` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/directory/PersonDetail.tsx:33` | link | `/workspace/people/contracts` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/directory/PersonDetail.tsx:34` | link | `/workspace/people/lifecycle` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/directory/PersonDetail.tsx:35` | link | `/workspace/governance/privacy` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/lifecycle/LifecycleTasks.tsx:17` | link | `/workspace/people/contracts` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/lifecycle/LifecycleTasks.tsx:18` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/lifecycle/LifecycleTasks.tsx:19` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/lifecycle/LifecycleView.tsx:36` | link | `/workspace/people/lifecycle` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/memberships/MembershipsView.tsx:17` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/compare/CompareDrafts.tsx:74` | link | `/workspace/plan/drafts` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/compare/CompareView.tsx:22` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/drafts/DraftEditor.tsx:152` | document | `/workspace/schedule` | `/workspace/[screen]` |
+| `features/workspace/planning/drafts/DraftsView.tsx:26` | link | `/workspace/plan/compare` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/generate/GenerateJobs.tsx:66` | link | `/workspace/plan/compare` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/generate/GenerateView.tsx:32` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/input/InputView.tsx:64` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/input/demand/DemandSection.tsx:60` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/publications/PublicationsView.tsx:27` | link | `/workspace/settings/notifications` | `/workspace/[screen]/[view]` |
+| `features/workspace/requests/RequestSections.tsx:24` | link | `/workspace/requests/leave` | `/workspace/[screen]/[view]` |
+| `features/workspace/requests/leave/LeaveView.tsx:83` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
+| `features/workspace/requests/outside/OutsideView.tsx:102` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
+| `features/workspace/schedule/ScheduleView.tsx:23` | link | `/workspace/schedule` | `/workspace/[screen]` |
+| `features/workspace/settings/flextime/ConfirmAdoption.tsx:93` | link | `/workspace/people/contracts` | `/workspace/[screen]/[view]` |
+| `features/workspace/settings/flextime/FlextimeView.tsx:73` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
+| `features/workspace/settings/notifications/NotificationsView.tsx:53` | link | `/workspace/schedule` | `/workspace/[screen]` |
+| `features/workspace/shared/api.ts:56` | document | `/login?redirectTo=<current page>` | `/login` |
+| `features/workspace/shared/changeCases/CaseActions.tsx:66` | document | `/workspace/schedule` | `/workspace/[screen]` |
+| `features/workspace/shell/RouteProblem.tsx:24` | document | `/workspace/home` | `/workspace/[screen]` |
+| `features/workspace/shell/RouteProblem.tsx:25` | document | `/login?redirectTo=<current page>` | `/login` |
 | `ideal/providers/ApiWorkspaceProvider.tsx:181` | document | `/login?redirectTo=<current page>` | `/login` |
 | `ideal/screens/live/LiveAdminScreens.tsx:288` | link | `/workspace/governance/actuals` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LiveAdminScreens.tsx:288` | link | `/workspace/governance/privacy` | `/workspace/[screen]/[view]` |
@@ -76,6 +128,9 @@
 | `ideal/screens/live/LiveAdminScreens.tsx:78` | link | `/workspace/people/memberships?person=${encodeURIComponent(current.person_id)}` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LiveCaseScreens.tsx:41` | link | `/workspace/requests/leave` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LivePlan.tsx:91` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
+| `ideal/screens/live/PlanningRouteViews.tsx:52` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
+| `ideal/screens/live/PlanningRouteViews.tsx:76` | link | `/workspace/plan/compare` | `/workspace/[screen]/[view]` |
+| `ideal/screens/live/WorkspaceContent.tsx:27` | document | `/workspace/home` | `/workspace/[screen]` |
 | `lib/loginPath.ts:23` | document | `/login?redirectTo=<current page>` | `/login` |
 | `lib/navigation.ts:10` | link | `/planning/workflows` | `/planning/workflows` |
 | `lib/navigation.ts:11` | link | `/settings` | `/settings` |
@@ -92,7 +147,7 @@
 | 箇所 | 書き換え先 |
 |---|---|
 
-## 実行時に決まる行き先（26 件）
+## 実行時に決まる行き先（40 件）
 
 変数で渡す行き先は、ここでは解決しない。画面を実際に辿る E2E（`frontend/tests/remediation-e2e/navigation.spec.ts`）で確かめる。
 
@@ -103,18 +158,32 @@
 | `app/schedule/[year]/[month]/page.tsx:71` | `currentPath` |
 | `app/schedule/[year]/[month]/page.tsx:114` | `currentPath` |
 | `components/BusinessWorkflow.tsx:38` | `loginPath(currentLocation())` |
+| `components/ContextLink.tsx:24` | `destination.pathname+destination.search+destination.hash` |
+| `components/ContextLink.tsx:26` | `href` |
 | `components/GlobalNavigation.tsx:18` | `item.href` |
+| `components/GrantAssessment.tsx:59` | `result.source` |
+| `components/WorkflowNavigation.tsx:18` | `/planning${query}` |
+| `components/WorkflowNavigation.tsx:21` | `/planning/workflows/${key}${query}` |
 | `components/ideal/IdealWorkspace.tsx:115` | `href` |
 | `components/layout/SidebarNavigation.tsx:30` | `item.href === "/schedule" ? scheduleHref : item.href` |
-| `features/workspace/planning/WorkflowNavigation.tsx:18` | `/planning${query}` |
-| `features/workspace/planning/WorkflowNavigation.tsx:21` | `/planning/workflows/${key}${query}` |
-| `features/workspace/requests/GrantAssessment.tsx:59` | `result.source` |
-| `features/workspace/shared/ContextLink.tsx:24` | `destination.pathname+destination.search+destination.hash` |
-| `features/workspace/shared/ContextLink.tsx:26` | `href` |
-| `features/workspace/shell/WorkspaceShell.tsx:55` | `workspaceHrefWithContext(`/workspace/${screen` |
-| `features/workspace/shell/WorkspaceShell.tsx:63` | `hrefFor(key)` |
-| `features/workspace/shell/WorkspaceShell.tsx:73` | `hrefFor("home")` |
-| `features/workspace/shell/WorkspaceShell.tsx:81` | `hrefFor("home")` |
+| `features/workspace/home/HomeQueue.tsx:45` | `decide` |
+| `features/workspace/home/TeamHome.tsx:20` | `WAY[link].route` |
+| `features/workspace/home/TeamHome.tsx:37` | `WAY.schedule.route` |
+| `features/workspace/operations/today/TodayView.tsx:55` | `cases` |
+| `features/workspace/operations/today/TodayView.tsx:56` | `cases` |
+| `features/workspace/people/lifecycle/LifecycleTasks.tsx:66` | `taskRoute(t.key)` |
+| `features/workspace/requests/leave/admin/GrantAssessmentForm.tsx:159` | `link` |
+| `features/workspace/schedule/ScheduleView.tsx:30` | `model.personalExport.print` |
+| `features/workspace/schedule/ScheduleView.tsx:30` | `model.personalExport.ical` |
+| `features/workspace/schedule/ScheduleView.tsx:28` | `schedule` |
+| `features/workspace/schedule/ScheduleView.tsx:28` | `schedule` |
+| `features/workspace/settings/notifications/NotificationsView.tsx:66` | `schedule` |
+| `features/workspace/shared/SelectedPersonBand.tsx:21` | `route` |
+| `features/workspace/shell/WorkspaceLink.tsx:25` | `workspaceHrefWithContext(route, context ?? {` |
+| `features/workspace/shell/WorkspaceShell.tsx:60` | `workspaceHrefWithContext(`/workspace/${screen` |
+| `features/workspace/shell/WorkspaceShell.tsx:75` | `hrefFor(key)` |
+| `features/workspace/shell/WorkspaceShell.tsx:85` | `hrefFor("home")` |
+| `features/workspace/shell/WorkspaceShell.tsx:93` | `hrefFor("home")` |
 | `features/workspace/shell/WorkspaceUserMenu.tsx:32` | `settingsHref` |
 | `features/workspace/shell/WorkspaceUserMenu.tsx:33` | `notificationsHref` |
 | `ideal/screens/ScheduleScreen.tsx:29` | `model.personalExport.print` |

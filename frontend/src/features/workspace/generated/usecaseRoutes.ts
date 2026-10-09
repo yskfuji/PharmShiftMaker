@@ -18,6 +18,8 @@ export const USE_CASE_ROUTES = [
     ],
     "transitions": [
       "/workspace/operations/cases",
+      "/workspace/operations/today",
+      "/workspace/requests/leave",
       "/workspace/schedule"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--today",
@@ -68,7 +70,8 @@ export const USE_CASE_ROUTES = [
       "/workspace/plan/compare",
       "/workspace/plan/drafts",
       "/workspace/plan/publications",
-      "/workspace/schedule"
+      "/workspace/schedule",
+      "/workspace/settings/notifications"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--plan-compare",
     "e2eId": "ideal-u03-plan-publish"
@@ -318,6 +321,8 @@ export const USE_CASE_ROUTES = [
     ],
     "transitions": [
       "/workspace/operations/cases",
+      "/workspace/operations/today",
+      "/workspace/requests/leave",
       "/workspace/schedule"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--today",
@@ -365,7 +370,8 @@ export const USE_CASE_ROUTES = [
     "transitions": [
       "/workspace/home",
       "/workspace/schedule",
-      "/workspace/governance/audit"
+      "/workspace/governance/audit",
+      "/workspace/operations/cases"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--operations-today",
     "e2eId": "ideal-u16-daily-operations"
@@ -387,6 +393,8 @@ export const USE_CASE_ROUTES = [
     ],
     "transitions": [
       "/workspace/operations/cases",
+      "/workspace/operations/today",
+      "/workspace/requests/leave",
       "/workspace/schedule"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--today",
@@ -411,7 +419,8 @@ export const USE_CASE_ROUTES = [
       "/workspace/settings/appearance",
       "/workspace/settings/notifications",
       "/workspace/settings/absence-consent",
-      "/workspace/settings/flextime"
+      "/workspace/settings/flextime",
+      "/workspace/schedule"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--settings-appearance",
     "e2eId": "ideal-u18-settings"
@@ -435,7 +444,8 @@ export const USE_CASE_ROUTES = [
     ],
     "transitions": [
       "/workspace/schedule",
-      "/workspace/operations/cases"
+      "/workspace/operations/cases",
+      "/workspace/plan/input"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--requests-leave",
     "e2eId": "ideal-u19-leave"
@@ -457,7 +467,10 @@ export const USE_CASE_ROUTES = [
       "/workspace/people/directory",
       "/workspace/people/memberships",
       "/workspace/people/lifecycle",
-      "/workspace/people/contracts"
+      "/workspace/people/contracts",
+      "/workspace/plan/input",
+      "/workspace/settings/flextime",
+      "/workspace/governance/audit"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--people-contracts",
     "e2eId": "ideal-u20-contracts"
@@ -504,7 +517,9 @@ export const USE_CASE_ROUTES = [
       "/workspace/settings/appearance",
       "/workspace/settings/notifications",
       "/workspace/settings/absence-consent",
-      "/workspace/settings/flextime"
+      "/workspace/settings/flextime",
+      "/workspace/people/contracts",
+      "/workspace/governance/audit"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--settings-flextime",
     "e2eId": "ideal-u22-flextime"
@@ -528,7 +543,8 @@ export const USE_CASE_ROUTES = [
       "/workspace/governance/audit",
       "/workspace/governance/actuals",
       "/workspace/governance/privacy",
-      "/workspace/governance/recovery"
+      "/workspace/governance/recovery",
+      "/workspace/plan/input"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--governance-actuals",
     "e2eId": "ideal-u23-actuals"
@@ -551,7 +567,8 @@ export const USE_CASE_ROUTES = [
     ],
     "transitions": [
       "/workspace/schedule",
-      "/workspace/operations/cases"
+      "/workspace/operations/cases",
+      "/workspace/governance/audit"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--requests-outside",
     "e2eId": "ideal-u24-outside"
@@ -576,7 +593,8 @@ export const USE_CASE_ROUTES = [
       "/workspace/governance/audit",
       "/workspace/governance/actuals",
       "/workspace/governance/privacy",
-      "/workspace/governance/recovery"
+      "/workspace/governance/recovery",
+      "/workspace/people/directory"
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--governance-privacy",
     "e2eId": "ideal-u25-privacy-erasure"
@@ -630,6 +648,55 @@ export const USE_CASE_ROUTES = [
     ],
     "storybookId": "ideal-ui-v3-cognitive-workspace--plan-drafts",
     "e2eId": "ideal-u27-advanced-planning"
+  },
+  {
+    "id": "U28",
+    "screen": "requests",
+    "view": "leave",
+    "route": "/workspace/requests/leave",
+    "roles": [
+      "ADMIN",
+      "LEADER",
+      "PHARMACIST"
+    ],
+    "states": [
+      "ready",
+      "pending",
+      "approved",
+      "validation",
+      "unknown"
+    ],
+    "transitions": [
+      "/workspace/schedule",
+      "/workspace/operations/cases",
+      "/workspace/plan/input"
+    ],
+    "storybookId": "ideal-ui-v3-cognitive-workspace--requests-leave",
+    "e2eId": "ideal-u28-partial-day-leave"
+  },
+  {
+    "id": "U29",
+    "screen": "governance",
+    "view": "privacy",
+    "route": "/workspace/governance/privacy",
+    "roles": [
+      "ADMIN"
+    ],
+    "states": [
+      "ready",
+      "blocked",
+      "executed",
+      "conflict",
+      "unknown"
+    ],
+    "transitions": [
+      "/workspace/governance/audit",
+      "/workspace/governance/actuals",
+      "/workspace/governance/privacy",
+      "/workspace/governance/recovery"
+    ],
+    "storybookId": "ideal-ui-v3-cognitive-workspace--governance-privacy",
+    "e2eId": "ideal-u29-expired-input-erasure"
   }
 ] as const;
 
@@ -733,7 +800,7 @@ export const WORKSPACE_ROUTES = [
     "route": "/workspace/plan/compare",
     "label": "案の比較",
     "short": "差を比較",
-    "description": "違反・変更数・希望充足・勤務時間差を同じ定義で比較します。",
+    "description": "違反・変更数・勤務が重なった希望・勤務時間の差を同じ数え方で比較します。",
     "roles": [
       "ADMIN",
       "LEADER"
@@ -757,7 +824,7 @@ export const WORKSPACE_ROUTES = [
     "route": "/workspace/plan/publications",
     "label": "公開版",
     "short": "通知まで確認",
-    "description": "公開前の影響、公開履歴、取消と通知状態を確認します。",
+    "description": "公開版の出力と取消を行い、公開通知の状態を確認します。",
     "roles": [
       "ADMIN",
       "LEADER"
@@ -768,8 +835,8 @@ export const WORKSPACE_ROUTES = [
     "view": "today",
     "route": "/workspace/operations/today",
     "label": "今日の予定",
-    "short": "予定と充足",
-    "description": "予定上の勤務と充足状態を、観測時刻とともに確認します。",
+    "short": "予定とケース",
+    "description": "今日の予定上の勤務と、それに関わる進行中のケースの件数を、数えた時刻とともに確認します。",
     "roles": [
       "ADMIN",
       "LEADER"
@@ -781,7 +848,7 @@ export const WORKSPACE_ROUTES = [
     "route": "/workspace/operations/cases",
     "label": "欠勤・交換",
     "short": "判断と通知",
-    "description": "候補・同意・独立承認・通知を一つの判断面で扱います。",
+    "description": "欠勤・交換のケースを選び、同意と承認の状況を確かめて、次の操作を行います。",
     "roles": [
       "ADMIN",
       "LEADER"
@@ -792,7 +859,7 @@ export const WORKSPACE_ROUTES = [
     "view": "mine",
     "route": "/workspace/requests/mine",
     "label": "自分の申請",
-    "short": "履歴と次の操作",
+    "short": "状態と新しい申請",
     "description": "自分に関係する申請の状態と、次に必要な操作を確認します。",
     "roles": [
       "ADMIN",
@@ -819,7 +886,7 @@ export const WORKSPACE_ROUTES = [
     "route": "/workspace/requests/swap",
     "label": "勤務交換",
     "short": "相手と責任者",
-    "description": "依頼、相手の同意、責任者の判断を段階ごとに確認します。",
+    "description": "交換の依頼と、相手の同意・責任者の判断の進み具合を確認します。",
     "roles": [
       "ADMIN",
       "LEADER",
@@ -866,8 +933,8 @@ export const WORKSPACE_ROUTES = [
     "view": "lifecycle",
     "route": "/workspace/people/lifecycle",
     "label": "入職・退職",
-    "short": "長期タスク",
-    "description": "システム判定と手動証跡を分けたタスクリストで進めます。",
+    "short": "手続きの確認",
+    "description": "自動で判定する確認と、担当者が確かめて記録する確認を、手続きごとに進めます。",
     "roles": [
       "ADMIN"
     ]
@@ -888,7 +955,7 @@ export const WORKSPACE_ROUTES = [
     "view": "audit",
     "route": "/workspace/governance/audit",
     "label": "監査",
-    "short": "匿名化イベント",
+    "short": "操作の記録",
     "description": "氏名や職員IDを含めず、役割・人数・版・時刻を追跡します。",
     "roles": [
       "ADMIN"
@@ -899,8 +966,8 @@ export const WORKSPACE_ROUTES = [
     "view": "actuals",
     "route": "/workspace/governance/actuals",
     "label": "実績照合",
-    "short": "取込から確定",
-    "description": "実績原本の取込、行エラー、差分、確定を順に確認します。",
+    "short": "取込と照合の記録",
+    "description": "勤怠の原本から実績を取り込み、公開した勤務と照らし合わせた結果を記録します。",
     "roles": [
       "ADMIN",
       "LEADER"
@@ -911,8 +978,8 @@ export const WORKSPACE_ROUTES = [
     "view": "privacy",
     "route": "/workspace/governance/privacy",
     "label": "個人情報",
-    "short": "請求・保留・消去",
-    "description": "本人請求、法的保留、残存データ、不可逆性を分けて確認します。",
+    "short": "請求・保全・消去",
+    "description": "本人からの請求、法的保全、消去と、消去の後に残るものを分けて確認します。",
     "roles": [
       "ADMIN",
       "PHARMACIST"
@@ -923,8 +990,8 @@ export const WORKSPACE_ROUTES = [
     "view": "recovery",
     "route": "/workspace/governance/recovery",
     "label": "復旧",
-    "short": "状態と証跡",
-    "description": "復旧後の状態と照合証跡を閲覧します。Webから復元は実行しません。",
+    "short": "復元後の状態",
+    "description": "バックアップから復元した後の状態を確認します。この画面から復元は実行しません。",
     "roles": [
       "ADMIN"
     ]
@@ -934,8 +1001,8 @@ export const WORKSPACE_ROUTES = [
     "view": "appearance",
     "route": "/workspace/settings/appearance",
     "label": "外観",
-    "short": "個人設定",
-    "description": "配色と動きの設定を端末設定と合わせて選びます。",
+    "short": "配色",
+    "description": "配色を選びます。動きやコントラストは、端末の設定に従います。",
     "roles": [
       "ADMIN",
       "LEADER",
@@ -947,7 +1014,7 @@ export const WORKSPACE_ROUTES = [
     "view": "notifications",
     "route": "/workspace/settings/notifications",
     "label": "通知",
-    "short": "本人宛て",
+    "short": "届いた通知",
     "description": "本人宛ての通知と確認状態を管理します。",
     "roles": [
       "ADMIN",
@@ -960,7 +1027,7 @@ export const WORKSPACE_ROUTES = [
     "view": "absence-consent",
     "route": "/workspace/settings/absence-consent",
     "label": "欠勤の同意",
-    "short": "scope設定",
+    "short": "同意を求めるか",
     "description": "代替者の同意要否、適用範囲、版、変更履歴を確認します。",
     "roles": [
       "ADMIN",
@@ -973,8 +1040,8 @@ export const WORKSPACE_ROUTES = [
     "view": "flextime",
     "route": "/workspace/settings/flextime",
     "label": "フレックス",
-    "short": "二者確認",
-    "description": "第一管理者の登録と別管理者の確認を別の状態として扱います。",
+    "short": "登録と確認",
+    "description": "管理者が採用を登録し、別の管理者が確認してから有効になります。",
     "roles": [
       "ADMIN"
     ]
@@ -1009,6 +1076,37 @@ export const WORKSPACE_NAV = {
     "settings"
   ]
 } as const;
+
+export const WORKSPACE_ROUTE_KEYS = [
+  "home/index",
+  "schedule/index",
+  "plan/input",
+  "plan/generate",
+  "plan/compare",
+  "plan/drafts",
+  "plan/publications",
+  "operations/today",
+  "operations/cases",
+  "requests/mine",
+  "requests/leave",
+  "requests/swap",
+  "requests/outside",
+  "people/directory",
+  "people/memberships",
+  "people/lifecycle",
+  "people/contracts",
+  "governance/audit",
+  "governance/actuals",
+  "governance/privacy",
+  "governance/recovery",
+  "settings/appearance",
+  "settings/notifications",
+  "settings/absence-consent",
+  "settings/flextime"
+] as const;
+
+export type WorkspaceRouteKey = typeof WORKSPACE_ROUTE_KEYS[number];
+export type WorkspaceRoutePath = typeof WORKSPACE_ROUTES[number]["route"];
 
 export const WORKSPACE_STORY_ROUTES = [
   {
@@ -2202,6 +2300,14 @@ export const WORKSPACE_STATE_STORIES = [
     "storybookId": "ideal-ui-v3-route-state-matrix--people-memberships-forbidden"
   },
   {
+    "route": "/workspace/people/memberships",
+    "screen": "people",
+    "view": "memberships",
+    "role": "ADMIN",
+    "state": "selected-person",
+    "storybookId": "ideal-ui-v3-route-state-matrix--people-memberships-selected-person"
+  },
+  {
     "route": "/workspace/people/lifecycle",
     "screen": "people",
     "view": "lifecycle",
@@ -2250,6 +2356,14 @@ export const WORKSPACE_STATE_STORIES = [
     "storybookId": "ideal-ui-v3-route-state-matrix--people-lifecycle-forbidden"
   },
   {
+    "route": "/workspace/people/lifecycle",
+    "screen": "people",
+    "view": "lifecycle",
+    "role": "ADMIN",
+    "state": "selected-person",
+    "storybookId": "ideal-ui-v3-route-state-matrix--people-lifecycle-selected-person"
+  },
+  {
     "route": "/workspace/people/contracts",
     "screen": "people",
     "view": "contracts",
@@ -2296,6 +2410,14 @@ export const WORKSPACE_STATE_STORIES = [
     "role": "ADMIN",
     "state": "forbidden",
     "storybookId": "ideal-ui-v3-route-state-matrix--people-contracts-forbidden"
+  },
+  {
+    "route": "/workspace/people/contracts",
+    "screen": "people",
+    "view": "contracts",
+    "role": "ADMIN",
+    "state": "selected-person",
+    "storybookId": "ideal-ui-v3-route-state-matrix--people-contracts-selected-person"
   },
   {
     "route": "/workspace/governance/audit",
@@ -2440,6 +2562,14 @@ export const WORKSPACE_STATE_STORIES = [
     "role": "ADMIN",
     "state": "forbidden",
     "storybookId": "ideal-ui-v3-route-state-matrix--governance-privacy-forbidden"
+  },
+  {
+    "route": "/workspace/governance/privacy",
+    "screen": "governance",
+    "view": "privacy",
+    "role": "ADMIN",
+    "state": "selected-person",
+    "storybookId": "ideal-ui-v3-route-state-matrix--governance-privacy-selected-person"
   },
   {
     "route": "/workspace/governance/recovery",

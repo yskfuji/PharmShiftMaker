@@ -2,9 +2,10 @@ import hashlib
 from datetime import UTC, datetime
 
 import pytest
+from sqlalchemy import select
 
 from shift_scheduler.application import copies, planning, privacy
-from shift_scheduler.db.compliance_models import LegalHold, ManagedCopy
+from shift_scheduler.db.compliance_models import CopyErasure, LegalHold, ManagedCopy
 from shift_scheduler.domain.copies import CopyRegistration
 from shift_scheduler.domain.privacy import RetentionPolicy
 from tests.test_reviewed_planning import db as _db
@@ -212,3 +213,141 @@ def test_unverified_subject_evidence_and_anchor_mismatch_block_erasure(
             session, SCOPE, plan["plan_id"], plan["fingerprint"], 1, "admin", AT
         )["queued_copy_ids"]
     assert path.exists()
+
+
+def _mixed_inventory(db, tmp_path, monkeypatch):
+    """One person with a file nothing blocks, a backup inside its retention period, an
+    outside copy awaiting its custodian, and an unverified file."""
+    prepare(db, tmp_path, monkeypatch)
+    data = snapshot(1, 1)
+    with db.begin() as session:
+        privacy.save_rule(
+            session,
+            SCOPE,
+            RetentionPolicy(
+                category="backups",
+                purpose="isolated proof",
+                anchor="backup_created",
+                retention_days=3650,
+                legal_minimum_days=0,
+                effective_from="2030-01-01",
+                effective_until="2040-01-01",
+                evidence=data.policy_evidence,
+                owner="admin",
+                next_review="2036-01-01",
+            ),
+            0,
+            "admin",
+        )
+        for copy_id, category, medium, anchor, anchor_at, status in (
+            ("copy2", "backups", "backup", "backup_created", "2034-06-01", "VERIFIED"),
+            ("copy3", "exports", "external", "last_activity", "2020-01-01", "VERIFIED"),
+            ("copy4", "exports", "file", "last_activity", "2020-01-01", "UNVERIFIED"),
+        ):
+            path = tmp_path / f"{copy_id}.txt"
+            path.write_text("synthetic " + copy_id)
+            copies.register(
+                session,
+                SCOPE,
+                CopyRegistration(
+                    copy_id=copy_id,
+                    category=category,
+                    medium=medium,
+                    relative_path=path.name,
+                    content_hash=hashlib.sha256(path.read_bytes()).hexdigest(),
+                    person_ids=("p0",),
+                    anchor=anchor,
+                    anchor_at=anchor_at + "T00:00:00Z",
+                    evidence=data.policy_evidence,
+                    subject_status=status,
+                ),
+                0,
+                "admin",
+            )
+
+
+def test_will_process_flag_is_what_execute_actually_processes(
+    db, tmp_path, monkeypatch
+):
+    _mixed_inventory(db, tmp_path, monkeypatch)
+    with db.begin() as session:
+        before = {
+            row.copy_id: (row.state, row.revision)
+            for row in session.scalars(select(ManagedCopy))
+        }
+        plan = copies.preview(session, SCOPE, "p0", "admin", AT)
+        flags = {t["copy_id"]: t["will_process"] for t in plan["targets"]}
+        blockers = {t["copy_id"]: t["blockers"] for t in plan["targets"]}
+        # Targets with and without blockers are both present, and the flag is a boolean
+        # on every one of them.
+        assert set(flags) == {"copy1", "copy2", "copy3", "copy4"}
+        assert all(type(value) is bool for value in flags.values())
+        assert blockers["copy1"] == []
+        assert "retention_not_expired" in blockers["copy2"]
+        assert "external_confirmation_required" in blockers["copy3"]
+        assert "subject_inventory_unverified" in blockers["copy4"]
+        # The same inventory without the flag is what the plan stores and fingerprints.
+        listed = copies.with_processing(copies.inventory(session, SCOPE, "p0", AT))
+        assert {t["copy_id"]: t["will_process"] for t in listed["targets"]} == flags
+        stored = session.get(CopyErasure, plan["plan_id"])
+        assert all("will_process" not in t for t in stored.payload["targets"])
+        assert stored.fingerprint == copies.inventory_fingerprint(stored.payload)
+
+        result = copies.execute(
+            session, SCOPE, plan["plan_id"], plan["fingerprint"], 1, "admin", AT
+        )
+        session.flush()
+        after = {
+            row.copy_id: (row.state, row.revision)
+            for row in session.scalars(select(ManagedCopy))
+        }
+    processed = set(result["queued_copy_ids"]) | set(result["erased_database_copy_ids"])
+    changed = {key for key in before if after[key] != before[key]}
+    # flag == actually processed, for every target: by the result's lists and by the rows.
+    assert {key for key, value in flags.items() if value} == processed == changed
+    assert processed == {"copy1"}
+    assert after["copy1"][0] == "PENDING_ERASURE"
+    for kept in ("copy2", "copy3", "copy4"):
+        assert flags[kept] is False and after[kept] == before[kept]
+
+
+def test_will_process_is_false_for_every_target_when_a_hold_blocks_them(
+    db, tmp_path, monkeypatch
+):
+    _mixed_inventory(db, tmp_path, monkeypatch)
+    with db.begin() as session:
+        session.add(
+            LegalHold(
+                hold_id="hold",
+                scope_id=SCOPE,
+                person_id="p0",
+                active=True,
+                revision=1,
+                payload={"reason": "legal"},
+            )
+        )
+    with db.begin() as session:
+        plan = copies.preview(session, SCOPE, "p0", "admin", AT)
+        assert [t["will_process"] for t in plan["targets"]] == [False] * 4
+        assert all("legal_hold" in t["blockers"] for t in plan["targets"])
+        result = copies.execute(
+            session, SCOPE, plan["plan_id"], plan["fingerprint"], 1, "admin", AT
+        )
+        assert result["queued_copy_ids"] == []
+        assert result["erased_database_copy_ids"] == []
+        assert result["state"] == "REMAINS"
+        assert {row.state for row in session.scalars(select(ManagedCopy))} == {
+            "PRESENT"
+        }
+
+
+def test_will_process_predicate_is_the_one_execute_uses():
+    assert copies.will_process({"blockers": []}) is True
+    assert copies.will_process({"blockers": ["legal_hold"]}) is False
+    data = {"targets": [{"copy_id": "a", "blockers": []}], "person_id": "p0"}
+    flagged = copies.with_processing(data)
+    assert flagged["targets"] == [
+        {"copy_id": "a", "blockers": [], "will_process": True}
+    ]
+    # Additive: the inventory handed in is not changed.
+    assert data["targets"] == [{"copy_id": "a", "blockers": []}]

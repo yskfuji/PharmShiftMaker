@@ -1,0 +1,175 @@
+/* The frame around every screen of the workspace (v3): the page head, the band that says
+   which facility, period and publication are shown, the navigation inside a screen, the
+   frame's own notices (a route that could not be read, a read that got no answer) and the
+   footer. The sidebar, the mobile header and the account menu keep their rules in
+   globals.css (a structural test reads the mobile header's rule there); their text sizes
+   and radii are tokens there too.
+
+   Three widths matter here:
+   - above 1100px a tab also shows its hint;
+   - up to 600px the navigation inside a screen is a row of 44px controls instead of
+     underlined tabs, and the plan's process shows the name of the stage that is open only
+     (the other stages show their numbers);
+   - up to 520px the sentence under the title is not drawn.
+   What is not drawn at a width stays in the accessibility tree (clipped, not removed), so a
+   link has the same name at every width. */
+
+.ideal-v3-app {
+  /* Text on the teal of a current step; the teal is the same in both themes. The band's
+     own colour (--ideal-v3-band) is part of the scale (scale.css). */
+  --ideal-v3-on-teal: 255 255 255;
+}
+
+/* 1. Page head ---------------------------------------------------------------------------- */
+/* The screen's name and, under it, what the open view is for. The view's own name is said
+   once, by the tab that is current. The title's line is as tall as the account control
+   beside it, so the two share a centre line. */
+.ideal-v3-app .ideal-v3-page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2) var(--space-8); max-width: 92rem; margin: 0 auto; }
+.ideal-v3-app .ideal-v3-title-block { min-width: 0; }
+.ideal-v3-app .ideal-v3-title-block h1 { display: flex; align-items: center; min-height: 2.75rem; margin: 0; font-size: var(--ideal-v3-text-xl); line-height: var(--line-height-heading); letter-spacing: -.02em; }
+.ideal-v3-app .ideal-v3-title-block p { max-width: var(--ideal-v3-measure); margin: 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-sm); line-height: var(--line-height-body); }
+.ideal-v3-app .ideal-v3-page-head > .ideal-v3-user-menu { flex: 0 0 auto; }
+.ideal-v3-app .ideal-v3-user-menu summary > span { max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The menu of the phone header (WorkspaceUserMenu, `compact`): its panel is never wider than
+   the screen it opens on. */
+.ideal-v3-app .ideal-v3-user-menu.is-compact > div { max-width: calc(100vw - 1.5rem); }
+
+/* 2. Context band --------------------------------------------------------------------------- */
+/* One panel: the choice of facility and department, and the three facts of what is shown.
+   A fact is its term and its value on one line; the facts wrap as a row, never as cards. */
+.ideal-v3-app .ideal-v3-context { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-8); max-width: 92rem; margin: var(--space-3) auto 0; padding: var(--space-2) var(--space-3); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--ideal-v3-band) / .5); }
+.ideal-v3-app .ideal-v3-context form { display: flex; align-items: flex-end; gap: var(--space-2); min-width: 0; max-width: 100%; }
+.ideal-v3-app .ideal-v3-context label { display: flex; align-items: center; gap: var(--space-2); min-width: 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-label); white-space: nowrap; }
+.ideal-v3-app .ideal-v3-context select { min-width: 13rem; max-width: 100%; min-height: 44px; padding: var(--space-2) var(--space-6) var(--space-2) var(--space-3); border: 1px solid rgb(var(--color-control)); border-radius: var(--radius-control); color: rgb(var(--color-fg)); background-color: rgb(var(--color-surface)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-context button { flex: 0 0 auto; min-height: 44px; padding: var(--space-2) var(--space-3); border: 1px solid rgb(var(--color-control)); border-radius: var(--radius-control); color: rgb(var(--color-fg)); background: rgb(var(--color-surface)); font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); cursor: pointer; }
+.ideal-v3-app .ideal-v3-context button:hover { background: rgb(var(--color-surface-sunken)); }
+.ideal-v3-app .ideal-v3-context dl { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-6); min-width: 0; margin: 0; }
+.ideal-v3-app .ideal-v3-context dl div { display: flex; align-items: baseline; gap: var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-v3-context dt { color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-label); white-space: nowrap; }
+.ideal-v3-app .ideal-v3-context dd { min-width: 0; margin: 0; font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-heading); font-variant-numeric: tabular-nums; }
+
+/* 3. Navigation inside a screen ---------------------------------------------------------------- */
+/* Tabs: a name and, where there is room, a hint. They wrap rather than scroll, so the tab
+   that is current is never out of view and a focus ring is never cut by a scroll box. */
+.ideal-v3-app .ideal-v3-subnav { display: flex; flex-wrap: wrap; gap: 0 var(--space-1); max-width: 92rem; margin: var(--space-3) auto 0; border-bottom: 1px solid rgb(var(--color-line)); }
+.ideal-v3-app .ideal-v3-subnav a { position: relative; display: flex; align-items: center; gap: var(--space-2); flex: 0 0 auto; max-width: 100%; min-height: 44px; padding: var(--space-2) var(--space-3); color: rgb(var(--color-fg-muted)); text-decoration: none; }
+.ideal-v3-app .ideal-v3-subnav a strong { font-size: var(--ideal-v3-text-sm); font-weight: var(--ideal-v3-weight-label); line-height: var(--line-height-dense); }
+.ideal-v3-app .ideal-v3-subnav a small { font-size: var(--ideal-v3-text-xs); line-height: var(--line-height-dense); }
+.ideal-v3-app .ideal-v3-subnav a:hover { color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-v3-subnav a[aria-current="page"] { color: rgb(var(--ideal-teal-text)); box-shadow: inset 0 -3px 0 rgb(var(--ideal-teal)); }
+.ideal-v3-app .ideal-v3-subnav a[aria-current="page"] strong { font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-content { margin-top: var(--space-4); }
+
+/* The settings: two groups of tabs, each under its name. The name is a label of the group,
+   not a tab: small, above the tabs, with no frame, no hover and no place in the tab order. */
+.ideal-v3-app .ideal-v3-subnav.is-grouped { gap: var(--space-2) var(--space-6); }
+.ideal-v3-app .ideal-v3-subnav-group { display: grid; align-content: end; gap: 0; min-width: 0; }
+.ideal-v3-app .ideal-v3-subnav-group > div { display: flex; flex-wrap: wrap; gap: 0 var(--space-1); }
+.ideal-v3-app .ideal-v3-subnav-label { padding: var(--space-1) var(--space-3) 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-heading); line-height: var(--line-height-dense); letter-spacing: .04em; }
+
+/* The plan: five stages in their order, of equal width, each with its number. The one that
+   is open is framed and filled; every other one is quiet, whether it comes before or after.
+   The order is the contract's and says nothing of what has been done: a stage's own screen
+   says whether its work is finished, so no stage carries a mark of completion here. */
+.ideal-v3-app .ideal-v3-subnav.is-process { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--space-2); border-bottom: 0; }
+.ideal-v3-app .ideal-v3-subnav.is-process a { display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: center; align-items: center; column-gap: var(--space-2); min-height: 48px; padding: var(--space-1) var(--space-3); border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+/* A stage's name breaks only where its words do (前提・/取込), never inside one. */
+.ideal-v3-app .ideal-v3-subnav.is-process a strong, .ideal-v3-app .ideal-v3-subnav.is-process a small { grid-column: 2; min-width: 0; word-break: keep-all; }
+.ideal-v3-app .ideal-v3-subnav-step { grid-row: 1 / span 2; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 1px solid rgb(var(--color-control)); border-radius: 50%; color: rgb(var(--color-fg-muted)); background: rgb(var(--color-surface)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-heading); font-variant-numeric: tabular-nums; line-height: 1; }
+.ideal-v3-app .ideal-v3-subnav.is-process a[aria-current="page"] { border-color: rgb(var(--ideal-teal)); color: rgb(var(--color-fg)); background: rgb(var(--ideal-teal-soft) / .46); box-shadow: inset 0 -3px 0 rgb(var(--ideal-teal)); }
+.ideal-v3-app .ideal-v3-subnav.is-process a[aria-current="page"] .ideal-v3-subnav-step { border-color: rgb(var(--ideal-teal)); color: rgb(var(--ideal-v3-on-teal)); background: rgb(var(--ideal-teal)); }
+
+/* Drawn nowhere, read everywhere (below, per width): a hint or a name for which there is
+   no room. */
+@media (max-width: 1100px) {
+  /* Beside the sidebar a stage is about 104px wide at the narrowest: less padding, so a
+     name of four characters stays on one line. */
+  .ideal-v3-app .ideal-v3-subnav.is-process { gap: var(--space-1); }
+  .ideal-v3-app .ideal-v3-subnav.is-process a { padding-inline: var(--space-2); column-gap: var(--space-1); }
+  .ideal-v3-app .ideal-v3-subnav-step { grid-row: auto; }
+  .ideal-v3-app .ideal-v3-subnav a small { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; }
+}
+@media (min-width: 601px) {
+  .ideal-v3-app .ideal-v3-subnav-group + .ideal-v3-subnav-group { padding-inline-start: var(--space-6); border-inline-start: 1px solid rgb(var(--color-line)); }
+}
+@media (max-width: 600px) {
+  /* A row of controls: each tab is framed, and the row wraps. */
+  .ideal-v3-app .ideal-v3-subnav:not(.is-process) { gap: var(--space-1); border-bottom: 0; }
+  .ideal-v3-app .ideal-v3-subnav.is-grouped { gap: var(--space-2) var(--space-3); }
+  .ideal-v3-app .ideal-v3-subnav-group > div { gap: var(--space-1); }
+  .ideal-v3-app .ideal-v3-subnav-label { padding: 0 0 var(--space-1); }
+  .ideal-v3-app .ideal-v3-subnav.is-grouped a { padding-inline: var(--space-2); }
+  .ideal-v3-app .ideal-v3-subnav:not(.is-process) a { padding-block: 0; border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-control); background: rgb(var(--color-surface)); }
+  .ideal-v3-app .ideal-v3-subnav:not(.is-process) a[aria-current="page"] { border-color: rgb(var(--ideal-teal)); background: rgb(var(--ideal-teal-soft) / .46); box-shadow: inset 0 -3px 0 rgb(var(--ideal-teal)); }
+  /* The process on one row: every stage keeps a 44px control with its number; the stage
+     that is open takes the rest of the row and shows its name. */
+  .ideal-v3-app .ideal-v3-subnav.is-process { display: flex; flex-wrap: nowrap; gap: var(--space-1); }
+  .ideal-v3-app .ideal-v3-subnav.is-process a { display: flex; flex: 0 0 44px; justify-content: center; gap: .4rem; min-width: 44px; min-height: 44px; padding: 0; }
+  .ideal-v3-app .ideal-v3-subnav.is-process a[aria-current="page"] { flex: 1 1 auto; justify-content: flex-start; min-width: 0; padding-inline: .4rem; }
+  .ideal-v3-app .ideal-v3-subnav.is-process a:not([aria-current="page"]) strong { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; }
+  .ideal-v3-app .ideal-v3-subnav-step { flex: 0 0 auto; }
+}
+
+/* 4. The frame at phone width ------------------------------------------------------------------- */
+@media (max-width: 820px) {
+  .ideal-v3-app .ideal-v3-title-block h1 { min-height: 0; }
+}
+@media (max-width: 520px) {
+  /* The purpose of the view is said by its first card; the sentence stays for a screen reader. */
+  .ideal-v3-app .ideal-v3-title-block p { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; }
+  .ideal-v3-app .ideal-v3-context { gap: var(--space-2); margin-top: var(--space-2); padding: var(--space-2); }
+  .ideal-v3-app .ideal-v3-context form { width: 100%; }
+  .ideal-v3-app .ideal-v3-context label { display: grid; flex: 1 1 auto; gap: .125rem; }
+  .ideal-v3-app .ideal-v3-context select { width: 100%; min-width: 0; padding-inline: var(--space-2) var(--space-1); }
+  .ideal-v3-app .ideal-v3-context dl { gap: 0 var(--space-4); }
+  .ideal-v3-app .ideal-v3-subnav { margin-top: var(--space-2); }
+  .ideal-v3-app .ideal-v3-content { margin-top: var(--space-3); }
+}
+
+/* 5. The frame's own notices ------------------------------------------------------------------ */
+/* What was just done, shown above the route: apart from the first card below it. */
+.ideal-v3-app .ideal-v3-content > .ideal-done { margin: 0 0 var(--space-4); }
+/* A read of the route that got no answer: the same surface as the other warnings of the
+   frame, the sentence at reading size, and the one action beside it where there is room. */
+.ideal-v3-app .ideal-v3-stale { gap: var(--space-2) var(--space-4); margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4); border: 1px solid rgb(var(--color-warning) / .55); border-inline-start: 4px solid rgb(var(--color-warning)); border-radius: var(--radius-control); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-stale strong { font-size: var(--ideal-v3-text-md); font-weight: var(--ideal-v3-weight-heading); }
+.ideal-v3-app .ideal-v3-stale p { max-width: var(--ideal-v3-measure); margin: var(--space-1) 0 0; color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-v3-stale .ideal-button { flex: 0 0 auto; }
+/* A route that could not be shown (not read, refused, changed elsewhere): a card of the
+   work surface with what happened, why, and the one way on. */
+.ideal-v3-app .ideal-problem { gap: var(--space-3) var(--space-4); align-items: start; max-width: 44rem; margin: var(--space-8) auto; padding: var(--space-6); border-radius: var(--radius-card); }
+.ideal-v3-app .ideal-problem > svg { width: 1.75rem; height: 1.75rem; margin-top: .1rem; }
+.ideal-v3-app .ideal-problem > div { display: grid; justify-items: start; gap: var(--space-2); min-width: 0; }
+.ideal-v3-app .ideal-problem h2 { margin: 0; font-size: var(--ideal-v3-text-lg); overflow-wrap: anywhere; }
+.ideal-v3-app .ideal-problem p { max-width: var(--ideal-v3-measure); margin: 0 0 var(--space-2); font-size: var(--ideal-v3-text-sm); overflow-wrap: anywhere; }
+/* While something is read: one wide block and a row of three, as the cards that follow
+   usually are. (The blocks were a third wide each but stacked, a column at the left edge.)
+   A frame, because in dark the block's fill is nearly the canvas's own. */
+.ideal-v3-app .ideal-loading { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); max-width: none; }
+.ideal-v3-app .ideal-loading > .ideal-skeleton { display: block; width: auto; border: 1px solid rgb(var(--color-line)); border-radius: var(--radius-card); }
+.ideal-v3-app .ideal-loading > .ideal-skeleton:first-child { grid-column: 1 / -1; }
+/* The workspace's own not-found and error pages, and the choice of a facility and department
+   when the address names none: the same card, at reading size. */
+.ideal-v3-app .ideal-v3-boundary > p { max-width: var(--ideal-v3-measure); font-size: var(--ideal-v3-text-sm); }
+/* The card's corner is the scale's here; the rule of globals.css keeps its own value for the
+   compatibility screen that uses the same class outside the workspace. */
+.ideal-v3-app .ideal-v3-choice { margin-block: var(--space-8); border-radius: var(--radius-card); }
+.ideal-v3-app .ideal-v3-choice h2 { margin: var(--space-1) 0; font-size: var(--ideal-v3-text-lg); }
+.ideal-v3-app .ideal-v3-choice > p { max-width: var(--ideal-v3-measure); margin: 0; color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-choice > div { margin-top: var(--space-4); }
+.ideal-v3-app .ideal-v3-choice button { white-space: normal; text-align: start; }
+.ideal-v3-app .ideal-v3-choice button small { color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-label); }
+@media (max-width: 520px) {
+  .ideal-v3-app .ideal-problem { grid-template-columns: minmax(0, 1fr); margin-block: var(--space-4); padding: var(--space-4); }
+  .ideal-v3-app .ideal-loading { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+  .ideal-v3-app .ideal-loading > .ideal-skeleton:nth-child(n+3) { display: none; }
+}
+
+/* 6. Footer ------------------------------------------------------------------------------------- */
+.ideal-v3-app .ideal-v3-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-4); max-width: 92rem; margin: var(--space-8) auto 0; padding-top: var(--space-3); border-top: 1px solid rgb(var(--color-line)); color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); }
+
+/* 7. Forced colours ----------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-context, .ideal-v3-app .ideal-v3-subnav.is-process a, .ideal-v3-app .ideal-v3-subnav-step, .ideal-v3-app .ideal-v3-stale, .ideal-v3-app .ideal-problem { border-color: CanvasText; }
+  .ideal-v3-app .ideal-v3-subnav.is-process a[aria-current="page"] .ideal-v3-subnav-step { color: HighlightText; background: Highlight; }
+}

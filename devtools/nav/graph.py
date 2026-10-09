@@ -3,15 +3,19 @@
 Sources scanned in frontend/src: href="..." / href={`...`} / Next Link object pathname
 (links, <Link>), location.assign/replace, browserNavigation.replace/assign, redirect(...)
 in server pages, the proxy's sign-in redirect and the shared navigation list
-(lib/navigation.ts). Each target is matched against the app's route patterns
-(app/**/page.tsx); a target that matches no route is a dead link. Output:
-docs/architecture/navigation.md.
+(lib/navigation.ts). The new workspace names its destinations by the route contract
+instead of a URL: `<WorkspaceLink route={routeOf("plan/input").route}>` and every other
+`routeOf("<screen>/<view>").route` are resolved through docs/ideal-ui/usecases.json to the
+path they stand for. Each target is matched against the app's route patterns
+(app/**/page.tsx); a target that matches no route, or a key the contract does not have, is
+a dead link. Output: docs/architecture/navigation.md.
 
     python -m devtools.nav.graph [--write | --check]
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -19,6 +23,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "frontend" / "src"
 OUT = ROOT / "docs" / "architecture" / "navigation.md"
+USE_CASES = ROOT / "docs" / "ideal-ui" / "usecases.json"
 PATTERNS = [
     (
         "link",
@@ -38,6 +43,49 @@ PATTERNS = [
 ]
 DYNAMIC_LOGIN = re.compile(r"loginPath\(")
 VARIABLE = re.compile(r"""href=\{(?![{`"'])([^}]+)\}""")
+# A destination named by the workspace route contract: routeOf("<screen>/<view>").route.
+CONTRACT_ROUTE = re.compile(r"""\brouteOf\(\s*["']([^"']+)["']\s*\)\.route\b""")
+# The same destination handed to a document navigation or a server redirect instead of a link.
+DOCUMENT_CALL = re.compile(r"(?:location|browserNavigation)\.\w+\([^;\n]*$")
+REDIRECT_CALL = re.compile(r"\bredirect\(\s*$")
+# A WorkspaceLink whose route is not such a literal (a list entry or a function result).
+VARIABLE_ROUTE = re.compile(
+    r"""<WorkspaceLink\b[^>]*?\broute=\{(?!routeOf\(\s*["'])([^}]+)\}"""
+)
+
+
+def contract_routes() -> dict[str, str]:
+    """Route key (`screen/view`) to path, from the use-case contract."""
+    rows = json.loads(USE_CASES.read_text(encoding="utf-8"))["workspace_routes"]
+    return {f'{row["screen"]}/{row["view"]}': row["route"] for row in rows}
+
+
+def contract_edges(text: str, where: str) -> list[dict[str, str]]:
+    """Every `routeOf("key").route` of a source text, resolved to its path."""
+    known = contract_routes()
+    rows = []
+    for match in CONTRACT_ROUTE.finditer(text):
+        key = match.group(1)
+        line_start = text.rfind("\n", 0, match.start()) + 1
+        before = text[line_start : match.start()]
+        if before.lstrip().startswith(("//", "*", "/*")):
+            continue  # a comment that explains the form is not a destination
+        kind = (
+            "server-redirect"
+            if REDIRECT_CALL.search(before)
+            else "document" if DOCUMENT_CALL.search(before) else "link"
+        )
+        # A key the contract does not have resolves to no route, and is reported as dead.
+        path = known.get(key, f"<no workspace route {key}>")
+        rows.append(
+            {
+                "source": f"{where}:{text.count(chr(10), 0, match.start()) + 1}",
+                "kind": kind,
+                "target": path,
+                "path": path,
+            }
+        )
+    return rows
 
 
 def routes() -> list[tuple[str, re.Pattern[str]]]:
@@ -105,6 +153,7 @@ def edges() -> list[dict[str, str]]:
                         "path": path,
                     }
                 )
+        rows.extend(contract_edges(text, where))
         for match in DYNAMIC_LOGIN.finditer(text):
             line = text.count("\n", 0, match.start()) + 1
             rows.append(
@@ -140,13 +189,14 @@ def variables() -> list[dict[str, str]]:
                             "expression": target,
                         }
                     )
-        for match in VARIABLE.finditer(text):
-            rows.append(
-                {
-                    "source": f"{file.relative_to(SRC)}:{text.count(chr(10), 0, match.start()) + 1}",
-                    "expression": match.group(1).strip(),
-                }
-            )
+        for pattern in (VARIABLE, VARIABLE_ROUTE):
+            for match in pattern.finditer(text):
+                rows.append(
+                    {
+                        "source": f"{file.relative_to(SRC)}:{text.count(chr(10), 0, match.start()) + 1}",
+                        "expression": match.group(1).strip(),
+                    }
+                )
     return rows
 
 

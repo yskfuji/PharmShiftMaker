@@ -1,33 +1,32 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ApiWorkspaceProvider from "@/ideal/providers/ApiWorkspaceProvider";
-import WorkspaceContent from "@/features/workspace/shell/WorkspaceContent";
-import WorkspaceShell from "@/features/workspace/shell/WorkspaceShell";
-import { screenMeta } from "@/ideal/screens/shared";
+import WorkspaceRoutePage, { type WorkspaceSearch } from "@/features/workspace/shell/WorkspaceRoutePage";
+import { screenMeta } from "@/ideal/ui/atoms";
 import type { IdealScreen } from "@/ideal/types";
-import { loadInitialWorkspace } from "@/ideal/api/serverInitial";
 import { isWorkspaceView, workspaceViews } from "@/ideal/views";
 import { idealUiEnabled } from "@/lib/featureFlags";
 
 export const dynamic = "force-dynamic";
 
+/** A screen of the contract. Own keys only: "constructor" or "__proto__" in the address is
+ * a key every object answers to, and is no screen. */
+const isScreen = (screen: string): screen is IdealScreen => Object.hasOwn(screenMeta, screen);
+
+// One view of a workspace screen. Only a screen and a view of the generated route contract
+// exist; the route itself is rendered by WorkspaceRoutePage from its own definition.
 export default async function WorkspaceViewPage({ params, searchParams }: {
   params: Promise<{ screen: string; view: string }>;
-  searchParams: Promise<{ scope?: string; period?: string; publication?: string; case?: string; person?: string }>;
+  searchParams: Promise<WorkspaceSearch>;
 }) {
   if (!idealUiEnabled()) notFound();
   const { screen, view } = await params;
-  if (!(screen in screenMeta) || !isWorkspaceView(screen as IdealScreen, view)) notFound();
-  const { scope, period, publication, case: caseId, person } = await searchParams;
-  const privacyPurpose = screen === "governance" && view === "privacy";
-  const initial = await loadInitialWorkspace(scope, screen as IdealScreen, { period, publicationId: publication, caseId, personId: person }, view);
-  return <WorkspaceShell initial={initial} screen={screen as IdealScreen} view={view} routeContext={{ case: initial.selectedCaseId ?? undefined, person: initial.selectedPersonId ?? undefined }}>
-    <ApiWorkspaceProvider scopeId={scope} period={initial.requestedPeriod} publicationId={initial.selectedPublicationId ?? undefined} caseId={initial.selectedCaseId ?? undefined} personId={initial.selectedPersonId ?? undefined} privacyPurpose={privacyPurpose} rosterPurpose={screen === "people"} initial={initial}><WorkspaceContent screen={screen as IdealScreen} view={view} /></ApiWorkspaceProvider>
-  </WorkspaceShell>;
+  if (!isScreen(screen) || !isWorkspaceView(screen, view)) notFound();
+  return <WorkspaceRoutePage screen={screen} view={view} search={await searchParams} />;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ screen: string; view: string }> }): Promise<Metadata> {
   const { screen, view } = await params;
-  const item = workspaceViews[screen as IdealScreen]?.find((candidate) => candidate.key === view);
-  return { title: item ? `${item.label} · ${screenMeta[screen as IdealScreen]?.label ?? "PharmShiftMaker"}` : "見つかりません" };
+  if (!isScreen(screen) || !Object.hasOwn(workspaceViews, screen)) return { title: "見つかりません" };
+  const item = workspaceViews[screen]?.find((candidate) => candidate.key === view);
+  return { title: item ? `${item.label} · ${screenMeta[screen].label}` : "見つかりません" };
 }

@@ -1,0 +1,55 @@
+/* Route layout of requests: mine, leave, swap and outside. Selectors start with .ideal-v3-app; class names are ideal-v3-<purpose>-*. */
+
+/* 1. The first card ------------------------------------------------------------------------ */
+/* The ways from the first card to the route's own tasks. The row is as tall as its buttons
+   before they are there (they arrive once the page can answer), so the card does not grow
+   under the reader; it starts where the text above it starts, not at the button's padding. */
+.ideal-v3-app .ideal-v3-requests-jumps { display: flex; flex: 0 0 auto; flex-wrap: wrap; align-items: center; gap: 0 var(--space-3); min-height: 44px; margin-inline-start: -.3rem; }
+.ideal-v3-app .ideal-toolbar p + .ideal-v3-requests-jumps { margin-top: var(--space-1); }
+/* Where something else is done instead: one line of its own under the purpose. */
+.ideal-v3-app .ideal-toolbar .ideal-v3-requests-pointer { margin-top: var(--space-2); }
+
+/* 2. What the server reports about the ledger ---------------------------------------------- */
+/* Inside the callout the text is read as a report, not as a muted note. */
+.ideal-v3-app .ideal-v3-requests-reports { display: grid; gap: var(--space-2); }
+.ideal-v3-app .ideal-panel .ideal-v3-requests-reports p { max-width: none; margin: 0; color: rgb(var(--color-fg)); }
+.ideal-v3-app .ideal-v3-requests-reports > section { display: grid; gap: var(--space-1); }
+.ideal-v3-app .ideal-v3-requests-reports .ideal-note-list { margin: 0; color: rgb(var(--color-fg)); overflow-wrap: anywhere; }
+
+/* 3. Tables of requests and declarations ---------------------------------------------------- */
+/* The version is three characters: its column does not take the width of a full one, so
+   the period of a request stays on one line where the region is wide enough. */
+.ideal-v3-app .ideal-v3-requests-tables .ideal-table :is(th, td):last-child { min-width: 4.5em; }
+/* A callout among the tables of a section: it ends with its section. */
+.ideal-v3-app .ideal-v3-requests-tables > section > .ideal-v3-callout { margin-bottom: 0; }
+/* A sentence about a table and the sentence that there is none: two lines, not one block. */
+.ideal-v3-app .ideal-v3-requests-tables > p + p { margin-top: var(--space-2); }
+.ideal-v3-app .ideal-v3-requests-tables > .ideal-definition-list { margin-top: var(--space-3); }
+/* A date in a name is not broken at its hyphens. */
+.ideal-v3-app .ideal-v3-requests-keep { white-space: nowrap; }
+
+/* requests/leave: the viewer's own figures, first in "now": what can be used, and how the
+   five-day obligation stands. The figure is the large part; the server's verdict is a pill
+   with its words. Nothing here is added up: each line is one line of the read. */
+.ideal-v3-app .ideal-v3-requests-headline { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--space-3) var(--space-6); max-width: 60rem; margin: 0; }
+.ideal-v3-app .ideal-v3-requests-headline > div { min-width: 0; padding-inline-start: var(--space-3); border-inline-start: 3px solid rgb(var(--ideal-teal)); }
+.ideal-v3-app .ideal-v3-requests-headline dt { color: rgb(var(--color-fg-muted)); font-size: var(--ideal-v3-text-xs); font-weight: var(--ideal-v3-weight-label); }
+.ideal-v3-app .ideal-v3-requests-headline dd { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); margin: 0; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+.ideal-v3-app .ideal-v3-requests-headline dd > strong { font-size: var(--ideal-v3-text-lg); font-weight: var(--ideal-v3-weight-heading); font-variant-numeric: tabular-nums; line-height: var(--line-height-heading); }
+.ideal-v3-app .ideal-v3-requests-headline dd > .ideal-pill { align-self: center; }
+/* The balance of each grant at phone width: the figure a person looks for (the days that can
+   be used now) is the second column, and it is in view before the table is scrolled. The
+   first column names a grant by three things (a person, an employer, a day): it wraps
+   between them, its header wraps with it, and the two columns of figures are as wide as
+   their own words. */
+@media (max-width: 520px) {
+  .ideal-v3-app [aria-label="年休残高"] .ideal-table thead th { white-space: normal; }
+  .ideal-v3-app [aria-label="年休残高"] .ideal-table :is(thead th:first-child, tbody th[scope="row"]) { min-width: 9.5em; max-width: 11em; }
+  .ideal-v3-app [aria-label="年休残高"] .ideal-table :is(th, td):not(:first-child) { min-width: 0; white-space: nowrap; }
+  .ideal-v3-app [aria-label="年休残高"] .ideal-table thead th:nth-child(2) { white-space: normal; max-width: 7em; }
+}
+/* Beside the header's count, for the person who waits: what the count means for them. */
+.ideal-v3-app .ideal-toolbar .ideal-note.ideal-v3-requests-waiting { max-width: 22rem; margin: 0; }
+@media (forced-colors: active) {
+  .ideal-v3-app .ideal-v3-requests-headline > div { border-color: CanvasText; }
+}

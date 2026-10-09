@@ -1,4 +1,4 @@
-"""Run U01–U27 in independent disposable PostgreSQL schemas.
+"""Run every use case of the contract in independent disposable PostgreSQL schemas.
 
 Each Playwright invocation starts the remediation server once. That server creates a
 fresh owned schema and removes it on shutdown. The three widths × three browser projects
@@ -110,7 +110,8 @@ def main() -> int:
         )
         if result.returncode or not exact_result(destination / "results.json", name):
             failed.append(row["id"])
-    summary = {"total": 27, "failed": failed, "passed": 27 - len(failed)}
+    total = len(document["use_cases"])
+    summary = {"total": total, "failed": failed, "passed": total - len(failed)}
     run_root.mkdir(parents=True, exist_ok=True)
     (run_root / "summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

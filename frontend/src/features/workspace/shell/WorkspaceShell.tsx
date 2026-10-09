@@ -3,32 +3,32 @@ import Link from "next/link";
 import { ChevronRight, Menu } from "lucide-react";
 import { roleLabels } from "@/ideal/data";
 import { WORKSPACE_NAV } from "@/features/workspace/generated/usecaseRoutes";
-import type { InitialWorkspacePayload } from "@/ideal/providers/initial";
-import { screenMeta } from "@/ideal/screens/shared";
-import type { IdealRole, IdealScreen } from "@/ideal/types";
-import { defaultWorkspaceView, workspaceViews } from "@/ideal/views";
+import type { PublicationRead } from "@/ideal/api/contracts";
+import { screenMeta } from "@/ideal/ui/atoms";
+import type { IdealRole, IdealScreen, PlanningScopeSummary, WorkspaceNotification } from "@/ideal/types";
+import { defaultWorkspaceView, workspaceRoute, workspaceViews } from "@/ideal/views";
 import WorkspaceContextSummary from "./WorkspaceContextSummary";
+import { workspaceHrefWithContext } from "./workspaceHref";
 import WorkspaceUserMenu from "./WorkspaceUserMenu";
 
+/** What the frame shows: who is signed in, their scopes, the scope, period and publication
+ * the URL selects, and their notifications. The route's context provides it. */
+export type ShellInitial = {
+  viewerName: string;
+  scopes: PlanningScopeSummary[];
+  scope: PlanningScopeSummary | null;
+  publications: PublicationRead[];
+  selectedPublicationId: string | null;
+  requestedPeriod: string;
+  notifications: WorkspaceNotification[];
+};
+
 type Props = {
-  initial: InitialWorkspacePayload;
+  initial: ShellInitial;
   screen: IdealScreen;
   view?: string;
   routeContext?: { publication?: string; case?: string; person?: string };
   children: ReactNode;
-};
-
-export const workspaceHrefWithContext = (path: string, context: { scope?: string; period?: string; publication?: string; case?: string; person?: string }) => {
-  const query = new URLSearchParams();
-  const privacyPurpose = path === "/workspace/governance/privacy";
-  if (context.scope && /^[A-Za-z0-9._:/-]{1,256}$/.test(context.scope)) query.set("scope", context.scope);
-  if (context.period && /^\d{4}-\d{2}$/.test(context.period)) query.set("period", context.period);
-  for (const key of ["publication", "case", "person"] as const) {
-    if (privacyPurpose && (key === "publication" || key === "case")) continue;
-    const value = context[key];
-    if (value && /^[A-Za-z0-9._:-]{1,256}$/.test(value)) query.set(key, value);
-  }
-  return `${path}${query.size ? `?${query}` : ""}`;
 };
 
 /**
@@ -52,9 +52,21 @@ export default function WorkspaceShell({ initial, screen, view, routeContext, ch
   };
   const notices = initial.notifications.filter((item) => !item.read).length;
   const visibleViews = workspaceViews[screen]?.filter((item) => item.roles.includes(role)) ?? [];
-  const viewLink = (item: (typeof visibleViews)[number], index: number) => <Link key={item.key} href={workspaceHrefWithContext(`/workspace/${screen}/${item.key}`, context)} aria-current={selectedView === item.key ? "page" : undefined}>
-    {screen === "plan" && <span>{index + 1}</span>}<strong>{item.label}</strong>{item.short && <small>{item.short}</small>}
+  // The plan screen is a process: its views are numbered in the order of the contract, and
+  // the one shown is the current one. Nothing here says that a stage is done: the frame does
+  // not know it (a stage's own screen says what is finished), so a stage before the current
+  // one looks and reads like one after it, a number and a name.
+  const process = screen === "plan";
+  const viewLink = (item: (typeof visibleViews)[number]) => <Link key={item.key} href={workspaceHrefWithContext(`/workspace/${screen}/${item.key}`, context)} aria-current={selectedView === item.key ? "page" : undefined}>
+    {process && <span className="ideal-v3-subnav-step">{visibleViews.indexOf(item) + 1}</span>}<strong>{item.label}</strong>{item.short && <small>{item.short}</small>}
   </Link>;
+  const viewGroup = (id: string, label: string, keys: string[]) => {
+    const items = visibleViews.filter((item) => keys.includes(item.key));
+    return items.length > 0 && <div className="ideal-v3-subnav-group" role="group" aria-labelledby={id}><span id={id} className="ideal-v3-subnav-label">{label}</span><div>{items.map(viewLink)}</div></div>;
+  };
+  // What this address is for. A screen without views (今日, 勤務表) has its sentence in the
+  // contract as well; the hint of the main navigation is said there already.
+  const purpose = currentView?.description ?? workspaceRoute(screen)?.description ?? screenMeta[screen].hint;
 
   const nav = <nav aria-label="主要ナビゲーション" className="ideal-v3-nav">
     {allowed.map((key) => {
@@ -84,7 +96,7 @@ export default function WorkspaceShell({ initial, screen, view, routeContext, ch
 
     <main id="main" tabIndex={-1} className="ideal-v3-main">
       <header className="ideal-v3-page-head">
-        <div className="ideal-v3-title-block"><span className="ideal-eyebrow">{currentView?.label ?? screenMeta[screen].hint}</span><h1>{screenMeta[screen].label}</h1><p>{currentView?.description ?? screenMeta[screen].hint}</p></div>
+        <div className="ideal-v3-title-block"><h1>{screenMeta[screen].label}</h1><p>{purpose}</p></div>
         <WorkspaceUserMenu name={initial.viewerName} role={roleLabels[role]} settingsHref={workspaceHrefWithContext("/workspace/settings/appearance", context)} notificationsHref={workspaceHrefWithContext("/workspace/settings/notifications", context)} notices={notices} />
       </header>
 
@@ -93,12 +105,12 @@ export default function WorkspaceShell({ initial, screen, view, routeContext, ch
         <WorkspaceContextSummary period={contextPeriod} publication={publication ? { publication_id: publication.publication_id, version: publication.version, validation_status: publication.validation_status } : null} />
       </section>
 
-      {workspaceViews[screen] && <nav className={`ideal-v3-subnav ${screen === "plan" ? "is-process" : ""}`} aria-label={`${screenMeta[screen].label}の機能`}>
-        {screen === "settings" ? <><div className="ideal-v3-subnav-group"><span>個人設定</span>{visibleViews.filter((item) => ["appearance", "notifications"].includes(item.key)).map(viewLink)}</div><div className="ideal-v3-subnav-group"><span>施設・部署設定</span>{visibleViews.filter((item) => ["absence-consent", "flextime"].includes(item.key)).map(viewLink)}</div></> : visibleViews.map(viewLink)}
+      {workspaceViews[screen] && <nav className={process ? "ideal-v3-subnav is-process" : screen === "settings" ? "ideal-v3-subnav is-grouped" : "ideal-v3-subnav"} aria-label={`${screenMeta[screen].label}の機能`}>
+        {screen === "settings" ? <>{viewGroup("settings-group-personal", "個人設定", ["appearance", "notifications"])}{viewGroup("settings-group-scope", "施設・部署設定", ["absence-consent", "flextime"])}</> : visibleViews.map(viewLink)}
       </nav>}
 
       <div className="ideal-v3-content">{children}</div>
-      <footer className="ideal-v3-footer"><span>PharmShiftMaker · 認知中心UI v3</span><span>日本語 · Asia/Tokyo · 実データの権限はサーバーで判定</span></footer>
+      <footer className="ideal-v3-footer"><span>PharmShiftMaker</span><span>日本語 · 時刻は日本時間（Asia/Tokyo）</span></footer>
     </main>
   </div>;
 }

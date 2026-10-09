@@ -34,10 +34,20 @@ export type InputLatest = { input_hash: string; input_revision: number; publicat
   period: { start: string; end: string };
 } };
 type InputPeriod = { input_hash: string };
+export type RecoveryStatus = { state: string; manifest_hash: string | null; note: string };
+/** What the people directory shows of a person's contracts and qualifications. */
+export type DirectoryRecords = {
+  people: Array<{ person_id: string; name: string }>;
+  contracts: Array<Record<string, unknown>>;
+  capabilities: Array<Record<string, unknown>>;
+  records: Array<{ kind: string; entity_id: string; revision: number; payload: Record<string, unknown> }>;
+};
 type ComplianceRecord = { kind: string; entity_id: string; payload: Record<string, unknown> };
 
-export function createIdealClient(identity: string) {
-  const request = createPlanningTransport(identity);
+export type PlanningRequest = <T>(path: string, method?: string, body?: unknown) => Promise<T>;
+
+/** `request` defaults to the browser transport; the server and Storybook pass their own. */
+export function createIdealClient(identity: string, request: PlanningRequest = createPlanningTransport(identity)) {
   // Literal paths, so devtools/er/ia_map.py can map these screens to their endpoints.
   const scope = (scopeId: string) => encodeURIComponent(scopeId);
   const id = (value: string) => encodeURIComponent(value);
@@ -109,6 +119,7 @@ export function createIdealClient(identity: string) {
       request<MembershipRevision>(`/memberships?scope_id=${scope(scopeId)}`, "POST", body),
     deactivateMembership: (scopeId: string, membershipId: string, body: { expected_version: number; evidence: Evidence } & Keyed) =>
       request<MembershipRevision>(`/memberships/${id(membershipId)}/deactivate?scope_id=${scope(scopeId)}`, "POST", body),
+    directoryRecords: (scopeId: string) => request<DirectoryRecords>(`/compliance/workflow-context?scope_id=${scope(scopeId)}`),
     lifecycleCases: (scopeId: string) => request<LifecycleCase[]>(`/lifecycle-cases?scope_id=${scope(scopeId)}`),
     createLifecycle: (scopeId: string, body: { person_id: string; kind: "ONBOARD" | "OFFBOARD"; effective_date: string; evidence: Evidence } & Keyed) =>
       request<LifecycleCase>(`/lifecycle-cases?scope_id=${scope(scopeId)}`, "POST", body),
@@ -118,8 +129,9 @@ export function createIdealClient(identity: string) {
       request<LifecycleCase>(`/lifecycle-cases/${id(caseId)}/tasks/${id(taskKey)}/attest?scope_id=${scope(scopeId)}`, "POST", body),
 
     // Governance
+    recoveryStatus: (scopeId: string) => request<RecoveryStatus>(`/compliance/recovery-status?scope_id=${scope(scopeId)}`),
     timeline: (scopeId: string, before: string | null, category: string | null) =>
-      request<AuditTimelinePage>(`/audit-timeline?scope_id=${scope(scopeId)}&limit=20${before ? `&before=${id(before)}` : ""}${category ? `&category=${category}` : ""}`),
+      request<AuditTimelinePage>(`/audit-timeline?scope_id=${scope(scopeId)}&limit=20${before ? `&before=${id(before)}` : ""}${category ? `&category=${id(category)}` : ""}`),
 
     // Planning studio
     refreshInput: (scopeId: string, expectedRevision: number) =>

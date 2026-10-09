@@ -268,3 +268,78 @@ def test_person_control_then_typed_shared_preservation(pg, monkeypatch, tmp_path
         archive = s.scalar(select(PreservedArchive))
         assert archive.payload["retained"]["people"] == [{"person_id": "p2"}]
         assert archive.payload["retained"]["subject_records"][0]["data"] == {}
+
+
+@pytest.mark.parametrize("shared", [False, True])
+def test_will_process_flag_is_what_the_subject_erasure_processed(
+    pg, monkeypatch, tmp_path, shared
+):
+    from shift_scheduler.db.compliance_models import CopyErasure
+
+    prepare(pg, monkeypatch, tmp_path, shared=shared)
+    with pg.begin() as s:
+        control = controls.preview(
+            s, SCOPE, "p1", issuer="test", subject="admin", at=NOW
+        )
+        planned = controls.plan_eligible(
+            s,
+            SCOPE,
+            "p1",
+            issuer="test",
+            subject="admin",
+            expected_revision=1,
+            idempotency_key="eligible-plan-flags",
+            at=NOW,
+        )
+    # The plan response and the control's inventory state the same flag per target.
+    flags = {t["copy_id"]: t["will_process"] for t in planned["targets"]}
+    listed = control["inventory"]["targets"]
+    assert {t["copy_id"]: t["will_process"] for t in listed} == flags
+    assert all(set(t) == {"copy_id", "will_process"} for t in planned["targets"])
+    assert flags and all(type(value) is bool for value in flags.values())
+    # Both kinds are present: a file nothing blocks, database records that are blocked,
+    # and (shared) database records that are erased.
+    kinds = {(t["medium"], t["will_process"]) for t in listed}
+    assert {("file", True), ("database", False)} <= kinds
+    assert (("database", True) in kinds) is shared
+    assert {t["copy_id"] for t in listed if not t["blockers"]} == {
+        key for key, value in flags.items() if value
+    }
+    with pg() as s:
+        before = {
+            row.copy_id: (row.state, row.revision)
+            for row in s.scalars(select(ManagedCopy))
+        }
+    with pg.begin() as s:
+        result = execute(s, planned)
+        stored = s.get(CopyErasure, planned["plan_id"]).payload
+    processed = set(stored["queued_copy_ids"]) | set(stored["erased_database_copy_ids"])
+    # flag == actually processed, for the targets with a blocker and for those without.
+    assert {key for key, value in flags.items() if value} == processed
+    assert result["queued_count"] + result["erased_database_count"] == len(processed)
+    with pg() as s:
+        after = {
+            row.copy_id: (row.state, row.revision)
+            for row in s.scalars(select(ManagedCopy))
+        }
+    for key, value in flags.items():
+        if value:
+            assert after[key] != before[key]
+            assert after[key][0] in {"PENDING_ERASURE", "ERASED"}
+        else:
+            assert after[key] == before[key]
+    # A replay of the plan request answers the same flags from the receipt.
+    with pg.begin() as s:
+        assert (
+            controls.plan_eligible(
+                s,
+                SCOPE,
+                "p1",
+                issuer="test",
+                subject="admin",
+                expected_revision=1,
+                idempotency_key="eligible-plan-flags",
+                at=NOW,
+            )
+            == planned
+        )

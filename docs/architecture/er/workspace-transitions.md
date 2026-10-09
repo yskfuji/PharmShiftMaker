@@ -5,9 +5,9 @@
 
 | 系列 | 起点 | 許可された関連画面 | 役割 |
 |---|---|---|---|
-| U01 認証・役割・scope | `/workspace/home` | `/workspace/operations/cases`<br>`/workspace/schedule` | ADMIN, LEADER, PHARMACIST |
+| U01 認証・役割・scope | `/workspace/home` | `/workspace/operations/cases`<br>`/workspace/operations/today`<br>`/workspace/requests/leave`<br>`/workspace/schedule` | ADMIN, LEADER, PHARMACIST |
 | U02 本人勤務と個人出力 | `/workspace/schedule` | `/workspace/requests/leave`<br>`/workspace/requests/swap`<br>`/workspace/operations/cases` | ADMIN, LEADER, PHARMACIST |
-| U03 三候補生成・比較・公開 | `/workspace/plan/compare` | `/workspace/plan/input`<br>`/workspace/plan/generate`<br>`/workspace/plan/compare`<br>`/workspace/plan/drafts`<br>`/workspace/plan/publications`<br>`/workspace/schedule` | ADMIN, LEADER |
+| U03 三候補生成・比較・公開 | `/workspace/plan/compare` | `/workspace/plan/input`<br>`/workspace/plan/generate`<br>`/workspace/plan/compare`<br>`/workspace/plan/drafts`<br>`/workspace/plan/publications`<br>`/workspace/schedule`<br>`/workspace/settings/notifications` | ADMIN, LEADER |
 | U04 古い入力の更新 | `/workspace/plan/input` | `/workspace/plan/input`<br>`/workspace/plan/generate`<br>`/workspace/plan/compare`<br>`/workspace/plan/drafts`<br>`/workspace/plan/publications`<br>`/workspace/schedule` | ADMIN |
 | U05 同意不要の欠勤 | `/workspace/operations/cases` | `/workspace/home`<br>`/workspace/schedule`<br>`/workspace/governance/audit` | ADMIN, LEADER |
 | U06 勤務交換と同意 | `/workspace/requests/swap` | `/workspace/schedule`<br>`/workspace/operations/cases` | ADMIN, LEADER, PHARMACIST |
@@ -18,17 +18,19 @@
 | U11 入職タスク | `/workspace/people/lifecycle` | `/workspace/people/directory`<br>`/workspace/people/memberships`<br>`/workspace/people/lifecycle`<br>`/workspace/people/contracts` | ADMIN |
 | U12 退職タスク | `/workspace/people/lifecycle` | `/workspace/people/directory`<br>`/workspace/people/memberships`<br>`/workspace/people/lifecycle`<br>`/workspace/people/contracts` | ADMIN |
 | U13 監査タイムライン | `/workspace/governance/audit` | `/workspace/governance/audit`<br>`/workspace/governance/actuals`<br>`/workspace/governance/privacy`<br>`/workspace/governance/recovery` | ADMIN |
-| U14 異常系と再送 | `/workspace/home` | `/workspace/operations/cases`<br>`/workspace/schedule` | ADMIN, LEADER, PHARMACIST |
+| U14 異常系と再送 | `/workspace/home` | `/workspace/operations/cases`<br>`/workspace/operations/today`<br>`/workspace/requests/leave`<br>`/workspace/schedule` | ADMIN, LEADER, PHARMACIST |
 | U15 月間勤務・版差分・部署出力 | `/workspace/schedule` | `/workspace/requests/leave`<br>`/workspace/requests/swap`<br>`/workspace/operations/cases` | ADMIN, LEADER, PHARMACIST |
-| U16 当日運用 | `/workspace/operations/today` | `/workspace/home`<br>`/workspace/schedule`<br>`/workspace/governance/audit` | ADMIN, LEADER |
-| U17 役割別ホーム | `/workspace/home` | `/workspace/operations/cases`<br>`/workspace/schedule` | ADMIN, LEADER, PHARMACIST |
-| U18 施設・個人設定 | `/workspace/settings/appearance` | `/workspace/settings/appearance`<br>`/workspace/settings/notifications`<br>`/workspace/settings/absence-consent`<br>`/workspace/settings/flextime` | ADMIN, LEADER, PHARMACIST |
-| U19 休暇 | `/workspace/requests/leave` | `/workspace/schedule`<br>`/workspace/operations/cases` | ADMIN, LEADER, PHARMACIST |
-| U20 契約・資格 | `/workspace/people/contracts` | `/workspace/people/directory`<br>`/workspace/people/memberships`<br>`/workspace/people/lifecycle`<br>`/workspace/people/contracts` | ADMIN |
+| U16 当日運用 | `/workspace/operations/today` | `/workspace/home`<br>`/workspace/schedule`<br>`/workspace/governance/audit`<br>`/workspace/operations/cases` | ADMIN, LEADER |
+| U17 役割別ホーム | `/workspace/home` | `/workspace/operations/cases`<br>`/workspace/operations/today`<br>`/workspace/requests/leave`<br>`/workspace/schedule` | ADMIN, LEADER, PHARMACIST |
+| U18 施設・個人設定 | `/workspace/settings/appearance` | `/workspace/settings/appearance`<br>`/workspace/settings/notifications`<br>`/workspace/settings/absence-consent`<br>`/workspace/settings/flextime`<br>`/workspace/schedule` | ADMIN, LEADER, PHARMACIST |
+| U19 休暇 | `/workspace/requests/leave` | `/workspace/schedule`<br>`/workspace/operations/cases`<br>`/workspace/plan/input` | ADMIN, LEADER, PHARMACIST |
+| U20 契約・資格 | `/workspace/people/contracts` | `/workspace/people/directory`<br>`/workspace/people/memberships`<br>`/workspace/people/lifecycle`<br>`/workspace/people/contracts`<br>`/workspace/plan/input`<br>`/workspace/settings/flextime`<br>`/workspace/governance/audit` | ADMIN |
 | U21 必要配置 | `/workspace/plan/input` | `/workspace/plan/input`<br>`/workspace/plan/generate`<br>`/workspace/plan/compare`<br>`/workspace/plan/drafts`<br>`/workspace/plan/publications`<br>`/workspace/schedule` | ADMIN |
-| U22 フレックスタイム採用 | `/workspace/settings/flextime` | `/workspace/settings/appearance`<br>`/workspace/settings/notifications`<br>`/workspace/settings/absence-consent`<br>`/workspace/settings/flextime` | ADMIN |
-| U23 実績照合 | `/workspace/governance/actuals` | `/workspace/governance/audit`<br>`/workspace/governance/actuals`<br>`/workspace/governance/privacy`<br>`/workspace/governance/recovery` | ADMIN, LEADER |
-| U24 兼業・外部勤務 | `/workspace/requests/outside` | `/workspace/schedule`<br>`/workspace/operations/cases` | ADMIN, LEADER, PHARMACIST |
-| U25 個人情報・人物消去 | `/workspace/governance/privacy` | `/workspace/governance/audit`<br>`/workspace/governance/actuals`<br>`/workspace/governance/privacy`<br>`/workspace/governance/recovery` | ADMIN, PHARMACIST |
+| U22 フレックスタイム採用 | `/workspace/settings/flextime` | `/workspace/settings/appearance`<br>`/workspace/settings/notifications`<br>`/workspace/settings/absence-consent`<br>`/workspace/settings/flextime`<br>`/workspace/people/contracts`<br>`/workspace/governance/audit` | ADMIN |
+| U23 実績照合 | `/workspace/governance/actuals` | `/workspace/governance/audit`<br>`/workspace/governance/actuals`<br>`/workspace/governance/privacy`<br>`/workspace/governance/recovery`<br>`/workspace/plan/input` | ADMIN, LEADER |
+| U24 兼業・外部勤務 | `/workspace/requests/outside` | `/workspace/schedule`<br>`/workspace/operations/cases`<br>`/workspace/governance/audit` | ADMIN, LEADER, PHARMACIST |
+| U25 個人情報・人物消去 | `/workspace/governance/privacy` | `/workspace/governance/audit`<br>`/workspace/governance/actuals`<br>`/workspace/governance/privacy`<br>`/workspace/governance/recovery`<br>`/workspace/people/directory` | ADMIN, PHARMACIST |
 | U26 復旧と照合 | `/workspace/governance/recovery` | `/workspace/governance/audit`<br>`/workspace/governance/actuals`<br>`/workspace/governance/privacy`<br>`/workspace/governance/recovery` | ADMIN |
 | U27 詳細計画操作 | `/workspace/plan/drafts` | `/workspace/plan/input`<br>`/workspace/plan/generate`<br>`/workspace/plan/compare`<br>`/workspace/plan/drafts`<br>`/workspace/plan/publications`<br>`/workspace/schedule` | ADMIN, LEADER |
+| U28 半日・時間単位の年休請求 | `/workspace/requests/leave` | `/workspace/schedule`<br>`/workspace/operations/cases`<br>`/workspace/plan/input` | ADMIN, LEADER, PHARMACIST |
+| U29 保存期限を過ぎた旧勤務入力の消去 | `/workspace/governance/privacy` | `/workspace/governance/audit`<br>`/workspace/governance/actuals`<br>`/workspace/governance/privacy`<br>`/workspace/governance/recovery` | ADMIN |

@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import IdealWorkspace from '@/components/ideal/IdealWorkspace';
 import CognitiveWorkspaceShowcase from '@/features/workspace/showcase/CognitiveWorkspaceShowcase';
-import WorkspaceContent from '@/features/workspace/shell/WorkspaceContent';
-import { workspaceHrefWithContext } from '@/features/workspace/shell/WorkspaceShell';
+import WorkspaceContent from '@/ideal/screens/live/WorkspaceContent';
+import { workspaceHrefWithContext } from '@/features/workspace/shell/workspaceHref';
 import ApiWorkspaceProvider from '../providers/ApiWorkspaceProvider';
 import { useWorkspace } from '../providers/WorkspaceContext';
 
@@ -31,14 +31,14 @@ function RefreshWorkspaceButton() {
   return <button type="button" onClick={() => void live?.refresh()}>作業文脈を更新</button>;
 }
 
-test('Storybook and the showcase never reach the API (synthetic by default and by provider)', () => {
+test('Storybook and the showcase never reach the API (synthetic by default and by provider)', async () => {
   const spy = jest.fn(() => { throw new Error('no network'); });
   global.fetch = spy as never;
   const { unmount } = render(<IdealWorkspace initialScreen="schedule" />);
   expect(screen.getByRole('heading', { level: 1, name: '勤務表' })).toBeInTheDocument();
   unmount();
   render(<CognitiveWorkspaceShowcase screen="settings" view="appearance" role="LEADER" />);
-  expect(screen.getByRole('heading', { name: '外観と動き' })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: '配色' })).toBeInTheDocument();
   expect(spy).not.toHaveBeenCalled();
 });
 

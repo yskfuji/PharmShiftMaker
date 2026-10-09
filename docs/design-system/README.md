@@ -44,7 +44,8 @@ SSRとブラウザのAPI接続先は共通のビルド値を使う。HTTPS/HTTP�
 |---|---|
 | `frontend/.storybook/` | Storybook 10（`@storybook/nextjs-vite`）の設定。fetch は、見本ごとに登録した合成 JSON だけを返す（`fetchMock.ts`）。登録のない要求は失敗させる |
 | `frontend/stories/` | 見本。`src` の外に置き、アプリのビルドと jest には入れない |
-| `frontend/tests/visual/` | 視覚・光学の監査（`*.pw.ts`）。基準画像は `__screenshots__/`（chromium のみ） |
+| `frontend/tests/visual/` | 視覚・光学の監査（`*.pw.ts`）。基準画像は `__screenshots__/`（chromium のみ）。新 workspace の構造の検査は `lib/structure.ts`（下の「構造の検査」） |
+| `frontend/src/styles/workspace/` | 新 workspace（`/workspace`）専用のスタイルシート。全てのセレクターが `.ideal-v3-app` で始まり、文字の大きさと角丸は `scale.css` の変数だけを使う（`tests/test_workspace_v3_structure.py` が検査する） |
 | `frontend/playwright.visual-linux.config.ts` | 監査の設定。ブラウザは、ラベル付きの Linux コンテナ（127.0.0.1:18526）で動かす |
 | `devtools/visual/` | 実行器（`run.mjs`）、静的配信（`serve.mjs`）、集計（`summarize.py`） |
 | `devtools/er/` | ER 図と情報設計の対応表の生成器。出力は `docs/architecture/er/` |
@@ -106,6 +107,54 @@ cd .. && tools/node24/node_modules/node/bin/node devtools/visual/run.mjs --run-i
 - axe（`@axe-core/playwright`）は、機能の E2E で使い続ける。ただし axe は、`text-base` の衝突（文字色と背景色が同じ）を見逃した（2026-09-28）。この検査はその補いである。
 - APCA は、WCAG の勧告に入っていないので使わない。
 - WebKit（Linux）は、既定の設定では Tab キーでリンクへ移らない。このため、リンクのフォーカスの検査は、chromium と firefox で行う。
+- 2026-10-06 の変更：横にスクロールした表では、同じ表の固定セル（`position: sticky`）の下に入った文字を「表示されていない」と扱い、固定セルの横に見えている部分だけを判定する。変更前は「判定不能」になり、スクロールした表の監査が完了しなかった。固定セル以外の重なりは、従来どおり「判定不能」である。反例は `optical-pinned.pw.ts` にある。
+
+## 構造の検査（新 workspace、2026-10-06 追加）
+
+上の光学検査は、画面が未完成に見えるかどうかを判定しない。2026-10-06 に、光学検査の検出が 0 件の画面で、ラベルが 1 文字ずつ折り返すボタン、太さのない見出し、枠のない表、サーバーの値をそのまま出した表示が見つかった（経過は[検証記録](../ideal-ui/verification.md)の「Visual repair of the workspace and the fourth formal run」）。このため、新 workspace の枠（`.ideal-v3-app`）の内側に限って、次の検査を追加した。
+
+`frontend/tests/visual/lib/structure.ts` は、描画結果を 1 回読み取り、計算値を報告する。画面を操作しない。
+
+| 区分 | 検査 | 内容 |
+|---|---|---|
+| 検出（試験が失敗する） | `squeezed-label`・`squeezed-text` | 文字が 3 行以上に折り返し、1 行あたり平均 3 文字以下。又は、空白のない文字列が 1 行あたり平均 1.5 文字以下。又は、幅 6em 未満のボタンでラベルが折り返す |
+| 検出 | `bare-heading` | 画面の内容の見出しの太さが 600 未満 |
+| 検出 | `bare-table` | 表に枠（3 辺以上の罫線）がなく、見出し行の塗りも本体と同じ。又は直前の表との間隔が 8px 未満 |
+| 検出 | `bare-list`・`bare-definition-list` | 印も枠も余白もない箇条書き。項目名と値の色・太さ・大きさが全て同じ定義リスト |
+| 検出 | `variantless-button` | 背景も枠もないボタン |
+| 検出 | `text-floor` | 12px 未満の本文（月間表のセルと外枠は注意にとどめる） |
+| 検出 | `link-colour` | ボタンでないリンクの色が、リンクの色と異なる |
+| 検出 | `machine-value` | ISO 8601 の日時、`UPPER_SNAKE` の値、既知の列挙値、「API」という語 |
+| 注意（失敗しない） | `wrapped-label`・`narrow-text`・`heading-touches-content`・`text-outliers`・`planes`・`page-length`・`content-start` | 折り返したラベル、見出しと内容の間隔 4px 未満、1 枠内の文字の大きさが 5 種類以上、面の 4 重の入れ子、ページの長さ（1440px で 3 画面超、320px で 8 画面超）、320px での内容の開始位置 |
+
+構造の検査が判定しないもの：
+
+- 意味。見出しと内容の食い違い、同じことを言う 2 枚のカード、文の分かりやすさと正しさ、項目の順序は判定しない。
+- 配置の揃い、余白、行の折返し位置（行頭の「）」や「ー」を含む）。
+- 閉じた `<details>` の中。開いた状態は、下の `storybook-v3-open.pw.ts` だけが見る。
+- `YYYY-MM-DD`・`YYYY-MM-DD HH:MM`・`HH:MM`（記録の表の書式として許す）、`schedule.published` のような記録種別（注意にとどめる）、`code` の中、識別子を見せるための開閉欄の中、`data-verbatim` を付けた要素（人が入力した文字をそのまま見せる箇所）。
+
+検査を呼び出す spec：
+
+| spec | 対象 | エンジン |
+|---|---|---|
+| `storybook-v3-roles.pw.ts`・`storybook-v3.pw.ts` | 役割×経路の 52 見本、代表の 25 見本（閉じた状態、4 配色 × 3 幅）。光学検査に構造の検査を加えた | 3 エンジン |
+| `storybook-v3-states.pw.ts` | 状態の 150 見本（幅 390px）。構造の検査は、正常と空の 2 状態だけ | 3 エンジン |
+| `storybook-v3-parts.pw.ts`（新設） | 共有部品の見本（「Ideal UI v3/Parts/」の全て。ビルドの index から読む）。光学検査と構造の検査 | 3 エンジン |
+| `storybook-v3-open.pw.ts`（新設） | 25 経路の全ての `<details>` を開いた状態。コントラスト、操作対象の大きさ、320px のあふれ、文字間隔、構造の検査。明るい配色、320px と 1440px | chromium だけ（設計上。ほかの 2 エンジンは skip） |
+| `structure-counter.pw.ts`（新設） | 検出ごとの反例（欠陥のあるページは報告され、直したページは報告されない）と、設計どおりのマークアップ | 3 エンジン |
+| `optical-pinned.pw.ts`（新設） | 固定セルの扱いの反例 | 3 エンジン |
+| `tests/remediation-e2e/ideal-deep-*.spec.ts` の `finishAudit` | 業務系列の最後の画面。axe、光学検査、構造の検査 | 3 エンジン |
+
+- `storybook-v3-open.pw.ts` は、Tab キーでの移動をしないので、開いた状態のフォーカスを検査しない。入力も送信もしないので、確認面・拒否・保存後の状態には到達しない。見本の合成応答が答えられない読取りは、注意（`synthetic-gap`）として経路名を記録する。その操作を合格とは扱わない。
+- 集計（`devtools/visual/summarize.py`）は、構造の検出と注意を、光学の検出と分けて数える。
+- `frontend/playwright.visual-local.config.ts` は、手元の Chromium で検査を繰り返すための診断用の設定である。証拠には使わない。
+
+### 行列を分割して実行する
+
+ブラウザのコンテナの `/tmp` は 512MiB の tmpfs である。Playwright のサーバーは、1 つの接続（worker）が続く間、試験ごとの trace の記録を `/tmp` に置き、接続が終わると解放する。行列全体を 1 つの接続で実行すると、役割×経路の行列は 1 エンジンあたり約 0.8〜1.2GiB、代表の行列は約 0.4〜0.7GiB を必要とし（2026-10-06 の測定）、Chromium では、上限に達した時点で全画面撮影が失敗した（2026-10-05・10-06 の正式実行で、役割×経路が 155/156 になった原因）。Firefox と WebKit で上限に達したときに何が起きるかは、調べていない。
+
+このため、実行器の `--project <エンジン>` と `--shard k/M` で分割する。2026-10-07 の正式実行（第 4 回）では、役割×経路を各エンジン 8 分割（24 回）、代表を 4 分割（12 回）、共有部品を 3 分割（9 回）、状態・全開・反例を各 1 回、計 48 回で実行した。`/tmp` の最大は 225MiB であった。分割したときは、各回が実行した試験を、分割なしの試験の一覧（Playwright の `--list`）と突き合わせ、欠け・余分・重複がないことを確かめる。
 
 ## 基準画像
 

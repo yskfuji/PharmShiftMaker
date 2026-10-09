@@ -39,6 +39,108 @@ def seed_historical_flex_adoptions(environ: dict[str, str]) -> bool:
     )
 
 
+BASE_MEMBERSHIPS = (
+    ("admin", "p0", "ADMIN"),
+    ("pharmacist", "p1", "PHARMACIST"),
+    ("leader", "p0", "LEADER"),
+)
+INDEPENDENT_APPROVER = ("developer", "p-reviewer", "ADMIN")
+INDEPENDENT_APPROVER_FLAGS = (
+    "PHARMSHIFT_E2E_DEEP",
+    "PHARMSHIFT_E2E_FLEX",
+    # Adds the second administrator and nothing else (no data, no hook, no clock).
+    "PHARMSHIFT_E2E_INDEPENDENT_APPROVER",
+)
+
+
+def fixture_memberships(environ: dict[str, str]) -> list[tuple[str, str, str]]:
+    """The account links of the fixture: (subject, person, role) in hospital/pharmacy.
+
+    ``admin`` and ``leader`` are both Person 0, so a case that changes Person 0's duty
+    has nobody independent to approve it. Destructive decisions, related-person cases
+    and the legacy flex flow need a second administrator who is neither person on the
+    schedule: ``developer``. It exists only when a journey asks for it, so unrelated
+    legacy and flag-OFF fixtures keep exactly the three links they always had.
+    """
+    memberships = list(BASE_MEMBERSHIPS)
+    if any(environ.get(flag) == "1" for flag in INDEPENDENT_APPROVER_FLAGS):
+        memberships.append(INDEPENDENT_APPROVER)
+    return memberships
+
+
+def require_synthetic_fixture(environ: dict[str, str], what: str) -> None:
+    """Refuse a test-only behaviour outside the mock, development synthetic server."""
+    if (
+        environ.get("AUTH_MODE") != "mock"
+        or environ.get("PHARMSHIFT_ENV") != "development"
+    ):
+        raise RuntimeError(what + " is allowed only in synthetic mock fixtures")
+
+
+def seed_expired_input(environ: dict[str, str]) -> bool:
+    """Return whether the deep U29 fixture registers superseded planning inputs.
+
+    They add periods and a retention rule to the scope, so they exist only for the
+    journey that erases one of them: every other journey and every flag-OFF spec
+    keeps the single registered input.
+    """
+    return (
+        environ.get("PHARMSHIFT_E2E_EXPIRED_INPUT") == "1"
+        and environ.get("PHARMSHIFT_E2E_DEEP") == "1"
+    )
+
+
+def capture_input_erasure(database_url: str, input_hash: str) -> dict[str, object]:
+    """Observe one planning input in the disposable schema, before and after its
+    erasure (U29): the input, the drafts and jobs that depend on it, and the markers.
+
+    Exposed only by the synthetic deep-E2E factory. It reads counts and writes nothing.
+    """
+    from sqlalchemy import create_engine, text
+
+    if not re.fullmatch(r"[a-f0-9]{64}", input_hash):
+        raise ValueError("A planning input is named by its SHA-256")
+    engine = create_engine(database_url)
+    try:
+        with engine.connect() as connection:
+
+            def count(statement: str) -> int:
+                return int(connection.scalar(text(statement), {"h": input_hash}) or 0)
+
+            return {
+                "input_hash": input_hash,
+                "remaining_inputs": count(
+                    "SELECT count(*) FROM planning_inputs WHERE input_hash = :h"
+                ),
+                "remaining_drafts": count(
+                    "SELECT count(*) FROM planning_drafts WHERE input_hash = :h"
+                ),
+                "remaining_jobs": count(
+                    "SELECT count(*) FROM planning_jobs WHERE input_hash = :h"
+                ),
+                "unfinished_jobs": count("""SELECT count(*) FROM planning_jobs
+                    WHERE input_hash = :h AND status IN ('QUEUED', 'RUNNING')"""),
+                "input_tombstones": count("""SELECT count(*) FROM erasure_markers
+                    WHERE table_name = 'planning_inputs' AND object_key = :h"""),
+                "executed_plans": count(
+                    """SELECT count(*) FROM erasure_plans WHERE status = 'EXECUTED'
+                    AND plan_id IN (SELECT plan_id FROM erasure_markers
+                      WHERE table_name = 'planning_inputs' AND object_key = :h)"""
+                ),
+                "plan_tombstones": count(
+                    """SELECT count(*) FROM erasure_markers WHERE plan_id IN
+                    (SELECT plan_id FROM erasure_markers
+                      WHERE table_name = 'planning_inputs' AND object_key = :h)"""
+                ),
+                "other_inputs": count(
+                    "SELECT count(*) FROM planning_inputs WHERE input_hash <> :h"
+                ),
+                "database": "disposable schema",
+            }
+    finally:
+        engine.dispose()
+
+
 def capture_erasure_receipt(
     database_url: str, receipt_path: str | None = None
 ) -> dict[str, object]:
@@ -165,13 +267,7 @@ def synthetic_app():
         from shift_scheduler.api.routers.planning import dashboard_observation_time
         from shift_scheduler.application import flex_adoption
 
-        if (
-            os.environ.get("AUTH_MODE") != "mock"
-            or os.environ.get("PHARMSHIFT_ENV") != "development"
-        ):
-            raise RuntimeError(
-                "A fixed presentation clock is allowed only in synthetic mock fixtures"
-            )
+        require_synthetic_fixture(os.environ, "A fixed presentation clock")
         value = datetime.fromisoformat(fixed)
         if value.tzinfo is None:
             raise ValueError("The synthetic observation clock must include a timezone")
@@ -181,6 +277,12 @@ def synthetic_app():
         # imports and startup never replace the domain clock.
         flex_adoption.now = lambda: value.astimezone(UTC)
     if os.environ.get("PHARMSHIFT_E2E_DEEP") == "1":
+        # The stand-in control authority, the /__e2e/* routes and the read-fault
+        # middleware exist for the deep browser journeys only. Checked before anything
+        # is replaced or registered.
+        require_synthetic_fixture(
+            os.environ, "The deep E2E hooks (/__e2e/* and the read fault)"
+        )
         from types import SimpleNamespace
 
         from shift_scheduler.application import subject_controls
@@ -210,7 +312,74 @@ def synthetic_app():
                 methods=["POST"],
                 include_in_schema=False,
             )
+        if not any(
+            getattr(route, "path", None) == "/__e2e/input-erasure-receipt"
+            for route in app.routes
+        ):
+
+            def input_erasure_receipt(body: dict[str, object]) -> dict[str, object]:
+                return capture_input_erasure(
+                    os.environ["DATABASE_URL"], str(body.get("input_hash", ""))
+                )
+
+            app.add_api_route(
+                "/__e2e/input-erasure-receipt",
+                input_erasure_receipt,
+                methods=["POST"],
+                include_in_schema=False,
+            )
+        if not any(
+            getattr(route, "path", None) == "/__e2e/fail-next-read"
+            for route in app.routes
+        ):
+            from fastapi.responses import JSONResponse
+
+            fault = ReadFault()
+
+            def fail_next_read(body: dict[str, object]) -> dict[str, object]:
+                fault.arm(str(body.get("path", "")))
+                return {"armed": True}
+
+            app.add_api_route(
+                "/__e2e/fail-next-read",
+                fail_next_read,
+                methods=["POST"],
+                include_in_schema=False,
+            )
+
+            @app.middleware("http")
+            async def one_shot_read_failure(request, call_next):
+                if fault.take(request.method, request.url.path):
+                    return JSONResponse({"detail": ReadFault.DETAIL}, status_code=503)
+                return await call_next(request)
+
     return app
+
+
+class ReadFault:
+    """One synthetic 503 for the next read of an allowed path (deep browser journeys only).
+
+    The workspace reads its context on the server, so a browser-side route interception
+    cannot make that read fail. Only a listed read can be failed, only once, and only
+    with a 503; nothing is written and no other request is affected.
+    """
+
+    ALLOWED = frozenset({"/planning/notifications"})
+    DETAIL = "合成の通知読取り障害"
+
+    def __init__(self) -> None:
+        self._armed: str | None = None
+
+    def arm(self, path: str) -> None:
+        if path not in self.ALLOWED:
+            raise ValueError("Only a listed synthetic read can be failed")
+        self._armed = path
+
+    def take(self, method: str, path: str) -> bool:
+        if method != "GET" or self._armed != path:
+            return False
+        self._armed = None
+        return True
 
 
 def main():
@@ -256,20 +425,7 @@ def main():
             Base.metadata.create_all(get_engine())
         with get_session_factory().begin() as session:
             flex = os.environ.get("PHARMSHIFT_E2E_FLEX") == "1"
-            memberships = [
-                ("admin", "p0", "ADMIN"),
-                ("pharmacist", "p1", "PHARMACIST"),
-                ("leader", "p0", "LEADER"),
-            ]
-            if (
-                os.environ.get("PHARMSHIFT_E2E_DEEP") == "1"
-                or os.environ.get("PHARMSHIFT_E2E_FLEX") == "1"
-            ):
-                # Destructive decisions and related-person cases need an independent
-                # administrator; the legacy flex flow also requires its second admin.
-                # Never widen unrelated legacy/flag-OFF fixtures' permissions.
-                memberships.append(("developer", "p-reviewer", "ADMIN"))
-            for subject, person, role in memberships:
+            for subject, person, role in fixture_memberships(dict(os.environ)):
                 session.add(
                     AccountMembership(
                         membership_id=subject,
@@ -282,7 +438,12 @@ def main():
                     )
                 )
             data = snapshot(
-                with_grant_series=os.environ.get("PHARMSHIFT_E2E_GRANT_SERIES") == "1"
+                with_grant_series=os.environ.get("PHARMSHIFT_E2E_GRANT_SERIES") == "1",
+                # Only the journey that claims half-day and hourly leave sets this.
+                with_partial_day_leave=os.environ.get(
+                    "PHARMSHIFT_E2E_PARTIAL_DAY_LEAVE"
+                )
+                == "1",
             )
             if seed_historical_flex_adoptions(os.environ):
                 # U22 needs to exercise the distinct "end an adoption that has
@@ -330,7 +491,14 @@ def main():
                             0,
                             "synthetic-fixture",
                         )
-            register_input(session, data, "fixture", 0)
+            # Only the journey that erases a superseded input registers any: they
+            # come first, so the fixture's own input stays the newest of the scope.
+            earlier_inputs = 0
+            if seed_expired_input(os.environ):
+                from scripts.remediation_fixture import seed_retention_trial
+
+                earlier_inputs = seed_retention_trial(session)
+            register_input(session, data, "fixture", earlier_inputs)
             if os.environ.get("PHARMSHIFT_E2E_DEEP") == "1":
                 from sqlalchemy import select
 
