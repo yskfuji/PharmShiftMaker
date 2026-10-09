@@ -1232,8 +1232,41 @@ def undeclared_route_links(
     return found
 
 
+_ROUTE_NAMES = re.compile(r'\bnames:\s*"(none|planning|roster|privacy)"')
+_PERSON_ROUTES = re.compile(r"export const PERSON_ROUTES\b[^=]*=\s*\[(.*?)\]", re.S)
+_ROUTE_PATH = re.compile(r'"(/workspace/[^"]+)"')
+
+
+def person_routes_unlike_definitions(tree: Tree) -> list[str]:
+    """A person named in a URL travels (shell/workspaceHref.ts, `PERSON_ROUTES`) exactly to
+    the routes whose definition looks at one: a roster (`names: "roster"`) or the privacy
+    purpose (`names: "privacy"`) in its route.ts. A route on one side only would carry a
+    person it does not look at, or look at one no link carries to it."""
+    looks_at_a_person = {
+        path
+        for key, path in _contract().items()
+        if (name := f"{_route_directory(key)}/route.ts") in tree.names
+        and (found := _ROUTE_NAMES.search(_strip_comments(tree.read(name))))
+        and found.group(1) in {"roster", "privacy"}
+    }
+    block = _PERSON_ROUTES.search(
+        _strip_comments(tree.read(f"{SHELL}workspaceHref.ts"))
+    )
+    if block is None:
+        return [f"{SHELL}workspaceHref.ts declares no PERSON_ROUTES"]
+    carried_to = set(_ROUTE_PATH.findall(block.group(1)))
+    return [
+        f"a person travels to {path}, whose definition does not look at one"
+        for path in sorted(carried_to - looks_at_a_person)
+    ] + [
+        f"{path} looks at a person, and no link carries one to it"
+        for path in sorted(looks_at_a_person - carried_to)
+    ]
+
+
 RULES: dict[str, Callable[[Tree], list[str]]] = {
     "undeclared_route_links": undeclared_route_links,
+    "person_routes_unlike_definitions": person_routes_unlike_definitions,
     "established_modules_reached": established_modules_reached,
     "established_links": established_links,
     "free_workspace_urls": free_workspace_urls,
@@ -1955,6 +1988,22 @@ MUTATIONS: list[tuple[str, str, Callable[[Tree], Tree], str]] = [
         "an established path becomes a re-export of a workspace module again",
         lambda tree: tree.with_file("components/PublicationExport.tsx", RE_EXPORT),
         "components/PublicationExport.tsx",
+    ),
+    (
+        "person_routes_unlike_definitions",
+        "a person is carried to a route whose definition does not look at one",
+        lambda tree: tree.edited(
+            f"{SHELL}workspaceHref.ts",
+            '"/workspace/people/lifecycle",',
+            '"/workspace/plan/input",',
+        ),
+        "a person travels to /workspace/plan/input, whose definition does not look at one",
+    ),
+    (
+        "person_routes_unlike_definitions",
+        "a definition starts looking at a person and no link carries one to it",
+        lambda tree: tree.edited(INPUT_ROUTE, 'names: "none"', 'names: "roster"'),
+        "/workspace/plan/input looks at a person, and no link carries one to it",
     ),
 ]
 

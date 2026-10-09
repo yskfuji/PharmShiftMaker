@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { WORKSPACE_ROUTES, type WorkspaceRouteKey } from "../../generated/usecaseRoutes";
 import { routeOf } from "../routeTypes";
-import { contextOfQuery, onWorkspaceRoute, workspaceHrefWithContext } from "../workspaceHref";
+import { contextOfQuery, onWorkspaceRoute, PERSON_ROUTES, workspaceHrefWithContext } from "../workspaceHref";
 import WorkspaceLink from "../WorkspaceLink";
 
 let mockQuery = new URLSearchParams();
@@ -15,9 +15,12 @@ test("a link is an anchor to a route of the contract and carries the context of 
   expect(hrefOf("前提")).toBe("/workspace/plan/input");
   mockQuery = new URLSearchParams("scope=hospital%2Fpharmacy&period=2026-01&publication=pub-1&case=c1&person=p1&draft=d1&input=h1&return=%2Fplanning");
   render(<WorkspaceLink className="ideal-inline-link" route={routeOf("governance/audit").route}>監査</WorkspaceLink>);
-  // Only the five context values travel: a plan, an input version or anything else does not.
-  expect(hrefOf("監査")).toBe("/workspace/governance/audit?scope=hospital%2Fpharmacy&period=2026-01&publication=pub-1&case=c1&person=p1");
+  // Only the context values travel: a plan, an input version or anything else does not; the
+  // person on screen does not either, since the audit route does not look at a person.
+  expect(hrefOf("監査")).toBe("/workspace/governance/audit?scope=hospital%2Fpharmacy&period=2026-01&publication=pub-1&case=c1");
   expect(screen.getByRole("link", { name: "監査" })).toHaveClass("ideal-inline-link");
+  render(<WorkspaceLink route={routeOf("people/directory").route}>職員一覧</WorkspaceLink>);
+  expect(hrefOf("職員一覧")).toBe("/workspace/people/directory?scope=hospital%2Fpharmacy&period=2026-01&publication=pub-1&case=c1&person=p1");
 });
 
 test("what the link names comes first and is never replaced by the URL on screen", () => {
@@ -27,9 +30,34 @@ test("what the link names comes first and is never replaced by the URL on screen
   // A person the link names and that is not well-formed is left out, not replaced by the one on screen.
   render(<WorkspaceLink route={routeOf("people/contracts").route} context={{ person: "p 2/../x" }}>契約</WorkspaceLink>);
   expect(hrefOf("契約")).toBe("/workspace/people/contracts?scope=hospital%2Fpharmacy&period=2026-01");
-  // Nothing named: the person on screen travels.
+  // Nothing named: the person on screen travels to a route that looks at a person.
   render(<WorkspaceLink route={routeOf("people/lifecycle").route} context={{ scope: "hospital/ward", person: undefined }}>入職</WorkspaceLink>);
   expect(hrefOf("入職")).toBe("/workspace/people/lifecycle?scope=hospital%2Fward&period=2026-01&person=p-on-screen");
+});
+
+test("a person travels only to the five routes that look at one, named or inherited; `person: null` inherits nobody", () => {
+  const personRoutes = ["people/directory", "people/memberships", "people/lifecycle", "people/contracts", "governance/privacy"] as const;
+  expect(PERSON_ROUTES).toEqual(personRoutes.map((key) => routeOf(key).route));
+  for (const key of personRoutes) {
+    expect(workspaceHrefWithContext(routeOf(key).route, { person: "p2" }, { scope: "s1", person: "p1" })).toBe(`${routeOf(key).route}?person=p2&scope=s1`);
+    expect(workspaceHrefWithContext(routeOf(key).route, {}, { scope: "s1", person: "p1" })).toBe(`${routeOf(key).route}?scope=s1&person=p1`);
+    // The link that clears the selection: nothing named, nothing inherited, the rest of the context kept.
+    expect(workspaceHrefWithContext(routeOf(key).route, { person: null }, { scope: "s1", period: "2026-10", person: "p1" })).toBe(`${routeOf(key).route}?scope=s1&period=2026-10`);
+  }
+  const others = WORKSPACE_ROUTES.filter((item) => !(PERSON_ROUTES as readonly string[]).includes(item.route));
+  expect(others).toHaveLength(20);
+  for (const item of others) {
+    expect(workspaceHrefWithContext(item.route, { person: "p2" }, { scope: "s1", person: "p1" })).toBe(`${item.route}?scope=s1`);
+    expect(workspaceHrefWithContext(item.route, {}, { scope: "s1", person: "p1" })).toBe(`${item.route}?scope=s1`);
+  }
+  // Through the link, on a screen that names a person: the person goes to the people screens and not to the plan.
+  mockQuery = new URLSearchParams("scope=s1&person=p-on-screen");
+  render(<WorkspaceLink route={routeOf("plan/input").route}>前提・取込</WorkspaceLink>);
+  expect(hrefOf("前提・取込")).toBe("/workspace/plan/input?scope=s1");
+  render(<WorkspaceLink route={routeOf("people/contracts").route}>契約・資格</WorkspaceLink>);
+  expect(hrefOf("契約・資格")).toBe("/workspace/people/contracts?scope=s1&person=p-on-screen");
+  render(<WorkspaceLink route={routeOf("people/contracts").route} context={{ person: null }}>解除</WorkspaceLink>);
+  expect(hrefOf("解除")).toBe("/workspace/people/contracts?scope=s1");
 });
 
 test("the privacy-purpose route is never given a publication or a change case", () => {
@@ -42,7 +70,8 @@ test("the privacy-purpose route is never given a publication or a change case", 
 test("a planning link names the input version and the plans; no other route takes them", () => {
   mockQuery = new URLSearchParams("scope=s1&person=p1");
   render(<WorkspaceLink route={routeOf("plan/compare").route} context={{ input: "hash-12", draft: ["d1", "d2", "d3"] }}>比較</WorkspaceLink>);
-  expect(hrefOf("比較")).toBe("/workspace/plan/compare?scope=s1&person=p1&input=hash-12&draft=d1&draft=d2&draft=d3");
+  // The person on screen stays behind: the comparison does not look at a person.
+  expect(hrefOf("比較")).toBe("/workspace/plan/compare?scope=s1&input=hash-12&draft=d1&draft=d2&draft=d3");
   expect(workspaceHrefWithContext(routeOf("plan/drafts").route, { input: "a/b", draft: ["d1", "d 2", "../d3"] })).toBe("/workspace/plan/drafts?draft=d1");
   // The builder ignores a plan on another route even if it is handed one.
   expect(workspaceHrefWithContext(routeOf("schedule/index").route, { input: "hash-12", draft: ["d1"] })).toBe("/workspace/schedule");
@@ -65,7 +94,8 @@ test("an identifier of dots, or one that begins with anything but a letter or a 
     expect(workspaceHrefWithContext(routeOf("plan/compare").route, { input: value, draft: [value, "d1"] }, { person: value })).toBe("/workspace/plan/compare?draft=d1");
   }
   // Dots inside a value are part of it.
-  expect(workspaceHrefWithContext(routeOf("plan/drafts").route, { input: "a..b", draft: ["d.1", "9."] }, { person: "p.1" })).toBe("/workspace/plan/drafts?person=p.1&input=a..b&draft=d.1&draft=9.");
+  expect(workspaceHrefWithContext(routeOf("plan/drafts").route, { input: "a..b", draft: ["d.1", "9."] }, { case: "c.1" })).toBe("/workspace/plan/drafts?case=c.1&input=a..b&draft=d.1&draft=9.");
+  expect(workspaceHrefWithContext(routeOf("people/contracts").route, {}, { person: "p.1" })).toBe("/workspace/people/contracts?person=p.1");
 });
 
 test("there is no free destination: only the paths of the generated contract are accepted", () => {
@@ -79,14 +109,18 @@ test("there is no free destination: only the paths of the generated contract are
 });
 
 test("a link to another month leaves the publication and the case of the month on screen behind", () => {
+  // The person on screen never travels to the schedule (it does not look at a person); the
+  // rule about the month is judged on the other keys.
   const onScreen = { scope: "s/d", period: "2026-10", publication: "pub-12", case: "case-1", person: "p1" };
   // The same month, or no month named: everything on screen travels, as before.
-  expect(workspaceHrefWithContext(routeOf("schedule/index").route, {}, onScreen)).toBe("/workspace/schedule?scope=s%2Fd&period=2026-10&publication=pub-12&case=case-1&person=p1");
-  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-10" }, onScreen)).toBe("/workspace/schedule?period=2026-10&scope=s%2Fd&publication=pub-12&case=case-1&person=p1");
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, {}, onScreen)).toBe("/workspace/schedule?scope=s%2Fd&period=2026-10&publication=pub-12&case=case-1");
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-10" }, onScreen)).toBe("/workspace/schedule?period=2026-10&scope=s%2Fd&publication=pub-12&case=case-1");
   // Another month: the server would refuse this publication with it (409), so it is not carried.
-  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-11" }, onScreen)).toBe("/workspace/schedule?period=2026-11&scope=s%2Fd&person=p1");
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-11" }, onScreen)).toBe("/workspace/schedule?period=2026-11&scope=s%2Fd");
   // A publication the link names itself is the link's own, and travels.
-  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-11", publication: "pub-13" }, onScreen)).toBe("/workspace/schedule?period=2026-11&publication=pub-13&scope=s%2Fd&person=p1");
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "2026-11", publication: "pub-13" }, onScreen)).toBe("/workspace/schedule?period=2026-11&publication=pub-13&scope=s%2Fd");
   // A month that is not well-formed names none: nothing is left behind for it.
-  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "next" }, onScreen)).toBe("/workspace/schedule?scope=s%2Fd&publication=pub-12&case=case-1&person=p1");
+  expect(workspaceHrefWithContext(routeOf("schedule/index").route, { period: "next" }, onScreen)).toBe("/workspace/schedule?scope=s%2Fd&publication=pub-12&case=case-1");
+  // On a people screen, a link to another month keeps the person: the person is not of the month.
+  expect(workspaceHrefWithContext(routeOf("people/contracts").route, { period: "2026-11" }, onScreen)).toBe("/workspace/people/contracts?period=2026-11&scope=s%2Fd&person=p1");
 });

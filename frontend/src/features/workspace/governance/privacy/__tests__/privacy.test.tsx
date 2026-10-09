@@ -535,3 +535,18 @@ describe("before React attaches", () => {
     expect(calls).toEqual([]);
   });
 });
+
+test("with a person named in the URL the band stands before the notice of the subject, which is unchanged; for the viewer there is none", async () => {
+  await mount(() => ({}), listing(), "ADMIN", { selectedPersonId: "p1", names: { p1: "合成 一" } });
+  const band = screen.getByRole("region", { name: "表示を絞っている職員" });
+  expect(band).toHaveTextContent("表示を絞っている職員：合成 一。この画面では、この職員の記録だけを表示し、新しく登録する記録の対象もこの職員になります。サインイン中のアカウントは 佐藤 美咲（システム管理者） のまま変わっていません。");
+  expect(within(band).getByRole("link", { name: "絞り込みを解除して全員の記録を表示する" })).toHaveAttribute("href", "/workspace/governance/privacy");
+  const notice = screen.getByText("請求の対象として選択中の職員：合成 一。この職員の請求を、管理者として代わりに出せます。", { exact: true });
+  expect(notice.tagName).toBe("P");
+  expect(band.compareDocumentPosition(notice)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  expect(band.parentElement!.closest("section")).toBe(panel("現在の状態"));
+  document.body.innerHTML = "";
+  await mount();
+  expect(screen.queryByRole("region", { name: "表示を絞っている職員" })).toBeNull();
+  expect(panel("現在の状態")).toHaveTextContent("請求の対象として選択中の職員：佐藤 美咲（あなた）。");
+});

@@ -94,3 +94,24 @@ test("the context band: the scope form the journeys submit, and the three facts 
   expect(within(band).getByRole("button", { name: "表示" })).toHaveAttribute("type", "submit");
   expect(Array.from(band.querySelectorAll("dl > div")).map((fact) => [fact.querySelector("dt")?.textContent, fact.querySelector("dd")?.textContent])).toEqual([["対象期間", "2026-10"], ["公開版", "v12"], ["検証状態", "公開時に検証済み"]]);
 });
+
+test("the person the URL names travels with the frame's links only to the routes that look at a person", () => {
+  render(<WorkspaceShell initial={initial("ADMIN")} screen="people" view="lifecycle" routeContext={{ case: "case-1", person: "p2" }}><p>the route</p></WorkspaceShell>);
+  const context = "scope=synthetic%2Fclinical-pharmacy&period=2026-10&publication=synthetic-publication-12&case=case-1";
+  const tabs = within(screen.getByRole("navigation", { name: "職員の機能" })).getAllByRole("link");
+  // Every tab of the people screen keeps the person (the directory included).
+  expect(tabs.map((link) => link.getAttribute("href"))).toEqual([
+    `/workspace/people/directory?${context}&person=p2`,
+    `/workspace/people/memberships?${context}&person=p2`,
+    `/workspace/people/lifecycle?${context}&person=p2`,
+    `/workspace/people/contracts?${context}&person=p2`,
+  ]);
+  const main = within(screen.getAllByRole("navigation", { name: "主要ナビゲーション" })[0]);
+  const hrefOf = (name: RegExp) => main.getByRole("link", { name }).getAttribute("href");
+  // The schedule, the settings and the brand's way home do not look at a person: the case and the rest go, the person stays.
+  expect(hrefOf(/^勤務表/)).toBe(`/workspace/schedule?${context}`);
+  expect(hrefOf(/^設定/)).toBe(`/workspace/settings/appearance?${context}`);
+  expect(hrefOf(/^職員/)).toBe(`/workspace/people/directory?${context}&person=p2`);
+  expect(hrefOf(/^ガバナンス/)).toBe(`/workspace/governance/audit?${context}`);
+  expect(screen.getAllByRole("link", { name: "PharmShiftMaker 今日へ" }).map((link) => link.getAttribute("href"))).toEqual([`/workspace/home?${context}`, `/workspace/home?${context}`]);
+});

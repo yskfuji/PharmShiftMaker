@@ -3,8 +3,9 @@
 // display context only: the server validates every selection again and decides the rest.
 import type { WorkspaceRoutePath } from "../generated/usecaseRoutes";
 
-/** What every workspace URL may carry. */
-export type WorkspaceLinkContext = { scope?: string; period?: string; publication?: string; case?: string; person?: string };
+/** What every workspace URL may carry. `person: null` names nobody and inherits nobody:
+ * the link that clears the selected person says so. */
+export type WorkspaceLinkContext = { scope?: string; period?: string; publication?: string; case?: string; person?: string | null };
 /** What a planning URL may carry besides: the input version and the plans it names. */
 export type PlanSelection = { input?: string; draft?: readonly string[] };
 
@@ -23,13 +24,29 @@ const PATTERN: Record<(typeof CONTEXT_KEYS)[number], RegExp> = {
 };
 const PRIVACY_ROUTE: WorkspaceRoutePath = "/workspace/governance/privacy";
 const PLAN_ROUTES = "/workspace/plan/";
+/**
+ * The routes that look at the person a URL names: the ones whose definition reads a roster
+ * (`names: "roster"`, the people screens) or the privacy-purpose route (`names: "privacy"`).
+ * Only a link to one of them carries a person, named or inherited: on any other route the
+ * server does not use the person, and a URL that carried one would read as if the account
+ * had changed. The structure test keeps this list equal to those definitions.
+ */
+export const PERSON_ROUTES: readonly WorkspaceRoutePath[] = [
+  "/workspace/people/directory",
+  "/workspace/people/memberships",
+  "/workspace/people/lifecycle",
+  "/workspace/people/contracts",
+  "/workspace/governance/privacy",
+];
 
 /**
  * The href of a workspace path with its context. A value that is not well-formed is left
  * out, never passed on. `inherited` (the context of the URL on screen) fills only what the
  * caller did not name: a value the caller named and that was refused is not replaced by
- * another. The privacy-purpose route is never given a publication or a change case, and a
- * link to another month never inherits the publication or the case of the month on screen.
+ * another, and `person: null` is a name for nobody, so nobody is inherited. What the caller
+ * named comes first in the query. The privacy-purpose route is never given a publication or
+ * a change case, a person travels only to a route of `PERSON_ROUTES`, and a link to another
+ * month never inherits the publication or the case of the month on screen.
  */
 export const workspaceHrefWithContext = (
   path: string,
@@ -38,7 +55,9 @@ export const workspaceHrefWithContext = (
 ): string => {
   const query = new URLSearchParams();
   const privacyPurpose = path === PRIVACY_ROUTE;
-  const carried = (key: (typeof CONTEXT_KEYS)[number]) => !(privacyPurpose && (key === "publication" || key === "case"));
+  const personRoute = (PERSON_ROUTES as readonly string[]).includes(path);
+  const carried = (key: (typeof CONTEXT_KEYS)[number]) =>
+    !(privacyPurpose && (key === "publication" || key === "case")) && !(key === "person" && !personRoute);
   for (const key of CONTEXT_KEYS) {
     const value = context[key];
     if (carried(key) && value && PATTERN[key].test(value)) query.set(key, value);
@@ -50,7 +69,8 @@ export const workspaceHrefWithContext = (
   const leftBehind = (key: (typeof CONTEXT_KEYS)[number]) => otherMonth && (key === "publication" || key === "case");
   for (const key of CONTEXT_KEYS) {
     const value = inherited[key];
-    if (carried(key) && !leftBehind(key) && !context[key] && value && PATTERN[key].test(value)) query.set(key, value);
+    const named = context[key];
+    if (carried(key) && !leftBehind(key) && named !== null && !named && value && PATTERN[key].test(value)) query.set(key, value);
   }
   if (path.startsWith(PLAN_ROUTES)) {
     if (context.input && IDENTIFIER.test(context.input)) query.set("input", context.input);

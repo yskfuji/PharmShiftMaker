@@ -184,3 +184,16 @@ test("a pharmacist's schedule in the showcase names nobody else", async () => {
   // With data the shell counts the one unread notification the routes are given.
   expect(screen.getAllByRole("link", { name: "通知 （未確認1件）" }).length).toBeGreaterThan(0);
 });
+
+test("the selected-person state is the ready state with a person named: the band in the route, the person in the frame's links", async () => {
+  render(<CognitiveWorkspaceShowcase screen="people" view="lifecycle" role="ADMIN" state="selected-person" />);
+  const band = await screen.findByRole("region", { name: "表示を絞っている職員" });
+  expect(band).toHaveTextContent("表示を絞っている職員：高橋 葵。");
+  expect(band).toHaveTextContent("サインイン中のアカウントは 佐藤 美咲（システム管理者） のまま変わっていません。");
+  // Narrowed to that person's case; the other person's is not shown.
+  expect(screen.getByRole("progressbar", { name: "高橋 葵のタスク進捗" })).toBeInTheDocument();
+  expect(screen.queryByRole("progressbar", { name: "鈴木 悠斗のタスク進捗" })).toBeNull();
+  const tabs = within(screen.getByRole("navigation", { name: "職員の機能" })).getAllByRole("link");
+  expect(tabs.every((link) => link.getAttribute("href")?.endsWith("&person=synthetic-pharmacist"))).toBe(true);
+  expect(within(screen.getAllByRole("navigation", { name: "主要ナビゲーション" })[0]).getByRole("link", { name: /^勤務表/ }).getAttribute("href")).not.toContain("person=");
+});

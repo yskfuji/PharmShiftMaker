@@ -1,4 +1,5 @@
 import { StatusPill } from "@/ideal/ui/atoms";
+import SelectedPersonBand from "../../shared/SelectedPersonBand";
 import TaskJump from "../../shared/TaskJump";
 import WorkspaceLink from "../../shell/WorkspaceLink";
 import { routeOf, type RouteContext } from "../../shell/routeTypes";
@@ -47,6 +48,7 @@ export default function PrivacyView({ data, ctx }: { data: PrivacyData; ctx: Rou
     </section>
     <section className="ideal-panel" aria-labelledby="privacy-current-title">
       <h2 id="privacy-current-title">現在の状態</h2>
+      <SelectedPersonBand ctx={ctx} route={routeOf("governance/privacy").route} />
       <p className="ideal-v3-callout">請求の対象として選択中の職員：{subject.name}。{admin ? (own ? <>ほかの職員の請求を代わりに出すには、{mayOpenDirectory ? <WorkspaceLink className="ideal-inline-link" route={routeOf("people/directory").route}>職員一覧</WorkspaceLink> : "職員一覧"}でその職員を選び、「個人情報の請求」を押してください。選んだ職員がこの画面に引き継がれます。</> : "この職員の請求を、管理者として代わりに出せます。") : "あなた自身の請求だけを出せます。"}</p>
       <div className="ideal-v3-record">
         <section aria-labelledby="privacy-cases-title">

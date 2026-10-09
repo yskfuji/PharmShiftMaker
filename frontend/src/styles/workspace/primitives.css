@@ -166,6 +166,13 @@
   color: rgb(var(--color-fg)); background: rgb(var(--color-surface-sunken) / .5); font-size: var(--ideal-v3-text-sm);
 }
 .ideal-v3-app .ideal-v3-callout--warn, .ideal-v3-app .ideal-panel .ideal-v3-callout--warn { border-color: rgb(var(--color-warning) / .55); border-inline-start-color: rgb(var(--color-warning)); background: rgb(var(--color-surface)); }
+/* The band of the person a URL names (shared/SelectedPersonBand): three short lines in one
+   callout, each a paragraph of its own, the last one the way out. */
+.ideal-v3-app .ideal-v3-callout.ideal-v3-selected-person { display: grid; gap: var(--space-1); }
+.ideal-v3-app .ideal-v3-selected-person > p { margin: 0; color: rgb(var(--color-fg)); font-size: var(--ideal-v3-text-sm); }
+/* The way out is one sentence: at phone width it takes two lines of about the same length,
+   broken between phrases (as a button's label is), never a single character alone. */
+.ideal-v3-app .ideal-v3-selected-person__clear { display: inline-block; min-height: 24px; text-wrap: balance; word-break: auto-phrase; }
 .ideal-v3-app .ideal-partial-problems, .ideal-v3-app section.ideal-note[role="alert"] {
   display: grid; gap: var(--space-2); justify-items: start; margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4);
   border: 1px solid rgb(var(--color-warning) / .55); border-inline-start: 4px solid rgb(var(--color-warning)); border-radius: var(--radius-control);

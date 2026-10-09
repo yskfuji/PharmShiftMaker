@@ -7,6 +7,7 @@ import { useEnteredBeforeMount } from "../../shared/hydration";
 import TaskJump from "../../shared/TaskJump";
 import { routeOf } from "../../shell/routeTypes";
 import WorkspaceLink from "../../shell/WorkspaceLink";
+import { useLive } from "../../shell/WorkspaceRuntime";
 import { evidenceState } from "./CurrentRecords";
 import { ENGAGEMENT, TIME_CATEGORY, employerName, ofPerson, siteCell, versionText, type Roster } from "./model";
 import { KindTables, type RecordKind } from "./RecordKinds";
@@ -20,12 +21,16 @@ import Identifiers from "../../shared/Identifiers";
  * and qualifications registered for them: a table for each kind that has records, and one
  * list of the kinds that have none. While nobody is chosen the detail says what choosing
  * does and leads to the steps of adding a person who is not in the list yet. The search
- * text is the only thing kept here; the chosen person is the route's.
+ * text is the only thing kept here; the chosen person is the route's. While the chosen
+ * person is the one the URL names, clearing the choice is the link that names nobody
+ * (the document is loaded again, as from the band); a person chosen in the list is
+ * cleared in place.
  * Nothing is judged: each record is shown as registered.
  */
 export default function StaffRecords({ roster }: { roster: Roster }) {
   const id = useId();
   const { personId, choose } = useSelectedPerson();
+  const named = useLive().selectedPersonId;
   const [query, setQuery] = useState("");
   const search = useRef<HTMLInputElement>(null);
   // Text typed into the search field of the server HTML raised no event here.
@@ -72,7 +77,9 @@ export default function StaffRecords({ roster }: { roster: Roster }) {
     {current ? <article className="ideal-v3-detail ideal-v3-contracts-detail" aria-live="polite">
       <div className="ideal-v3-contracts-detail__head">
         <div><span className="ideal-eyebrow">選択中の職員</span><h4 className="ideal-v3-heading">{current.payload.name || "氏名未登録の職員"}（{versionText(current.revision)}）</h4></div>
-        <button type="button" className="ideal-button ideal-button--secondary" onClick={() => choose("")}>職員の選択を解除する</button>
+        {named && personId === named
+          ? <WorkspaceLink className="ideal-button ideal-button--secondary" route={routeOf("people/contracts").route} context={{ person: null }}>職員の選択を解除する</WorkspaceLink>
+          : <button type="button" className="ideal-button ideal-button--secondary" onClick={() => choose("")}>職員の選択を解除する</button>}
       </div>
       <KindTables kinds={kinds} missingLabel="この職員の記録のうち未登録の項目" Heading="h5" />
       <Identifiers items={[{ label: "職員の識別子", value: current.key }]} />

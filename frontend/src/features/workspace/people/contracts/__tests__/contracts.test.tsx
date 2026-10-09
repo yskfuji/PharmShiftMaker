@@ -728,3 +728,33 @@ describe("before React attaches", () => {
     expect(calls).toEqual([]);
   });
 });
+
+test("with a person named in the URL: the band under the sections, and clearing the choice is the link that names nobody", async () => {
+  const named = await mount(roster(), serve(), { selectedPersonId: "p2", names: { p2: "合成 二" } });
+  const band = screen.getByRole("region", { name: "表示を絞っている職員" });
+  expect(band).toHaveTextContent("表示を絞っている職員：合成 二。この画面では、この職員の記録だけを表示し、新しく登録する記録の対象もこの職員になります。サインイン中のアカウントは 佐藤 美咲（システム管理者） のまま変わっていません。");
+  expect(within(band).getByRole("link", { name: "絞り込みを解除して全員の記録を表示する" })).toHaveAttribute("href", "/workspace/people/contracts");
+  // Between the row of sections and the current state.
+  expect(band.compareDocumentPosition(screen.getByRole("navigation", { name: "この画面の内容" }))).toBe(Node.DOCUMENT_POSITION_PRECEDING);
+  expect(band.compareDocumentPosition(panel("現在の状態"))).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  // The chosen person is the one the URL names: the clear control is the same link, as a button-styled anchor; no button of that name.
+  const clear = screen.getByRole("link", { name: "職員の選択を解除する" });
+  expect(clear).toHaveAttribute("href", "/workspace/people/contracts");
+  expect(clear).toHaveClass("ideal-button", "ideal-button--secondary");
+  expect(screen.queryByRole("button", { name: "職員の選択を解除する" })).toBeNull();
+  // Another person chosen in the list: the choice is the browser's, and clearing it is the button again.
+  choose(/合成 一/);
+  expect(screen.getByRole("heading", { level: 4, name: /^合成 一/ })).toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "職員の選択を解除する" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "職員の選択を解除する" }));
+  expect(screen.getByText("職員一覧から職員を選んでください")).toBeInTheDocument();
+  // The band is the route's and stays until the document is loaded again.
+  expect(screen.getByRole("region", { name: "表示を絞っている職員" })).toBeInTheDocument();
+  named.view.unmount();
+  // Without a person in the URL: no band, and a person chosen in the list is cleared by the button.
+  await mount();
+  expect(screen.queryByRole("region", { name: "表示を絞っている職員" })).toBeNull();
+  choose(/合成 二/);
+  expect(screen.getByRole("button", { name: "職員の選択を解除する" })).toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "職員の選択を解除する" })).toBeNull();
+});

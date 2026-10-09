@@ -1,9 +1,10 @@
 import type { LifecycleCase } from "@/ideal/types";
 import { StatusPill } from "@/ideal/ui/atoms";
 import { UNKNOWN_VALUE } from "../../shared/labels";
+import SelectedPersonBand from "../../shared/SelectedPersonBand";
 import TaskDisclosure from "../../shared/TaskDisclosure";
 import TaskJump from "../../shared/TaskJump";
-import { nameOf, type RouteContext } from "../../shell/routeTypes";
+import { nameOf, routeOf, type RouteContext } from "../../shell/routeTypes";
 import LifecycleCard from "./LifecycleCard";
 import LifecycleForm from "./LifecycleForm";
 
@@ -11,7 +12,8 @@ const START_TASK = "lifecycle-task-start";
 
 /**
  * Onboarding and offboarding cases of the scope (of the person the URL names, when it
- * names one), and the form that starts another. The count in the header is of the cases
+ * names one: the band says so and leads out of it), and the form that starts another. The
+ * count in the header is of the cases
  * the server returned, by the state the server gave each (application/ideal_workflows.py,
  * lifecycle_response: IN_PROGRESS or READY). A case in a state this code does not know is
  * counted as neither: its card names the state 「未対応の値」. The control beside the count
@@ -31,7 +33,7 @@ export default function LifecycleView({ data, ctx }: { data: LifecycleCase[]; ct
           <TaskJump target={START_TASK}>新しい手続きを始める</TaskJump>
         </div>
       </div>
-      {person && <p className="ideal-v3-callout">選択中の職員：{nameOf(ctx, person)}。この職員の手続きだけを表示しています。</p>}
+      <SelectedPersonBand ctx={ctx} route={routeOf("people/lifecycle").route} />
       {list.length ? <div className="ideal-lifecycle-list">{list.map((c) => <LifecycleCard key={c.case_id} c={c} name={nameOf(ctx, c.person_id)} />)}</div> : <p className="ideal-note">{person ? "選択した職員に進行中の手続きはありません。" : "進行中の手続きはありません。"}</p>}
       <div className="ideal-v3-task-list ideal-v3-people-tasks">
         <TaskDisclosure id={START_TASK} summary="新しい入職・退職手続きを始める" tone="primary" hint="職員・種類（入職か退職）・発効日を記録して始めます。">

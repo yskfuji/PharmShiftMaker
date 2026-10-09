@@ -9,9 +9,11 @@ export const syntheticViewerName = (role: IdealRole) =>
  * Fictitious people, facility and publication. No real name, facility or record. A
  * pharmacist is given what the API gives one: no roster and only their own duties.
  * `empty`: the same scope with nothing yet: no names, a publication without assignments,
- * no notifications and no plan chosen in the URL.
+ * no notifications and no plan chosen in the URL. `selectedPersonId`: the person a URL
+ * would name, as the server would have confirmed them (the "selected person" state of the
+ * routes that look at one).
  */
-export function syntheticContext(role: IdealRole, empty = false): RouteContext {
+export function syntheticContext(role: IdealRole, empty = false, selectedPersonId: string | null = null): RouteContext {
   const personId = `synthetic-${role.toLowerCase()}`;
   const publication = {
     publication_id: "synthetic-publication-12",
@@ -30,7 +32,7 @@ export function syntheticContext(role: IdealRole, empty = false): RouteContext {
     publications: [publication],
     publication,
     selectedCaseId: null,
-    selectedPersonId: null,
+    selectedPersonId,
     // What a planning URL would name: the three compared plans; the first is the one edited.
     selectedDraftIds: empty ? [] : ["synthetic-draft-1", "synthetic-draft-2", "synthetic-draft-3"],
     selectedInputHash: null,

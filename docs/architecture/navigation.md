@@ -4,7 +4,7 @@
 画面を移す箇所（リンク、ページの読み込み、サーバーの転送、プロキシのサインイン転送、共通の導線の一覧）をソースから抜き出し、行き先を実在するルートの型と照合した。画面の中の開閉（ダイアログ・開閉の欄・段階の切替）は、E2E で確かめる。
 
 - ルート：17 件
-- 遷移の箇所：103 件
+- 遷移の箇所：108 件
 - 行き先が実在しない箇所：0 件
 
 ## ルート
@@ -69,8 +69,9 @@
 | `components/ideal/IdealWorkspace.tsx:130` | document | `/workspace/home` | `/workspace/[screen]` |
 | `features/workspace/governance/actuals/ActualEditor.tsx:25` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
 | `features/workspace/governance/actuals/ActualsView.tsx:62` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
-| `features/workspace/governance/privacy/PrivacyView.tsx:119` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
-| `features/workspace/governance/privacy/PrivacyView.tsx:50` | link | `/workspace/people/directory` | `/workspace/[screen]/[view]` |
+| `features/workspace/governance/privacy/PrivacyView.tsx:121` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
+| `features/workspace/governance/privacy/PrivacyView.tsx:51` | link | `/workspace/governance/privacy` | `/workspace/[screen]/[view]` |
+| `features/workspace/governance/privacy/PrivacyView.tsx:52` | link | `/workspace/people/directory` | `/workspace/[screen]/[view]` |
 | `features/workspace/home/HomeQueue.tsx:29` | link | `/workspace/operations/cases` | `/workspace/[screen]/[view]` |
 | `features/workspace/home/HomeQueue.tsx:38` | link | `/workspace/operations/cases` | `/workspace/[screen]/[view]` |
 | `features/workspace/home/PersonalHome.tsx:16` | link | `/workspace/schedule` | `/workspace/[screen]` |
@@ -80,11 +81,13 @@
 | `features/workspace/home/TeamHome.tsx:13` | link | `/workspace/requests/leave` | `/workspace/[screen]/[view]` |
 | `features/workspace/operations/today/TodayView.tsx:50` | link | `/workspace/operations/cases` | `/workspace/[screen]/[view]` |
 | `features/workspace/operations/today/TodayView.tsx:54` | link | `/workspace/schedule` | `/workspace/[screen]` |
+| `features/workspace/people/contracts/ContractsView.tsx:43` | link | `/workspace/people/contracts` | `/workspace/[screen]/[view]` |
 | `features/workspace/people/contracts/History.tsx:38` | link | `/workspace/governance/audit` | `/workspace/[screen]/[view]` |
 | `features/workspace/people/contracts/NewStaffSteps.tsx:75` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
 | `features/workspace/people/contracts/NextActions.tsx:76` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
-| `features/workspace/people/contracts/StaffRecords.tsx:80` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
-| `features/workspace/people/contracts/StaffRecords.tsx:81` | link | `/workspace/people/lifecycle` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/StaffRecords.tsx:81` | link | `/workspace/people/contracts` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/StaffRecords.tsx:87` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/contracts/StaffRecords.tsx:88` | link | `/workspace/people/lifecycle` | `/workspace/[screen]/[view]` |
 | `features/workspace/people/contracts/editors/EmploymentEditor.tsx:111` | link | `/workspace/settings/flextime` | `/workspace/[screen]/[view]` |
 | `features/workspace/people/contracts/editors/parts.tsx:21` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
 | `features/workspace/people/directory/PersonDetail.tsx:32` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
@@ -94,6 +97,8 @@
 | `features/workspace/people/lifecycle/LifecycleTasks.tsx:17` | link | `/workspace/people/contracts` | `/workspace/[screen]/[view]` |
 | `features/workspace/people/lifecycle/LifecycleTasks.tsx:18` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
 | `features/workspace/people/lifecycle/LifecycleTasks.tsx:19` | link | `/workspace/plan/input` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/lifecycle/LifecycleView.tsx:36` | link | `/workspace/people/lifecycle` | `/workspace/[screen]/[view]` |
+| `features/workspace/people/memberships/MembershipsView.tsx:17` | link | `/workspace/people/memberships` | `/workspace/[screen]/[view]` |
 | `features/workspace/planning/compare/CompareDrafts.tsx:74` | link | `/workspace/plan/drafts` | `/workspace/[screen]/[view]` |
 | `features/workspace/planning/compare/CompareView.tsx:22` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
 | `features/workspace/planning/drafts/DraftEditor.tsx:152` | document | `/workspace/schedule` | `/workspace/[screen]` |
@@ -142,7 +147,7 @@
 | 箇所 | 書き換え先 |
 |---|---|
 
-## 実行時に決まる行き先（39 件）
+## 実行時に決まる行き先（40 件）
 
 変数で渡す行き先は、ここでは解決しない。画面を実際に辿る E2E（`frontend/tests/remediation-e2e/navigation.spec.ts`）で確かめる。
 
@@ -166,14 +171,15 @@
 | `features/workspace/home/TeamHome.tsx:37` | `WAY.schedule.route` |
 | `features/workspace/operations/today/TodayView.tsx:55` | `cases` |
 | `features/workspace/operations/today/TodayView.tsx:56` | `cases` |
-| `features/workspace/people/lifecycle/LifecycleTasks.tsx:61` | `taskRoute(t.key)` |
+| `features/workspace/people/lifecycle/LifecycleTasks.tsx:66` | `taskRoute(t.key)` |
 | `features/workspace/requests/leave/admin/GrantAssessmentForm.tsx:159` | `link` |
 | `features/workspace/schedule/ScheduleView.tsx:30` | `model.personalExport.print` |
 | `features/workspace/schedule/ScheduleView.tsx:30` | `model.personalExport.ical` |
 | `features/workspace/schedule/ScheduleView.tsx:28` | `schedule` |
 | `features/workspace/schedule/ScheduleView.tsx:28` | `schedule` |
 | `features/workspace/settings/notifications/NotificationsView.tsx:66` | `schedule` |
-| `features/workspace/shell/WorkspaceLink.tsx:24` | `workspaceHrefWithContext(route, context ?? {` |
+| `features/workspace/shared/SelectedPersonBand.tsx:21` | `route` |
+| `features/workspace/shell/WorkspaceLink.tsx:25` | `workspaceHrefWithContext(route, context ?? {` |
 | `features/workspace/shell/WorkspaceShell.tsx:60` | `workspaceHrefWithContext(`/workspace/${screen` |
 | `features/workspace/shell/WorkspaceShell.tsx:75` | `hrefFor(key)` |
 | `features/workspace/shell/WorkspaceShell.tsx:85` | `hrefFor("home")` |

@@ -15,9 +15,10 @@ type Props<R extends WorkspaceRoutePath> = Omit<ComponentProps<"a">, "href"> & {
 /**
  * A link from one workspace route to another. The destination is a route of the contract
  * and nothing else: there is no free `href` and no return URL. The scope, period,
- * publication, case and person of the URL on screen travel with it unless the link names
- * its own, each checked for its form (see `workspaceHrefWithContext`). It is a plain
- * anchor, so the destination is read again by the server.
+ * publication and case of the URL on screen travel with it unless the link names its own,
+ * and the person on screen only to a route that looks at a person (`PERSON_ROUTES`), each
+ * checked for its form (see `workspaceHrefWithContext`). It is a plain anchor, so the
+ * destination is read again by the server.
  */
 export default function WorkspaceLink<R extends WorkspaceRoutePath>({ route, context, children, ...anchor }: Props<R>) {
   const inherited = contextOfQuery(useRouteParams());

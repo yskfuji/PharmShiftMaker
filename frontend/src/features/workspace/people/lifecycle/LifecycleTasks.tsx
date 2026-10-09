@@ -48,6 +48,11 @@ export default function LifecycleTasks({ caseId, version, personId, tasks }: { c
   const asked = tasks.some((t) => t.key === task);
   const id = useId();
   const why = action.busy || evidenceReady(evidence) ? null : EVIDENCE_NEEDED;
+  // A link names the case's person only when the roster this route was given holds them:
+  // the destination refuses a person its roster does not hold (404). A new hire whose
+  // first record is not registered yet is not in the roster, so the link opens the route
+  // for everyone, where the first step of 「新しい職員を追加する手順」 registers them.
+  const known = Boolean(personId) && live.people.some((person) => person.person_id === personId);
   return <>
     <ul className="ideal-task-list">{tasks.map((t) => {
       const done = t.status === "COMPLETED";
@@ -58,7 +63,7 @@ export default function LifecycleTasks({ caseId, version, personId, tasks }: { c
         <span><strong>{labelOf(TASK, t.key)}</strong><small>{done ? (t.completed_at ? `完了 ${stamp(t.completed_at)}` : "完了") : "未完了"}{Object.hasOwn(SOURCE, t.source) ? `（${SOURCE[t.source]}）` : ""}</small>{t.blocked_reason && <small className="ideal-v3-lifecycle-blocked">{t.blocked_reason}</small>}</span>
         {(attest || source) && <span className="ideal-v3-lifecycle-action">
           {attest && <button type="button" className="ideal-button ideal-button--secondary" onClick={() => setTask(t.key)}>確認を記録 <ChevronRight aria-hidden="true" /></button>}
-          {source && <WorkspaceLink className="ideal-inline-link" route={taskRoute(t.key)} context={{ scope: live.scopeId, person: personId || undefined }}>{taskRouteLabel(t.key)} <ChevronRight aria-hidden="true" /></WorkspaceLink>}
+          {source && <WorkspaceLink className="ideal-inline-link" route={taskRoute(t.key)} context={{ scope: live.scopeId, person: known ? personId : null }}>{taskRouteLabel(t.key)} <ChevronRight aria-hidden="true" /></WorkspaceLink>}
         </span>}
         {task === t.key && <form className="ideal-v3-lifecycle-attest" onSubmit={(e) => { e.preventDefault(); void action.run(async () => {
           const body = { task_key: task, expected_version: version, evidence };

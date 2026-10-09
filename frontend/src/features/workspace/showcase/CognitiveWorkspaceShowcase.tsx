@@ -3,9 +3,9 @@
 import RouteProblem from "../shell/RouteProblem";
 import { routeDefinition, routeKey } from "../shell/routes";
 import WorkspaceShell, { type ShellInitial } from "../shell/WorkspaceShell";
-import ShowcaseRoute from "./ShowcaseRoute";
+import ShowcaseRoute, { SELECTED_PERSON, type WorkspaceShowcaseState } from "./ShowcaseRoute";
 import { syntheticContext } from "./synthetic/context";
-import type { IdealRole, IdealScreen, ShowcaseState } from "@/ideal/types";
+import type { IdealRole, IdealScreen } from "@/ideal/types";
 
 /** The frame of the synthetic scope. */
 const initialFor = (role: IdealRole, empty: boolean): ShellInitial => ({
@@ -24,9 +24,11 @@ const initialFor = (role: IdealRole, empty: boolean): ShellInitial => ({
  * route definition (read and view) and the same refusal when the role has no route there.
  * Only the transport differs (see ShowcaseRoute).
  */
-export default function CognitiveWorkspaceShowcase({ screen = "home", view, role = "LEADER", state = "ready" }: { screen?: IdealScreen; view?: string; role?: IdealRole; state?: ShowcaseState }) {
+export default function CognitiveWorkspaceShowcase({ screen = "home", view, role = "LEADER", state = "ready" }: { screen?: IdealScreen; view?: string; role?: IdealRole; state?: WorkspaceShowcaseState }) {
   const key = routeKey(screen, view, role);
-  return <WorkspaceShell initial={initialFor(role, Boolean(key) && state === "empty")} screen={screen} view={view}>
+  // The frame is given what the route's URL would name, so its links carry it as in production.
+  const routeContext = state === "selected-person" ? { person: SELECTED_PERSON } : undefined;
+  return <WorkspaceShell initial={initialFor(role, Boolean(key) && state === "empty")} screen={screen} view={view} routeContext={routeContext}>
     {key ? <ShowcaseRoute definition={routeDefinition(key)} role={role} state={state} /> : <RouteProblem status={403} detail="" forbiddenRoute />}
   </WorkspaceShell>;
 }

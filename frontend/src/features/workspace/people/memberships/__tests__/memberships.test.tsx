@@ -233,3 +233,19 @@ test("inactive links are read on demand, and again when the route's read changes
   await act(async () => { fireEvent.click(screen.getByRole("checkbox", { name: "無効も表示" })); });
   expect(screen.queryByText("ph-account")).toBeNull();
 });
+
+test("with a person named in the URL the band says whom, that the account is unchanged, and leads back to everyone", async () => {
+  await mount([member({}), pharmacist], () => [], { selectedPersonId: "synthetic-leader" });
+  const band = screen.getByRole("region", { name: "表示を絞っている職員" });
+  expect(band).toHaveTextContent("表示を絞っている職員：鈴木 悠斗。この画面では、この職員の記録だけを表示し、新しく登録する記録の対象もこの職員になります。サインイン中のアカウントは 佐藤 美咲（システム管理者） のまま変わっていません。");
+  expect(within(band).getByRole("link", { name: "絞り込みを解除して全員の記録を表示する" })).toHaveAttribute("href", "/workspace/people/memberships");
+  // The band stands where the earlier notice stood: above the table, inside the section.
+  expect(band.parentElement!.closest("section")).toBe(screen.getByRole("heading", { level: 2, name: "本人アカウントの紐付け状況" }).closest("section"));
+  expect(band.compareDocumentPosition(screen.getByText("選択した職員の紐付けはありません。"))).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  expect(screen.queryByText(/^選択中の職員：/)).toBeNull();
+});
+
+test("without a person in the URL there is no band", async () => {
+  await mount([member({}), pharmacist]);
+  expect(screen.queryByRole("region", { name: "表示を絞っている職員" })).toBeNull();
+});

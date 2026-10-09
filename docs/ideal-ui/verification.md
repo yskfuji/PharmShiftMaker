@@ -43,7 +43,7 @@ dependency row.
 | Routes with every task open (new) | Fourth run: 25/25 passed in Chromium; the 50 tests of the other two engines are skipped by design. 50 conditions (25 routes × 320 and 1440px, light theme); across them `<details>` elements were opened 144 times, none stayed closed and no read went unanswered; optical findings, undetermined checks and structural findings 0. No focus check, nothing typed or submitted. |
 | Counter-examples of the detectors (new) | Fourth run: 99/99 passed (33 per engine, five spec files): for each failing check a page that has the defect must be reported and its correction must not. |
 | Static review gallery | 233 synthetic stories × 390/1024/1920px = 699 Chromium images; automated axe and horizontal-overflow findings 0. Recorded before the 2026-10-05 restructuring; the gallery was not regenerated, and it shows neither the rebuilt nor the repaired screens. Representative human review remains pending. |
-| Dependency vulnerability audit | Fourth run: registry-backed `pip-audit` of the 46 locked Python packages: 0 known vulnerabilities. **`npm audit` failed**: both invocations exited with status 1 (production graph, threshold moderate: 2 high advisories; full graph, threshold high: the same 2 high and 21 moderate). Open at the time of this record; the dependency update is tracked separately. See "Fourth formal run" below. Third run (2026-10-05 19:29 UTC), same commands and same lockfile: 0 findings. |
+| Dependency vulnerability audit | Fourth run: registry-backed `pip-audit` of the 46 locked Python packages: 0 known vulnerabilities. **`npm audit` failed**: both invocations exited with status 1 (production graph, threshold moderate: 2 high advisories; full graph, threshold high: the same 2 high and 21 moderate). Open at the time of this record; the dependency update is tracked separately. See "Fourth formal run" below. Third run (2026-10-05 19:29 UTC), same commands and same lockfile: 0 findings. Update, 2026-10-07: a lockfile-only change (`sharp` 0.35.5, `source-map-js` 1.2.2, `babel-plugin-istanbul` 8.0.2) was merged into the public `main` as pull request #16; both `npm audit` invocations exit 0 locally, and the public CI of that pull request passed, including the job that runs them. The browser matrices were not run on the updated lockfile, and the fourth run's record above is not rewritten. |
 | Dependency license audit | 46 Python distributions and the npm lockfile graph were classified; no unclassified license remained in the recorded reports. Recorded before the 2026-10-05 restructuring; not re-run on the final commit. |
 | Independent review | Of the state before the restructuring: 0 high, 0 medium and 1 low finding (the displayed role in the anonymous audit timeline; see `independent-review-v3.md`). Of the restructuring: four rounds by a separate reviewing agent, see "Independent review of the restructuring" below; at the end 0 high and 0 medium findings were open. Of the visual repair: three looks at screenshots and four code reviews, all by AI review agents and none by a person, see "Reviews of the repair" below; the last two commits of the repair were not reviewed, and no screenshots were looked at independently after the fourth round. |
 
@@ -189,7 +189,20 @@ were purpose-built.
   `features/workspace/shell/WorkspaceLink`: the destination is a route path of the
   generated contract, there is no free `href` and no return URL, and only the
   scope, period, publication, change case and person travel with it (a planning
-  route may also name an input version and plans).
+  route may also name an input version and plans). Corrected on 2026-10-07: the
+  person travels only to the five routes that look at one (`PERSON_ROUTES` in
+  `shell/workspaceHref.ts`: the four people screens and the privacy-purpose
+  route, the routes whose definition declares `names: "roster"` or
+  `"privacy"`; the structure test keeps the two lists equal). A link to any
+  other route carries no person, named or inherited, so the frame's links to
+  the schedule, the plan or the settings drop it. On the four routes that
+  narrow to the person (account links, onboarding and offboarding, contracts
+  and qualifications, personal data) a band (`shared/SelectedPersonBand`)
+  names the person, says that the signed-in account is unchanged, and leads
+  to the same route without the person (`person: null`, a plain anchor).
+  This correction was verified partially: Jest, the type check, the lint, the
+  static structure rules and the local Storybook detectors; the browser
+  journeys of the formal run (U09, U20, U25) were not run again on it.
 - The established product's implementations were moved out of
   `features/workspace`: 30 files, of which 28 went back to
   `frontend/src/components` and two, used only by the v1/v2 showcase
@@ -961,6 +974,16 @@ the advisories were published was not checked. This work did not introduce
 them and did not fix them. They are open at the time of this record; the
 dependency update is tracked separately.
 
+Update, 2026-10-07 (not part of the run): the lockfile-only update named in the
+row above was merged into `main` as pull request #16 (the pull request also
+regenerated the SBOM and the third-party licence manifest that the public CI
+checks against the lockfile, and added to `.gitleaks.toml` the allowlist for the
+fixed test strings that this branch already had). Before the merge, both
+`npm audit` invocations, Jest (1,052 tests), `tsc`, ESLint and the production
+build passed on that lockfile on the workstation, and every job of the public CI
+of the pull request passed, including its Playwright job. No browser matrix of
+this record was run on that lockfile.
+
 The Storybook matrices were split into 48 invocations of the visual runner:
 role-route in eight parts per engine (24), representative in four per engine
 (12), shared parts in three per engine (9), and states, open and
@@ -1013,6 +1036,80 @@ Deviations from "each step once, in one piece", recorded as they happened:
 - Not run again in the fourth run, as in the third: the observation of
   PostgreSQL for the ER comparison, the isolated restore drill, the licence
   audit and the static review gallery.
+
+### Partial verification of the person-selection change (2026-10-09)
+
+After the fourth run the owner asked why the links of the onboarding screen
+opened a screen narrowed to one staff member, and the answer was changed in code:
+the person named by `?person=` now travels only between the five routes that look
+at a person, four of them show a band that says whom the screen is narrowed to,
+that the signed-in account is unchanged and how to clear the narrowing, and the
+route-state matrix of Storybook has four new `selected-person` states. This is the
+commit range from `09203885` to `a0143dd3` of the working branch (on top of
+`587e6c34`), under "2026-10-07" in `CHANGELOG.md`. The owner chose to verify it
+partly. The fourth run is **not** repeated for it: the table of the fourth run
+describes `587e6c34`.
+
+What was run, on commit `a0143dd3`, each check once, no retry, in the same Linux
+container and with the same runners as the fourth run:
+
+| Check | Result |
+|---|---|
+| Builds (deep-runner build; Linux build with Storybook, 313 stories: the 309 of the fourth run and the 4 new states) | passed |
+| Jest | 116 suites, 1,063 tests, 8 snapshots passed |
+| `tsc --noEmit`, ESLint | passed, no output |
+| Structure, contract, diagram and wording tests (eight files) | 199 passed (the new rule that `PERSON_ROUTES` equals the routes declaring `names: "roster"` or `"privacy"`, with two mutations, is included) |
+| Journeys U09, U20, U25 (the use cases that open the person routes), 3 engines × widths 320, 768, 1440 | 27/27 passed; 0 failed, 0 skipped, 0 flaky, no retry; source drift: none (1,796 frozen files); axe violations 0, optical findings 0 and undecidable 0, structure findings 0 over 189 audits |
+| Storybook matrices through the visual runner, 18 invocations (the `/tmp` of the container cannot hold a whole matrix) | roles 54/54, representative 39/39, states 462/462 (the 4 new states × 3 engines = 12 of them), open 25/25 in Chromium (50 skipped by design in the other two engines), counter-examples 99/99; in all 679 expected, 0 unexpected, 50 skipped, 0 flaky; structure and optical findings 0; one source hash for all 18; completeness against the unsplit lists: missing 0, extra 0, twice 0; `/tmp` of the container at most 195,420K of 524,288K |
+
+The matrices of this run contain only the parts that hold the five person routes
+(each of the five routes ran once in each engine in roles, representative and
+states, and once in Chromium in open) and the stories of other routes that share those parts. The
+shared-parts matrix was not run, because the band is not a shared-parts story.
+
+What these checks do not show about the band. The `states` specification judges
+only that a state exists and is labelled, and the other matrices open the routes
+without naming a person, so none of them puts the band through the structure and
+optical detectors. For that, the author ran the same detector functions over the
+four new states in the local Chromium, light and dark, 1440 and 320, closed and
+opened, with a specification kept outside the repository: structure findings 0,
+optical findings 0, undecidable 0. This is not a result of the runner above.
+
+Looking at the band in WebKit and Firefox (Linux builds). The four new states
+were captured at 320 and 1440, light and dark, in both engines (48 conditions
+with Chromium for comparison); the geometry of each was measured in the page
+(no overflow, no clipping, no overlap of the three paragraphs of the band), and
+nine of the images were opened and looked at, among them the band of
+memberships, contracts and privacy at 320 in light and dark. At 320 the clear
+link takes two lines of about equal length in all three engines, with no last
+line of one character; at 1440 it takes one. Not good: WebKit and Firefox break
+the first paragraph inside words (「記録だ／けを表示し」, where Chromium breaks
+between phrases), and at 320 all engines break a name inside the name
+(「佐藤／美咲」). On the privacy route the band is followed by the route's
+existing paragraph 「請求の対象として選択中の職員：…」, so the same person
+appears twice; the existing paragraph is read verbatim by journey U25 and was
+kept. The images were looked at by the person running the check, not by a
+separate reviewer.
+
+A defect found by hand in the real preview and fixed (commit `feca9b10`): the
+task links of an onboarding case named the case's person, and for a new hire
+who has no record yet the person is not in the route's roster, so the
+destination refused the person and showed 「見つかりません」. The link now names a
+person only when the roster the route was given holds them; otherwise it opens
+the route for everyone, where the first step of 「新しい職員を追加する手順」
+registers the person. This is covered by a Jest test and is not covered by a
+journey.
+
+What was not run for this change: the full Python tests (the diff of `src/` from
+`587e6c34` is empty and the only changed test file is
+`tests/test_workspace_v3_structure.py`), ruff, black, mypy, the contract and link
+checks, the production and Storybook gate builds, the flag-OFF and flag-ON runs,
+the comparison with the base commit, the dependency audits, the shared-parts
+matrix, the roles and representative parts that hold no person route, and any
+check on macOS Safari or Firefox. No AI review agent read the diff of this change
+and none looked at its screenshots; the review of the repair in this record
+ends before it. A later commit (`ce341988`) only brings the lockfile update and
+its generated files into the working branch; no browser check was run after it.
 
 ### Journey assertions changed since the third formal run
 
@@ -1095,7 +1192,9 @@ and the final source. No assertion about behaviour was changed.
   list without a marker as a list. This was not checked with a screen reader.
 - **The draft re-check under concurrent saving** is covered by Jest only (see
   "Defects found during the repair").
-- **`npm audit`:** two high advisories are open (see "Fourth formal run").
+- **`npm audit`:** two high advisories were open at the fourth run (see "Fourth
+  formal run"); the lockfile update that clears them is described there under
+  "Update, 2026-10-07" and was not covered by the browser matrices.
 
 ## Pending evaluations
 

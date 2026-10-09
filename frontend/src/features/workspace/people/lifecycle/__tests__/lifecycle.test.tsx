@@ -94,13 +94,19 @@ test("a case shows its progress, and each open task the action the server allows
   expect(offboard).toHaveTextContent("退職 · 進行中");
   expect(offboard).toHaveTextContent("発効日 2026-10-31 · 第3版");
   expect(offboard).toHaveTextContent("有効なアカウントが残っています。");
-  // A link says where it leads before it is followed.
+  // A link says where it leads before it is followed. The person goes to the account links
+  // (they look at a person) and not to the plan's input (it does not).
   expect(within(offboard).getAllByRole("link").map((link) => [link.textContent?.trim(), link.getAttribute("href")])).toEqual([
     ["本人アカウントを開く", "/workspace/people/memberships?scope=synthetic%2Fclinical-pharmacy&person=synthetic-pharmacist"],
-    ["前提・取込を開く", "/workspace/plan/input?scope=synthetic%2Fclinical-pharmacy&person=synthetic-pharmacist"],
+    ["前提・取込を開く", "/workspace/plan/input?scope=synthetic%2Fclinical-pharmacy"],
   ]);
   expect(within(offboard).getAllByRole("button", { name: "確認を記録" })).toHaveLength(1);
   expect(onboard).toHaveTextContent("入職 · すべて完了");
+  // A case for a person the roster does not hold yet (a new hire before their first
+  // record): the link does not name them, since the destination would refuse the person.
+  mount([lifecycle({ case_id: "c3", person_id: "p-new", kind: "ONBOARD", status: "OPEN", tasks: [task("contract", { status: "NOT_STARTED", source: "SYSTEM" })] })]);
+  const fresh = cards().find((card) => within(card).queryByRole("link", { name: /契約・資格を開く/ }))!;
+  expect(within(fresh).getByRole("link", { name: /契約・資格を開く/ })).toHaveAttribute("href", "/workspace/people/contracts?scope=synthetic%2Fclinical-pharmacy");
   expect(within(onboard).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "1");
   expect(within(onboard).queryByRole("button")).toBeNull();
 });
@@ -197,4 +203,19 @@ test("only the state the server calls in progress is counted as in progress; an 
   document.body.innerHTML = "";
   mount([lifecycle(), lifecycle({ case_id: "c2", status: "ON_HOLD" }), lifecycle({ case_id: "c3", status: "READY" })]);
   expect(screen.getByRole("heading", { level: 2, name: "手続きの進み具合" }).closest(".ideal-panel__head")!.querySelector(".ideal-pill")).toHaveTextContent("進行中 1件");
+});
+
+test("with a person named in the URL the band says whom, that the account is unchanged, and leads back to everyone", () => {
+  mount([lifecycle()], () => lifecycle(), { selectedPersonId: "synthetic-leader" });
+  const band = screen.getByRole("region", { name: "表示を絞っている職員" });
+  expect(band).toHaveTextContent("表示を絞っている職員：鈴木 悠斗。この画面では、この職員の記録だけを表示し、新しく登録する記録の対象もこの職員になります。サインイン中のアカウントは 佐藤 美咲（システム管理者） のまま変わっていません。");
+  expect(within(band).getByRole("link", { name: "絞り込みを解除して全員の記録を表示する" })).toHaveAttribute("href", "/workspace/people/lifecycle");
+  // Under the header of the section, before the cases.
+  expect(band.parentElement!.closest("section")).toBe(screen.getByRole("heading", { level: 2, name: "手続きの進み具合" }).closest("section"));
+  expect(band.compareDocumentPosition(screen.getByText("選択した職員に進行中の手続きはありません。"))).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  expect(screen.queryByText(/^選択中の職員：/)).toBeNull();
+  // Without a person: no band.
+  document.body.innerHTML = "";
+  mount([lifecycle()]);
+  expect(screen.queryByRole("region", { name: "表示を絞っている職員" })).toBeNull();
 });

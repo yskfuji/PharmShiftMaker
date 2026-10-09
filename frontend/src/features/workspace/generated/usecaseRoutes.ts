@@ -2300,6 +2300,14 @@ export const WORKSPACE_STATE_STORIES = [
     "storybookId": "ideal-ui-v3-route-state-matrix--people-memberships-forbidden"
   },
   {
+    "route": "/workspace/people/memberships",
+    "screen": "people",
+    "view": "memberships",
+    "role": "ADMIN",
+    "state": "selected-person",
+    "storybookId": "ideal-ui-v3-route-state-matrix--people-memberships-selected-person"
+  },
+  {
     "route": "/workspace/people/lifecycle",
     "screen": "people",
     "view": "lifecycle",
@@ -2348,6 +2356,14 @@ export const WORKSPACE_STATE_STORIES = [
     "storybookId": "ideal-ui-v3-route-state-matrix--people-lifecycle-forbidden"
   },
   {
+    "route": "/workspace/people/lifecycle",
+    "screen": "people",
+    "view": "lifecycle",
+    "role": "ADMIN",
+    "state": "selected-person",
+    "storybookId": "ideal-ui-v3-route-state-matrix--people-lifecycle-selected-person"
+  },
+  {
     "route": "/workspace/people/contracts",
     "screen": "people",
     "view": "contracts",
@@ -2394,6 +2410,14 @@ export const WORKSPACE_STATE_STORIES = [
     "role": "ADMIN",
     "state": "forbidden",
     "storybookId": "ideal-ui-v3-route-state-matrix--people-contracts-forbidden"
+  },
+  {
+    "route": "/workspace/people/contracts",
+    "screen": "people",
+    "view": "contracts",
+    "role": "ADMIN",
+    "state": "selected-person",
+    "storybookId": "ideal-ui-v3-route-state-matrix--people-contracts-selected-person"
   },
   {
     "route": "/workspace/governance/audit",
@@ -2538,6 +2562,14 @@ export const WORKSPACE_STATE_STORIES = [
     "role": "ADMIN",
     "state": "forbidden",
     "storybookId": "ideal-ui-v3-route-state-matrix--governance-privacy-forbidden"
+  },
+  {
+    "route": "/workspace/governance/privacy",
+    "screen": "governance",
+    "view": "privacy",
+    "role": "ADMIN",
+    "state": "selected-person",
+    "storybookId": "ideal-ui-v3-route-state-matrix--governance-privacy-selected-person"
   },
   {
     "route": "/workspace/governance/recovery",

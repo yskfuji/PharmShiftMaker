@@ -1,7 +1,8 @@
 import { StatusPill } from "@/ideal/ui/atoms";
 import SectionNav from "../../shared/SectionNav";
+import SelectedPersonBand from "../../shared/SelectedPersonBand";
 import TaskJump from "../../shared/TaskJump";
-import type { RouteContext } from "../../shell/routeTypes";
+import { routeOf, type RouteContext } from "../../shell/routeTypes";
 import { ContractOverview, FacilityRecords, RuleRecords } from "./CurrentRecords";
 import History from "./History";
 import type { Roster } from "./model";
@@ -18,7 +19,7 @@ const saved = (records: Array<{ revision: number }>) => records.filter((item) =>
  * Contracts and qualifications: what is registered now (with the server's staging issues),
  * what can be done next, and the versions. A form opens only from "next"; every save is
  * confirmed in place. The records are the server's read of the route; the person the URL
- * names is chosen at first.
+ * names is chosen at first, and the band under the sections says so and leads out of it.
  *
  * The header says whether the server found an inconsistency and, when it did, leads to its
  * result. The row under it goes to each of the three sections; what it says beside a
@@ -39,6 +40,7 @@ export default function ContractsView({ data, ctx }: { data: Roster; ctx: RouteC
       { target: "contracts-next-title", label: "次の操作", meta: `新しい職員の手順・操作${TASK_COUNT}件` },
       { target: "contracts-history-title", label: "履歴", meta: "現在の版と監査の履歴" },
     ]} />
+    <SelectedPersonBand ctx={ctx} route={routeOf("people/contracts").route} />
     <PersonSelection initial={ctx.selectedPersonId}>
       <section className="ideal-panel" aria-labelledby="contracts-current-title">
         <h2 id="contracts-current-title" className="ideal-v3-section-nav__target" tabIndex={-1}>現在の状態</h2>

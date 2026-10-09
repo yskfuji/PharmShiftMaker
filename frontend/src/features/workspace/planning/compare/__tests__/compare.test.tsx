@@ -144,8 +144,9 @@ test("the comparison the server read is shown without another read; a duplicate 
   expect(screen.getByText(/このボタンが「選んだ案を確認・編集」に変わります。/)).toBeInTheDocument();
   expect(screen.queryByRole("link", { name: /選んだ案を確認・編集/ })).toBeNull();
   fireEvent.click(within(rows[3]).getByRole("radio"));
-  // The display context is kept; the choice replaces the listed plans.
-  expect(screen.getByRole("link", { name: /選んだ案を確認・編集/ })).toHaveAttribute("href", "/workspace/plan/drafts?scope=synthetic%2Fclinical-pharmacy&person=p1&input=abc&draft=d3");
+  // The display context is kept (the person on screen stays behind: the plans do not look at
+  // a person); the choice replaces the listed plans.
+  expect(screen.getByRole("link", { name: /選んだ案を確認・編集/ })).toHaveAttribute("href", "/workspace/plan/drafts?scope=synthetic%2Fclinical-pharmacy&input=abc&draft=d3");
   // Picking a plan is state of the island: the browser reads nothing for it.
   expect(calls).toEqual([]);
 });
