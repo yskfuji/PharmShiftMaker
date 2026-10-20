@@ -21,6 +21,8 @@ def test_checked_in_third_party_license_bundle_is_current() -> None:
 def test_public_tree_excludes_private_work_history_and_keeps_release_sources() -> None:
     rules = policy()
     for path in (
+        "docs/backlog/main-tree-triage-2026-10-17.md",
+        "docs/backlog/unfinished-ledger-2026-10-17.md",
         "CHAT_HISTORY.md",
         "ARCHITECTURE.md",
         "audit/run/results.json",
@@ -129,3 +131,38 @@ def test_showcase_package_has_an_explicit_document_allowlist_and_canonical_sbom(
     }
     assert excluded.isdisjoint(PACKAGE_IDEAL_UI_FILES)
     assert Path(__file__).parents[1] / "docs/release/SBOM.cdx.json" == CANONICAL_SBOM
+
+
+def test_public_tree_rejects_tracked_runtime_and_handoff_files() -> None:
+    for path in (
+        "PUBLIC-MANIFEST.json",
+        "PUBLIC-MANIFEST.sha256",
+        "docs/HANDOFF_GPT6_2026-10-18.md",
+        "docs/HANDOFF_CODEX_2026-10-15.md",
+        "docs/backlog/new-internal-ledger.md",
+        "tmp/worktrees/example/source.py",
+        "frontend/node_modules/example/index.js",
+        "frontend/.next/BUILD_ID",
+        "nested/runtime-secrets/config.json",
+        "nested/.env.local",
+        "nested/.env.production",
+        "nested/.env.example",
+        "nested/server.key",
+        "nested/client.pem",
+        "data/receiver.sqlite3",
+        "data/application.dump",
+        "nested/server.log",
+        "../private.txt",
+        "/private.txt",
+        r"..\private.txt",
+        r"C:\secrets\.env",
+    ):
+        assert not included(path), path
+    for path in (
+        "ops/attendance_mapping.example.yaml",
+        ".env.example",
+        "tests/fixtures/synthetic.json",
+        "frontend/tests/visual/__screenshots__/chromium-linux/example.png",
+        "src/shift_scheduler/db.py",
+    ):
+        assert included(path), path

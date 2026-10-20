@@ -22,7 +22,11 @@
     "ops/systemd/pharmshift-api.service",
     "ops/upgrade.md",
     "ops/ux_research.md",
-    "shift_arch_manifest.yaml"
+    "shift_arch_manifest.yaml",
+    "docs/backlog/main-tree-triage-2026-10-17.md",
+    "docs/backlog/unfinished-ledger-2026-10-17.md",
+    "PUBLIC-MANIFEST.json",
+    "PUBLIC-MANIFEST.sha256"
   ],
   "excluded_prefixes": [
     ".agents/",
@@ -30,7 +34,13 @@
     ".codex/",
     ".cursor/",
     "audit/",
-    "tools/"
+    "tools/",
+    "tmp/",
+    "docs/HANDOFF_",
+    "docs/backlog/",
+    "logs/",
+    "backups/",
+    "runtime-secrets/"
   ],
   "excluded_ideal_ui_documents": [
     "docs/ideal-ui/e2e-root-cause-manifest.json",
@@ -61,5 +71,29 @@
     "docs/legal/development-provenance.md",
     "docs/architecture/er/physical.mmd"
   ],
-  "maximum_file_bytes": 50000000
+  "maximum_file_bytes": 50000000,
+  "excluded_path_components": [
+    ".git",
+    "node_modules",
+    ".venv",
+    "__pycache__",
+    ".next",
+    "runtime-secrets"
+  ],
+  "excluded_filename_patterns": [
+    "*.pem",
+    "*.key",
+    "*.p12",
+    "*.pfx",
+    "*.sqlite",
+    "*.sqlite3",
+    "*.db",
+    "*.dump",
+    "*.backup",
+    "*.log",
+    ".env*"
+  ],
+  "allowed_environment_examples": [
+    ".env.example"
+  ]
 }
