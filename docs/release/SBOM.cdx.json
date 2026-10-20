@@ -3123,9 +3123,9 @@
     },
     {
       "name": "handlebars",
-      "purl": "pkg:npm/handlebars@4.7.9",
+      "purl": "pkg:npm/handlebars@4.7.10",
       "type": "library",
-      "version": "4.7.9"
+      "version": "4.7.10"
     },
     {
       "name": "has-bigints",
@@ -4616,6 +4616,12 @@
       "version": "7.8.5"
     },
     {
+      "name": "server-only",
+      "purl": "pkg:npm/server-only@0.0.1",
+      "type": "library",
+      "version": "0.0.1"
+    },
+    {
       "name": "set-function-length",
       "purl": "pkg:npm/set-function-length@1.2.2",
       "type": "library",
@@ -5573,7 +5579,7 @@
     "properties": [
       {
         "name": "pharmshiftmaker:lockfiles-sha256",
-        "value": "a86044327cc16a4cee94d50fc01f703b2124b7cb74311f46bf7a6875d7c365e0"
+        "value": "0abf9075174bf64ae76f97ca52aaa800fa78c2d9fbdc6fdbff2610e5465adc18"
       },
       {
         "name": "pharmshiftmaker:vulnerability-attestation",
@@ -5581,7 +5587,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:eaabcf4d-f4ea-5141-bca2-53cb2b7ad37e",
+  "serialNumber": "urn:uuid:104fb9f3-c981-57dc-8fb5-36fbf8a19499",
   "specVersion": "1.5",
   "version": 1
 }

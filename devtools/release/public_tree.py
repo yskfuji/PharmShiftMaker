@@ -8,6 +8,7 @@ every copied file by SHA-256.  It does not alter Git state or contact GitHub.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import hashlib
 import json
 import shutil
@@ -26,7 +27,26 @@ def included(relative: str, document: dict[str, object] | None = None) -> bool:
     rules = document or policy()
     exact = set(rules["excluded_exact"]) | set(rules["excluded_ideal_ui_documents"])
     prefixes = tuple(rules["excluded_prefixes"])
-    return relative not in exact and not relative.startswith(prefixes)
+    parts = relative.split("/")
+    if (
+        "\\" in relative
+        or ":" in relative
+        or relative.startswith("/")
+        or any(part in ("", ".", "..") for part in parts)
+    ):
+        return False
+    components = set(rules.get("excluded_path_components", []))
+    patterns = rules.get("excluded_filename_patterns", [])
+    return (
+        relative not in exact
+        and not relative.startswith(prefixes)
+        and not any(part in components for part in parts)
+        and not any(
+            fnmatch.fnmatchcase(parts[-1], pattern)
+            and relative not in rules.get("allowed_environment_examples", [])
+            for pattern in patterns
+        )
+    )
 
 
 def clean_commit() -> str:

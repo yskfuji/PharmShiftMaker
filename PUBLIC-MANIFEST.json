@@ -1,5 +1,5 @@
 {
-  "file_count": 1948,
+  "file_count": 1950,
   "files": [
     {
       "bytes": 279,
@@ -57,9 +57,9 @@
       "sha256": "b40c76fd975e0823b65bd1de142e2507fe71bbb31e0762caf3fc52a827fc3328"
     },
     {
-      "bytes": 1011,
+      "bytes": 1439,
       "path": ".gitleaks.toml",
-      "sha256": "722cc1c86681d2e35799a0f5c7f0743a11ce293847b1aaedb4a872ee5a4ff22c"
+      "sha256": "c6f3793dcd0e8469a8ce49b146d9dcd8b27a1cb9de280dbfd5f2eb099ee75e53"
     },
     {
       "bytes": 916,
@@ -362,14 +362,14 @@
       "sha256": "d2a1a564e2975c4a7d2834e5299bf31e4f8bd10f5b5810c8073b7a792b131ab7"
     },
     {
-      "bytes": 1827,
+      "bytes": 2482,
       "path": "devtools/release/public-tree.json",
-      "sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2"
+      "sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9"
     },
     {
-      "bytes": 4573,
+      "bytes": 5205,
       "path": "devtools/release/public_tree.py",
-      "sha256": "c0af1487ab570a40e00e7f3369a9c2d11c13c88caad277ace26dbbd0bf00e0b5"
+      "sha256": "97d77b407d9c271f3c9d7fddd3ad4be460af5abb59b412bbabbbff026994d311"
     },
     {
       "bytes": 3095,
@@ -597,14 +597,14 @@
       "sha256": "79f41b2b48b2625f756441736fa2b0545ed885a6665d623f6ebb459bd9496ac1"
     },
     {
-      "bytes": 139056,
+      "bytes": 139193,
       "path": "docs/release/SBOM.cdx.json",
-      "sha256": "e78c98badd691d024551e852eb2efa11011c7f8c3dde1c3aa8dea3547b62d71a"
+      "sha256": "bd61bd90e18ef098da20ca21b9c887d5bc920f18a4410a0d3d24aed0f82d1b28"
     },
     {
-      "bytes": 663426,
+      "bytes": 664239,
       "path": "docs/release/THIRD_PARTY_LICENSES/manifest.json",
-      "sha256": "50cd47d6e49397096b164aa1d18684900222ad487970babb956988f3f911c9b5"
+      "sha256": "042dfd635e893e80b65d43011f249a3cf6bb2d8862b1f815236260d86aa0e095"
     },
     {
       "bytes": 1080,
@@ -2452,14 +2452,14 @@
       "sha256": "8afcdecaccf4f290c86390d42d5e4a92fbd7b57f807ebe420364db2ffcc44ab4"
     },
     {
-      "bytes": 508826,
+      "bytes": 509152,
       "path": "frontend/package-lock.json",
-      "sha256": "e8aa95852a7de859b0c2aa5aa2e2e0a4f6d0c589dab1b609846f2a5375658811"
+      "sha256": "ee1ada827598523f4d31eaf769ca908405d014804a9f7ea83b9297fee15885e4"
     },
     {
-      "bytes": 1933,
+      "bytes": 2005,
       "path": "frontend/package.json",
-      "sha256": "24ca9229458163344d0d7f6a5b9e4b72f0e5b0e68f5b70aa149c61c1219316be"
+      "sha256": "00502b1b59bf08fbe6e10aa1634233918a9963bc086780e2880df1f1dc9d313a"
     },
     {
       "bytes": 553,
@@ -2540,6 +2540,11 @@
       "bytes": 1063,
       "path": "frontend/scripts/api-contract.test.cjs",
       "sha256": "b541294bd412879fa147e980358f175bcbcc9d0a2c623e303a981b561863d322"
+    },
+    {
+      "bytes": 781,
+      "path": "frontend/scripts/check-server-boundaries.cjs",
+      "sha256": "9a5dc989f3e501c585d066ca907d338f84df0d0cd016152e01b37595c21b9114"
     },
     {
       "bytes": 1664,
@@ -3652,6 +3657,11 @@
       "sha256": "0d035c2076d241656e36f6b73e8efbc6ab5f9d3557a0dd64a7ce8216a6faad6b"
     },
     {
+      "bytes": 1063,
+      "path": "frontend/src/lib/__tests__/auth.test.ts",
+      "sha256": "c115558a7d3b3e2c08e0bb1da3cd3b3c91ef08ad06011eaddd6cc2c064ac9198"
+    },
+    {
       "bytes": 1961,
       "path": "frontend/src/lib/__tests__/errorText.test.ts",
       "sha256": "5aa3672b5bf1cae2882fb31eb8e317ba478395f1fe9beb2bdf70886e3db7fe7a"
@@ -3677,9 +3687,9 @@
       "sha256": "73eb6f3033a90f4171c5ab3dee1eaf5d1918d54f5c6a2b8e199baba0b4f479ea"
     },
     {
-      "bytes": 288,
+      "bytes": 296,
       "path": "frontend/src/lib/auth.ts",
-      "sha256": "528560896dd02224cd6c54c3017180bb8b774160e4c1be308552e34733b8256f"
+      "sha256": "6fec47ffcde23c763f8e0fe9a5fd39bf79ac92ad34c9970f2e07f18f4d54dbb1"
     },
     {
       "bytes": 462,
@@ -9442,9 +9452,9 @@
       "sha256": "31d8748fb687d9730382f4ac4de29a418af01c0eb492407367149bab1128f69c"
     },
     {
-      "bytes": 4523,
+      "bytes": 5787,
       "path": "tests/test_public_tree_policy.py",
-      "sha256": "9cbb9812a638f5134c066b153547d5f2993571e0b706816f7fa16a9d892b01ad"
+      "sha256": "5f0bb3f2633b024ff0e50711ede9b46dcdd408cbc764613170bc054939f52e4c"
     },
     {
       "bytes": 6787,
@@ -9743,6 +9753,6 @@
     }
   ],
   "format": "PharmShiftMaker public tree manifest v1",
-  "policy_sha256": "6a8c27a1c565d5b21aaafde8f4d3e5c6907e2f579e07a519ef3c9bc96f94b1f2",
-  "source_commit": "6f7bf2a29f940574a0b6c9e7e586305c5d5d7311"
+  "policy_sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9",
+  "source_commit": "79bb65177ed3972bfadd19b3ec281678b0b0ed73"
 }
