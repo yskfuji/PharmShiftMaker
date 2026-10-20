@@ -1,7 +1,7 @@
 {
   "format": "PharmShiftMaker third-party license manifest v1",
   "license_text_count": 355,
-  "package_count": 1001,
+  "package_count": 1002,
   "packages": [
     {
       "author": "TJ Holowaychuk <tj@vision-media.ca>",
@@ -10108,7 +10108,7 @@
         "type": "git",
         "url": "https://github.com/handlebars-lang/handlebars.js.git"
       },
-      "version": "4.7.9"
+      "version": "4.7.10"
     },
     {
       "author": "Jordan Harband <ljharb@gmail.com>",
@@ -15505,6 +15505,23 @@
       "version": "7.8.5"
     },
     {
+      "author": null,
+      "ecosystem": "npm",
+      "installed": true,
+      "license": "MIT",
+      "license_files": [
+        {
+          "sha256": "b85dcd3e453d05982552c52b5fc9e0bdd6d23c6f8e844b984a88af32570b0cc0",
+          "source": "canonical/MIT.txt"
+        }
+      ],
+      "license_text_basis": "canonical terms; package name, version, author and repository identify the corresponding rights holder notice",
+      "location": "node_modules/server-only",
+      "name": "server-only",
+      "repository": null,
+      "version": "0.0.1"
+    },
+    {
       "author": "Jordan Harband <ljharb@gmail.com>",
       "ecosystem": "npm",
       "installed": true,
@@ -18493,7 +18510,7 @@
     }
   ],
   "sources": {
-    "frontend/package-lock.json": "c12e8512676576dc0d51ef78eb1208a690a3cc4d9444e918054e21d4e96b90f4",
+    "frontend/package-lock.json": "ee1ada827598523f4d31eaf769ca908405d014804a9f7ea83b9297fee15885e4",
     "requirements.lock": "f892a5b48ab78b8b5cfb4dde067b71a9b904ef6ae661484587621d1486524da8"
   },
   "unresolved": [],
