@@ -3192,7 +3192,7 @@
         "type": "git",
         "url": "git+https://github.com/oxc-project/oxc.git"
       },
-      "version": "0.151.0"
+      "version": "0.154.0"
     },
     {
       "author": null,
@@ -3715,7 +3715,7 @@
       "location": "node_modules/@rolldown/binding-android-arm-eabi",
       "name": "@rolldown/binding-android-arm-eabi",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3727,7 +3727,7 @@
       "location": "node_modules/@rolldown/binding-android-arm64",
       "name": "@rolldown/binding-android-arm64",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3748,7 +3748,7 @@
         "type": "git",
         "url": "git+https://github.com/rolldown/rolldown.git"
       },
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3760,7 +3760,7 @@
       "location": "node_modules/@rolldown/binding-darwin-x64",
       "name": "@rolldown/binding-darwin-x64",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3772,7 +3772,7 @@
       "location": "node_modules/@rolldown/binding-freebsd-x64",
       "name": "@rolldown/binding-freebsd-x64",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3784,7 +3784,7 @@
       "location": "node_modules/@rolldown/binding-linux-arm-gnueabihf",
       "name": "@rolldown/binding-linux-arm-gnueabihf",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3796,7 +3796,7 @@
       "location": "node_modules/@rolldown/binding-linux-arm64-gnu",
       "name": "@rolldown/binding-linux-arm64-gnu",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3808,7 +3808,7 @@
       "location": "node_modules/@rolldown/binding-linux-arm64-musl",
       "name": "@rolldown/binding-linux-arm64-musl",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3820,7 +3820,7 @@
       "location": "node_modules/@rolldown/binding-linux-ppc64-gnu",
       "name": "@rolldown/binding-linux-ppc64-gnu",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3832,7 +3832,7 @@
       "location": "node_modules/@rolldown/binding-linux-s390x-gnu",
       "name": "@rolldown/binding-linux-s390x-gnu",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3844,7 +3844,7 @@
       "location": "node_modules/@rolldown/binding-linux-x64-gnu",
       "name": "@rolldown/binding-linux-x64-gnu",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3856,7 +3856,7 @@
       "location": "node_modules/@rolldown/binding-linux-x64-musl",
       "name": "@rolldown/binding-linux-x64-musl",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3868,7 +3868,7 @@
       "location": "node_modules/@rolldown/binding-openharmony-arm64",
       "name": "@rolldown/binding-openharmony-arm64",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3880,7 +3880,7 @@
       "location": "node_modules/@rolldown/binding-win32-arm64-msvc",
       "name": "@rolldown/binding-win32-arm64-msvc",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -3892,7 +3892,7 @@
       "location": "node_modules/@rolldown/binding-win32-x64-msvc",
       "name": "@rolldown/binding-win32-x64-msvc",
       "repository": null,
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": null,
@@ -13313,7 +13313,7 @@
       "location": "node_modules/nanoid",
       "name": "nanoid",
       "repository": "ai/nanoid",
-      "version": "3.3.19"
+      "version": "3.3.20"
     },
     {
       "author": "JounQin <admin@1stg.me> (https://www.1stG.me)",
@@ -14470,7 +14470,7 @@
       "location": "node_modules/vite/node_modules/postcss",
       "name": "postcss",
       "repository": "postcss/postcss",
-      "version": "8.5.28"
+      "version": "8.5.31"
     },
     {
       "author": "George Zahariev <z@georgezahariev.com>",
@@ -15242,7 +15242,7 @@
         "type": "git",
         "url": "git+https://github.com/rolldown/rolldown.git"
       },
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "author": "Nikita Vasilyev <me@elv1s.ru>",
@@ -17275,7 +17275,7 @@
       "license": "MIT",
       "license_files": [
         {
-          "sha256": "387dd7baa307083401a27c58c362c30832f5ba1dba84f10cc22c33401523f45c",
+          "sha256": "a47172e44a86a7e2cd1c16282341f7726ec60caafe3a6166fe3e0602005b6fa6",
           "source": "LICENSE.md"
         }
       ],
@@ -17287,7 +17287,7 @@
         "type": "git",
         "url": "git+https://github.com/vitejs/vite.git"
       },
-      "version": "8.3.1"
+      "version": "8.3.4"
     },
     {
       "author": "Storybook Bot <storybookbot@gmail.com>",
@@ -17950,11 +17950,11 @@
       "license_files": [
         {
           "sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7",
-          "source": "certifi-2025.11.12.dist-info/licenses/LICENSE"
+          "source": "certifi-2026.10.19.dist-info/licenses/LICENSE"
         }
       ],
       "name": "certifi",
-      "version": "2025.11.12"
+      "version": "2026.10.19"
     },
     {
       "ecosystem": "pypi",
@@ -18510,8 +18510,8 @@
     }
   ],
   "sources": {
-    "frontend/package-lock.json": "ee1ada827598523f4d31eaf769ca908405d014804a9f7ea83b9297fee15885e4",
-    "requirements.lock": "f892a5b48ab78b8b5cfb4dde067b71a9b904ef6ae661484587621d1486524da8"
+    "frontend/package-lock.json": "6a8bbb572dd5dce4850966a08bc25e1e7d7f06024636acc4a0aef635762d24ef",
+    "requirements.lock": "76f44c83918861467ca09cdb7128083996c591442a14b0af9166926bcc21abb7"
   },
   "unresolved": [],
   "unresolved_count": 0

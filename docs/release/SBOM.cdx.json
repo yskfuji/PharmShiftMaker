@@ -1137,9 +1137,9 @@
     },
     {
       "name": "@oxc-project/types",
-      "purl": "pkg:npm/%40oxc-project/types@0.151.0",
+      "purl": "pkg:npm/%40oxc-project/types@0.154.0",
       "type": "library",
-      "version": "0.151.0"
+      "version": "0.154.0"
     },
     {
       "name": "@oxc-resolver/binding-android-arm-eabi",
@@ -1365,93 +1365,93 @@
     },
     {
       "name": "@rolldown/binding-android-arm-eabi",
-      "purl": "pkg:npm/%40rolldown/binding-android-arm-eabi@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-android-arm-eabi@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-android-arm64",
-      "purl": "pkg:npm/%40rolldown/binding-android-arm64@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-android-arm64@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-darwin-arm64",
-      "purl": "pkg:npm/%40rolldown/binding-darwin-arm64@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-darwin-arm64@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-darwin-x64",
-      "purl": "pkg:npm/%40rolldown/binding-darwin-x64@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-darwin-x64@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-freebsd-x64",
-      "purl": "pkg:npm/%40rolldown/binding-freebsd-x64@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-freebsd-x64@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-linux-arm-gnueabihf",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-linux-arm64-gnu",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-linux-arm64-musl",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-linux-ppc64-gnu",
-      "purl": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-linux-s390x-gnu",
-      "purl": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-linux-x64-gnu",
-      "purl": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-linux-x64-musl",
-      "purl": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-openharmony-arm64",
-      "purl": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-win32-arm64-msvc",
-      "purl": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/binding-win32-x64-msvc",
-      "purl": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.2.11",
+      "purl": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "@rolldown/pluginutils",
@@ -4089,9 +4089,9 @@
     },
     {
       "name": "nanoid",
-      "purl": "pkg:npm/nanoid@3.3.19",
+      "purl": "pkg:npm/nanoid@3.3.20",
       "type": "library",
-      "version": "3.3.19"
+      "version": "3.3.20"
     },
     {
       "name": "napi-postinstall",
@@ -4389,9 +4389,9 @@
     },
     {
       "name": "postcss",
-      "purl": "pkg:npm/postcss@8.5.28",
+      "purl": "pkg:npm/postcss@8.5.31",
       "type": "library",
-      "version": "8.5.28"
+      "version": "8.5.31"
     },
     {
       "name": "prelude-ls",
@@ -4545,9 +4545,9 @@
     },
     {
       "name": "rolldown",
-      "purl": "pkg:npm/rolldown@1.2.11",
+      "purl": "pkg:npm/rolldown@1.2.14",
       "type": "library",
-      "version": "1.2.11"
+      "version": "1.2.14"
     },
     {
       "name": "rrweb-cssom",
@@ -5127,9 +5127,9 @@
     },
     {
       "name": "vite",
-      "purl": "pkg:npm/vite@8.3.1",
+      "purl": "pkg:npm/vite@8.3.4",
       "type": "library",
-      "version": "8.3.1"
+      "version": "8.3.4"
     },
     {
       "name": "w3c-xmlserializer",
@@ -5325,9 +5325,9 @@
     },
     {
       "name": "certifi",
-      "purl": "pkg:pypi/certifi@2025.11.12",
+      "purl": "pkg:pypi/certifi@2026.10.19",
       "type": "library",
-      "version": "2025.11.12"
+      "version": "2026.10.19"
     },
     {
       "name": "cffi",
@@ -5579,7 +5579,7 @@
     "properties": [
       {
         "name": "pharmshiftmaker:lockfiles-sha256",
-        "value": "0abf9075174bf64ae76f97ca52aaa800fa78c2d9fbdc6fdbff2610e5465adc18"
+        "value": "59545a53d0475d2448fce20727d31801311ed360348f576d71fb9d12d33ac629"
       },
       {
         "name": "pharmshiftmaker:vulnerability-attestation",
@@ -5587,7 +5587,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:104fb9f3-c981-57dc-8fb5-36fbf8a19499",
+  "serialNumber": "urn:uuid:3c7c212e-382b-5e25-805a-bd9da1e57a80",
   "specVersion": "1.5",
   "version": 1
 }
