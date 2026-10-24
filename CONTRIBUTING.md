@@ -13,7 +13,7 @@
 
 ## 開発手順
 
-Python 3.12及びNode.js 24を用いる。変更前に関連する設計、API契約及び試験を確認し、変更後は少なくとも次を実行する。
+Python 3.12.15及びNode.js 26.12.1（`.nvmrc`）を用いる。変更前に関連する設計、API契約及び試験を確認し、変更後は少なくとも次を実行する。
 
 ```bash
 ruff check src scripts tests devtools

@@ -1,5 +1,5 @@
 # Local clean build. Capture resolved base/image digests in the evaluation manifest.
-FROM node:24-bookworm-slim AS build
+FROM node:26.12.1-bookworm-slim AS build
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --ignore-scripts
@@ -9,7 +9,7 @@ COPY frontend/next.config.js frontend/postcss.config.js frontend/tailwind.config
 ENV NEXT_TELEMETRY_DISABLED=1 NEXT_PUBLIC_API_BASE_URL=https://127.0.0.1:18513/api INTERNAL_API_BASE_URL=http://api:8000
 RUN npm run build
 RUN npm prune --omit=dev --ignore-scripts
-FROM node:24-bookworm-slim
+FROM node:26.12.1-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 NEXT_SSL_CERT_PATH=/tls/localhost-cert.pem NEXT_SSL_KEY_PATH=/tls/localhost-key.pem
 COPY --from=build --chown=node:node /app /app

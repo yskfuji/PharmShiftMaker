@@ -3929,17 +3929,17 @@
         "basis": "source_expression_and_enclosing_function_review"
       }
     },
-    "scripts/run_ideal_usecase_matrix.py:node24:cb9277650b1dbd0555d7a551fa7f275286b2f33dab3eccb7b5e92ffb44dd22a2": {
+    "scripts/run_ideal_usecase_matrix.py:pinned_node:1418129f9e2d1170597b10f7fb99e136ffaf0eeb506e8525b3d8a431055da6d6": {
       "path": "scripts/run_ideal_usecase_matrix.py",
-      "symbol": "node24",
-      "line": 29,
-      "expression_hash": "cb9277650b1dbd0555d7a551fa7f275286b2f33dab3eccb7b5e92ffb44dd22a2",
+      "symbol": "pinned_node",
+      "line": 27,
+      "expression_hash": "1418129f9e2d1170597b10f7fb99e136ffaf0eeb506e8525b3d8a431055da6d6",
       "call": "subprocess.check_output",
       "status": "UNVERIFIED",
       "policy": "Evaluation-only runtime version probe; no product data is an intended input.",
       "classification": "ISOLATED_EVALUATION",
       "classification_evidence": {
-        "expression_hash": "cb9277650b1dbd0555d7a551fa7f275286b2f33dab3eccb7b5e92ffb44dd22a2",
+        "expression_hash": "1418129f9e2d1170597b10f7fb99e136ffaf0eeb506e8525b3d8a431055da6d6",
         "reason": "Reads the configured Node executable version before a synthetic, isolated U01-U27 acceptance run; the command is not a product storage path.",
         "basis": "source_expression_and_enclosing_function_review"
       },
@@ -3993,17 +3993,17 @@
       },
       "handler_status": "UNVERIFIED"
     },
-    "scripts/run_ideal_deep_matrix.py:node24:cb9277650b1dbd0555d7a551fa7f275286b2f33dab3eccb7b5e92ffb44dd22a2": {
+    "scripts/run_ideal_deep_matrix.py:pinned_node:1418129f9e2d1170597b10f7fb99e136ffaf0eeb506e8525b3d8a431055da6d6": {
       "path": "scripts/run_ideal_deep_matrix.py",
-      "symbol": "node24",
-      "line": 34,
-      "expression_hash": "cb9277650b1dbd0555d7a551fa7f275286b2f33dab3eccb7b5e92ffb44dd22a2",
+      "symbol": "pinned_node",
+      "line": 111,
+      "expression_hash": "1418129f9e2d1170597b10f7fb99e136ffaf0eeb506e8525b3d8a431055da6d6",
       "call": "subprocess.check_output",
       "status": "UNVERIFIED",
       "policy": "Evaluation-only runtime version probe; no product data is an intended input.",
       "classification": "ISOLATED_EVALUATION",
       "classification_evidence": {
-        "expression_hash": "cb9277650b1dbd0555d7a551fa7f275286b2f33dab3eccb7b5e92ffb44dd22a2",
+        "expression_hash": "1418129f9e2d1170597b10f7fb99e136ffaf0eeb506e8525b3d8a431055da6d6",
         "reason": "Reads the configured Node executable version before a synthetic, isolated U19-U27 acceptance run; the command is not a product storage path.",
         "basis": "source_expression_and_enclosing_function_review"
       },

@@ -3,7 +3,7 @@
 # Always use a unique -p pharmshift-dev-<run-id>; no published database ports.
 services:
   db:
-    image: postgres:16
+    image: postgres:16.15
     cpus: 0.25
     mem_limit: 512m
     memswap_limit: 512m
@@ -22,7 +22,7 @@ services:
       interval: 2s
       retries: 30
   control-db:
-    image: postgres:16
+    image: postgres:16.15
     cpus: 0.25
     mem_limit: 512m
     memswap_limit: 512m
@@ -41,7 +41,7 @@ services:
       interval: 2s
       retries: 30
   witness-db:
-    image: postgres:16
+    image: postgres:16.15
     cpus: 0.25
     mem_limit: 512m
     memswap_limit: 512m

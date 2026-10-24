@@ -1,7 +1,7 @@
 {
   "format": "PharmShiftMaker third-party license manifest v1",
-  "license_text_count": 355,
-  "package_count": 1002,
+  "license_text_count": 353,
+  "package_count": 1001,
   "packages": [
     {
       "author": "TJ Holowaychuk <tj@vision-media.ca>",
@@ -997,23 +997,15 @@
       "version": "1.11.1"
     },
     {
-      "author": "toyobayashi",
+      "author": null,
       "ecosystem": "npm",
-      "installed": true,
+      "installed": false,
       "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "2088f55c6731498410b20c95ebd345ed4a4a800bf74c0fba4d282fd2a021daaa",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
+      "license_files": [],
+      "license_text_basis": "not installed",
       "location": "node_modules/@emnapi/core",
       "name": "@emnapi/core",
-      "repository": {
-        "type": "git",
-        "url": "git+https://github.com/toyobayashi/emnapi.git"
-      },
+      "repository": null,
       "version": "1.11.3"
     },
     {
@@ -1065,23 +1057,15 @@
       "version": "1.11.1"
     },
     {
-      "author": "toyobayashi",
+      "author": null,
       "ecosystem": "npm",
-      "installed": true,
+      "installed": false,
       "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "2088f55c6731498410b20c95ebd345ed4a4a800bf74c0fba4d282fd2a021daaa",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
+      "license_files": [],
+      "license_text_basis": "not installed",
       "location": "node_modules/@emnapi/runtime",
       "name": "@emnapi/runtime",
-      "repository": {
-        "type": "git",
-        "url": "git+https://github.com/toyobayashi/emnapi.git"
-      },
+      "repository": null,
       "version": "1.11.3"
     },
     {
@@ -1097,23 +1081,15 @@
       "version": "1.9.2"
     },
     {
-      "author": "toyobayashi",
+      "author": null,
       "ecosystem": "npm",
-      "installed": true,
+      "installed": false,
       "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "2088f55c6731498410b20c95ebd345ed4a4a800bf74c0fba4d282fd2a021daaa",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
+      "license_files": [],
+      "license_text_basis": "not installed",
       "location": "node_modules/@emnapi/wasi-threads",
       "name": "@emnapi/wasi-threads",
-      "repository": {
-        "type": "git",
-        "url": "git+https://github.com/toyobayashi/emnapi.git"
-      },
+      "repository": null,
       "version": "1.2.1"
     },
     {
@@ -1141,23 +1117,15 @@
       "version": "1.2.2"
     },
     {
-      "author": "toyobayashi",
+      "author": null,
       "ecosystem": "npm",
-      "installed": true,
+      "installed": false,
       "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "2088f55c6731498410b20c95ebd345ed4a4a800bf74c0fba4d282fd2a021daaa",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
+      "license_files": [],
+      "license_text_basis": "not installed",
       "location": "node_modules/@emnapi/core/node_modules/@emnapi/wasi-threads",
       "name": "@emnapi/wasi-threads",
-      "repository": {
-        "type": "git",
-        "url": "git+https://github.com/toyobayashi/emnapi.git"
-      },
+      "repository": null,
       "version": "1.2.3"
     },
     {
@@ -2076,24 +2044,15 @@
       "version": "0.35.5"
     },
     {
-      "author": "Lovell Fuller <npm@lovell.info>",
+      "author": null,
       "ecosystem": "npm",
-      "installed": true,
+      "installed": false,
       "license": "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
-      "license_files": [
-        {
-          "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
+      "license_files": [],
+      "license_text_basis": "not installed",
       "location": "node_modules/@img/sharp-wasm32",
       "name": "@img/sharp-wasm32",
-      "repository": {
-        "directory": "npm/wasm32",
-        "type": "git",
-        "url": "git+https://github.com/lovell/sharp.git"
-      },
+      "repository": null,
       "version": "0.35.5"
     },
     {
@@ -2754,27 +2713,15 @@
       "version": "1.1.4"
     },
     {
-      "author": {
-        "name": "LongYinan",
-        "url": "https://github.com/Brooooooklyn"
-      },
+      "author": null,
       "ecosystem": "npm",
-      "installed": true,
+      "installed": false,
       "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "b85dcd3e453d05982552c52b5fc9e0bdd6d23c6f8e844b984a88af32570b0cc0",
-          "source": "canonical/MIT.txt"
-        }
-      ],
-      "license_text_basis": "canonical terms; package name, version, author and repository identify the corresponding rights holder notice",
+      "license_files": [],
+      "license_text_basis": "not installed",
       "location": "node_modules/@napi-rs/wasm-runtime",
       "name": "@napi-rs/wasm-runtime",
-      "repository": {
-        "directory": "wasm-runtime",
-        "type": "git",
-        "url": "git+https://github.com/napi-rs/napi-rs.git"
-      },
+      "repository": null,
       "version": "1.2.4"
     },
     {
@@ -2796,7 +2743,7 @@
         "type": "git",
         "url": "https://github.com/vercel/next.js"
       },
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -2817,7 +2764,7 @@
         "type": "git",
         "url": "https://github.com/vercel/next.js"
       },
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -2829,7 +2776,7 @@
       "location": "node_modules/@next/swc-darwin-x64",
       "name": "@next/swc-darwin-x64",
       "repository": null,
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -2841,7 +2788,7 @@
       "location": "node_modules/@next/swc-linux-arm64-gnu",
       "name": "@next/swc-linux-arm64-gnu",
       "repository": null,
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -2853,7 +2800,7 @@
       "location": "node_modules/@next/swc-linux-arm64-musl",
       "name": "@next/swc-linux-arm64-musl",
       "repository": null,
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -2865,7 +2812,7 @@
       "location": "node_modules/@next/swc-linux-x64-gnu",
       "name": "@next/swc-linux-x64-gnu",
       "repository": null,
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -2877,7 +2824,7 @@
       "location": "node_modules/@next/swc-linux-x64-musl",
       "name": "@next/swc-linux-x64-musl",
       "repository": null,
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -2889,7 +2836,7 @@
       "location": "node_modules/@next/swc-win32-arm64-msvc",
       "name": "@next/swc-win32-arm64-msvc",
       "repository": null,
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -2901,7 +2848,7 @@
       "location": "node_modules/@next/swc-win32-x64-msvc",
       "name": "@next/swc-win32-x64-msvc",
       "repository": null,
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -3192,7 +3139,7 @@
         "type": "git",
         "url": "git+https://github.com/oxc-project/oxc.git"
       },
-      "version": "0.154.0"
+      "version": "0.155.0"
     },
     {
       "author": null,
@@ -3663,7 +3610,7 @@
         "type": "git",
         "url": "git+https://github.com/microsoft/playwright.git"
       },
-      "version": "1.56.1"
+      "version": "1.64.1"
     },
     {
       "author": null,
@@ -3715,7 +3662,7 @@
       "location": "node_modules/@rolldown/binding-android-arm-eabi",
       "name": "@rolldown/binding-android-arm-eabi",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3727,7 +3674,7 @@
       "location": "node_modules/@rolldown/binding-android-arm64",
       "name": "@rolldown/binding-android-arm64",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3748,7 +3695,7 @@
         "type": "git",
         "url": "git+https://github.com/rolldown/rolldown.git"
       },
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3760,7 +3707,7 @@
       "location": "node_modules/@rolldown/binding-darwin-x64",
       "name": "@rolldown/binding-darwin-x64",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3772,7 +3719,7 @@
       "location": "node_modules/@rolldown/binding-freebsd-x64",
       "name": "@rolldown/binding-freebsd-x64",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3784,7 +3731,7 @@
       "location": "node_modules/@rolldown/binding-linux-arm-gnueabihf",
       "name": "@rolldown/binding-linux-arm-gnueabihf",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3796,7 +3743,7 @@
       "location": "node_modules/@rolldown/binding-linux-arm64-gnu",
       "name": "@rolldown/binding-linux-arm64-gnu",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3808,7 +3755,7 @@
       "location": "node_modules/@rolldown/binding-linux-arm64-musl",
       "name": "@rolldown/binding-linux-arm64-musl",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3820,7 +3767,7 @@
       "location": "node_modules/@rolldown/binding-linux-ppc64-gnu",
       "name": "@rolldown/binding-linux-ppc64-gnu",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3832,7 +3779,7 @@
       "location": "node_modules/@rolldown/binding-linux-s390x-gnu",
       "name": "@rolldown/binding-linux-s390x-gnu",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3844,7 +3791,7 @@
       "location": "node_modules/@rolldown/binding-linux-x64-gnu",
       "name": "@rolldown/binding-linux-x64-gnu",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3856,7 +3803,7 @@
       "location": "node_modules/@rolldown/binding-linux-x64-musl",
       "name": "@rolldown/binding-linux-x64-musl",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3868,7 +3815,7 @@
       "location": "node_modules/@rolldown/binding-openharmony-arm64",
       "name": "@rolldown/binding-openharmony-arm64",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3880,7 +3827,7 @@
       "location": "node_modules/@rolldown/binding-win32-arm64-msvc",
       "name": "@rolldown/binding-win32-arm64-msvc",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3892,7 +3839,7 @@
       "location": "node_modules/@rolldown/binding-win32-x64-msvc",
       "name": "@rolldown/binding-win32-x64-msvc",
       "repository": null,
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": null,
@@ -3933,7 +3880,7 @@
         "directory": "packages/pluginutils",
         "url": "rollup/plugins"
       },
-      "version": "5.4.0"
+      "version": "5.5.1"
     },
     {
       "author": "sinclairzx81",
@@ -4014,7 +3961,7 @@
         "type": "git",
         "url": "https://github.com/storybookjs/storybook.git"
       },
-      "version": "10.6.0"
+      "version": "10.6.3"
     },
     {
       "author": "Eirik Sletteberg",
@@ -4035,7 +3982,7 @@
         "type": "git",
         "url": "https://github.com/storybookjs/storybook.git"
       },
-      "version": "10.6.0"
+      "version": "10.6.3"
     },
     {
       "author": "Norbert <ndelangen@me.com>",
@@ -4096,7 +4043,7 @@
         "type": "git",
         "url": "https://github.com/storybookjs/storybook.git"
       },
-      "version": "10.6.0"
+      "version": "10.6.3"
     },
     {
       "author": null,
@@ -4117,7 +4064,7 @@
         "type": "git",
         "url": "https://github.com/storybookjs/storybook.git"
       },
-      "version": "10.6.0"
+      "version": "10.6.3"
     },
     {
       "author": null,
@@ -4138,7 +4085,7 @@
         "type": "git",
         "url": "https://github.com/storybookjs/storybook.git"
       },
-      "version": "10.6.0"
+      "version": "10.6.3"
     },
     {
       "author": null,
@@ -4159,7 +4106,7 @@
         "type": "git",
         "url": "https://github.com/storybookjs/storybook.git"
       },
-      "version": "10.6.0"
+      "version": "10.6.3"
     },
     {
       "author": "강동윤 <kdy1997.dev@gmail.com>",
@@ -4615,23 +4562,15 @@
       "version": "0.10.2"
     },
     {
-      "author": "toyobayashi",
+      "author": null,
       "ecosystem": "npm",
-      "installed": true,
+      "installed": false,
       "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "09e436100bf926e78df875ec80cf3d0c643dfec779b52cfe2aa96afa0de714cb",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
+      "license_files": [],
+      "license_text_basis": "not installed",
       "location": "node_modules/@tybys/wasm-util",
       "name": "@tybys/wasm-util",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/toyobayashi/wasm-util.git"
-      },
+      "repository": null,
       "version": "0.10.4"
     },
     {
@@ -4968,7 +4907,7 @@
         "type": "git",
         "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
       },
-      "version": "24.13.6"
+      "version": "26.6.5"
     },
     {
       "author": null,
@@ -5136,7 +5075,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5157,7 +5096,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5178,7 +5117,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5199,7 +5138,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5220,7 +5159,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5241,7 +5180,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5262,7 +5201,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5283,7 +5222,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5304,7 +5243,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": null,
@@ -5325,7 +5264,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": "Andrea Giammarchi",
@@ -9662,26 +9601,6 @@
         }
       ],
       "license_text_basis": "installed distribution",
-      "location": "node_modules/playwright/node_modules/fsevents",
-      "name": "fsevents",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/fsevents/fsevents.git"
-      },
-      "version": "2.3.2"
-    },
-    {
-      "author": null,
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "2a8a5d6197bb97a018b8a190dd3ed853d750ca87c8e80c17aad41d6c6ff448e1",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
       "location": "node_modules/fsevents",
       "name": "fsevents",
       "repository": {
@@ -10257,7 +10176,7 @@
         "type": "git",
         "url": "git+https://github.com/inspect-js/hasOwn.git"
       },
-      "version": "2.0.2"
+      "version": "2.0.4"
     },
     {
       "author": null,
@@ -10473,7 +10392,7 @@
         "type": "git",
         "url": "https://github.com/kaelzhang/node-ignore.git"
       },
-      "version": "7.0.9"
+      "version": "7.0.14"
     },
     {
       "author": {
@@ -10724,7 +10643,7 @@
         "type": "git",
         "url": "git+https://github.com/inspect-js/is-core-module.git"
       },
-      "version": "2.16.1"
+      "version": "2.17.0"
     },
     {
       "author": "Jordan Harband <ljharb@gmail.com>",
@@ -12978,7 +12897,7 @@
         "type": "git",
         "url": "git+https://github.com/Rich-Harris/magic-string.git"
       },
-      "version": "1.4.2"
+      "version": "1.4.3"
     },
     {
       "author": {
@@ -13404,7 +13323,7 @@
       "location": "node_modules/next",
       "name": "next",
       "repository": "vercel/next.js",
-      "version": "16.3.8"
+      "version": "16.4.3"
     },
     {
       "author": null,
@@ -14390,7 +14309,7 @@
         "type": "git",
         "url": "git+https://github.com/microsoft/playwright.git"
       },
-      "version": "1.56.1"
+      "version": "1.64.1"
     },
     {
       "author": {
@@ -14416,7 +14335,7 @@
         "type": "git",
         "url": "git+https://github.com/microsoft/playwright.git"
       },
-      "version": "1.56.1"
+      "version": "1.64.1"
     },
     {
       "author": "Jordan Harband <ljharb@gmail.com>",
@@ -14840,7 +14759,7 @@
         "type": "git",
         "url": "https://github.com/react/react.git"
       },
-      "version": "19.3.0"
+      "version": "19.3.1"
     },
     {
       "author": {
@@ -14904,7 +14823,7 @@
         "type": "git",
         "url": "https://github.com/react/react.git"
       },
-      "version": "19.3.0"
+      "version": "19.3.1"
     },
     {
       "author": null,
@@ -15113,7 +15032,7 @@
         "type": "git",
         "url": "ssh://github.com/browserify/resolve.git"
       },
-      "version": "1.22.11"
+      "version": "1.22.13"
     },
     {
       "author": {
@@ -15242,7 +15161,7 @@
         "type": "git",
         "url": "git+https://github.com/rolldown/rolldown.git"
       },
-      "version": "1.2.14"
+      "version": "1.2.15"
     },
     {
       "author": "Nikita Vasilyev <me@elv1s.ru>",
@@ -15921,7 +15840,7 @@
         "type": "git",
         "url": "https://github.com/storybookjs/storybook.git"
       },
-      "version": "10.6.0"
+      "version": "10.6.3"
     },
     {
       "author": "Nathan Rajlich <nathan@tootallnate.net> (http://tootallnate.net)",
@@ -16236,7 +16155,7 @@
         }
       ],
       "license_text_basis": "installed distribution",
-      "location": "node_modules/@storybook/react-vite/node_modules/strip-bom",
+      "location": "node_modules/tsconfig-paths/node_modules/strip-bom",
       "name": "strip-bom",
       "repository": "sindresorhus/strip-bom",
       "version": "3.0.0"
@@ -16828,7 +16747,7 @@
         }
       ],
       "license_text_basis": "installed distribution",
-      "location": "node_modules/@storybook/react-vite/node_modules/tsconfig-paths",
+      "location": "node_modules/tsconfig-paths",
       "name": "tsconfig-paths",
       "repository": "https://github.com/dividab/tsconfig-paths",
       "version": "4.2.0"
@@ -17074,7 +16993,7 @@
         "type": "git",
         "url": "https://github.com/typescript-eslint/typescript-eslint.git"
       },
-      "version": "8.70.0"
+      "version": "8.72.0"
     },
     {
       "author": "Mihai Bazon <mihai.bazon@gmail.com> (http://lisperator.net/)",
@@ -17131,7 +17050,7 @@
         "type": "git",
         "url": "git+https://github.com/nodejs/undici.git"
       },
-      "version": "6.28.1"
+      "version": "6.29.1"
     },
     {
       "author": null,
@@ -17151,7 +17070,7 @@
         "type": "git",
         "url": "git+https://github.com/nodejs/undici.git"
       },
-      "version": "7.18.2"
+      "version": "8.9.0"
     },
     {
       "author": null,
@@ -17275,7 +17194,7 @@
       "license": "MIT",
       "license_files": [
         {
-          "sha256": "a47172e44a86a7e2cd1c16282341f7726ec60caafe3a6166fe3e0602005b6fa6",
+          "sha256": "a22152baa1aef74402443008e767e7c689a524c0909d19b0431d97f5ab066a13",
           "source": "LICENSE.md"
         }
       ],
@@ -17287,7 +17206,7 @@
         "type": "git",
         "url": "git+https://github.com/vitejs/vite.git"
       },
-      "version": "8.3.4"
+      "version": "8.3.5"
     },
     {
       "author": "Storybook Bot <storybookbot@gmail.com>",
@@ -17308,7 +17227,7 @@
         "type": "git",
         "url": "https://github.com/storybookjs/storybook.git"
       },
-      "version": "10.6.0"
+      "version": "10.6.3"
     },
     {
       "author": "aleclarson",
@@ -17852,7 +17771,7 @@
         "type": "git",
         "url": "git+https://github.com/colinhacks/zod.git"
       },
-      "version": "4.6.5"
+      "version": "4.6.7"
     },
     {
       "author": {
@@ -17989,19 +17908,19 @@
       "license_files": [
         {
           "sha256": "3e0c7c091a948b82533ba98fd7cbb40432d6f1a9acbf85f5922d2f99a93ae6bb",
-          "source": "cryptography-50.0.1.dist-info/licenses/LICENSE"
+          "source": "cryptography-50.0.2.dist-info/licenses/LICENSE"
         },
         {
           "sha256": "aac73b3148f6d1d7111dbca32099f68d26c644c6813ae1e4f05f6579aa2663fe",
-          "source": "cryptography-50.0.1.dist-info/licenses/LICENSE.APACHE"
+          "source": "cryptography-50.0.2.dist-info/licenses/LICENSE.APACHE"
         },
         {
           "sha256": "602c4c7482de6479dd2e9793cda275e5e63d773dacd1eca689232ab7008fb4fb",
-          "source": "cryptography-50.0.1.dist-info/licenses/LICENSE.BSD"
+          "source": "cryptography-50.0.2.dist-info/licenses/LICENSE.BSD"
         }
       ],
       "name": "cryptography",
-      "version": "50.0.1"
+      "version": "50.0.2"
     },
     {
       "ecosystem": "pypi",
@@ -18299,11 +18218,11 @@
       "license_files": [
         {
           "sha256": "797a7a20231d4c433e9f1911db1731d06b5828b98f499819a034f7c0f56f5ce5",
-          "source": "pyjwt-2.15.0.dist-info/licenses/LICENSE"
+          "source": "pyjwt-2.15.1.dist-info/licenses/LICENSE"
         }
       ],
       "name": "PyJWT",
-      "version": "2.15.0"
+      "version": "2.15.1"
     },
     {
       "ecosystem": "pypi",
@@ -18510,8 +18429,8 @@
     }
   ],
   "sources": {
-    "frontend/package-lock.json": "6a8bbb572dd5dce4850966a08bc25e1e7d7f06024636acc4a0aef635762d24ef",
-    "requirements.lock": "76f44c83918861467ca09cdb7128083996c591442a14b0af9166926bcc21abb7"
+    "frontend/package-lock.json": "41ce2c7a3daf907e2b037e8ca5a8fc83eda8c0c14387c5851e5675012a3502a2",
+    "requirements.lock": "15f6d6e039180e8d404eec6bbad8caa5ef0fd7d6039d5102dd535bf7bbb3d766"
   },
   "unresolved": [],
   "unresolved_count": 0
