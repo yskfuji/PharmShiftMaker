@@ -1,21 +1,13 @@
-MIT License
+All Rights Reserved
 
 Copyright (c) 2025-2026 Yusuke Fujinami
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+本ソフトウェア及び関連文書（以下「本ソフトウェア」という）の著作権は、藤波祐介（Yusuke Fujinami）が単独で保有する。
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+本リポジトリを非公開化した日（2026-10-24）以降に頒布される本ソフトウェアの複製、改変、再頒布、商用利用その他の利用には、著作権者の事前の書面による許諾を要する。許諾のない利用を禁止する。
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+本リポジトリが公開されていた期間（2025年から2026年10月24日まで）にMIT Licenseの下で本ソフトウェアの複製を取得した第三者が、当該複製について有するMIT License上の権利は、本変更によって遡って消滅するものではない。ただし、著作権者は当該複製のその後の頒布又は利用を推奨しない。
+
+本ソフトウェアは現状有姿で提供され、明示又は黙示を問わずいかなる保証もしない。著作権者は、本ソフトウェアの利用により生じたいかなる請求、損害又はその他の責任についても、契約、不法行為その他いかなる法的根拠によるかを問わず、一切の責任を負わない。
+
+本ソフトウェアに組み込まれた第三者ソフトウェアには、[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)に記載のとおり、それぞれの許諾条件が適用される。本変更は第三者ソフトウェアの許諾条件に影響しない。
