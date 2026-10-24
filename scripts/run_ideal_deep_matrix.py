@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -103,20 +104,16 @@ def run_case(command: list[str], env: dict[str, str]) -> int:
         raise
 
 
-def node24() -> Path:
-    configured = os.environ.get("E2E_NODE24")
-    candidates = [Path(configured)] if configured else []
-    candidates.append(
-        ROOT / "tools" / "node24" / "node_modules" / "node" / "bin" / "node"
-    )
-    for candidate in candidates:
-        if candidate.is_file():
-            version = subprocess.check_output(
-                [candidate, "-p", "process.versions.node"], text=True
-            ).strip()
-            if version.startswith("24."):
-                return candidate
-    raise SystemExit("Set E2E_NODE24 to a Node 24 executable")
+def pinned_node() -> Path:
+    expected = (ROOT / ".nvmrc").read_text(encoding="utf-8").strip()
+    configured = os.environ.get("E2E_NODE") or shutil.which("node")
+    if configured and Path(configured).is_file():
+        version = subprocess.check_output(
+            [configured, "-p", "process.versions.node"], text=True
+        ).strip()
+        if version == expected:
+            return Path(configured)
+    raise SystemExit(f"Set E2E_NODE to a Node {expected} executable (.nvmrc)")
 
 
 def exact_result(path: Path, name: str) -> bool:
@@ -250,7 +247,7 @@ def main() -> int:
         )
     )
     run_root.mkdir(parents=True, exist_ok=True)
-    node = node24()
+    node = pinned_node()
     runner = FRONTEND / "node_modules" / "@playwright" / "test" / "cli.js"
     build_root = FRONTEND / os.environ.get("E2E_DIST_DIR", ".next-ideal-deep")
     build_manifest = build_root / "required-server-files.json"

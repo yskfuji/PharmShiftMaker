@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 from collections import Counter
 from pathlib import Path
@@ -19,21 +20,17 @@ FRONTEND = ROOT / "frontend"
 USE_CASES = ROOT / "docs" / "ideal-ui" / "usecases.json"
 
 
-def node24() -> Path:
-    configured = os.environ.get("E2E_NODE24")
-    candidates = [Path(configured)] if configured else []
-    candidates.append(
-        ROOT / "tools" / "node24" / "node_modules" / "node" / "bin" / "node"
-    )
-    for candidate in candidates:
-        if candidate.is_file():
-            version = subprocess.check_output(
-                [candidate, "-p", "process.versions.node"], text=True
-            ).strip()
-            if version.startswith("24."):
-                return candidate
+def pinned_node() -> Path:
+    expected = (ROOT / ".nvmrc").read_text(encoding="utf-8").strip()
+    configured = os.environ.get("E2E_NODE") or shutil.which("node")
+    if configured and Path(configured).is_file():
+        version = subprocess.check_output(
+            [configured, "-p", "process.versions.node"], text=True
+        ).strip()
+        if version == expected:
+            return Path(configured)
     raise SystemExit(
-        "Set E2E_NODE24 to a Node 24 executable; other Node versions are not accepted."
+        f"Set E2E_NODE to a Node {expected} executable (.nvmrc); other versions are not accepted."
     )
 
 
@@ -81,7 +78,7 @@ def main() -> int:
         )
     )
     runner = FRONTEND / "node_modules" / "@playwright" / "test" / "cli.js"
-    node = node24()
+    node = pinned_node()
     failed: list[str] = []
     for row in document["use_cases"]:
         name = row["e2e"]
