@@ -15,7 +15,7 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 ## リポジトリからの開発表示
 
-Node.js 24、npm及びloopbackへ接続できるブラウザを用いる。
+Node.js 26.12.1（`.nvmrc`）、同梱のnpm及びloopbackへ接続できるブラウザを用いる。
 
 ```bash
 cd frontend

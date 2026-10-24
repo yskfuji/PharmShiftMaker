@@ -29,7 +29,7 @@ PharmShiftMakerは、病院薬剤部の勤務計画、当日の変更、休暇�
 
 ## 合成データでのローカル起動
 
-要件はPython 3.12、Node.js 24及びnpmである。以下の手順は、隔離された開発用SQLiteと合成職員だけを使用する。
+要件はPython 3.12.15、Node.js 26.12.1（`.nvmrc`）及び同梱のnpmである。以下の手順は、隔離された開発用SQLiteと合成職員だけを使用する。
 
 ```bash
 python3.12 -m venv .venv

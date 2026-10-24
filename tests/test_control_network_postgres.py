@@ -155,7 +155,7 @@ def test_actual_three_db_http_ack_loss_recovery_writer_fencing_and_signing_key_r
             "POSTGRES_DB=pharmshift_" + kind,
             "-p",
             f"127.0.0.1:{port}:5432",
-            "postgres:16",
+            "postgres:16.15",
         )
         for _ in range(120):
             if (
