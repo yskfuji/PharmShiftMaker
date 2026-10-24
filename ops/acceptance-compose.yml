@@ -1,7 +1,7 @@
 name: pharmshift-acceptance-20260923
 services:
   db:
-    image: postgres:16
+    image: postgres:16.15
     cpus: 1.0
     mem_limit: 2g
     environment:

@@ -1,6 +1,6 @@
 # PharmShiftMaker frontend
 
-Node.js 24 / Next.js 16 / React 19。依存の正確な版は `package-lock.json` を参照してください。
+Node.js 26.12.1（リポジトリ直下の `.nvmrc`）/ Next.js 16 / React 19。依存の正確な版は `package-lock.json` を参照してください。
 
 起動手順は [ルートREADME](../README.md#合成データでのローカル起動)、現在の合否・残件は [検証記録](../docs/ideal-ui/verification.md) に記載しています。
 
