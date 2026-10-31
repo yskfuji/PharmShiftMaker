@@ -1,0 +1,13 @@
+import type {Meta, StoryObj} from '@storybook/nextjs-vite';
+import StaffContextCard from '@/features/workspace/people/StaffContextCard';
+const meta={title:'Ideal UI v3/Multirole',component:StaffContextCard,args:{scopeId:'hospital/pharmacy'},parameters:{layout:'padded'}} satisfies Meta<typeof StaffContextCard>;
+export default meta;
+type Story=StoryObj<typeof meta>;
+const context=(occupation:string|null,permission='STAFF')=>({fetchRoutes:[{path:'/planning/staff-context',body:{person_id:'synthetic-person',occupation,permission,occupation_status:occupation?'recorded':'unknown'}}]});
+export const Clerk:Story={parameters:context('CLERK')};
+export const ClericalLeader:Story={parameters:context('CLERK','LEADER')};
+export const Pharmacist:Story={parameters:context('PHARMACIST')};
+export const Assistant:Story={parameters:context('ASSISTANT')};
+export const Unknown:Story={parameters:context(null)};
+export const Failure:Story={parameters:{fetchRoutes:[{path:'/planning/staff-context',status:503,body:{detail:'unavailable'}}]}};
+export const Restricted:Story={parameters:{fetchRoutes:[{path:'/planning/staff-context',status:423,body:{detail:'restricted'}}]}};

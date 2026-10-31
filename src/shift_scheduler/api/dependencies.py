@@ -49,6 +49,10 @@ class MockUserRecord(TypedDict):
 
 
 _MOCK_USER_DB: dict[str, MockUserRecord] = {
+    "staff": {
+        "password": _secret_or_default("AUTH_PASSWORD_STAFF", "pass-staff"),
+        "role": AppRole.STAFF,
+    },
     "pharmacist": {
         "password": _secret_or_default("AUTH_PASSWORD_PHARMACIST", "pass-ph"),
         "role": AppRole.PHARMACIST,

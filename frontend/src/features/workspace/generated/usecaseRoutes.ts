@@ -8,7 +8,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "ready",
@@ -31,7 +32,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "ready",
@@ -128,7 +130,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "awaiting_consent",
@@ -150,7 +153,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "ready",
@@ -172,7 +176,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "enabled",
@@ -306,7 +311,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "unauthenticated",
@@ -331,7 +337,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "ready",
@@ -378,7 +385,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "ready",
@@ -400,7 +408,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "ready",
@@ -424,7 +433,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "ready",
@@ -541,7 +551,8 @@ export const USE_CASE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "draft",
@@ -563,7 +574,8 @@ export const USE_CASE_ROUTES = [
     "route": "/workspace/governance/privacy",
     "roles": [
       "ADMIN",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ],
     "states": [
       "requested",
@@ -687,7 +699,8 @@ export const WORKSPACE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -700,7 +713,8 @@ export const WORKSPACE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -797,7 +811,8 @@ export const WORKSPACE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -810,7 +825,8 @@ export const WORKSPACE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -823,7 +839,8 @@ export const WORKSPACE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -836,7 +853,8 @@ export const WORKSPACE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -915,7 +933,8 @@ export const WORKSPACE_ROUTES = [
     "description": "本人請求、法的保留、残存データ、不可逆性を分けて確認します。",
     "roles": [
       "ADMIN",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -939,7 +958,8 @@ export const WORKSPACE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -952,7 +972,8 @@ export const WORKSPACE_ROUTES = [
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -960,12 +981,13 @@ export const WORKSPACE_ROUTES = [
     "view": "absence-consent",
     "route": "/workspace/settings/absence-consent",
     "label": "欠勤の同意",
-    "short": "scope設定",
+    "short": "部署の設定",
     "description": "代替者の同意要否、適用範囲、版、変更履歴を確認します。",
     "roles": [
       "ADMIN",
       "LEADER",
-      "PHARMACIST"
+      "PHARMACIST",
+      "STAFF"
     ]
   },
   {
@@ -1002,6 +1024,13 @@ export const WORKSPACE_NAV = {
     "settings"
   ],
   "PHARMACIST": [
+    "home",
+    "schedule",
+    "requests",
+    "governance",
+    "settings"
+  ],
+  "STAFF": [
     "home",
     "schedule",
     "requests",
@@ -1136,6 +1165,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "storybookId": "ideal-ui-v3-role-route-matrix--home-index-pharmacist"
   },
   {
+    "route": "/workspace/home",
+    "screen": "home",
+    "view": "index",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--home-index-staff"
+  },
+  {
     "route": "/workspace/schedule",
     "screen": "schedule",
     "view": "index",
@@ -1155,6 +1191,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "view": "index",
     "role": "PHARMACIST",
     "storybookId": "ideal-ui-v3-role-route-matrix--schedule-index-pharmacist"
+  },
+  {
+    "route": "/workspace/schedule",
+    "screen": "schedule",
+    "view": "index",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--schedule-index-staff"
   },
   {
     "route": "/workspace/plan/input",
@@ -1276,6 +1319,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "storybookId": "ideal-ui-v3-role-route-matrix--requests-mine-pharmacist"
   },
   {
+    "route": "/workspace/requests/mine",
+    "screen": "requests",
+    "view": "mine",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--requests-mine-staff"
+  },
+  {
     "route": "/workspace/requests/leave",
     "screen": "requests",
     "view": "leave",
@@ -1295,6 +1345,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "view": "leave",
     "role": "PHARMACIST",
     "storybookId": "ideal-ui-v3-role-route-matrix--requests-leave-pharmacist"
+  },
+  {
+    "route": "/workspace/requests/leave",
+    "screen": "requests",
+    "view": "leave",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--requests-leave-staff"
   },
   {
     "route": "/workspace/requests/swap",
@@ -1318,6 +1375,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "storybookId": "ideal-ui-v3-role-route-matrix--requests-swap-pharmacist"
   },
   {
+    "route": "/workspace/requests/swap",
+    "screen": "requests",
+    "view": "swap",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--requests-swap-staff"
+  },
+  {
     "route": "/workspace/requests/outside",
     "screen": "requests",
     "view": "outside",
@@ -1337,6 +1401,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "view": "outside",
     "role": "PHARMACIST",
     "storybookId": "ideal-ui-v3-role-route-matrix--requests-outside-pharmacist"
+  },
+  {
+    "route": "/workspace/requests/outside",
+    "screen": "requests",
+    "view": "outside",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--requests-outside-staff"
   },
   {
     "route": "/workspace/people/directory",
@@ -1402,6 +1473,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "storybookId": "ideal-ui-v3-role-route-matrix--governance-privacy-pharmacist"
   },
   {
+    "route": "/workspace/governance/privacy",
+    "screen": "governance",
+    "view": "privacy",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--governance-privacy-staff"
+  },
+  {
     "route": "/workspace/governance/recovery",
     "screen": "governance",
     "view": "recovery",
@@ -1430,6 +1508,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "storybookId": "ideal-ui-v3-role-route-matrix--settings-appearance-pharmacist"
   },
   {
+    "route": "/workspace/settings/appearance",
+    "screen": "settings",
+    "view": "appearance",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--settings-appearance-staff"
+  },
+  {
     "route": "/workspace/settings/notifications",
     "screen": "settings",
     "view": "notifications",
@@ -1451,6 +1536,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "storybookId": "ideal-ui-v3-role-route-matrix--settings-notifications-pharmacist"
   },
   {
+    "route": "/workspace/settings/notifications",
+    "screen": "settings",
+    "view": "notifications",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--settings-notifications-staff"
+  },
+  {
     "route": "/workspace/settings/absence-consent",
     "screen": "settings",
     "view": "absence-consent",
@@ -1470,6 +1562,13 @@ export const WORKSPACE_ROLE_STORIES = [
     "view": "absence-consent",
     "role": "PHARMACIST",
     "storybookId": "ideal-ui-v3-role-route-matrix--settings-absence-consent-pharmacist"
+  },
+  {
+    "route": "/workspace/settings/absence-consent",
+    "screen": "settings",
+    "view": "absence-consent",
+    "role": "STAFF",
+    "storybookId": "ideal-ui-v3-role-route-matrix--settings-absence-consent-staff"
   },
   {
     "route": "/workspace/settings/flextime",

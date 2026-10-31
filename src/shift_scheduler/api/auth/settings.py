@@ -82,6 +82,7 @@ class OIDCSettings:
     state_ttl_seconds: int
     jwks_cache_seconds: int
     http_timeout: float
+    staff_roles: tuple[str, ...] = ("pharmshift-staff",)
 
 
 def _resolve_auth_mode() -> AuthMode:
@@ -224,6 +225,9 @@ def get_oidc_settings() -> OIDCSettings | None:
         developer_roles=developer_roles,
         leader_roles=leader_roles,
         pharmacist_roles=pharmacist_roles,
+        staff_roles=tuple(
+            _split_csv(_getenv("OIDC_ROLE_MAPPING_STAFF")) or ["pharmshift-staff"]
+        ),
         default_role=default_role,
         user_id_claims=user_id_claims,
         email_claims=email_claims,

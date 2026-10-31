@@ -1,4 +1,6 @@
 "use client";
+import { isSelfServiceRole } from "@/lib/accessRoles";
+
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useIdentity } from "@/components/IdentityProvider";
@@ -123,7 +125,7 @@ export default function ApiWorkspaceProvider({ scopeId, period, publicationId, c
           ? Promise.resolve({ [scope.person_id]: viewerName })
           : privacyPurpose
           ? client.privacyPeople(scope.scope_id)
-          : scope.role === "PHARMACIST"
+          : isSelfServiceRole(scope.role)
           ? Promise.resolve({})
           : rosterPurpose || resolved.personId ? client.scopePeople(scope.scope_id) : client.people(scope.scope_id)),
         partial("勤務表", privacyPurpose ? Promise.resolve(null) : optional(client.scheduleCalendar(scope.scope_id, requestedPeriod))),
@@ -188,7 +190,7 @@ export default function ApiWorkspaceProvider({ scopeId, period, publicationId, c
     publicationOf: (id: string) => state.publications.find((p) => p.publication_id === id),
     // A pharmacist is not given other people's names; the other person is named only
     // where the server says so (exchange options).
-    nameOf: (person: string) => state.names[person] ?? (person === scope.person_id ? "あなた" : scope.role === "PHARMACIST" ? "相手の職員" : person),
+    nameOf: (person: string) => state.names[person] ?? (person === scope.person_id ? "あなた" : isSelfServiceRole(scope.role) ? "相手の職員" : person),
     people: Object.entries(state.names).map(([person_id, name]) => ({ person_id, name })),
     refresh: async () => {
       const detail = await load();

@@ -45,6 +45,7 @@ class ShiftCategory(str, Enum):
 
     WARD = "WARD"
     DAY_SHIFT = "DAY_SHIFT"
+    CLERICAL = "CLERICAL"
     EVENING = "EVENING"
     NIGHT_DUTY = "NIGHT_DUTY"
     ON_CALL = "ON_CALL"
@@ -80,6 +81,7 @@ class Role(str, Enum):
 
     PHARMACIST = "PHARMACIST"
     ASSISTANT = "ASSISTANT"
+    CLERK = "CLERK"
 
 
 class HolidayRequestKind(str, Enum):

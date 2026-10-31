@@ -117,7 +117,7 @@ def typescript(
                 for route in (routes_config or [])
             )
         ]
-        for role in ("ADMIN", "LEADER", "PHARMACIST")
+        for role in ("ADMIN", "LEADER", "PHARMACIST", "STAFF")
     }
     navigation_body = json.dumps(navigation, ensure_ascii=False, indent=2)
     return (

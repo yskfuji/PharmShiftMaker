@@ -79,7 +79,7 @@ test('without the consent setting a pharmacist applies for an absence without na
   open('requests');
   const panel = (await screen.findByRole('heading', { name: '新しい申請' })).closest('section')!;
   fireEvent.change(within(panel).getByLabelText('勤務'), { target: { value: 'd1' } });
-  expect(await within(panel).findByText(/薬剤師は代わりの人を指名できません/)).toBeInTheDocument();
+  expect(await within(panel).findByText(/あなたは代替候補を選べません/)).toBeInTheDocument();
   fireEvent.click(within(panel).getByRole('radio', { name: /代わりを指定しない/ }));
   await fillEvidence(panel);
   fireEvent.click(within(panel).getByRole('button', { name: '申請する' }));

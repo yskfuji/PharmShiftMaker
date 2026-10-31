@@ -46,7 +46,7 @@
 | `app/workspace/page.tsx:8` | server-redirect | `/workspace/home` | `/workspace/[screen]` |
 | `components/BusinessWorkflow.tsx:38` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/BusinessWorkflow.tsx:41` | link | `/planning/workflows` | `/planning/workflows` |
-| `components/ScheduleWorkspace.tsx:136` | link | `/planning` | `/planning` |
+| `components/ScheduleWorkspace.tsx:138` | link | `/planning` | `/planning` |
 | `components/SessionControls.tsx:21` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:20` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:33` | link | `/planning/workflows/${p}?scope=${encodeURIComponent(m.scope_id)}` | `/planning/workflows/[workflow]` |
@@ -60,21 +60,21 @@
 | `components/ideal/IdealWorkspace.tsx:124` | link | `/workspace/settings/notifications` | `/workspace/[screen]/[view]` |
 | `components/ideal/IdealWorkspace.tsx:125` | link | `/workspace/${current}/${item.key}` | `/workspace/[screen]/[view]` |
 | `components/ideal/IdealWorkspace.tsx:130` | document | `/workspace/home` | `/workspace/[screen]` |
-| `features/workspace/people/ContractWorkflow.tsx:204` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
-| `features/workspace/people/ContractWorkflow.tsx:247` | link | `/settings` | `/settings` |
+| `features/workspace/people/ContractWorkflow.tsx:205` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
+| `features/workspace/people/ContractWorkflow.tsx:248` | link | `/settings` | `/settings` |
 | `features/workspace/people/NewStaffTaskList.tsx:48` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
 | `features/workspace/planning/PlanningRouteViews.tsx:52` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
 | `features/workspace/planning/PlanningRouteViews.tsx:76` | link | `/workspace/plan/compare` | `/workspace/[screen]/[view]` |
 | `features/workspace/settings/FlexTimeSettings.tsx:194` | link | `/planning` | `/planning` |
-| `features/workspace/shell/WorkspaceContent.tsx:27` | document | `/workspace/home` | `/workspace/[screen]` |
-| `ideal/providers/ApiWorkspaceProvider.tsx:181` | document | `/login?redirectTo=<current page>` | `/login` |
+| `features/workspace/shell/WorkspaceContent.tsx:28` | document | `/workspace/home` | `/workspace/[screen]` |
+| `ideal/providers/ApiWorkspaceProvider.tsx:183` | document | `/login?redirectTo=<current page>` | `/login` |
 | `ideal/screens/live/LiveAdminScreens.tsx:288` | link | `/workspace/governance/actuals` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LiveAdminScreens.tsx:288` | link | `/workspace/governance/privacy` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LiveAdminScreens.tsx:288` | link | `/workspace/governance/recovery` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LiveAdminScreens.tsx:78` | link | `/workspace/people/contracts?person=${encodeURIComponent(current.person_id)}` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LiveAdminScreens.tsx:78` | link | `/workspace/people/lifecycle?person=${encodeURIComponent(current.person_id)}` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LiveAdminScreens.tsx:78` | link | `/workspace/people/memberships?person=${encodeURIComponent(current.person_id)}` | `/workspace/[screen]/[view]` |
-| `ideal/screens/live/LiveCaseScreens.tsx:41` | link | `/workspace/requests/leave` | `/workspace/[screen]/[view]` |
+| `ideal/screens/live/LiveCaseScreens.tsx:43` | link | `/workspace/requests/leave` | `/workspace/[screen]/[view]` |
 | `ideal/screens/live/LivePlan.tsx:91` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
 | `lib/loginPath.ts:23` | document | `/login?redirectTo=<current page>` | `/login` |
 | `lib/navigation.ts:10` | link | `/planning/workflows` | `/planning/workflows` |
@@ -117,10 +117,10 @@
 | `features/workspace/shell/WorkspaceShell.tsx:81` | `hrefFor("home")` |
 | `features/workspace/shell/WorkspaceUserMenu.tsx:32` | `settingsHref` |
 | `features/workspace/shell/WorkspaceUserMenu.tsx:33` | `notificationsHref` |
-| `ideal/screens/ScheduleScreen.tsx:29` | `model.personalExport.print` |
-| `ideal/screens/ScheduleScreen.tsx:29` | `model.personalExport.ical` |
+| `ideal/screens/ScheduleScreen.tsx:31` | `model.personalExport.print` |
+| `ideal/screens/ScheduleScreen.tsx:31` | `model.personalExport.ical` |
 | `ideal/screens/live/LiveAdminScreens.tsx:157` | `lifecycleTaskHref(t.key, live.scopeId, c.person_id)` |
 | `ideal/screens/live/LiveAdminScreens.tsx:289` | `item.href` |
-| `ideal/screens/live/LiveCaseScreens.tsx:110` | `linkTo("operations")` |
+| `ideal/screens/live/LiveCaseScreens.tsx:112` | `linkTo("operations")` |
 | `ideal/screens/live/LivePlan.tsx:84` | `route("/workspace/plan/compare", params, { input: data.input_hash, draft: generatedDrafts` |
 | `ideal/screens/live/LivePlan.tsx:98` | `route("/workspace/plan/drafts", params, { input: inputHash, draft: chosen` |

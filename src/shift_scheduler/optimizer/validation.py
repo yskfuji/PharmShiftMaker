@@ -140,6 +140,23 @@ def _validate_known_entities(
                     },
                 )
             )
+        person = people_by_id.get(assignment.person_id)
+        shift = shift_types_by_id.get(assignment.shift_id)
+        if person is not None and shift is not None:
+            from shift_scheduler.domain.occupation import occupation_allows_category
+
+            if not occupation_allows_category(person.role, shift.category):
+                warnings.append(
+                    ScheduleWarningEntry(
+                        code="MANUAL_OCCUPATION_MISMATCH",
+                        severity="critical",
+                        message="職種に対応していない勤務が指定されています",
+                        context={
+                            "person_id": person.person_id,
+                            "shift_id": shift.shift_id,
+                        },
+                    )
+                )
         if assignment.shift_id not in shift_types_by_id:
             warnings.append(
                 ScheduleWarningEntry(

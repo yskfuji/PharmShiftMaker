@@ -48,3 +48,16 @@ test('privacy explains judgment and residual copies without implying schedule pu
  expect(await screen.findByText(/消去を実行しても、保全・バックアップ・外部コピーが残る/)).toBeVisible();
  expect(screen.queryByText(/勤務案へ反映/)).not.toBeInTheDocument();
 });
+
+
+test.each([false,true])('an empty leave report preserves the distinction between no rows and unresolved findings (%s)',async(unresolved)=>{
+ global.fetch=jest.fn(async(url:string)=>url.includes('/records')?result([]):result({balances:[],obligations:[],findings:unresolved?[{message:'unconfirmed'}]:[]})) as any;
+ render(<CompliancePanel scope="hospital/pharmacy" personId="p1" role="STAFF" section="leave" onChanged={()=>{}}/>);
+ if(unresolved){
+  expect(await screen.findByText('未確認または不整合があります。管理者による照合が必要です。')).toBeVisible();
+  expect(screen.queryByText(/表示対象の年休残高・取得義務はありません/)).not.toBeInTheDocument();
+ }else{
+  expect(await screen.findByText('表示対象の年休残高・取得義務はありません。残高が0日であることを意味しません。')).toBeVisible();
+ }
+ expect(screen.queryByLabelText('年休残高')).not.toBeInTheDocument();
+});

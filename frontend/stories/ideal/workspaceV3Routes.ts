@@ -16,6 +16,12 @@ const workflow = { input_hash: input.input_hash, role: "ADMIN", people, contract
 
 /** Synthetic responses for the exact production feature components used by v3 stories. */
 export const workspaceV3Routes: FetchRoute[] = [
+  // Explicit synthetic personas, separate from production authorization.
+  { path: "/planning/staff-context", body: null, resolveBody: args => {
+    const role = typeof args.role === "string" ? args.role : "LEADER";
+    return {person_id: `synthetic-${role.toLowerCase()}`, permission: role,
+      occupation: role === "STAFF" ? "CLERK" : "PHARMACIST", occupation_status: "recorded"};
+  } },
   { path: "/planning/change-cases", body: [] },
   { path: "/planning/daily-operations", body: { scope_id: "synthetic/clinical-pharmacy", day: "2026-10-12", observed_at: "2026-10-12T08:16:00+09:00", visibility: "department", scheduled_assignments: assignments, scheduled_count: assignments.length, open_case_count: 0, absence_case_count: 0, coverage_finding_count: 0, undelivered_notification_count: 1, limitations: ["予定上の勤務であり、在席実績ではありません。"] } },
   { path: "/planning/notifications", body: [{ event_id: "notice-1", category: "schedule", kind: "公開版が更新されました", publication_id: publication.publication_id, version: 12, read: false, created_at: "2026-10-12T07:42:00+09:00" }] },

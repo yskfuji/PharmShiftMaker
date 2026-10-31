@@ -603,6 +603,32 @@
       "environment": [
         "isolated_full_restore"
       ]
+    },
+    {
+      "id": "multirole-workflow",
+      "kind": "diagnostic",
+      "requirements": [
+        "U01",
+        "U02",
+        "U03",
+        "U04",
+        "U09",
+        "U19",
+        "U20",
+        "U21"
+      ],
+      "criterion": "Real PostgreSQL plus in-process product API routing: register clerical staff, scoped STAFF/LEADER separation, preference, actual generation worker, review/publication and own-only retrieval. Legacy hash compatibility and occupation counterexamples. Not browser, real IdP, full privacy lifecycle or facility acceptance.",
+      "command": [
+        "{python}",
+        "-m",
+        "scripts.acceptance_pytest",
+        "tests/test_multirole_boundaries.py",
+        "tests/test_multirole_api.py"
+      ],
+      "requires": [],
+      "environment": [
+        "isolated_postgres"
+      ]
     }
   ]
 }

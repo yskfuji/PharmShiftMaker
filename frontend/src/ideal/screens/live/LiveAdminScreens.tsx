@@ -10,7 +10,7 @@ import { useResource } from "../../live/useResource";
 import type { AuditEntry, LifecycleCase, MembershipRevision } from "../../types";
 import { StatusPill } from "../shared";
 
-const ROLE: Record<string, string> = { ADMIN: "システム管理者", LEADER: "薬剤部責任者", PHARMACIST: "薬剤師" };
+const ROLE: Record<string, string> = { ADMIN: "システム管理者", LEADER: "薬剤部責任者", STAFF: "職員", PHARMACIST: "職員（旧権限）" };
 const TASK: Record<string, string> = {
   contract: "雇用契約の確認", qualification: "資格の確認", membership: "本人アカウントの紐付け", candidate_generation: "勤務候補の生成",
   contract_end: "契約終了の確認", candidate_exclusion: "勤務候補からの除外", balance_review: "休暇残高の確認", membership_deactivation: "アカウントの無効化",
@@ -117,7 +117,7 @@ function Deactivate({ live, m, onChanged, blockedReason }: { live: LiveApi; m: M
 
 function LinkForm({ live, initialPersonId, onChanged }: { live: LiveApi; initialPersonId: string | null; onChanged: () => void }) {
   const id = useId();
-  const [form, setForm] = useState({ issuer: "", subject: "", person_id: initialPersonId ?? "", role: "PHARMACIST" as "ADMIN" | "LEADER" | "PHARMACIST" });
+  const [form, setForm] = useState({ issuer: "", subject: "", person_id: initialPersonId ?? "", role: "STAFF" as "ADMIN" | "LEADER" | "STAFF" | "PHARMACIST" });
   const [evidence, setEvidence] = useState(EMPTY_EVIDENCE);
   const action = useAction();
   const people = live.people.map((person) => person.person_id);
@@ -146,7 +146,7 @@ function LifecycleCard({ live, c, onChanged }: { live: LiveApi; c: LifecycleCase
   const [task, setTask] = useState<string | null>(null);
   const [evidence, setEvidence] = useState(EMPTY_EVIDENCE);
   const action = useAction();
-  return <article>
+  return <article className="ideal-lifecycle-case">
     <span className={`ideal-avatar ${c.kind === "OFFBOARD" ? "is-offboard" : ""}`}>{live.nameOf(c.person_id).slice(0, 1)}</span>
     <div className="ideal-lifecycle-list__main">
       <div><strong>{live.nameOf(c.person_id)}</strong><StatusPill tone={c.status === "READY" ? "good" : "info"}>{c.kind === "ONBOARD" ? "入職" : "退職"} · {c.status === "READY" ? "すべて完了" : "進行中"}</StatusPill></div>
@@ -213,8 +213,8 @@ export function LiveSettings({ live }: { live: LiveApi }) {
         <div className="ideal-panel__head"><div><span className="ideal-eyebrow">欠勤の運用</span><h2 id="consent-title">代わりに入る人の同意</h2></div>
           <StatusPill tone={consent.enabled ? "good" : "neutral"}>{consent.enabled ? "同意を求める" : "同意を求めない"}</StatusPill></div>
         <p>{consent.enabled
-          ? "欠勤の代わりに指名された人が同意してから、責任者が承認します。薬剤師も自分の勤務の代わりを指名できます。"
-          : "責任者が代わりを決め、同意は求めません。薬剤師は代わりを指名できません。"}
+          ? "欠勤の代わりに指名された人が同意してから、責任者が承認します。職員権限でも、自分の勤務の代替候補を選べます。"
+          : "責任者が代わりを決め、同意は求めません。職員権限では代替候補を選べません。"}
           切り替えは、切り替えた後に作るケースから適用されます（作成済みのケースは変わりません）。</p>
         {admin && <form onSubmit={(e) => { e.preventDefault(); void action.run(async () => {
           const body = { enabled: !consent.enabled, expected_version: consent.revision, evidence };
@@ -293,7 +293,7 @@ export function LiveGovernance({ live }: { live: LiveApi }) {
         <label className="ideal-inline-field" htmlFor={`${id}-category`}>種類<select id={`${id}-category`} className="ideal-input" value={category} onChange={(e) => setCategory(e.target.value)}><option value="">すべて</option>{Object.entries(CATEGORY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label></div>
       <Loaded resource={first}>{(page) => <>
         {entries.length ? <ol className="ideal-timeline">{entries.map((e, index) => <li key={`${e.at}-${e.kind}-${index}`}><span /><div><strong>{eventLabel(e.kind)}</strong>
-          <p>{CATEGORY[e.category]} · {e.actor_role ?? "役割不明"} · 関係した人 {e.subject_count === null ? "—" : `${e.subject_count}名`}{e.version === null ? "" : ` · 版 ${e.version}`}</p><small>記録種別 <code>{e.kind}</code></small></div><time dateTime={e.at}>{stamp(e.at)}</time></li>)}</ol>
+          <p>{CATEGORY[e.category]} · {e.actor_role ? (Object.hasOwn(ROLE, e.actor_role) ? ROLE[e.actor_role] : `権限を確認してください（${e.actor_role}）`) : "権限未確認"} · 関係した人 {e.subject_count === null ? "—" : `${e.subject_count}名`}{e.version === null ? "" : ` · 版 ${e.version}`}</p><small>記録種別 <code>{e.kind}</code></small></div><time dateTime={e.at}>{stamp(e.at)}</time></li>)}</ol>
           : <p className="ideal-note">記録はありません。</p>}
         {cursor && <button type="button" className="ideal-button ideal-button--secondary" disabled={more.busy} onClick={() => void more.run(async () => {
           const next = await live.client.timeline(live.scopeId, cursor, category || null);

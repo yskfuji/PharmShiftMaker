@@ -40,6 +40,7 @@ test('without a publication nothing is invented', () => {
   const model = build('ADMIN', {}, null);
   expect(model.home.team.headline.ADMIN).toBe('公開済みの勤務表はまだありません');
   expect(model.schedule.rows).toEqual([]);
+  expect(model.schedule.days.every((day) => day.status === "未公開")).toBe(true);
   expect(model.schedule.personalExport).toBeNull();
   // no verification claim and no "good" tone without a publication
   expect(model.shell.publication.note).toBe('未公開');
@@ -64,4 +65,21 @@ test('two duties on one day are both shown, and a pharmacist count is labelled a
   expect(cells[0].shift.split('・')).toHaveLength(2);
   expect(model.schedule.details[cells[0].id].facts.some((f) => f.startsWith('夜勤 20:00–08:00'))).toBe(true);
   expect(model.schedule.summary[0].label).toMatch(/^自分の公開勤務 /);
+});
+
+
+test('unpublished and past-only publications do not claim an absent schedule', () => {
+  expect(build('STAFF', {}, null).home.personal.title).toBe('勤務表はまだ公開されていません');
+  const past = {...publication, assignments: publication.assignments.filter(d => d.person_id === 'p-other')};
+  expect(build('STAFF', {}, past).home.personal.title).toBe('公開版に今後の勤務はありません');
+});
+
+test('published shift codes are labelled without changing stored identifiers', () => {
+  const published = {...publication, assignments: [{...publication.assignments[0], kind: 'DAY', location: 'unmapped-location'}]};
+  const model = build('STAFF', {}, published);
+  expect(model.schedule.rows[0].cells[1].shift).toBe('日勤');
+  expect(model.schedule.agendas[1].items[0].status).toBe('日勤');
+  expect(model.schedule.details['p-self-1'].facts).toContain('配置場所（登録名・コード）：unmapped-location');
+  expect(model.schedule.details['p-self-1'].note).not.toContain('次の段');
+  expect(published.assignments[0].kind).toBe('DAY');
 });

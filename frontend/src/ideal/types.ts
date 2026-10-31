@@ -1,4 +1,4 @@
-export type IdealRole = "ADMIN" | "LEADER" | "PHARMACIST";
+export type IdealRole = "ADMIN" | "LEADER" | "STAFF" | "PHARMACIST";
 
 export type IdealScreen =
   | "home"

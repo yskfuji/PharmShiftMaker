@@ -1,4 +1,6 @@
 "use client";
+import { isSelfServiceRole } from "@/lib/accessRoles";
+
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
@@ -21,18 +23,18 @@ export default function ScheduleScreen({ role, model }: { role: IdealRole; model
   const visiblePeople = new Set(visibleRows.map((row) => row.id));
   const agendaItems = agenda.items.filter((item) => visiblePeople.has(item.id.slice(0, item.id.lastIndexOf("-"))));
   // An empty week is said in words, so it is not mistaken for a table that failed to load.
-  const empty = role === "PHARMACIST" ? "表示期間に、あなたの公開済みの勤務はありません。" : "表示期間に、公開済みの勤務はありません。";
+  const empty = isSelfServiceRole(role) ? "表示期間に、あなたの公開済みの勤務はありません。" : "表示期間に、公開済みの勤務はありません。";
   return (
     <div className="ideal-stack">
       <section className="ideal-toolbar"><div><span className="ideal-eyebrow">{model.eyebrow}</span><h2>{model.title}</h2></div>{model.showcaseActions
-        ? <div className="ideal-actions"><button className="ideal-button ideal-button--secondary"><Download aria-hidden="true" />{role === "PHARMACIST" ? "自分の予定を出力" : "公開版を出力"}</button>{role !== "PHARMACIST" && <button className="ideal-button ideal-button--primary">変更点を確認</button>}</div>
+        ? <div className="ideal-actions"><button className="ideal-button ideal-button--secondary"><Download aria-hidden="true" />{isSelfServiceRole(role) ? "自分の予定を出力" : "公開版を出力"}</button>{!isSelfServiceRole(role) && <button className="ideal-button ideal-button--primary">変更点を確認</button>}</div>
         : model.personalExport && <div className="ideal-actions"><a className="ideal-button ideal-button--secondary" href={model.personalExport.print} target="_blank" rel="noopener noreferrer"><Download aria-hidden="true" />自分の予定を印刷</a><a className="ideal-button ideal-button--secondary" href={model.personalExport.ical} download><Download aria-hidden="true" />カレンダーに追加<span className="sr-only">（.ics）</span></a></div>}</section>
       <section className="ideal-v3-filters" aria-label="勤務表の表示条件"><label>職員名<input className="ideal-input" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="名前で絞り込み" /></label><label>資格・担当<select className="ideal-input" value={qualification} onChange={(event) => setQualification(event.target.value)}><option value="">すべて</option>{qualifications.map((item) => <option key={item}>{item}</option>)}</select></label><label className="ideal-switch"><input type="checkbox" checked={changesOnly} onChange={(event) => setChangesOnly(event.target.checked)} /><span>直前版から変更された職員だけ</span></label><span className="ideal-v3-filter-count" role="status">{visibleRows.length}名を表示</span></section>
       <div className="ideal-schedule-summary">{model.summary.map((item) => <span key={item.label}><i className={`ideal-dot ideal-dot--${item.tone}`} />{item.label}</span>)}<span className="ideal-schedule-summary__push">{model.range}</span></div>
       {model.departmentExport && <details className="ideal-v3-disclosure ideal-department-export"><summary><Download aria-hidden="true" />部署の公開版を出力</summary><div><p>CSV・JSONを管理領域で検証し、受渡し記録と内容ハッシュを残して保存します。</p><PublicationExport scope={model.departmentExport.scope} publication={model.departmentExport.publication} version={model.departmentExport.version} /></div></details>}
       <section className="ideal-schedule-table-wrap" aria-label="月間勤務表" tabIndex={0}>
         <table className="ideal-schedule-table">
-          <caption className="sr-only">{model.title}の公開済み勤務。横にスクロールして日付を確認できます。</caption>
+          <caption className="sr-only">{model.title}の勤務表。横にスクロールして日付を確認できます。</caption>
           <thead><tr><th scope="col" className="ideal-schedule-table__person">職員・資格</th>{model.days.map((day) => <th scope="col" key={day.label} className={day.weekend ? "is-weekend" : ""}><strong>{day.label}</strong><span>{day.status}</span></th>)}</tr></thead>
           <tbody>{visibleRows.map((person) => <tr key={person.id}>
             <th scope="row" className="ideal-schedule-table__person"><span className="ideal-person"><span className="ideal-avatar">{person.initial}</span><span><strong>{person.name}</strong><small>{person.badge}</small></span></span></th>

@@ -56,7 +56,7 @@ class HolidayRequestDeleteRequest(BaseModel):
 
 
 def _resolve_person_id(person_id: str | None, user: UserPrincipal) -> str:
-    if user.role == AppRole.PHARMACIST:
+    if user.role in (AppRole.STAFF, AppRole.PHARMACIST):
         if person_id is not None and person_id != user.user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -126,7 +126,7 @@ def list_holiday_requests(
 ) -> HolidayRequestListResponse:
     requests = _STORE.list_requests(year, month)
     match user.role:
-        case AppRole.PHARMACIST:
+        case AppRole.STAFF | AppRole.PHARMACIST:
             target = _resolve_person_id(person_id, user)
             requests = [req for req in requests if req.person_id == target]
         case _:

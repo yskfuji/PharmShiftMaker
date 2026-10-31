@@ -5,6 +5,7 @@ import {useCallback,useEffect,useRef,useState} from 'react';
 import CopyManagement from '@/features/workspace/governance/CopyManagement';
 import SubjectControlWorkflow from '@/features/workspace/governance/SubjectControlWorkflow';
 import ContractWorkflow from '@/features/workspace/people/ContractWorkflow';
+import ErasePastInputs from '../governance/ErasePastInputs';
 import GovernanceForms from '@/features/workspace/governance/GovernanceForms';
 import OutsideDeclarationForm from '@/features/workspace/requests/OutsideDeclarationForm';
 import LedgerHistory from '@/features/workspace/requests/LedgerHistory';
@@ -16,10 +17,9 @@ import {errorText} from '@/lib/errorText';
 type RecordRow={kind:string;key:string;entity_id:string;revision:number;payload:Record<string,unknown>};
 
 export default function ComplianceWorkspace({scope,personId,targetPersonId,role,onChanged,section='all'}:{scope:string;personId:string;targetPersonId?:string;role:string;onChanged:()=>void|Promise<void>;section?:'all'|'contracts'|'outside'|'leave'|'actuals'|'privacy'}){
- const [oldInputs,setOldInputs]=useState<{input_hash:string;period:{start:string;end:string}}[]>([]);
  const show=(name:string)=>section==='all'||section===name;
   const [loaded,setLoaded]=useState(false);
- const [rows,setRows]=useState<RecordRow[]>([]);const [message,setMessage]=useState('');const [error,setError]=useState('');const [busy,setBusy]=useState(false);const [dirty,setDirty]=useState(false);const [balances,setBalances]=useState<(LeaveIdentityFields&{account_id:string;available_days:{numerator:number;denominator:number};expired:boolean})[]>([]);const [eraseHash,setEraseHash]=useState('');const [preview,setPreview]=useState<{plan_id:string;fingerprint:string;targets:unknown[];blockers:string[]}|null>(null);
+ const [rows,setRows]=useState<RecordRow[]>([]);const [message,setMessage]=useState('');const [error,setError]=useState('');const [busy,setBusy]=useState(false);const [dirty,setDirty]=useState(false);const [balances,setBalances]=useState<(LeaveIdentityFields&{account_id:string;available_days:{numerator:number;denominator:number};expired:boolean})[]>([]);
  const [ledgerStatus,setLedgerStatus]=useState('読み込み中');const [ledgerError,setLedgerError]=useState('');const [privacyError,setPrivacyError]=useState('');const [obligations,setObligations]=useState<(LeaveIdentityFields&{start?:string;obligation_id:string;taken_half_days:number;required_half_days:number;status:string;end:string})[]>([]);
  const retry=useRef<{serialized:string;key:string}|null>(null);const admin=role==='ADMIN';
  const call=useCallback(async(path:string,body?:unknown)=>{const response=await fetch(`${API}/planning/compliance${path}?scope_id=${encodeURIComponent(scope)}`,{credentials:'include',cache:'no-store',method:body?'POST':'GET',headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(!response.ok)throw new Error(`${response.status===409?'競合：再読込して内容を確認してください。':response.status===403?'操作権限がありません。':'保存されていません。'} ${await response.text()}`);return response.json();},[scope]);
@@ -33,13 +33,12 @@ export default function ComplianceWorkspace({scope,personId,targetPersonId,role,
   }
   if(section==='leave'||section==='all'){
    setBalances([]);setObligations([]);
-   try{const report=await call('/leave-report');setBalances(report.balances);setObligations(report.obligations);setLedgerStatus(report.findings.length?'未確認または不整合があります。管理者による照合が必要です。':'固定入力に含まれるイベントの残高です。過去時点の確認は、下の時点指定照会を使用してください。');}
+   try{const report=await call('/leave-report');setBalances(report.balances);setObligations(report.obligations);setLedgerStatus(report.findings.length?'未確認または不整合があります。管理者による照合が必要です。':!report.balances.length&&!report.obligations.length?'表示対象の年休残高・取得義務はありません。残高が0日であることを意味しません。':'固定入力に含まれるイベントの残高です。過去時点の確認は、下の時点指定照会を使用してください。');}
    catch(e){setLedgerStatus('年休残高と取得義務は未確認です。');setLedgerError(errorText(e).includes('版2')?'旧版入力のため、年休台帳は未確認です。版2の情報を照合して登録してください。':'年休台帳を計算できませんでした。残高ゼロや問題なしとは判断できません。契約・制度の不整合を修正して再照合してください。 '+errorText(e));}
   }
  },[call,section]);
- useEffect(()=>{if(!admin||section!=='all')return;void fetch(`${API}/planning/inputs?scope_id=${encodeURIComponent(scope)}`,{credentials:'include',cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error('旧入力の候補を取得できません。');setOldInputs(await r.json());}).catch(e=>setPrivacyError(errorText(e)));},[scope,admin,section]);
  useUnsavedNavigation(dirty);
- useEffect(()=>{let active=true;setLoaded(false);setRows([]);setBalances([]);setObligations([]);setLedgerStatus("読み込み中");setLedgerError('');setPrivacyError('');setPreview(null);setDirty(false);setError('');void reload().then(()=>{if(active)setLoaded(true);}).catch(e=>{if(active)setError(errorText(e));});return()=>{active=false;};},[reload]);
+ useEffect(()=>{let active=true;setLoaded(false);setRows([]);setBalances([]);setObligations([]);setLedgerStatus("読み込み中");setLedgerError('');setPrivacyError('');setDirty(false);setError('');void reload().then(()=>{if(active)setLoaded(true);}).catch(e=>{if(active)setError(errorText(e));});return()=>{active=false;};},[reload]);
  useEffect(()=>{const warn=(event:BeforeUnloadEvent)=>{if(dirty){event.preventDefault();event.returnValue='';}};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[dirty]);
  async function perform(action:()=>Promise<void>){setBusy(true);setError('');setMessage('');try{await action();setDirty(false);await reload();await onChanged();window.dispatchEvent(new Event("planning-records-changed"));}catch(e){setError(errorText(e));}finally{setBusy(false);}}
  async function mutate(path:string,payload:unknown,expected=0){const serialized=JSON.stringify({path,payload,expected});if(retry.current?.serialized!==serialized)retry.current={serialized,key:crypto.randomUUID()};return call(path,{payload,expected_revision:expected,idempotency_key:retry.current.key});}
@@ -47,7 +46,7 @@ export default function ComplianceWorkspace({scope,personId,targetPersonId,role,
 
  const heading=section==='contracts'?'契約・制度の記録':section==='outside'?'申告と原本照合':section==='leave'?'請求・残高・取得の管理':section==='privacy'?'本人対応と保存・消去':'契約・年休・記録の管理';
  const detailedLeaveClaim=section==='all';
- const inputExpiryAvailable=section==='all';
+ const inputExpiryAvailable=section==='all'||section==='privacy';
  if(!loaded)return <section className="workflow-panel space-y-3 border rounded p-4" aria-labelledby="compliance-title"><h2 id="compliance-title" className="text-xl font-semibold">{heading}</h2>{error?<><p role="alert">{error}</p><button className="ui-button ui-button-secondary" onClick={()=>{setError('');void reload().then(()=>setLoaded(true)).catch(e=>setError(errorText(e)));}}>記録の読み込みを再試行</button></>:<p role="status">対象部署の記録と権限を読み込み中…</p>}</section>;
  return <section className="workflow-stable-interactions space-y-6" aria-labelledby="compliance-title"><h2 id="compliance-title" className="text-xl font-semibold">{heading}</h2><p>{section==='privacy'?'請求の受付、管理者の判断、実行結果を分けて確認します。消去を実行しても、保全・バックアップ・外部コピーが残る場合があります。':section==='leave'?'請求・予約と実取得は別の記録です。年休残高と取得義務をそれぞれ確認し、勤務に影響する変更は勤務案へ反映して再検証してください。':section==='outside'?'本人の申告と原本の照合結果を分けて確認します。勤務に影響する変更は勤務案へ反映し、再検証してください。':'勤務に影響する変更は勤務案へ反映し、再検証してください。'}</p>{error&&<p role="alert" className="border border-danger p-3 break-words">{error}</p>}<p role="status">{message}{busy?'処理中…':''}{dirty?' 未保存の変更があります。':''}</p>
  {(show('leave')||show('privacy'))&&<nav aria-label="この画面の業務" className="workflow-section-nav">
@@ -72,6 +71,6 @@ export default function ComplianceWorkspace({scope,personId,targetPersonId,role,
  {show('privacy')&&privacyError&&<p role="alert" aria-label="本人対応の取得結果" className="break-words">{privacyError}</p>}
  {show('privacy')&&<div id="privacy-governance" className="workflow-section"><h3 className="text-lg font-semibold">本人対応の判断・保存規則</h3><GovernanceForms key={"governance:"+scope} scope={scope} admin={admin} onChanged={onChanged}/></div>}
  {admin&&show('privacy')&&<div id="privacy-control" className="workflow-section"><h3 className="text-lg font-semibold">人物の利用制限・消去</h3><SubjectControlWorkflow key={'subject-control:'+scope} scope={scope}/></div>} {admin&&show('privacy')&&<div id="privacy-copies" className="workflow-section"><h3 className="text-lg font-semibold">コピー・保全・残存の確認</h3><CopyManagement key={"copies:"+scope} scope={scope}/></div>}
- {admin&&show('privacy')&&inputExpiryAvailable&&<details id="privacy-expiry" className="workflow-section"><summary>保存期限を過ぎた旧勤務入力の消去</summary><p>現行の参照・休暇台帳・法的保全がある記録は消去できません。消去後は対象範囲の再現ができなくなります。</p><label className="block">対象の旧勤務期間<select value={eraseHash} onChange={e=>{setEraseHash(e.target.value);setPreview(null);}} className="ui-control block w-full"><option value="">選択してください</option>{oldInputs.map(i=><option key={i.input_hash} value={i.input_hash}>{i.period.start} ～ {i.period.end}</option>)}</select></label><button className="ui-button ui-button-secondary" disabled={busy||!eraseHash} onClick={()=>void perform(async()=>setPreview(await mutate('/erasure-preview',{input_hash:eraseHash},0)))}>消去対象と保全条件を確認</button>{preview&&<div className="space-y-2"><p>対象 {preview.targets.length} 件</p><ul>{preview.blockers.map(b=><li key={b}>{b}</li>)}</ul><button className="ui-button ui-button-danger border-danger" disabled={busy||preview.blockers.length>0} onClick={()=>void perform(async()=>{await mutate('/erasure-execute',{plan_id:preview.plan_id,fingerprint:preview.fingerprint},0);setPreview(null);setMessage('消去結果と消去証跡を記録しました。');})}>この確認版の対象を消去</button></div>}</details>}
+ {admin&&show('privacy')&&<div id="privacy-expiry" className="workflow-section"><ErasePastInputs key={scope} scope={scope}/></div>}
  </section>;
 }

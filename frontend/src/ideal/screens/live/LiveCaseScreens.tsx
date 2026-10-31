@@ -1,4 +1,6 @@
 "use client";
+import { isSelfServiceRole } from "@/lib/accessRoles";
+
 
 import { ChevronRight } from "lucide-react";
 import ContextLink from "@/components/ContextLink";
@@ -33,7 +35,7 @@ export function LiveRequests({ live, mode = "mine" }: { live: LiveApi; mode?: "m
   const cases = useCases(live);
   const done = useNotice();
   const own = (live.publication?.assignments ?? []).filter((d) => d.person_id === live.personId);
-  const planner = live.role !== "PHARMACIST";
+  const planner = !isSelfServiceRole(live.role);
   return (
     <div className="ideal-stack">
       {done.element}
@@ -104,7 +106,7 @@ export function LiveHomeQueue({ live, onNavigate, linkTo }: { live: LiveApi; onN
           <div className="ideal-panel__head"><div><span className="ideal-eyebrow">あなたへの依頼</span><h2 id="asked-title">同意が必要な勤務</h2></div><StatusPill tone="warn">{asked.length}件</StatusPill></div>
           <div className="ideal-case-list">{asked.map((c) => <article key={c.case_id}><CaseSummary c={c} live={live} /><CaseActions c={c} live={live} verbs={["consent", "decline"]} onChanged={(message) => { done.show(message); void cases.reload(); }} /></article>)}</div>
         </section>}
-        {live.role !== "PHARMACIST" && <section className="ideal-panel" aria-labelledby="queue-title">
+        {!isSelfServiceRole(live.role) && <section className="ideal-panel" aria-labelledby="queue-title">
           <div className="ideal-panel__head"><div><span className="ideal-eyebrow">判断待ち</span><h2 id="queue-title">次に判断すること</h2></div>
             {linkTo
               ? <ContextLink className="ideal-link ideal-link--target" href={linkTo("operations")}>当日運用で開く <ChevronRight aria-hidden="true" /></ContextLink>
@@ -116,7 +118,7 @@ export function LiveHomeQueue({ live, onNavigate, linkTo }: { live: LiveApi; onN
             <li><span className="ideal-priority-list__number">{counts.DRAFT}</span><div><strong>指摘あり</strong><p>サーバーの検証で公開できないケース（取り下げて作り直す）</p></div><StatusPill tone={counts.DRAFT ? "danger" : "neutral"}>要対応</StatusPill></li>
           </ol>
         </section>}
-        {live.role === "PHARMACIST" && !asked.length && <p className="ideal-note">あなたに同意を求めている申請はありません。</p>}
+        {isSelfServiceRole(live.role) && !asked.length && <p className="ideal-note">あなたに同意を求めている申請はありません。</p>}
       </div>;
     }}</Loaded>
   </>);

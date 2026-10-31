@@ -22,6 +22,7 @@ from shift_scheduler.api.routers import (
     planning,
     schedules,
     staff,
+    staff_context,
     workflows,
 )
 from shift_scheduler.db.restore_lock import RestoreUnavailable
@@ -114,6 +115,7 @@ app.include_router(holiday_requests.router)
 app.include_router(leave_quotas.router)
 app.include_router(schedules.router)
 app.include_router(staff.router)
+app.include_router(staff_context.router)
 app.include_router(planning.router)
 app.include_router(workflows.router)
 app.include_router(compliance.router)

@@ -1,3 +1,4 @@
+import { isSelfServiceRole } from "@/lib/accessRoles";
 import type { ReactNode } from "react";
 import { Check, ChevronRight, Clock3, ShieldCheck } from "lucide-react";
 import type { HomeModel } from "../model";
@@ -7,7 +8,7 @@ import { Metric, StatusPill } from "./shared";
 /** `queue`: the API-backed decision queue and consent requests, shown where the
  * synthetic model has its fixed queue. */
 export default function HomeScreen({ role, model, queue }: { role: IdealRole; model: HomeModel; queue?: ReactNode }) {
-  if (role === "PHARMACIST") {
+  if (isSelfServiceRole(role)) {
     const home = model.personal;
     return (
       <div className="ideal-stack ideal-home-bands">

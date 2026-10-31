@@ -6,7 +6,7 @@
 
 ## U01 認証・役割・scope
 
-経路: `/workspace/home` / 画面: `home/index` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u01-auth-scope`
+経路: `/workspace/home` / 画面: `home/index` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u01-auth-scope`
 
 ```mermaid
 sequenceDiagram
@@ -38,7 +38,7 @@ sequenceDiagram
 
 ## U02 本人勤務と個人出力
 
-経路: `/workspace/schedule` / 画面: `schedule/index` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u02-personal-schedule`
+経路: `/workspace/schedule` / 画面: `schedule/index` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u02-personal-schedule`
 
 ```mermaid
 sequenceDiagram
@@ -186,7 +186,7 @@ sequenceDiagram
 
 ## U06 勤務交換と同意
 
-経路: `/workspace/requests/swap` / 画面: `requests/swap` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u06-swap`
+経路: `/workspace/requests/swap` / 画面: `requests/swap` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u06-swap`
 
 ```mermaid
 sequenceDiagram
@@ -228,7 +228,7 @@ sequenceDiagram
 
 ## U07 申請取下げ
 
-経路: `/workspace/requests/mine` / 画面: `requests/mine` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u07-withdraw`
+経路: `/workspace/requests/mine` / 画面: `requests/mine` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u07-withdraw`
 
 ```mermaid
 sequenceDiagram
@@ -255,7 +255,7 @@ sequenceDiagram
 
 ## U08 欠勤同意設定
 
-経路: `/workspace/settings/absence-consent` / 画面: `settings/absence-consent` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u08-absence-consent`
+経路: `/workspace/settings/absence-consent` / 画面: `settings/absence-consent` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u08-absence-consent`
 
 ```mermaid
 sequenceDiagram
@@ -447,7 +447,7 @@ sequenceDiagram
 
 ## U14 異常系と再送
 
-経路: `/workspace/home` / 画面: `home/index` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u14-failure-retry`
+経路: `/workspace/home` / 画面: `home/index` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u14-failure-retry`
 
 ```mermaid
 sequenceDiagram
@@ -479,7 +479,7 @@ sequenceDiagram
 
 ## U15 月間勤務・版差分・部署出力
 
-経路: `/workspace/schedule` / 画面: `schedule/index` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u15-monthly-schedule`
+経路: `/workspace/schedule` / 画面: `schedule/index` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u15-monthly-schedule`
 
 ```mermaid
 sequenceDiagram
@@ -548,7 +548,7 @@ sequenceDiagram
 
 ## U17 役割別ホーム
 
-経路: `/workspace/home` / 画面: `home/index` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u17-role-home`
+経路: `/workspace/home` / 画面: `home/index` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u17-role-home`
 
 ```mermaid
 sequenceDiagram
@@ -590,7 +590,7 @@ sequenceDiagram
 
 ## U18 施設・個人設定
 
-経路: `/workspace/settings/appearance` / 画面: `settings/appearance` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u18-settings`
+経路: `/workspace/settings/appearance` / 画面: `settings/appearance` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u18-settings`
 
 ```mermaid
 sequenceDiagram
@@ -622,7 +622,7 @@ sequenceDiagram
 
 ## U19 休暇
 
-経路: `/workspace/requests/leave` / 画面: `requests/leave` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u19-leave`
+経路: `/workspace/requests/leave` / 画面: `requests/leave` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u19-leave`
 
 ```mermaid
 sequenceDiagram
@@ -867,7 +867,7 @@ sequenceDiagram
 
 ## U24 兼業・外部勤務
 
-経路: `/workspace/requests/outside` / 画面: `requests/outside` / 役割: ADMIN, LEADER, PHARMACIST / E2E: `ideal-u24-outside`
+経路: `/workspace/requests/outside` / 画面: `requests/outside` / 役割: ADMIN, LEADER, PHARMACIST, STAFF / E2E: `ideal-u24-outside`
 
 ```mermaid
 sequenceDiagram
@@ -899,7 +899,7 @@ sequenceDiagram
 
 ## U25 個人情報・人物消去
 
-経路: `/workspace/governance/privacy` / 画面: `governance/privacy` / 役割: ADMIN, PHARMACIST / E2E: `ideal-u25-privacy-erasure`
+経路: `/workspace/governance/privacy` / 画面: `governance/privacy` / 役割: ADMIN, PHARMACIST, STAFF / E2E: `ideal-u25-privacy-erasure`
 
 ```mermaid
 sequenceDiagram

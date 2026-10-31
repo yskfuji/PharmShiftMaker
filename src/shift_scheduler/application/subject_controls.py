@@ -69,8 +69,95 @@ def preview(
         "state": "CONTROL_APPLIED_REMAINS" if record else "NOT_APPLIED",
         "all_copies_erased": False,
         "identity_boundary": "stable person ID only; unknown aliases require identity review",
-        "inventory": copies.inventory(session, scope, person, now),
+        "inventory": copies.with_processing(
+            copies.inventory(session, scope, person, now)
+        ),
+        "applicable_cases": applicable_cases(session, scope, person, now),
     }
+
+
+def _require_applicable(
+    session: Session,
+    scope: str,
+    person: str,
+    case: PrivacyCase | None,
+    case_revision: int,
+    now: datetime,
+) -> RetentionRule:
+    """Everything apply() requires of the decision, the holds, an earlier control and
+    the rule for control records. It is the only statement of those requirements:
+    apply() enforces it and preview() lists the decisions that pass it
+    (`applicable_cases`), so a screen never keeps a copy of its own.
+    """
+    facility = scope.split("/")[0]
+    if (
+        not case
+        or case.scope_id != scope
+        or case.person_id != person
+        or case.kind != "erase"
+    ):
+        raise LookupError("Matching authorized erasure decision required")
+    if case.revision != case_revision or case.status != "APPROVED":
+        raise Conflict("Current approved erasure decision required")
+    hold = session.scalar(
+        select(LegalHold).where(
+            LegalHold.scope_id.startswith(facility + "/"),
+            LegalHold.active.is_(True),
+            or_(LegalHold.person_id == person, LegalHold.person_id.is_(None)),
+        )
+    )
+    if hold:
+        raise Conflict("Active preservation hold prevents subject erasure control")
+    if session.get(ErasedSubject, (facility, person)):
+        raise Conflict("Person control already exists; use original operation key")
+    rule = session.scalar(
+        select(RetentionRule)
+        .where(RetentionRule.scope_id == scope, RetentionRule.category == "control")
+        .order_by(RetentionRule.revision.desc())
+        .limit(1)
+    )
+    policy = RetentionPolicy.model_validate(rule.payload) if rule else None
+    if (
+        rule is None
+        or policy is None
+        or not policy.effective_from <= now.date() < policy.effective_until
+        or not verified(policy.evidence, now)
+        or policy.next_review < now.date()
+        or policy.retention_days < policy.legal_minimum_days
+    ):
+        raise ValueError(
+            "Current verified retention policy for control records required"
+        )
+    return rule
+
+
+def applicable_cases(
+    session: Session, scope: str, person: str, now: datetime
+) -> list[dict[str, Any]]:
+    """The person's decisions apply() would accept now, at their current revision.
+
+    Empty when none qualifies, whatever the reason (no approved erasure decision, an
+    active hold, a control that already exists, or no current verified rule for
+    control records). The independent control service is asked by apply() itself.
+    """
+    listed = []
+    for case in session.scalars(
+        select(PrivacyCase)
+        .where(PrivacyCase.scope_id == scope, PrivacyCase.person_id == person)
+        .order_by(PrivacyCase.case_id)
+    ):
+        try:
+            _require_applicable(session, scope, person, case, case.revision, now)
+        except (LookupError, Conflict, ValueError):
+            continue
+        listed.append(
+            {
+                "case_id": case.case_id,
+                "revision": case.revision,
+                "reason": str(case.payload.get("reason", "")),
+            }
+        )
+    return listed
 
 
 def apply(
@@ -111,44 +198,7 @@ def apply(
         return receipt.response
     facility = scope.split("/")[0]
     case = session.get(PrivacyCase, case_id, with_for_update=True)
-    if (
-        not case
-        or case.scope_id != scope
-        or case.person_id != person
-        or case.kind != "erase"
-    ):
-        raise LookupError("Matching authorized erasure decision required")
-    if case.revision != case_revision or case.status != "APPROVED":
-        raise Conflict("Current approved erasure decision required")
-    hold = session.scalar(
-        select(LegalHold).where(
-            LegalHold.scope_id.startswith(facility + "/"),
-            LegalHold.active.is_(True),
-            or_(LegalHold.person_id == person, LegalHold.person_id.is_(None)),
-        )
-    )
-    if hold:
-        raise Conflict("Active preservation hold prevents subject erasure control")
-    if session.get(ErasedSubject, (facility, person)):
-        raise Conflict("Person control already exists; use original operation key")
-    rule = session.scalar(
-        select(RetentionRule)
-        .where(RetentionRule.scope_id == scope, RetentionRule.category == "control")
-        .order_by(RetentionRule.revision.desc())
-        .limit(1)
-    )
-    policy = RetentionPolicy.model_validate(rule.payload) if rule else None
-    if (
-        rule is None
-        or policy is None
-        or not policy.effective_from <= now.date() < policy.effective_until
-        or not verified(policy.evidence, now)
-        or policy.next_review < now.date()
-        or policy.retention_days < policy.legal_minimum_days
-    ):
-        raise ValueError(
-            "Current verified retention policy for control records required"
-        )
+    rule = _require_applicable(session, scope, person, case, case_revision, now)
     _authority()
     response = {
         "person_id": person,
@@ -289,7 +339,12 @@ def plan_eligible(
     idempotency_key: str,
     at: datetime | None = None,
 ) -> dict[str, Any]:
-    """Create a versioned plan without copying erased-person data into receipts."""
+    """Create a versioned plan without copying erased-person data into receipts.
+
+    The receipt keeps the plan's identifier, fingerprint and revision and, for each copy
+    the plan names, its copy id and whether executing the plan would process it
+    (``will_process``). It keeps no content of a copy and no reason why a copy stays.
+    """
     _authorize(session, scope, issuer, subject)
     _authority()
     if expected_revision != 1 or not 8 <= len(idempotency_key) <= 128:
@@ -309,6 +364,11 @@ def plan_eligible(
     plan = copies.preview(session, scope, person, subject, at or datetime.now(UTC))
     result = {k: plan[k] for k in ("plan_id", "fingerprint", "revision")}
     result["all_copies_erased"] = False
+    # What executing this plan would act on, by identifier only (no content, no reason).
+    result["targets"] = [
+        {"copy_id": target["copy_id"], "will_process": target["will_process"]}
+        for target in plan["targets"]
+    ]
     session.add(
         PlanningReceipt(receipt_id=key, fingerprint=fingerprint, response=result)
     )

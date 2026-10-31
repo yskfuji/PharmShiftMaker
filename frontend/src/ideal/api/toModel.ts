@@ -1,3 +1,5 @@
+import { shiftLabel } from "../live/format";
+import { isSelfServiceRole } from "@/lib/accessRoles";
 // Build the view model from what the API returned, and nothing else: no coverage, queue or
 // stability figure is shown until an endpoint provides it. A day without a published duty
 // shows "—" (it is not necessarily leave). Times are shown in Asia/Tokyo.
@@ -69,10 +71,10 @@ export function toWorkspaceModel(input: {
       const id = `${person}-${i}`;
       if (day_.length) {
         const p = parts(day);
-        details[id] = { title: `${nameOf(person)} · ${p.month}月${p.day}日`, facts: [...day_.flatMap((d) => [`${d.kind} ${span(d)}`, d.location]), `公開版 ${version}`],
-          note: "公開済みの勤務です。変更は申請から行います（申請の接続は次の段です）。" };
+        details[id] = { title: `${nameOf(person)} · ${p.month}月${p.day}日`, facts: [...day_.flatMap((d) => [`${shiftLabel(d.kind)} ${span(d)}`, `配置場所（登録名・コード）：${d.location}`]), `公開版 ${version}`],
+          note: "公開済みの勤務です。変更が必要な場合は、申請画面で対象の勤務と申請内容を確認してください。" };
       }
-      return { id, shift: day_.length ? day_.map((d) => d.kind).join("・") : "—", time: day_.map(span).join(" / "), changed: day_.some((d) => changed.has(d.duty_id)) };
+      return { id, shift: day_.length ? day_.map((d) => shiftLabel(d.kind)).join("・") : "—", time: day_.map(span).join(" / "), changed: day_.some((d) => changed.has(d.duty_id)) };
     }),
   }));
   const first = parts(week[0]);
@@ -91,8 +93,8 @@ export function toWorkspaceModel(input: {
     home: {
       personal: {
         eyebrow: "次の勤務",
-        title: next ? `${parts(new Date(next.start)).month}月${parts(new Date(next.start)).day}日（${parts(new Date(next.start)).weekday}） ${span(next)}` : "予定されている勤務はありません",
-        detail: next ? [next.location, next.kind, next.task].filter(Boolean).join(" · ") : `公開版 ${version} にあなたの勤務はありません`,
+        title: next ? `${parts(new Date(next.start)).month}月${parts(new Date(next.start)).day}日（${parts(new Date(next.start)).weekday}） ${span(next)}` : publication ? "公開版に今後の勤務はありません" : "勤務表はまだ公開されていません",
+        detail: next ? [`配置場所：${next.location}`, shiftLabel(next.kind), `業務：${next.task}`].filter(Boolean).join(" · ") : publication ? `公開版 ${version} の勤務期間を確認してください` : "公開後に、この画面で自分の勤務を確認できます",
         when: next ? relativeDay(now, new Date(next.start)) : "—",
         countdown: next ? (new Date(next.start) > now ? `出勤まで ${Math.ceil((new Date(next.start).getTime() - now.getTime()) / 3_600_000)}時間` : "勤務中") : "",
         metrics: [ownCount],
@@ -126,10 +128,10 @@ export function toWorkspaceModel(input: {
       eyebrow: publication ? `公開版 ${version} · 公開済み` : "公開版なし",
       title: `${first.year}年${first.month}月`,
       summary: publication
-        ? [{ tone: "good", label: `${scope.role === "PHARMACIST" ? "自分の公開勤務" : "公開勤務"} ${duties.length}件` }, ...(verified ? [] : [{ tone: "warn" as const, label: "再検証が必要" }])]
+        ? [{ tone: "good", label: `${isSelfServiceRole(scope.role) ? "自分の公開勤務" : "公開勤務"} ${duties.length}件` }, ...(verified ? [] : [{ tone: "warn" as const, label: "再検証が必要" }])]
         : [{ tone: "warn", label: "公開版がありません" }],
       range: `表示期間 ${first.month}/${first.day}–${last.month}/${last.day}`,
-      days: week.map((day) => { const p = parts(day); return { label: `${p.month}/${p.day} ${p.weekday}`, status: "公開済み", weekend: ["土", "日"].includes(p.weekday) }; }),
+      days: week.map((day) => { const p = parts(day); return { label: `${p.month}/${p.day} ${p.weekday}`, status: publication ? "公開済み" : "未公開", weekend: ["土", "日"].includes(p.weekday) }; }),
       rows,
       agenda: agendaFor(week[0], 0, people, onDay, nameOf, scope.person_id),
       agendas: week.map((day, index) => agendaFor(day, index, people, onDay, nameOf, scope.person_id)),
@@ -162,7 +164,7 @@ function agendaFor(
         name: nameOf(person),
         initial: nameOf(person).slice(0, 1),
         badge: person === viewer ? "本人" : "",
-        status: duties.length ? duties.map((d) => d.kind).join("・") : "勤務なし",
+        status: duties.length ? duties.map((d) => shiftLabel(d.kind)).join("・") : "勤務なし",
         tone: duties.length ? "good" as const : "neutral" as const,
       };
     }),

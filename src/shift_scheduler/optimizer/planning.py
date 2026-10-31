@@ -237,8 +237,11 @@ def solve(
     for d in duties:
         c = contract_for(snapshot, d)
         from shift_scheduler.domain.capability_coverage import capability_covers
+        from shift_scheduler.domain.occupation import occupation_allows_duty
 
-        capable = capability_covers(
+        capable = occupation_allows_duty(
+            snapshot.people, snapshot.demands, d
+        ) and capability_covers(
             snapshot.capabilities, d.person_id, d.task, d.location, d, verified
         )
         allowed = bool(

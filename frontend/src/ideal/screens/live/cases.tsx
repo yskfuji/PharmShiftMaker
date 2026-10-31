@@ -1,4 +1,6 @@
 "use client";
+import { isSelfServiceRole } from "@/lib/accessRoles";
+
 
 import { useState } from "react";
 import { browserNavigation } from "@/lib/browserNavigation";
@@ -31,7 +33,7 @@ export function CaseSummary({ c, live }: { c: ScheduleChangeCase; live: LiveApi 
   const v = validationOf(c);
   const affected = c.affected_assignments as unknown as PublishedDuty[];
   const added = replacements(c);
-  const planner = live.role !== "PHARMACIST";
+  const planner = !isSelfServiceRole(live.role);
   return (
     <div className="ideal-case-summary">
       <div className="ideal-case-summary__head">
