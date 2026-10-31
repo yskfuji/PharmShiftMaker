@@ -60,11 +60,11 @@
 | `components/ideal/IdealWorkspace.tsx:124` | link | `/workspace/settings/notifications` | `/workspace/[screen]/[view]` |
 | `components/ideal/IdealWorkspace.tsx:125` | link | `/workspace/${current}/${item.key}` | `/workspace/[screen]/[view]` |
 | `components/ideal/IdealWorkspace.tsx:130` | document | `/workspace/home` | `/workspace/[screen]` |
-| `features/workspace/people/ContractWorkflow.tsx:205` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
-| `features/workspace/people/ContractWorkflow.tsx:248` | link | `/settings` | `/settings` |
+| `features/workspace/people/ContractWorkflow.tsx:206` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
+| `features/workspace/people/ContractWorkflow.tsx:249` | link | `/settings` | `/settings` |
 | `features/workspace/people/NewStaffTaskList.tsx:48` | link | `/planning?scope=${encodeURIComponent(scope)}#contract-heading` | `/planning` |
-| `features/workspace/planning/PlanningRouteViews.tsx:52` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
-| `features/workspace/planning/PlanningRouteViews.tsx:76` | link | `/workspace/plan/compare` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/PlanningRouteViews.tsx:53` | link | `/workspace/plan/generate` | `/workspace/[screen]/[view]` |
+| `features/workspace/planning/PlanningRouteViews.tsx:77` | link | `/workspace/plan/compare` | `/workspace/[screen]/[view]` |
 | `features/workspace/settings/FlexTimeSettings.tsx:194` | link | `/planning` | `/planning` |
 | `features/workspace/shell/WorkspaceContent.tsx:28` | document | `/workspace/home` | `/workspace/[screen]` |
 | `ideal/providers/ApiWorkspaceProvider.tsx:183` | document | `/login?redirectTo=<current page>` | `/login` |
