@@ -427,9 +427,9 @@
       "sha256": "23000bd72935a37174624d733b1366e9fdcde6e6ccaa3fe736f841d0c672c0f9"
     },
     {
-      "bytes": 22180,
+      "bytes": 22260,
       "path": "docs/architecture/er/ia-map.md",
-      "sha256": "4eb3c95b18588441c66bb8f04f8de729064883819e2f71bf83ad1e954c2fe1ae"
+      "sha256": "95508ca3b0b34c8790b7d29aed4d07d6161f184b52dc8ab7f9ba8d3ec758d459"
     },
     {
       "bytes": 4737,
@@ -494,7 +494,7 @@
     {
       "bytes": 8911,
       "path": "docs/architecture/navigation.md",
-      "sha256": "e098b2d02028e5caf302a20c41e22e6588e93f870e2266aa1f6c12618bd253b9"
+      "sha256": "8633ebe8305ce8ab9b070980db60d721a53c95978db875549c84060117b2629d"
     },
     {
       "bytes": 9681,
@@ -9849,5 +9849,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9",
-  "source_commit": "1daf62c4087c2af05178287d16b74046fb4b2c26"
+  "source_commit": "66959e96882899ce05ca597e501cfe064a3fed40"
 }
