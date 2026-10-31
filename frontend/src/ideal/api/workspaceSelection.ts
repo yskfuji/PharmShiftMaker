@@ -1,3 +1,4 @@
+import { isSelfServiceRole } from "@/lib/accessRoles";
 import type { PublicationRead } from "./contracts";
 
 export type WorkspaceSelection = { period?: string; publicationId?: string; caseId?: string; personId?: string };
@@ -46,11 +47,11 @@ export function publicationMonth(publication: PublicationRead): string {
 export function resolvePersonSelection(
   requestedPersonId: string | null,
   viewerPersonId: string,
-  role: "ADMIN" | "LEADER" | "PHARMACIST",
+  role: "ADMIN" | "LEADER" | "STAFF" | "PHARMACIST",
   names: Record<string, string>,
 ): string | null {
   if (!requestedPersonId) return null;
-  const allowed = role === "PHARMACIST"
+  const allowed = isSelfServiceRole(role)
     ? requestedPersonId === viewerPersonId
     : Object.hasOwn(names, requestedPersonId);
   if (!allowed) {

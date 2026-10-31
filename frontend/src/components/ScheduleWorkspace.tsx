@@ -1,4 +1,6 @@
 "use client";
+import { isSelfServiceRole } from "@/lib/accessRoles";
+
 
 import { useMemo, useState } from "react";
 
@@ -36,7 +38,7 @@ export default function ScheduleWorkspace({
 
   const privilegedRoles = useMemo(() => new Set(["LEADER", "ADMIN", "DEVELOPER"]), []);
   const canEdit = privilegedRoles.has(userRole);
-  const isPharmacist = userRole === "PHARMACIST";
+  const isPharmacist = isSelfServiceRole(userRole);
   // Manual adjustments stay in this page until the confirmed save sends them.
   useUnsavedNavigation(canEdit && Object.keys(manualOverrides).length > 0);
   const editableOverrides = useMemo(

@@ -104,7 +104,7 @@ def _apply_manual_assignments(
 def _visible_assignments_for_user(
     assignments: list[Assignment], user: UserPrincipal
 ) -> list[Assignment]:
-    if user.role == AppRole.PHARMACIST:
+    if user.role in (AppRole.STAFF, AppRole.PHARMACIST):
         return [
             assignment
             for assignment in assignments

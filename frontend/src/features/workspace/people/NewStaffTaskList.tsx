@@ -37,7 +37,7 @@ export default function NewStaffTaskList({records,scope,busy,onStart,initialPers
  return <section aria-labelledby={headingId} className="workflow-panel space-y-4 min-w-0">
   <h4 id={headingId} className="font-semibold">新しい職員を追加する手順</h4>
   <p>上から順に登録します。記録は1件ずつ保存され、途中でやめても保存済みの分は残ります。既存の記録の訂正は、下の「1. 対象を選ぶ」から行えます。</p>
-  <label className="block">手順を確認する職員<select className="ui-control block w-full min-w-0 max-w-full" value={known} onChange={e=>setPersonId(e.target.value)} aria-describedby={personField}><option value="">まだ登録していない（新しい職員）</option>{records.people.map(p=><option key={p.person_id} value={p.person_id}>{p.name}</option>)}</select></label>
+  <label className="block">手順を確認する職員<select className="ui-control block w-full min-w-0 max-w-full" value={known} onChange={e=>setPersonId(e.target.value)} aria-describedby={personField}><option value="">未登録の職員</option>{records.people.map(p=><option key={p.person_id} value={p.person_id}>{p.name}</option>)}</select></label>
   <p id={personField} className="text-sm text-fg-muted">氏名を登録した後にこの欄で選ぶと、その職員の進み具合を表示します。</p>
   <ol className="space-y-3">
    {steps.map((state,index)=><li key={state.step} className="rounded-lg border border-line p-3 space-y-2 min-w-0">

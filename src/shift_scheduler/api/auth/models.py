@@ -12,7 +12,8 @@ from typing import Any
 class AppRole(str, Enum):
     """Application-level RBAC roles."""
 
-    PHARMACIST = "PHARMACIST"
+    STAFF = "STAFF"
+    PHARMACIST = "PHARMACIST"  # Legacy self-service role, not a qualification.
     LEADER = "LEADER"
     ADMIN = "ADMIN"
     DEVELOPER = "DEVELOPER"

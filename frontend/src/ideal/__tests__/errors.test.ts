@@ -26,3 +26,10 @@ test('a failed read offers a reload and never claims an unknown outcome or kept 
   expect(problemFrom(new TypeError('Failed to fetch'), 'read')).toMatchObject({ kind: 'unknown', code: 'NET', title: '読み込めませんでした' });
   expect(problemFrom(new PlanningError(401, 'x'), 'read').kind).toBe('unauthenticated');
 });
+
+
+test('a restricted read is distinct from a service outage', () => {
+  expect(problemFrom(new PlanningError(423, 'restricted'), 'read')).toMatchObject({kind:'forbidden',code:'423'});
+  expect(problemFrom(new PlanningError(423, 'restricted'), 'read').body).toContain('管理者');
+  expect(problemFrom(new PlanningError(503, 'unavailable'), 'read').kind).toBe('unknown');
+});

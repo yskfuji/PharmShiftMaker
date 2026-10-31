@@ -22,7 +22,9 @@ const preview: Preview = {
     a11y: { test: 'error', options: { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] } } },
   },
   // One synthetic fetch per story, removed after it (the returned function is the cleanup).
-  beforeEach: ({ parameters }) => installFetchMock((parameters.fetchRoutes ?? []) as FetchRoute[]),
+  beforeEach: ({ parameters, args }) => installFetchMock(((parameters.fetchRoutes ?? []) as FetchRoute[]).map(route => ({
+    ...route, body: route.resolveBody ? route.resolveBody(args) : route.body,
+  }))),
   decorators: [
     (Story, context) => {
       const theme = context.globals.theme as string;

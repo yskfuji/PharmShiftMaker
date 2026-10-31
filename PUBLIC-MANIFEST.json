@@ -1,5 +1,5 @@
 {
-  "file_count": 1949,
+  "file_count": 1969,
   "files": [
     {
       "bytes": 279,
@@ -247,9 +247,9 @@
       "sha256": "308d0456b7c373fee49b0f93139c207e2da5101f10fd34f8ed73f15fbc030b0e"
     },
     {
-      "bytes": 9924,
+      "bytes": 9949,
       "path": "devtools/design_tokens/build.mjs",
-      "sha256": "60824e2a2a07d8f37bf39ecdfe136d83d0835244730b581b49bbbba3ca4d73f1"
+      "sha256": "0866fcbade8e97482589e54a20862f3384f7c07b1e45879871c100f1410ebd17"
     },
     {
       "bytes": 83,
@@ -297,9 +297,9 @@
       "sha256": "471bc7d945fe4b8fe60721c5985f6d3da9ff7fcba6a96caf3c947001cd8bba63"
     },
     {
-      "bytes": 11077,
+      "bytes": 11086,
       "path": "devtools/ideal_ui/generate_routes.py",
-      "sha256": "7ff4dc9410b505ba693e9533e0de148de9cfe200ba9124eced5a0f246d10161c"
+      "sha256": "c1237367386d99d684cc150c9f81e2828649e59697516133c8abefa03bb8c070"
     },
     {
       "bytes": 21318,
@@ -422,14 +422,14 @@
       "sha256": "8106e935ea49d4988eeae5cd15f24de68de7ffbe71d0c419531fd3bda00cf813"
     },
     {
-      "bytes": 3775,
+      "bytes": 6253,
       "path": "docs/acceptance-execution.md",
-      "sha256": "95e6893250b584bb665a66e04f8eaa54c7a2d01eb7e6b67636628a3c3d5b5477"
+      "sha256": "23000bd72935a37174624d733b1366e9fdcde6e6ccaa3fe736f841d0c672c0f9"
     },
     {
-      "bytes": 21971,
+      "bytes": 22260,
       "path": "docs/architecture/er/ia-map.md",
-      "sha256": "e301c620ca71b45e18ac47ed637ba184c2fbe73fb7890128cfa870a0b1b3add8"
+      "sha256": "95508ca3b0b34c8790b7d29aed4d07d6161f184b52dc8ab7f9ba8d3ec758d459"
     },
     {
       "bytes": 4737,
@@ -472,9 +472,9 @@
       "sha256": "f09f0b85cb757a4c4e69513ff2768e164401ec6c6161083da8cdfaaa96dcaa1e"
     },
     {
-      "bytes": 56957,
+      "bytes": 57041,
       "path": "docs/architecture/er/usecase-sequences.md",
-      "sha256": "aba9e60ebeb8f7161ff2b87bc221c475d100bdc3964cea294de414bb152aa593"
+      "sha256": "43eda69768e65fa49e021b4090110afd0dca0d79f79418a9e2dc97f46f9d13cb"
     },
     {
       "bytes": 5036,
@@ -482,9 +482,9 @@
       "sha256": "d7d4a892a467aee14d32ac296e537c552b47913aa9bf76b0e41e9dd33b999b96"
     },
     {
-      "bytes": 5530,
+      "bytes": 5614,
       "path": "docs/architecture/er/workspace-transitions.md",
-      "sha256": "c04637ad3371fb0dc73a5c3be1d542efd910d437d77189cc448ebdaefd17b1e9"
+      "sha256": "bc84e9054e33b05140320a34b96b4195d3adc5a0264dd882ab9061f6483ec983"
     },
     {
       "bytes": 6848,
@@ -494,7 +494,7 @@
     {
       "bytes": 8911,
       "path": "docs/architecture/navigation.md",
-      "sha256": "1644033e87fa265ff74aa745e65bdff2b2485884454f1b46cf2de4e5f073b07b"
+      "sha256": "8633ebe8305ce8ab9b070980db60d721a53c95978db875549c84060117b2629d"
     },
     {
       "bytes": 9681,
@@ -522,9 +522,9 @@
       "sha256": "392faf4253660c8a686ccf2c4e12cddb2b0b3325b04caacb2402ffb3f4a87356"
     },
     {
-      "bytes": 3789,
+      "bytes": 13744,
       "path": "docs/ideal-ui/acceptance-matrix.md",
-      "sha256": "4bff8b3c093f007b65617f5e7164d9aabfbd9d25f6adc306f0a7d85c3af1b2c8"
+      "sha256": "8704e83aea5b9c26cbf50a55e9d9ed6a7e0aae61e04961c325f7e071bef705f0"
     },
     {
       "bytes": 11338,
@@ -557,9 +557,9 @@
       "sha256": "9756cc9576db217ff3f0edef37bfa332ad689ea419edf1cd4ac40e4a0713e1ac"
     },
     {
-      "bytes": 35060,
+      "bytes": 35262,
       "path": "docs/ideal-ui/usecases.json",
-      "sha256": "874d573c2915d3a925e988b449df12d18c9d4cf04a5293e06823f2e49ba333e3"
+      "sha256": "311157829b922ffd60928394618cbc0b3ecdf9cde5570a7eaa9c680540cba3b9"
     },
     {
       "bytes": 5151,
@@ -2387,9 +2387,9 @@
       "sha256": "1589a15e55fbebc6519c95d91d8f0a090618f20dc78e479858b9c27552484961"
     },
     {
-      "bytes": 1211,
+      "bytes": 1269,
       "path": "frontend/.storybook/fetchMock.ts",
-      "sha256": "b0ce43e2ebe7bd58c07cf99050a72802b4d3252e6632929efdd62503ccf9b9a3"
+      "sha256": "ae8b91bcc3e609f2279b3dc1ce179e23b9f0b7050b8ea56767ecb1904d727450"
     },
     {
       "bytes": 1656,
@@ -2397,9 +2397,9 @@
       "sha256": "2123ca8305430d9e8f41feaa8ab48c991a429804bb2e31b73d59b3fa8201e26d"
     },
     {
-      "bytes": 1565,
+      "bytes": 1673,
       "path": "frontend/.storybook/preview.tsx",
-      "sha256": "edacc82b335582bbe1865d8329a8c5011430f71e1e21beda2bb1d0a55757ba32"
+      "sha256": "86c7f00d6c6d54f997dda39b8d16ca469c5e92775b86df9067db673f1de100bc"
     },
     {
       "bytes": 219,
@@ -2592,9 +2592,9 @@
       "sha256": "57759f2b6caee0a485c7ede340c1f5737ba72121277f2bb70af6822212f5a42d"
     },
     {
-      "bytes": 78663,
+      "bytes": 79789,
       "path": "frontend/src/app/globals.css",
-      "sha256": "1959888bdd6e7ef2007cfc65024f97741b9c396a9bee42d98a618b422ac38811"
+      "sha256": "45eef09734a91d578a08785949b7d1b5103e30d646fdaa69e84ec596991b7f21"
     },
     {
       "bytes": 2209,
@@ -2892,9 +2892,9 @@
       "sha256": "5859f212f22f6a07bfebf84c80efdf326136043849b7dd2076e56cba7a04e8da"
     },
     {
-      "bytes": 9484,
+      "bytes": 9542,
       "path": "frontend/src/components/ScheduleWorkspace.tsx",
-      "sha256": "b6e5ac4b07d3bc2c1394dfea5f8dff25ed947673c1069a1c46a826452a210b05"
+      "sha256": "7184f9e91856be94f8eca803c37a4604746f52caf42be8bbbc4c6297dbb22408"
     },
     {
       "bytes": 7485,
@@ -2947,9 +2947,9 @@
       "sha256": "33e2c2cf1b40c8f985c9b9457199ae4ab6fca768684b3a576dd7dc6d735c557c"
     },
     {
-      "bytes": 5997,
+      "bytes": 6960,
       "path": "frontend/src/components/__tests__/CompliancePanel.test.tsx",
-      "sha256": "874d64654f613a8c3f88744bba7b6140aa199dc5b58afcbe905a6437e0dc2c73"
+      "sha256": "023f1a22d25166b817982575ea7c3d15e0346cf788863a3497e8ed0e9f83db84"
     },
     {
       "bytes": 55215,
@@ -2972,6 +2972,11 @@
       "sha256": "2651174edc8db5a55b028ebaaacab67bd8067f5cedff369321da8246dd576093"
     },
     {
+      "bytes": 3924,
+      "path": "frontend/src/components/__tests__/ErasePastInputs.test.tsx",
+      "sha256": "8e53741a7998e13853842f43bc5c5373d677a509a41b29e9c049b122145da74c"
+    },
+    {
       "bytes": 3650,
       "path": "frontend/src/components/__tests__/ExternalCopyForm.test.tsx",
       "sha256": "5a335e0cc2708262228004197aad2dca13078036ecfc04fab941008a2a872c50"
@@ -2982,9 +2987,9 @@
       "sha256": "0154faf5be870c54b5e56ebe86a268dd1b520098c484a20869103cc26cdd24a4"
     },
     {
-      "bytes": 3882,
+      "bytes": 4772,
       "path": "frontend/src/components/__tests__/GovernanceForms.test.tsx",
-      "sha256": "b230fa78870bf136803cbc40b6ddb767658599fd04ced460a3d2c94356d8b963"
+      "sha256": "1eff868fd34e7c8f2305c8655194861a74a66132e0d4ae6616e23c2f6be60a83"
     },
     {
       "bytes": 6213,
@@ -3017,6 +3022,11 @@
       "sha256": "d90c000e1d0eb5d736bb566229dee195921511580d58402422f1c2c2d7372b52"
     },
     {
+      "bytes": 9213,
+      "path": "frontend/src/components/__tests__/LeaveRequestStates.test.tsx",
+      "sha256": "bf81053cca322b6d84c1eea3cadf222df9a285913b3a075b26f1ae9b8c4085b8"
+    },
+    {
       "bytes": 1363,
       "path": "frontend/src/components/__tests__/LedgerHistory.test.tsx",
       "sha256": "1d651dc9602d6ba34d60bffa2092023323147388c4a43371165120472a2c5f0e"
@@ -3025,6 +3035,16 @@
       "bytes": 2192,
       "path": "frontend/src/components/__tests__/LiveDashboard.test.tsx",
       "sha256": "004db2ed4525a959194452ab0a9cc46d56724a91248d51a9986656b1797e613d"
+    },
+    {
+      "bytes": 2481,
+      "path": "frontend/src/components/__tests__/Multirole.test.tsx",
+      "sha256": "2f7a99a51102801e7c2f14b922b2c252a73e54651a9503ac4f1d148b30daa73b"
+    },
+    {
+      "bytes": 1714,
+      "path": "frontend/src/components/__tests__/NameRevisionFields.test.tsx",
+      "sha256": "769f11f521973cca46a620888960c445d0aa129dd665c0d1e13193558fd65d4b"
     },
     {
       "bytes": 8222,
@@ -3097,9 +3117,9 @@
       "sha256": "34fce9e03b69a1db48e71519ae58611303f0d96e3b9d6687e8cc0263c9ea0ef4"
     },
     {
-      "bytes": 6999,
+      "bytes": 8063,
       "path": "frontend/src/components/__tests__/SubjectControlWorkflow.test.tsx",
-      "sha256": "73e719c18269bc448d9d68777d4bfa66b5c259bcba370001eb4fb7a382845604"
+      "sha256": "903337efe1fa7e31ca666e969a61e0ecc875377cff277d734fcfa9fd18bee5c7"
     },
     {
       "bytes": 16265,
@@ -3187,9 +3207,9 @@
       "sha256": "b93aafb776613eb301120b2932fed7d8da2c30e71d5895dfeaa7b58d1d2a2efe"
     },
     {
-      "bytes": 70779,
+      "bytes": 73185,
       "path": "frontend/src/features/workspace/generated/usecaseRoutes.ts",
-      "sha256": "d418fccaca769f19bcd935ebb7752235d1e6fb001cdaae0b79048fc566dd4862"
+      "sha256": "3aa33cece7778466f6d210dc1a13e4bf61892ebe44d4bdd3a6ba7330b223eaa4"
     },
     {
       "bytes": 5219,
@@ -3207,14 +3227,19 @@
       "sha256": "c693abf7ddff5616e8b33c8d29cad954ed4cda1ed1e5c3655d7c5f8ba7450716"
     },
     {
+      "bytes": 7497,
+      "path": "frontend/src/features/workspace/governance/ErasePastInputs.tsx",
+      "sha256": "3abfcdb4da88ed8323f98b453c29e20fc4a6b1549b933a3cb8a4e7ddc1178819"
+    },
+    {
       "bytes": 4526,
       "path": "frontend/src/features/workspace/governance/ExternalCopyForm.tsx",
       "sha256": "7cf5276354e584ffb46d20a9947485ec4c71ba2ce176c9c2772b369e90899439"
     },
     {
-      "bytes": 13562,
+      "bytes": 13567,
       "path": "frontend/src/features/workspace/governance/GovernanceForms.tsx",
-      "sha256": "b380e1d27188d1ea7d91ae45bc55a70f4ef3b3e499c13693fc8a432906dc5197"
+      "sha256": "8bfb91a1800627a46995d046401d83d8bc5cd355b6dd528b0677d85af23b7814"
     },
     {
       "bytes": 5817,
@@ -3227,9 +3252,9 @@
       "sha256": "ac2e390bc527d8a1f72af9600d87debf3606a8f69f18bea15b7f1d4e707a638f"
     },
     {
-      "bytes": 12310,
+      "bytes": 12876,
       "path": "frontend/src/features/workspace/governance/SubjectControlWorkflow.tsx",
-      "sha256": "b6b951aafcac2868cd5aab4ef0eedc8f41b44d9c8dbbf580b39b62c92a3b0000"
+      "sha256": "08d9ec80c6041fc51ae2a9dc6d450c25ff9b9e89742d78a22557d148828942b7"
     },
     {
       "bytes": 159,
@@ -3252,14 +3277,29 @@
       "sha256": "75d88eb4352fce7660319624655071f54488c22d1f0f2bbe6880896abfe226d1"
     },
     {
-      "bytes": 72253,
+      "bytes": 73240,
       "path": "frontend/src/features/workspace/people/ContractWorkflow.tsx",
-      "sha256": "bfbd1cf48d5ce0eb37860daabba6030d73695feb367c38ff98c2d66561e4e6a1"
+      "sha256": "65438b9d653aa3118528ee92541285fa622e18c6bcedb0f1f5fdd55a4f69925d"
     },
     {
-      "bytes": 4521,
+      "bytes": 3016,
+      "path": "frontend/src/features/workspace/people/NameRevisionFields.tsx",
+      "sha256": "a4219e02687d25175142890e375eeb7b950dbd144bc8742e553a7735880597ad"
+    },
+    {
+      "bytes": 4491,
       "path": "frontend/src/features/workspace/people/NewStaffTaskList.tsx",
-      "sha256": "f60cb03bf63856c3f358d20cb71d4cf3362801ee1af1ef3af5d9ca11c1314a6a"
+      "sha256": "fa9dd2fa50edd62fc29a5dac49a7aacc5c578fcb7b3b2989c6b9da2c17f414aa"
+    },
+    {
+      "bytes": 1056,
+      "path": "frontend/src/features/workspace/people/OccupationField.tsx",
+      "sha256": "01d8f7a9bdc157cbdfb05f4739df34256a041605f666deffa4a449545fe43db0"
+    },
+    {
+      "bytes": 3554,
+      "path": "frontend/src/features/workspace/people/StaffContextCard.tsx",
+      "sha256": "775620f1580a46ee42f4240185d30b7f6383959cfbf7fce4c1c90e98b9fce054"
     },
     {
       "bytes": 82,
@@ -3282,9 +3322,9 @@
       "sha256": "6d47893a0a7a93ab8432ad4cf89710cdcbe5d5360f41ec83a0803b4f87a02ba5"
     },
     {
-      "bytes": 17847,
+      "bytes": 18202,
       "path": "frontend/src/features/workspace/planning/PlanningRouteViews.tsx",
-      "sha256": "f8d123696af16fd7fa4392d23f9688e277f903983d9dc87c03fd8ce5c246c915"
+      "sha256": "2505990bdfaed9a60760a545e1b501a97f0061085eb922a4f4639b22bcbbee3d"
     },
     {
       "bytes": 34278,
@@ -3322,9 +3362,9 @@
       "sha256": "cbda70b9380c0d4d603871b050992ae76d386ba3a3113493d2f79945a7f60b69"
     },
     {
-      "bytes": 10705,
+      "bytes": 14176,
       "path": "frontend/src/features/workspace/requests/LeaveRequestWorkspace.tsx",
-      "sha256": "54cdc70b8ff5b0e0f4b7c6dc617e77202795aa1f82b20c541e65bed58d0d1f1e"
+      "sha256": "d4da8f440586685c1ef47a03bc9941680a601465761287b4706eae0295155bfc"
     },
     {
       "bytes": 3763,
@@ -3357,9 +3397,9 @@
       "sha256": "a865b602b9c3db5deac5408289e7f3d5c97063801241bbaa3cd111ef1f2f3bc1"
     },
     {
-      "bytes": 17044,
+      "bytes": 15363,
       "path": "frontend/src/features/workspace/shared/ComplianceWorkspace.tsx",
-      "sha256": "9e69b5159ba14c70b5123495fee20105524a3f277e47571ef94f0f07e2e11044"
+      "sha256": "2f60f1c3ef1715e93178f5fd0ffd64a015bfc65722e90ed4ef4e2c77dce58df2"
     },
     {
       "bytes": 3311,
@@ -3387,9 +3427,9 @@
       "sha256": "92484b0f14b42d17ca56cf2243ef609de8e8a8f33691f3ae5ac9c68c65feafec"
     },
     {
-      "bytes": 4257,
+      "bytes": 4405,
       "path": "frontend/src/features/workspace/shell/WorkspaceContent.tsx",
-      "sha256": "ed90fa2d34bda53fa2f7e9d3b1e0b1173b5c08cd45c5680141697c382d02ca0d"
+      "sha256": "c9d9471fa06736d02c15684e65dd06c892d835721967cab3082fb7a16eda930c"
     },
     {
       "bytes": 1403,
@@ -3442,14 +3482,19 @@
       "sha256": "41c80f04cba8e7e4ef42011113fd08638a6a29a38e0ff53c89b509cc75b2a104"
     },
     {
-      "bytes": 1865,
+      "bytes": 2241,
       "path": "frontend/src/ideal/__tests__/errors.test.ts",
-      "sha256": "62609c613c56026c26833237fce9288a882ce5308c141b3c01552c8b2b894b2e"
+      "sha256": "428c5dc6af49524365c90404a36f924206094499f4e05fd122b17fb3340d82ce"
     },
     {
-      "bytes": 14970,
+      "bytes": 1145,
+      "path": "frontend/src/ideal/__tests__/format.test.ts",
+      "sha256": "9a24053df57f1e93cd986ce3fe618c79e00f20eb7fa9efc5dab34510fcbdddea"
+    },
+    {
+      "bytes": 14961,
       "path": "frontend/src/ideal/__tests__/live.test.tsx",
-      "sha256": "d57bc2979689299b8ecfa25d45ecaf31887abe3be5a7822640133fe0be4d15dc"
+      "sha256": "0d2174b547df6830f19d5d4c17e5bb2442987b1adbd03291036beb4c33dc4e64"
     },
     {
       "bytes": 2340,
@@ -3467,14 +3512,14 @@
       "sha256": "b5081d10670c93ad7c9f63008036f448e16725346019fb28fd7b7bd6bcb689bf"
     },
     {
-      "bytes": 4841,
+      "bytes": 6006,
       "path": "frontend/src/ideal/__tests__/toModel.test.ts",
-      "sha256": "8d29f80e27523da181b8406e7f76f546e03fc63925c6b7b8c7ca2da9c0418527"
+      "sha256": "c8a47a6efb36896e72b06935eaa78a431e1e0785292227ed5f3586abf88ba58f"
     },
     {
-      "bytes": 12054,
+      "bytes": 12064,
       "path": "frontend/src/ideal/api/client.ts",
-      "sha256": "9d7301bbd39a863a04abac85f4584b7514d1a1ad0bfbc5f0d40983c26e64e3fa"
+      "sha256": "ef28cbda69ab3339caaf3acdfef29e8d6b34215559c4444059af329b121049a5"
     },
     {
       "bytes": 500,
@@ -3482,9 +3527,9 @@
       "sha256": "aa7d8a30dc82cc0539e7408096c28efc3514f07425b29ba6a19c854f6020fbfe"
     },
     {
-      "bytes": 4071,
+      "bytes": 4363,
       "path": "frontend/src/ideal/api/errors.ts",
-      "sha256": "074cfabcba9be47646c33ce23976623dda53a61dd41254b73aa60101bea51b43"
+      "sha256": "6b86a1e0ce315a4b440ba929dac04c07443cb5b465fe2974acdb95cb6686f82e"
     },
     {
       "bytes": 1527,
@@ -3492,24 +3537,24 @@
       "sha256": "5e61b4a9a0ff3a77659ffe41296bbe56a0bc20563d13e6af5cc570f4ee467c16"
     },
     {
-      "bytes": 9961,
+      "bytes": 10018,
       "path": "frontend/src/ideal/api/serverInitial.ts",
-      "sha256": "9e0a0f3abe60237b5b5f5242ce24ce1b8d7dea81b3167969beb82b683a597cec"
+      "sha256": "eafd5b764356c6b83303193ea4c6f90050206cb950474fb8c4f01aa83370f015"
     },
     {
-      "bytes": 11237,
+      "bytes": 11678,
       "path": "frontend/src/ideal/api/toModel.ts",
-      "sha256": "d759d4ab224d8f3f099fc061402b1546226e3f93a3c58574c4bd277a33be09a9"
+      "sha256": "36282edbfc25eb48fd08a5e930587e5174eb5e13c3f4c0f442b8afb2ddb5479e"
     },
     {
-      "bytes": 4218,
+      "bytes": 4285,
       "path": "frontend/src/ideal/api/workspaceSelection.ts",
-      "sha256": "3fff08deff0bcfdea5e02f44cd18ea2d1b0362bb82d5a4626bff10f0b7565667"
+      "sha256": "5dc6d4fe7eef8084eba74f053f43ea71cb7376ce84953f2c024c504292d730a0"
     },
     {
-      "bytes": 2657,
+      "bytes": 2731,
       "path": "frontend/src/ideal/data.ts",
-      "sha256": "28d12eb1f2105d2577f9dfa63c91c76a30559538d1e0a0eec24c8c7b5204eefb"
+      "sha256": "2266ea4b3cccc8f4519d051b1add956dd66717e0a2f7916448deee608092cdd6"
     },
     {
       "bytes": 1283,
@@ -3517,9 +3562,9 @@
       "sha256": "2af2e98a9ad13578301e78b9a8014361c9110282d051b8479c25fb60f839fca9"
     },
     {
-      "bytes": 1184,
+      "bytes": 2691,
       "path": "frontend/src/ideal/live/format.ts",
-      "sha256": "e7c108b5da5d2e9cb36e1fe2352b2ced24368135d2519c35375f4233da12dd01"
+      "sha256": "77c330133e0d0d994c938a98c1a6613d51c762098039512641cb8b33ec2d3cef"
     },
     {
       "bytes": 3455,
@@ -3537,9 +3582,9 @@
       "sha256": "d1dd23b03f2e1668010fc16cc5452cc91e987354fc9fdd3c7cb391e95358202e"
     },
     {
-      "bytes": 12694,
+      "bytes": 12754,
       "path": "frontend/src/ideal/providers/ApiWorkspaceProvider.tsx",
-      "sha256": "42377a887c0bbdbd1dca8b1f05105f9b05468664ac8f7bda0a39fe2057961e07"
+      "sha256": "d7c5a8872f3579322a91db5b3e2f1be4c0c3a90fa4a257da7db17076dd6199c9"
     },
     {
       "bytes": 2420,
@@ -3567,9 +3612,9 @@
       "sha256": "03ecddc2754e1eac9263f4b82d524c14eb7c81e3afa4e0339c25b785eeb79384"
     },
     {
-      "bytes": 4654,
+      "bytes": 4711,
       "path": "frontend/src/ideal/screens/HomeScreen.tsx",
-      "sha256": "bf38f8863b481a478993e73c26851cbf99d07eda8b4db3d6775efae10755aa95"
+      "sha256": "534865ec62211251f474f0edb7354dec4e4a114c45210fddc906e508092d744e"
     },
     {
       "bytes": 2816,
@@ -3587,14 +3632,14 @@
       "sha256": "0ef712ed66ed4c474723540b82c8b885f73a98b479cf57342d258fca59d4380d"
     },
     {
-      "bytes": 1698,
+      "bytes": 1757,
       "path": "frontend/src/ideal/screens/RequestsScreen.tsx",
-      "sha256": "9b2ffce569035816a6f7e5162aaf3a2113e338c2bd7f0b5777fb78cb8115aa56"
+      "sha256": "6193ba8b0282a2e0935a2516a11d9312330c7528df6cce9bc7cbb70b0b587d0f"
     },
     {
-      "bytes": 7611,
+      "bytes": 7665,
       "path": "frontend/src/ideal/screens/ScheduleScreen.tsx",
-      "sha256": "82ed189f02ae4d02ee20b06441a6bb95ae6aeff30ad1b20562dd083de9d13660"
+      "sha256": "b0d3f05f9f2f5eccd337a3b2fd35d0ef985d2ffb77743b9bc8ac10dd768c50f1"
     },
     {
       "bytes": 1580,
@@ -3602,19 +3647,19 @@
       "sha256": "f2efa417a8b5c3d5029ed265c5ef527b0a286ec7bab5a71daac7012dcc8c405b"
     },
     {
-      "bytes": 8328,
+      "bytes": 8496,
       "path": "frontend/src/ideal/screens/live/IntegratedFeatureView.tsx",
-      "sha256": "d598ca5a89fe73d9a8a91353042172dcf0de67545969fe0d937d19da473bc346"
+      "sha256": "f3e22f592aca793bb6c718a96400c773eefa58d60f0acc724d805e7b5963f68e"
     },
     {
-      "bytes": 27736,
+      "bytes": 27932,
       "path": "frontend/src/ideal/screens/live/LiveAdminScreens.tsx",
-      "sha256": "68722f01eaf0198626f15f56990dda4178f00e369e19640cab856539c905f87f"
+      "sha256": "357afc461c0aabc328bf053d755c4774bfc61a3b0fa11f01b94b9a538d2e486f"
     },
     {
-      "bytes": 10910,
+      "bytes": 10974,
       "path": "frontend/src/ideal/screens/live/LiveCaseScreens.tsx",
-      "sha256": "8947fcd16e5ba36263559e14ee6eb3f5f14c5902350abaa3169ac7da5dd40549"
+      "sha256": "2b066bed35385e9d787bb5f5d7ba701a9bc71a6df571abc0545c81b45a24c5fe"
     },
     {
       "bytes": 9261,
@@ -3624,12 +3669,12 @@
     {
       "bytes": 6860,
       "path": "frontend/src/ideal/screens/live/NewCaseForm.tsx",
-      "sha256": "e5901ac099a1af9e369cc6209119420a4f60e1ee813d12c2653299d486782727"
+      "sha256": "1f8be44aa30f2bf3d87d9f17a24e0c8912363ed2cfad96a37a880169c8dd5227"
     },
     {
-      "bytes": 7258,
+      "bytes": 7317,
       "path": "frontend/src/ideal/screens/live/cases.tsx",
-      "sha256": "a97c0087e3a9e36c59f7561c6a740ce5c777286a5c456e578a9a7660e5e2e269"
+      "sha256": "7b425d73726d8d387bc4680c04a8b92933e2192dedd6c84f67a4095329809210"
     },
     {
       "bytes": 3135,
@@ -3642,9 +3687,9 @@
       "sha256": "b276e280acf195e24c77abdd83a4af8d8943e66c383a671f161a21946d2166df"
     },
     {
-      "bytes": 6517,
+      "bytes": 6527,
       "path": "frontend/src/ideal/types.ts",
-      "sha256": "380101d0d961f21375a871af24e7f494123400601545494d54fed9d288d17d32"
+      "sha256": "bb0c6f292a15623eb24608924ec639779f724a48c4dd53fceba448268901ef1f"
     },
     {
       "bytes": 1524,
@@ -3665,6 +3710,11 @@
       "bytes": 2136,
       "path": "frontend/src/lib/__tests__/newStaffProgress.test.ts",
       "sha256": "a46c9bd4df9674ba81fb5723f84eecc6dc40563c8bd6c1b1d71a8119516d2a40"
+    },
+    {
+      "bytes": 226,
+      "path": "frontend/src/lib/accessRoles.ts",
+      "sha256": "6a4cefb3eae67ec7d66f28dd01131dbc0c163daba29c7a343384c3b98b200bf0"
     },
     {
       "bytes": 3347,
@@ -3727,14 +3777,14 @@
       "sha256": "466465acd3ef3a845b4e33c23e34d28873b681df1b960eefa7765ddf711fb23d"
     },
     {
-      "bytes": 1410,
+      "bytes": 1418,
       "path": "frontend/src/lib/identity-server.ts",
-      "sha256": "ea3541fdd765296c6a9039866e73738c4e724160e9d4256014660a293c78a321"
+      "sha256": "1fdd1f318f6b12fa345bba1f35e2f64664ce58f46bcfa732429df68bb894a7e6"
     },
     {
-      "bytes": 756,
+      "bytes": 774,
       "path": "frontend/src/lib/identity.ts",
-      "sha256": "93b0f7246471be2332ffa27481a74e39496ac83af4f1ac32e9b36a7bde286667"
+      "sha256": "37e09f1e40637d0b444a659de5c21db77f6178ed8a395a1d70847bc6de1bb8a5"
     },
     {
       "bytes": 428,
@@ -3817,9 +3867,9 @@
       "sha256": "f7f12cacfaab43ef8e533282aa6f63419fe8330935e911e13db512192e75aa30"
     },
     {
-      "bytes": 8260,
+      "bytes": 8285,
       "path": "frontend/src/styles/tokens.css",
-      "sha256": "871ae0c0786d4f709b6857e18b826f45595927aa7d873ede56b31f79a8a161e4"
+      "sha256": "ee0268bb844f774f40375f6f73ea8f995881dd604aab435c884841128d4d6e0d"
     },
     {
       "bytes": 3749,
@@ -3832,9 +3882,9 @@
       "sha256": "14cd9f84cc1c69f4d11fb2e8fea1dbcf9659200f5b8e4067c1eea9396e6b7130"
     },
     {
-      "bytes": 6337,
+      "bytes": 7436,
       "path": "frontend/stories/ideal/CognitiveWorkspace.generated.stories.tsx",
-      "sha256": "86c4168f51630bcd86a8fdfdfaefd2a0f2b185a1c0f949405be8552b6c149e56"
+      "sha256": "d36f0697d8576448a8972b1f64c94b8ee79332bd8e2742f849220f17c4016749"
     },
     {
       "bytes": 19807,
@@ -3852,9 +3902,14 @@
       "sha256": "2ddd9bced8e4ce0699c75ab25525add0eb4a989f4a9fed7b5d336a47dc5fc9b3"
     },
     {
-      "bytes": 6784,
+      "bytes": 1161,
+      "path": "frontend/stories/ideal/Multirole.stories.tsx",
+      "sha256": "a482e7c355173848462317fdfe45ec89576aec4448d2ebc6914d326a9ff8e56e"
+    },
+    {
+      "bytes": 7177,
       "path": "frontend/stories/ideal/workspaceV3Routes.ts",
-      "sha256": "49b9001b6256358273ec3673148e085438f0317a7df5fe2d972e0f6abbe04901"
+      "sha256": "0416485a1e23741d5aed5a30e0cdaaa9dc429c8350c0fe58c90138917b825fd7"
     },
     {
       "bytes": 2842,
@@ -3905,6 +3960,11 @@
       "bytes": 2772,
       "path": "frontend/tailwind.config.ts",
       "sha256": "befc32a93aa3d1b4262a3bfaaa2fe967328168a317673f64d2056e935fce961e"
+    },
+    {
+      "bytes": 9528,
+      "path": "frontend/tests/acceptance/multirole-journey.cjs",
+      "sha256": "f8cdd547e475e926538d82fec036fa09247dcca34394cb65ad7f6b3e8e27e762"
     },
     {
       "bytes": 2723,
@@ -7362,6 +7422,11 @@
       "sha256": "c566df8dedb1c3ffe454ca63c5ef9dea624da00a3e7a10a97611f32d7afa05dd"
     },
     {
+      "bytes": 1375,
+      "path": "frontend/tests/visual/multirole.pw.ts",
+      "sha256": "d4abc1c75a693019f0e1ba89537e7d3cf2d9a31b3dd6e26ccc2f26f0c8e8796a"
+    },
+    {
       "bytes": 3466,
       "path": "frontend/tests/visual/optical-gradient.pw.ts",
       "sha256": "d68e4c25f5366b3042a233b2cbec894f6b19bf160c89284c78364c421a8e1d37"
@@ -7382,9 +7447,9 @@
       "sha256": "0c232fc27430eecd3cb196dc7473302ce68e6ecfc7015fdee2cba60f0d846ca6"
     },
     {
-      "bytes": 1642,
+      "bytes": 3254,
       "path": "frontend/tests/visual/storybook-v3.pw.ts",
-      "sha256": "66991f32779a995eb427de9a6321ff5fb7246ac1d2a5b8d1a848dc8243d73f00"
+      "sha256": "0369547e47dff132e374c2f6b3ccf8ab6f6b023c29723d0d5371cb0e4957698c"
     },
     {
       "bytes": 2273,
@@ -7402,9 +7467,9 @@
       "sha256": "b8b55d2ae05efcab172e227cacb01fc23f2240eb2834cb226b369632f3218b9a"
     },
     {
-      "bytes": 17284,
+      "bytes": 18116,
       "path": "ops/acceptance-cases.json",
-      "sha256": "f15a2469553b30d7ba5e210432c296bac15fabf77fcee3663cc59637f58d47a4"
+      "sha256": "ea6a2c1133a373ff389cd9efecc237180e33e42afcb5dc3fa07b72b2a2bb09c0"
     },
     {
       "bytes": 3120,
@@ -7992,14 +8057,14 @@
       "sha256": "7293c3be5fc8b01fe0cca22df0c104dc4b31abc58b0976ef54973d160ba42c56"
     },
     {
-      "bytes": 835,
+      "bytes": 905,
       "path": "src/shift_scheduler/api/auth/models.py",
-      "sha256": "a9c841726cef6e55a3a37a7aa46e1cb533590951c41901ef69091325d00e9d06"
+      "sha256": "cfefecf7c8b44728a5b4ebdc1e65b67129352ef9b02a7917a111f0dcfff7e246"
     },
     {
-      "bytes": 13916,
+      "bytes": 14016,
       "path": "src/shift_scheduler/api/auth/oidc.py",
-      "sha256": "3d275a60c293bae93ca33bfc5f696d0999c8a1caa3b58658fcdbde097e701ceb"
+      "sha256": "c69a91771f872c590390587ca30bbddabfb24046a6ba952e31193567b6c9dc03"
     },
     {
       "bytes": 7407,
@@ -8007,19 +8072,19 @@
       "sha256": "44d0ba2e940e18c79755a61c51aed6d13dd9621172e27bbb8ddddfb5f40ecc90"
     },
     {
-      "bytes": 7546,
+      "bytes": 7724,
       "path": "src/shift_scheduler/api/auth/settings.py",
-      "sha256": "23b1af4a76bfb275ee4a660d595fdb997bb74f759b4305cb5684d5f1476f6a05"
+      "sha256": "fe28b5fe374a9c4caf51b87220cabbd9fbc00320041b944fa7f5be90716967f9"
     },
     {
-      "bytes": 7369,
+      "bytes": 7499,
       "path": "src/shift_scheduler/api/dependencies.py",
-      "sha256": "5c48c74600290d2e5e97ac013fda0c767b951a9147d009d938c5a2aabeb513f2"
+      "sha256": "c6b1093a4f95fa24fa9668bb9eafda8c87fc75ae7e2d361a25bcc81b39c4a081"
     },
     {
-      "bytes": 7373,
+      "bytes": 7433,
       "path": "src/shift_scheduler/api/main.py",
-      "sha256": "ce5f1f451273825e204ec8e823242e4e703af916670fc738c9cd8de7ee0761f8"
+      "sha256": "64eff86f25d0657b562727464e30111645f279fcc79c42053bc80bdc83bb6359"
     },
     {
       "bytes": 211,
@@ -8037,9 +8102,9 @@
       "sha256": "e11756eefe758189846fd15421fadc24c9f8f8fc006befba2e8bbc976417ce9b"
     },
     {
-      "bytes": 76632,
+      "bytes": 77208,
       "path": "src/shift_scheduler/api/routers/compliance.py",
-      "sha256": "1d202c82443dc48c212f8ce10babec4963c4f4e68cf6f660ea45f8affa05a6d4"
+      "sha256": "588326e4f8be79759dccf2fe83742db97fc25145ca07e2e9ebfbcb05c4bfe451"
     },
     {
       "bytes": 1876,
@@ -8047,9 +8112,9 @@
       "sha256": "6c55e65e7cd736db474c2f21af62e81f554fb6caf16637c5edbd3dea8569103b"
     },
     {
-      "bytes": 7897,
+      "bytes": 7930,
       "path": "src/shift_scheduler/api/routers/holiday_requests.py",
-      "sha256": "e064a7fdac7cc1bba8c61b00935f250c7fa9485f27798094d654f1e536dbacc3"
+      "sha256": "1008affcc1a89cd2bf875d51832d7996fde3aae1e670f87b3cd7281c7b1592a3"
     },
     {
       "bytes": 4438,
@@ -8057,14 +8122,14 @@
       "sha256": "8957fcbdd655698b709588f095fba7da3dbdf62a440fa20000d29d2157297cae"
     },
     {
-      "bytes": 36053,
+      "bytes": 36062,
       "path": "src/shift_scheduler/api/routers/planning.py",
-      "sha256": "02ce1cb218fd70bfc7b62eac154d90c7e9db215ae5b74ded2d880e83b808b08c"
+      "sha256": "51055776c3fa168d62fef8e758b7981ce1a80ae4e2d07e6c9422d7b23f699ff5"
     },
     {
-      "bytes": 8587,
+      "bytes": 8604,
       "path": "src/shift_scheduler/api/routers/schedules.py",
-      "sha256": "2ffc06892be0639be94e88fa901bd970afb479fcd74d54f374f631901125a6ef"
+      "sha256": "8bfd6983ce2bde84e482b104a6e93011a11aa9307715273f3e3b9d920c495712"
     },
     {
       "bytes": 15621,
@@ -8072,9 +8137,14 @@
       "sha256": "90ce5f66e7333e96969ffeaeacd490ec9f185c71c39812496312185642e85037"
     },
     {
-      "bytes": 45666,
+      "bytes": 2602,
+      "path": "src/shift_scheduler/api/routers/staff_context.py",
+      "sha256": "c21f6d35cbb48d6d29e46f75aba6c6b600ba12afbce40136ab5f517a481f53ef"
+    },
+    {
+      "bytes": 45783,
       "path": "src/shift_scheduler/api/routers/workflows.py",
-      "sha256": "cf8ff203bf6af913338d23e95ae85dfc0d59e38ffe22516ba002d39a1e9bba02"
+      "sha256": "d3eee04900365b1a56a7047e145734aa02417c72a0ba7682056a1d7b03cd6351"
     },
     {
       "bytes": 43,
@@ -8112,9 +8182,9 @@
       "sha256": "de6ed5ae7e5074140dd1d8343a90eba20559892e24dc505d74af2441e0f99e4f"
     },
     {
-      "bytes": 31574,
+      "bytes": 32525,
       "path": "src/shift_scheduler/application/copies.py",
-      "sha256": "c72bcda3aa1df3b6d1066f49af70f2e9fc1217e4c70ea44071fa09697b36ebf5"
+      "sha256": "ce6e74832e22324f67c99360b4d922ab3bbfa4bc4d7ff0db07192dc59405e2f5"
     },
     {
       "bytes": 2980,
@@ -8187,9 +8257,9 @@
       "sha256": "a872bb5bef44eab7ce841d4737caa16cd52aa367bdae302dbc98974036c5c292"
     },
     {
-      "bytes": 18793,
+      "bytes": 22487,
       "path": "src/shift_scheduler/application/privacy.py",
-      "sha256": "5df568dfe0669ddc607e94f8d28facd7705d0b3f1366fd59586d994401127786"
+      "sha256": "837d3e6f194c1e15df287d51ba5d3618846ad217d35c1a97de7b99da7eca0042"
     },
     {
       "bytes": 7660,
@@ -8242,9 +8312,9 @@
       "sha256": "7efdf0381857fa0d75b16b05ca4a6e3d649e06c8957286e28d020b26e7963c97"
     },
     {
-      "bytes": 11639,
+      "bytes": 13929,
       "path": "src/shift_scheduler/application/subject_controls.py",
-      "sha256": "60cd2255c423abc88cde256719c41cbd12ef544ccf7913893844db50e4308236"
+      "sha256": "73ae856d2c89f8e6a03909ac545de5f18cb7c09d1d7c5ce05ec53be7cf3539d1"
     },
     {
       "bytes": 2082,
@@ -8342,9 +8412,9 @@
       "sha256": "6d6e257a22c0e8f6c20d37447541bcca3a384f114e3e7f62217236fb190160dd"
     },
     {
-      "bytes": 11747,
+      "bytes": 11914,
       "path": "src/shift_scheduler/constraints/variables.py",
-      "sha256": "ae009e618d9b37db5832a67f12a732b213d30adc982e9a32890932d7e7731a5d"
+      "sha256": "f300b7cd833bde0898dda98adf7d65b0976d776d65264fb0739a7dd1a9be842e"
     },
     {
       "bytes": 84,
@@ -8517,9 +8587,9 @@
       "sha256": "968eba837c790d2e85f7a9a93252295712a1302cba65477f358f977e141c9c4d"
     },
     {
-      "bytes": 4073,
+      "bytes": 4119,
       "path": "src/shift_scheduler/domain/enums.py",
-      "sha256": "a9a89b8014edfa3a5e9873bb5c7a3ec8bf4673712d1ca783e7e6e7fde2528ca9"
+      "sha256": "f2090624c8124fce2d2716cc8bda02745ceda8a307bcb4272b8fded40402d10a"
     },
     {
       "bytes": 4337,
@@ -8532,9 +8602,14 @@
       "sha256": "0eb2eeb8811bc9faa17c00723d92456aa8e5633329674c4b3bdcd81085e57e08"
     },
     {
-      "bytes": 13286,
+      "bytes": 1768,
+      "path": "src/shift_scheduler/domain/occupation.py",
+      "sha256": "358fcaca8793014b1c348dbe3f1373dd7b2003cac93465028fd34c14d74302a7"
+    },
+    {
+      "bytes": 15543,
       "path": "src/shift_scheduler/domain/planning.py",
-      "sha256": "a4656158387e8856ba04a6624875d9cdc316ca91137429c2460a5959d4152bd6"
+      "sha256": "838af88832bb5914fa9acf7251f9ed0a681c8434d8fd51e527a0276f124ff7b3"
     },
     {
       "bytes": 1215,
@@ -8617,9 +8692,9 @@
       "sha256": "26f190b24834f7b7461f6d59c016d33d4681f2935bb03c06121c93d299550c6c"
     },
     {
-      "bytes": 32535,
+      "bytes": 32699,
       "path": "src/shift_scheduler/optimizer/planning.py",
-      "sha256": "daad1ff747437eaa3dff7624f37ad482fc92c1428cd8293eb55b4e5a78531e20"
+      "sha256": "1afbc60865c205fe0696df9ccea6490ac25596ee586a68373d22217b119c1ab9"
     },
     {
       "bytes": 12854,
@@ -8632,9 +8707,9 @@
       "sha256": "6cced05034a42716a63ab7f2f060a33876af62538cec6920dd0a154efb637b54"
     },
     {
-      "bytes": 12190,
+      "bytes": 13014,
       "path": "src/shift_scheduler/optimizer/validation.py",
-      "sha256": "9eacf5821e9626fb6eac32fa1141edbefea068c5268ba9b0a24ee7a8619a8d24"
+      "sha256": "174bc5f2480a9c2c827a187cac0f5152ef4eaa06b52bff1e8e4eb604c5c92280"
     },
     {
       "bytes": 8974,
@@ -8687,9 +8762,9 @@
       "sha256": "5e004bb4e44843c2f02ea023d0fd9f82fdd9fab018d4ca55007ac0c51b9bc0bc"
     },
     {
-      "bytes": 28254,
+      "bytes": 28566,
       "path": "src/shift_scheduler/validation/planning.py",
-      "sha256": "c109538879fb75335ce3410429e928760033768d20a8f2d33370a6854f4ff499"
+      "sha256": "9fbfb83b1a207d3fc1cf2e23542cc8d67d44c3872985e3823d0d9ac63e05b131"
     },
     {
       "bytes": 5590,
@@ -9117,6 +9192,11 @@
       "sha256": "af7f1c7f23b789c3a95c036a99a80176df42f402ec06b01bc37ec96ab7c8fb9c"
     },
     {
+      "bytes": 9027,
+      "path": "tests/test_erasure_candidates.py",
+      "sha256": "f28feb1dfd0f6a2b912955a49bbc44a1eab9bd0716d44845bbe0cc80858a2c39"
+    },
+    {
       "bytes": 1544,
       "path": "tests/test_erasure_control.py",
       "sha256": "242f7438c3f5883aca7ad2a632807c90f2735df6f6808f9af99c7a8003444994"
@@ -9357,6 +9437,16 @@
       "sha256": "c26769f3ee7b0f39486daacbaf83980bc91c13e35960fb4a5b3dc06344cd912e"
     },
     {
+      "bytes": 10477,
+      "path": "tests/test_multirole_api.py",
+      "sha256": "c6396170c2dad699be7181a84ca785313e622f04a122b19e60cd4f006d0d6fbe"
+    },
+    {
+      "bytes": 6254,
+      "path": "tests/test_multirole_boundaries.py",
+      "sha256": "26a1d629242e0214801aacb826a72ec996096c16890560b89d1694364542e9b7"
+    },
+    {
       "bytes": 1932,
       "path": "tests/test_navigation_graph.py",
       "sha256": "f835bd2e33f4d94ae607334997eaa59dec2c6bde5af45a536744709beab0d7d7"
@@ -9400,6 +9490,11 @@
       "bytes": 3702,
       "path": "tests/test_period_boundary.py",
       "sha256": "139e5195c56f4c6631d5eecbdd0f3fa962fd71289332f421198888d6e38c5e44"
+    },
+    {
+      "bytes": 11590,
+      "path": "tests/test_person_name_revision.py",
+      "sha256": "640ccfc2ed6d834b1f1f893df079e48e10e10ea80abd1497c048fefda23ee427"
     },
     {
       "bytes": 4050,
@@ -9632,6 +9727,11 @@
       "sha256": "f2b848aa27560cd5825bee19e854ba3521ba697bd0a3d935349d5cc8ef3c4c7b"
     },
     {
+      "bytes": 6916,
+      "path": "tests/test_subject_control_applicable_cases.py",
+      "sha256": "d04295c20f31008efc217e83daf7d7a56f27e0424d52666e1486c3bb014a32e5"
+    },
+    {
       "bytes": 2506,
       "path": "tests/test_subject_control_independent_http.py",
       "sha256": "e71f63b2f4d607accfa8cd6c583a856c07961fe03049c238a357f69254a90019"
@@ -9749,5 +9849,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9",
-  "source_commit": "206813ac2112f5d19ff1aae33d09ce2de4c25331"
+  "source_commit": "66959e96882899ce05ca597e501cfe064a3fed40"
 }

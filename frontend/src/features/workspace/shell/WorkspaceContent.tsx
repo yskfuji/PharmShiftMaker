@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { browserNavigation } from "@/lib/browserNavigation";
 import { roleLabels } from "@/ideal/data";
 import { useWorkspace } from "@/ideal/providers/WorkspaceContext";
+import StaffContextCard from "@/features/workspace/people/StaffContextCard";
 import HomeScreen from "@/ideal/screens/HomeScreen";
 import ScheduleScreen from "@/ideal/screens/ScheduleScreen";
 import IntegratedFeatureView from "@/ideal/screens/live/IntegratedFeatureView";
@@ -26,7 +27,7 @@ export default function WorkspaceContent({ screen, view }: { screen: IdealScreen
   const allowed = source.model.shell.nav[role].includes(screen) && (!selectedView || workspaceViews[screen]?.some((item) => item.key === selectedView && item.roles.includes(role)) !== false);
   if (!allowed) return <ProblemState problem={{ kind: "forbidden", code: "403", title: "この画面は、あなたの役割では開けません", body: "権限のある業務だけを表示します。URLや識別子を書き換えてもサーバー側で拒否されます。", action: "今日へ" }} onAction={() => browserNavigation.replace("/workspace/home")} />;
   let content: ReactNode;
-  if (screen === "home") content = <HomeScreen role={role} model={source.model.home} queue={source.live && <LiveHomeQueue live={source.live} onNavigate={() => undefined} linkTo={() => "/workspace/operations/cases"} />} />;
+  if (screen === "home") content = <>{source.live && <StaffContextCard scopeId={source.live.scopeId}/>}<HomeScreen role={role} model={source.model.home} queue={source.live && <LiveHomeQueue live={source.live} onNavigate={() => undefined} linkTo={() => "/workspace/operations/cases"} />} /></>;
   else if (screen === "schedule") content = <ScheduleScreen role={role} model={source.model.schedule} />;
   else if (!source.live || !selectedView) content = <LoadingState />;
   else content = <IntegratedFeatureView screen={screen} view={selectedView} live={source.live} />;

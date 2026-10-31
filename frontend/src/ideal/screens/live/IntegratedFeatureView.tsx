@@ -1,4 +1,6 @@
 "use client";
+import { isSelfServiceRole } from "@/lib/accessRoles";
+
 
 import ActualReconciliation from "@/features/workspace/governance/ActualReconciliation";
 import ComplianceWorkspace from "@/features/workspace/shared/ComplianceWorkspace";
@@ -10,7 +12,7 @@ import type { LiveApi } from "../../live/context";
 import { useResource } from "../../live/useResource";
 import type { DailyOperationsSnapshot, WorkspaceNotification } from "../../types";
 import { Loaded } from "../../live/parts";
-import { stamp } from "../../live/format";
+import { stamp, dutyInterval, shiftLabel } from "../../live/format";
 import { StatusPill } from "../shared";
 import { LiveGovernance, LivePeople, LiveSettings } from "./LiveAdminScreens";
 import { LiveOperations, LiveRequests } from "./LiveCaseScreens";
@@ -29,7 +31,7 @@ export default function IntegratedFeatureView({ screen, view, live }: Props) {
   }
   if (screen === "operations") return view === "today" ? <DailyOperations live={live} /> : <LiveOperations live={live} />;
   if (screen === "requests") {
-    if (view === "leave") return <PurposeSurface><LeaveRequestWorkspace scope={live.scopeId} personId={live.personId} canReview={live.role !== "PHARMACIST"} onChanged={live.refresh} /><ComplianceWorkspace scope={live.scopeId} personId={live.personId} role={live.role} section="leave" onChanged={live.refresh} /></PurposeSurface>;
+    if (view === "leave") return <PurposeSurface><LeaveRequestWorkspace scope={live.scopeId} personId={live.personId} nameOf={live.nameOf} canReview={!isSelfServiceRole(live.role)} onChanged={live.refresh} /><ComplianceWorkspace scope={live.scopeId} personId={live.personId} role={live.role} section="leave" onChanged={live.refresh} /></PurposeSurface>;
     if (view === "outside") return <PurposeSurface><ComplianceWorkspace scope={live.scopeId} personId={live.personId} role={live.role} section="outside" onChanged={live.refresh} /></PurposeSurface>;
     return <LiveRequests live={live} mode={view === "swap" ? "swap" : "mine"} />;
   }
@@ -62,7 +64,7 @@ function DailyOperations({ live }: { live: LiveApi }) {
   return <div className="ideal-stack"><Loaded resource={resource}>{(snapshot: DailyOperationsSnapshot) => <>
     <section className="ideal-toolbar"><div><span className="ideal-eyebrow">{snapshot.day}</span><h2>予定上の勤務</h2><p>{snapshot.limitations[0]}</p></div><StatusPill tone={snapshot.coverage_finding_count ? "warn" : "good"}>{snapshot.coverage_finding_count ? `指摘 ${snapshot.coverage_finding_count}件` : "サーバー検証済み"}</StatusPill></section>
     <div className="ideal-grid ideal-grid--3"><article className="ideal-metric"><p>予定勤務</p><strong>{snapshot.scheduled_count}</strong><span>在席・出勤実績ではありません</span></article><article className="ideal-metric"><p>進行中ケース</p><strong>{snapshot.open_case_count}</strong><span>欠勤・交換</span></article><article className="ideal-metric"><p>未配信通知</p><strong>{snapshot.undelivered_notification_count}</strong><span>通知処理の状態</span></article></div>
-    <section className="ideal-panel"><h2>勤務予定</h2>{snapshot.scheduled_assignments.length ? <ul className="ideal-record-list">{snapshot.scheduled_assignments.map((row, index) => <li key={String(row.duty_id ?? index)}><strong>{live.nameOf(String(row.person_id ?? ""))}</strong><span>{String(row.kind ?? "勤務")} · {String(row.start ?? "")}–{String(row.end ?? "")}</span></li>)}</ul> : <p className="ideal-note">本日の予定勤務はありません。</p>}</section>
+    <section className="ideal-panel"><h2>勤務予定</h2>{snapshot.scheduled_assignments.length ? <ul className="ideal-record-list">{snapshot.scheduled_assignments.map((row, index) => <li className="ideal-operation-assignment" key={String(row.duty_id ?? index)}><strong>{live.nameOf(String(row.person_id ?? ""))}</strong><span>{shiftLabel(String(row.kind ?? "勤務"))} · {dutyInterval(String(row.start ?? ""), String(row.end ?? ""))}</span></li>)}</ul> : <p className="ideal-note">本日の予定勤務はありません。</p>}</section>
   </>}</Loaded></div>;
 }
 

@@ -353,6 +353,32 @@ def review_database_copy(
     }
 
 
+def will_process(target: dict[str, Any]) -> bool:
+    """Whether execute() acts on this inventory target.
+
+    The one predicate of the execute path and of the flag shown before it: a target for
+    which inventory() (with the database dependency plan) lists no blocker. Such a
+    database record is erased and such a file or backup is queued for erasure; every
+    other target is left as it is.
+    """
+    return not target["blockers"]
+
+
+def with_processing(data: dict[str, Any]) -> dict[str, Any]:
+    """An inventory as a response: each target states ``will_process``.
+
+    Applied to responses only. The stored plan payload and its fingerprint are those of
+    inventory() unchanged, so a plan made before this field existed still executes.
+    """
+    return {
+        **data,
+        "targets": [
+            {**target, "will_process": will_process(target)}
+            for target in data["targets"]
+        ],
+    }
+
+
 def inventory_fingerprint(data: dict[str, Any]) -> str:
     from copy import deepcopy
 
@@ -408,7 +434,7 @@ def preview(
         "plan_id": row.plan_id,
         "fingerprint": row.fingerprint,
         "revision": row.revision,
-        **data,
+        **with_processing(data),
     }
 
 
@@ -505,7 +531,7 @@ def execute(
     database_targets: list[str] = []
     # Preflight every eligible target before committing any irreversible action.
     for target in current["targets"]:
-        if target["blockers"]:
+        if not will_process(target):
             continue
         row = session.get(ManagedCopy, target["copy_id"])
         if row is None:  # listed by inventory() in this transaction

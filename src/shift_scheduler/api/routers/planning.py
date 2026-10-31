@@ -120,7 +120,7 @@ class PlanningScopeSummary(RequestModel):
     scope_id: str
     display_name: str
     person_id: str
-    role: Literal["ADMIN", "LEADER", "PHARMACIST"]
+    role: Literal["ADMIN", "LEADER", "STAFF", "PHARMACIST"]
     input_revision: int
 
 

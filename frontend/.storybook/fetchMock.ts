@@ -3,7 +3,7 @@
  * `parameters.fetchRoutes` (method + path → synthetic JSON); any other request fails
  * loudly, so a story cannot silently depend on a live API or real data.
  */
-export type FetchRoute = { method?: string; path: string | RegExp; status?: number; body: unknown };
+export type FetchRoute = { method?: string; path: string | RegExp; status?: number; body: unknown; resolveBody?: (args: Record<string, unknown>) => unknown };
 
 export function installFetchMock(routes: FetchRoute[]): () => void {
   const original = globalThis.fetch;

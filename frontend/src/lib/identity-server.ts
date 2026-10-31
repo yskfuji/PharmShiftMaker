@@ -20,6 +20,6 @@ export async function getLegacyIdentityContext() {
   if(response.status===403)return null;
   if(!response.ok) throw new Error(`互換管理の対象を確認できません（HTTP ${response.status}）`);
   const body=await response.json();
-  if(typeof body.person_id!=='string'||!['ADMIN','DEVELOPER','LEADER','PHARMACIST'].includes(body.effective_role))throw new Error('Invalid legacy context');
+  if(typeof body.person_id!=='string'||!['ADMIN','DEVELOPER','LEADER','STAFF','PHARMACIST'].includes(body.effective_role))throw new Error('Invalid legacy context');
   return body as {person_id:string;effective_role:string};
 }

@@ -9,6 +9,8 @@ from typing import Literal, Self
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
+from .enums import Role
+
 
 class Value(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -50,9 +52,63 @@ class Evidence(Value):
         return self
 
 
+NameChangeCategory = Literal[
+    "initial",
+    "surname_change",
+    "court_permitted_change",
+    "clerical_correction",
+]
+PharmacistRegistryStatus = Literal[
+    "not_required",
+    "pending_30day_filing",
+    "verified",
+]
+
+
 class Person(Value):
     person_id: str = Field(min_length=1, max_length=64)
     name: str = Field(min_length=1)
+    occupation: Role | None = Field(default=None, exclude_if=lambda v: v is None)
+    # Absent on legacy inputs: serialization must retain their exact content/hash.
+    legal_name: str | None = Field(default=None, exclude_if=lambda value: value is None)
+    former_names: tuple[str, ...] = Field(
+        default=(), exclude_if=lambda value: not value
+    )
+    name_change_category: NameChangeCategory = Field(
+        default="initial", exclude_if=lambda value: value == "initial"
+    )
+    effective_on: date | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    pharmacist_registry_status: PharmacistRegistryStatus = Field(
+        default="not_required", exclude_if=lambda value: value == "not_required"
+    )
+    evidence: Evidence | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+
+    @model_validator(mode="after")
+    def valid_name_revision(self) -> Self:
+        if self.legal_name is not None and not self.legal_name.strip():
+            raise ValueError("Legal name cannot be blank")
+        if any(not item.strip() for item in self.former_names) or len(
+            set(self.former_names)
+        ) != len(self.former_names):
+            raise ValueError("Former names must be non-empty and unique")
+        if self.name_change_category in {
+            "surname_change",
+            "court_permitted_change",
+        } and (self.effective_on is None or self.evidence is None):
+            raise ValueError(
+                "Official or marital name changes require an effective date and verification evidence"
+            )
+        if self.pharmacist_registry_status == "verified" and (
+            self.evidence is None or self.evidence.status != "verified"
+        ):
+            raise ValueError(
+                "Verified pharmacist registry change requires verified evidence"
+            )
+        return self
 
 
 class ContractRevision(Interval):
@@ -139,6 +195,9 @@ class Duty(Interval):
 
 class Demand(Interval):
     demand_id: str
+    required_occupation: Role | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )
     task: str
     location: str
     minimum: int = Field(ge=0)

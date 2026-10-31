@@ -286,6 +286,8 @@ class OIDCProvider:
             return AppRole.DEVELOPER
         if self._match_role(observed, self._settings.leader_roles):
             return AppRole.LEADER
+        if self._match_role(observed, self._settings.staff_roles):
+            return AppRole.STAFF
         if self._match_role(observed, self._settings.pharmacist_roles):
             return AppRole.PHARMACIST
         return self._settings.default_role

@@ -48,7 +48,7 @@ class MembershipRevision(RequestModel):
     subject: str
     person_id: str
     scope_id: str
-    role: Literal["ADMIN", "LEADER", "PHARMACIST"]
+    role: Literal["ADMIN", "LEADER", "STAFF", "PHARMACIST"]
     active: bool
     revision: int
     evidence: dict[str, Any]
@@ -61,7 +61,7 @@ class MembershipLinkRequest(RequestModel):
     issuer: str = Field(min_length=3, max_length=512)
     subject: str = Field(min_length=1, max_length=256)
     person_id: str = Field(min_length=1, max_length=64)
-    role: Literal["ADMIN", "LEADER", "PHARMACIST"]
+    role: Literal["ADMIN", "LEADER", "STAFF", "PHARMACIST"]
     evidence: EvidenceRecord
     expected_version: int = Field(ge=0)
     idempotency_key: str = Field(min_length=8, max_length=128)
@@ -267,7 +267,7 @@ class AuditEntry(RequestModel):
     at: datetime
     kind: str
     category: str
-    actor_role: Literal["ADMIN", "LEADER", "PHARMACIST"] | None
+    actor_role: Literal["ADMIN", "LEADER", "STAFF", "PHARMACIST"] | None
     subject_count: int | None
     version: int | None
 
@@ -504,7 +504,7 @@ def create_change_case(
         for d in publication.payload["assignments"]
         if d["duty_id"] in set(payload.affected_assignment_ids)
     ]
-    if member.role == "PHARMACIST":
+    if member.role in ("STAFF", "PHARMACIST"):
         own = [d for d in affected if d["person_id"] == member.person_id]
         others = [d for d in affected if d["person_id"] != member.person_id]
         # An absence concerns only the pharmacist's own duties. An exchange concerns one
@@ -516,7 +516,7 @@ def create_change_case(
     # The facility lock orders this check against a concurrent switch of the setting.
     planning_service.lock_facility(session, scope_id)
     if (
-        member.role == "PHARMACIST"
+        member.role in ("STAFF", "PHARMACIST")
         and payload.kind == "ABSENCE"
         and payload.proposed_assignment_ids
         and not service.absence_consent_policy(session, scope_id)["enabled"]
@@ -935,7 +935,7 @@ def schedule_calendar(
             .order_by(PlanningPublication.version.desc())
             .limit(1)
         )
-    own = member.role == "PHARMACIST"
+    own = member.role in ("STAFF", "PHARMACIST")
     assignments = list(selected.payload["assignments"]) if selected else []
     before = list(previous.payload["assignments"]) if previous else []
     if own:
@@ -1017,7 +1017,7 @@ def daily_operations(
         .date()
         == day
     ]
-    if member.role == "PHARMACIST":
+    if member.role in ("STAFF", "PHARMACIST"):
         assignments = [
             item for item in assignments if item["person_id"] == member.person_id
         ]
@@ -1055,7 +1055,7 @@ def daily_operations(
             PlanningOutbox.delivered_at.is_(None),
         )
     ).all()
-    if member.role == "PHARMACIST":
+    if member.role in ("STAFF", "PHARMACIST"):
         notices = [
             row
             for row in notices
@@ -1065,7 +1065,9 @@ def daily_operations(
         "scope_id": scope_id,
         "day": day,
         "observed_at": datetime.now(UTC),
-        "visibility": "self" if member.role == "PHARMACIST" else "department",
+        "visibility": (
+            "self" if member.role in ("STAFF", "PHARMACIST") else "department"
+        ),
         "scheduled_assignments": assignments,
         "scheduled_count": len(assignments),
         "open_case_count": len(cases),

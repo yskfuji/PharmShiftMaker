@@ -433,7 +433,14 @@ def validate(snapshot: SolverSnapshot, proposal: Proposal) -> ValidationReport:
                 state="unverified",
             )
         from shift_scheduler.domain.capability_coverage import capability_covers
+        from shift_scheduler.domain.occupation import occupation_allows_duty
 
+        if not occupation_allows_duty(snapshot.people, snapshot.demands, d):
+            fail(
+                "capability",
+                "Occupation does not meet required duty occupation",
+                d.duty_id,
+            )
         if not capability_covers(
             snapshot.capabilities, d.person_id, d.task, d.location, d, verified
         ):

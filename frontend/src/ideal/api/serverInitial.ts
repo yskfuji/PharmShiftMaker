@@ -1,3 +1,4 @@
+import { isSelfServiceRole } from "@/lib/accessRoles";
 import { getAuthToken } from "@/lib/auth";
 import { API_BASE_URL } from "@/lib/apiTarget";
 import { ensureHttpsDispatcher } from "@/lib/httpsDispatcher";
@@ -171,7 +172,7 @@ export async function loadInitialWorkspace(
         : privacyPurpose
           ? read<PrivacyPeople>(`/planning/compliance/privacy?scope_id=${queryScope}`).then((value) =>
               Object.fromEntries(value.people.map((person) => [person.person_id, person.name])))
-        : scope.role === "PHARMACIST" || !needsNames
+        : isSelfServiceRole(scope.role) || !needsNames
         ? Promise.resolve(null)
         : screen === "people" || resolved.personId
           ? scopePeople()

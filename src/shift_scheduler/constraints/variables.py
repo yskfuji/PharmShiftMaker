@@ -270,6 +270,10 @@ def _can_assign_shift(
     shift: ShiftType,
     allowed_weekdays: set[int] | None,
 ) -> bool:
+    from shift_scheduler.domain.occupation import occupation_allows_category
+
+    if not occupation_allows_category(person.role, shift.category):
+        return False
     if allowed_weekdays is not None and weekday_index not in allowed_weekdays:
         return False
     if day_info.day_type in WEEKEND_DAY_TYPES and not profile.weekend_allowed:

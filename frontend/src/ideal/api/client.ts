@@ -105,7 +105,7 @@ export function createIdealClient(identity: string) {
     // People: accounts and onboarding/offboarding
     memberships: (scopeId: string, includeInactive: boolean) =>
       request<MembershipRevision[]>(`/memberships?scope_id=${scope(scopeId)}&include_inactive=${includeInactive}`),
-    linkMembership: (scopeId: string, body: { issuer: string; subject: string; person_id: string; role: "ADMIN" | "LEADER" | "PHARMACIST"; expected_version: number; evidence: Evidence } & Keyed) =>
+    linkMembership: (scopeId: string, body: { issuer: string; subject: string; person_id: string; role: "ADMIN" | "LEADER" | "STAFF" | "PHARMACIST"; expected_version: number; evidence: Evidence } & Keyed) =>
       request<MembershipRevision>(`/memberships?scope_id=${scope(scopeId)}`, "POST", body),
     deactivateMembership: (scopeId: string, membershipId: string, body: { expected_version: number; evidence: Evidence } & Keyed) =>
       request<MembershipRevision>(`/memberships/${id(membershipId)}/deactivate?scope_id=${scope(scopeId)}`, "POST", body),

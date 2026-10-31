@@ -115,7 +115,7 @@
   }
 }
 :root {
-  --font-family-sans: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-sans: 'Noto Sans JP Variable', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-size-body: 1rem;
   --font-size-dense: 0.875rem;
   --line-height-body: 1.7;

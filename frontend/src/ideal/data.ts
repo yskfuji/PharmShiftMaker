@@ -6,7 +6,8 @@ type DisplayLifecycleCase = { caseId: string; kind: "ONBOARD" | "OFFBOARD"; stat
 export const roleLabels: Record<IdealRole, string> = {
   ADMIN: "システム管理者",
   LEADER: "薬剤部責任者",
-  PHARMACIST: "薬剤師",
+  STAFF: "職員",
+  PHARMACIST: "職員（旧権限）",
 };
 
 export const staff = [
@@ -34,5 +35,6 @@ export const lifecycleCases: DisplayLifecycleCase[] = [
 export const navByRole: Record<IdealRole, string[]> = {
   ADMIN: ["home", "schedule", "plan", "operations", "requests", "people", "governance", "settings"],
   LEADER: ["home", "schedule", "plan", "operations", "requests", "people"],
+  STAFF: ["home", "schedule", "requests"],
   PHARMACIST: ["home", "schedule", "requests"],
 };

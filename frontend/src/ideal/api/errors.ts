@@ -43,8 +43,10 @@ function readProblem(status: number | null, detail: string): ProblemModel {
       return { kind: "notFound", code: "404", title: "見つかりません", body: detail, action: "再読み込み" };
     case 409:
       return { kind: "conflict", code: "409", title: "表示中の版が古くなりました", body: `新しい公開版があります。再読み込みして最新の内容を表示してください。（${detail}）`, action: "再読み込み" };
+    case 423:
+      return { kind: "forbidden", code: "423", title: "利用制限中のため表示できません", body: "管理者に制限状態を確認してください。対応後に再読み込みできます。表示の取得では何も変更していません。", action: "再読み込み" };
     default:
-      // 5xx (including 423 locks and 503 restore quarantine), a timeout or a dropped connection.
+      // 5xx (including 503 restore quarantine), a timeout or a dropped connection.
       return { kind: "unknown", code: status ? String(status) : "NET", title: "読み込めませんでした", body: "サーバーから内容を受け取れませんでした。時間をおいて再読み込みしてください。表示だけなので、何も変更されていません。", action: "再読み込み" };
   }
 }

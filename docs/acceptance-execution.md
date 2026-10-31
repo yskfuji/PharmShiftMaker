@@ -31,3 +31,38 @@ SQLiteの実行台帳に開始・結果を追記し、試行ごとのログとSH
 ## 現時点で実行入口のない受入
 
 全製品保存経路、全共有型、独立制御の全復旧、全専用操作、指定結合BFS、指定25か月結合故障、完全復元、全視覚評価、Linux最終配布、資源実測、1440調整・1200受入・10利用者+5生成は、それぞれ実装と根拠を接続してから `null` を実コマンドへ置き換える。単に完了フラグを追加しない。
+
+## 多職種版の実ブラウザ更新一巡
+
+再利用する検査コードは `frontend/tests/acceptance/multirole-journey.cjs` に置く。
+DBコピー、資格、TLS鍵、画像、ログはGitへ追加せず、実行ごとの管理領域へ保存する。
+製品ソースのworktreeと成果物領域を混同しない。別Git管理領域に属するworktreeもあるため、
+`git rev-parse --git-common-dir`、基点、未コミット差分hashをそれぞれ記録する。
+整理時に古いworktreeや監査記録を自動削除・pruneしない。
+
+この検査は通常環境の疎通確認ではなく、合成データへの書込みである。
+所有確認済みの専用PostgreSQL、mock認証、専用管理領域、実生成workerを準備する。
+通常18510/18511へ向けず、コンテナ内部のHTTPS18610/18611を使用する。
+空のDBに既存マイグレーション、管理者本人対応、合成原本を用意し、職種登録と本人対応を実APIで行う。
+保存した公開・review・操作成功を直接挿入してはならない。
+
+```sh
+# frontendディレクトリ。資格とCAは管理領域内の実在パスを指定する。
+# 出力先の親だけを準備し、<新しい実行ID>は未作成の名前にする。
+PHARMSHIFT_SYNTHETIC_ACCEPTANCE=1 \
+ACCEPTANCE_CREDENTIALS=/managed/test-credentials.json \
+ACCEPTANCE_OUTPUT=/managed/<新しい実行ID> \
+NODE_EXTRA_CA_CERTS=/managed/ca.pem \
+node tests/acceptance/multirole-journey.cjs
+```
+
+`.nvmrc`のNode 26.12.1で実行する。管理者による部署全体の申請・公開版の空確認を
+最初の書込み前に行う。資格ファイルは合成アカウントのstaff/admin/pharmacistのみを使用し、
+内容を結果要約やコマンド行へ出さない。出力先の再利用は拒否する。
+既存データを検出したときは自動削除せず、新しいDBと実行IDを用意する。
+
+成功条件は希望提出、入力への反映、生成、検証、review、公開、本人再取得と、
+初回・再読込みの画面表示、他人非表示、管理操作・別部署の拒否。
+API成功と撮影だけで画面合格にしない。生成前の合成原本と期待値もhashで結び付ける。
+この入口は限定ブラウザ診断であり、既存`multirole-workflow`や未実施の正式ゲートを
+自動的に合格へ変更しない。実拡大、VoiceOver、全画像審査は別の実行記録にする。

@@ -84,7 +84,7 @@ export default function NewCaseForm({ live, duties, kinds, onCreated }: { live: 
         <legend>{kind === "ABSENCE" ? "代わりの人" : "交換の相手"}</legend>
         {optionsProblem && <InlineProblem problem={optionsProblem} />}
         {!options && !optionsProblem && !namingRefused && <p className="ideal-note" role="status">候補を確認しています…</p>}
-        {namingRefused && <p className="ideal-note">この施設・部署では、薬剤師は代わりの人を指名できません。代わりは責任者が決めます。</p>}
+        {namingRefused && <p className="ideal-note">この施設・部署の設定では、あなたは代替候補を選べません。代わりは責任者が決めます。</p>}
         {options?.consent_required && <p className="ideal-note">選んだ相手の同意を得てから、責任者が承認します。</p>}
         {options?.options.map((o) => (
           <label key={o.option_id} className="ideal-option">

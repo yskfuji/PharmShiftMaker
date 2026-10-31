@@ -459,6 +459,7 @@ def privacy_records(scope_id: Scope, session: DB, user: User) -> dict[str, Any]:
                 "case_id": r.case_id,
                 "revision": r.revision,
                 "status": r.status,
+                **privacy.decision_options(r.status, member.role == "ADMIN"),
                 "payload": r.payload,
             }
             for r in cases
@@ -605,6 +606,13 @@ def hold(request: Mutation, scope_id: Scope, session: DB, user: User) -> dict[st
     return once(session, scope_id, user.user_id, "hold", request, action)
 
 
+@router.get("/erasure-candidates", response_model=None)
+def erasure_candidates(scope_id: Scope, session: DB, user: User) -> dict[str, Any]:
+    """The scope's planning inputs with the server's answer on erasing each one."""
+    access(session, user, scope_id, admin=True, privacy_purpose=True)
+    return privacy.erasure_candidates(session, scope_id)
+
+
 @router.post("/erasure-preview")
 def erasure_preview(
     request: Mutation, scope_id: Scope, session: DB, user: User
@@ -615,7 +623,12 @@ def erasure_preview(
         row = privacy.preview(
             session, scope_id, request.payload["input_hash"], user.user_id
         )
-        return dict(plan_id=row.plan_id, fingerprint=row.fingerprint, **row.payload)
+        return dict(
+            plan_id=row.plan_id,
+            fingerprint=row.fingerprint,
+            erasable=privacy.erasable(row.payload),
+            **row.payload,
+        )
 
     return once(session, scope_id, user.user_id, "erasure.preview", request, action)
 
@@ -1367,8 +1380,10 @@ def copy_inventory(
     from shift_scheduler.application import copies
 
     access(session, user, scope_id, admin=True, privacy_purpose=True)
-    return copies.inventory(
-        session, scope_id, person_id, datetime.now(ZoneInfo("Asia/Tokyo"))
+    return copies.with_processing(
+        copies.inventory(
+            session, scope_id, person_id, datetime.now(ZoneInfo("Asia/Tokyo"))
+        )
     )
 
 

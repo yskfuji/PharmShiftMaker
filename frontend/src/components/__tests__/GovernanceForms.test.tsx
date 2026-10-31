@@ -19,3 +19,15 @@ test('rule chains are selected and revised per retention anchor within one categ
  fireEvent.change(screen.getByLabelText('利用目的'),{target:{value:'期間終了からの改定'}});fireEvent.click(screen.getByRole('button',{name:'保存規則の改定を記録'}));
  await waitFor(()=>expect(posts).toHaveLength(1));expect(posts[0].expected_revision).toBe(1);expect(posts[0].payload.anchor).toBe('period_end');
 });
+
+test.each([undefined, [], ['REJECTED']])('next decisions use server metadata only: %j',async(allowed)=>{
+ global.fetch=jest.fn(async()=>response({rules:[],cases:[{case_id:'case',revision:1,status:'APPROVED',allowed_next:allowed,payload:{person_id:'p1',kind:'erase',reason:'合成判断'}}]})) as any;
+ render(<GovernanceForms scope="hospital/pharmacy" admin onChanged={()=>{}}/>);
+ await screen.findByText('本人対応の進捗・判断');
+ fireEvent.click(screen.getByText('本人対応の進捗・判断'));
+ fireEvent.click(screen.getByText('この請求を確認'));
+ const choices=screen.getByLabelText('次の判断');
+ expect(choices.querySelectorAll('option')).toHaveLength(allowed?.length??0);
+ expect(screen.queryByRole('option',{name:'実施完了'})).not.toBeInTheDocument();
+ if(!allowed?.length)expect(screen.getByText('本人対応の判断を記録')).toBeDisabled();
+});

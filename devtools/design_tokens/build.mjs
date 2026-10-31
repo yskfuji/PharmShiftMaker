@@ -122,7 +122,7 @@ ${block(THEMES.dark).replaceAll('\n  ', '\n    ').replace(/^  /, '    ')}
   }
 }
 :root {
-  --font-family-sans: ${value('font-family-sans')};
+  --font-family-sans: 'Noto Sans JP Variable', ${value('font-family-sans')};
   --font-size-body: ${font(16)};
   --font-size-dense: ${font(14)};
   --line-height-body: ${value('line-height-170')};

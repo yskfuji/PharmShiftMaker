@@ -12,8 +12,8 @@
     {"key": "settings", "label": "設定", "hint": "施設と通知"}
   ],
   "workspace_routes": [
-    {"screen": "home", "view": "index", "route": "/workspace/home", "label": "今日", "short": "判断が必要なこと", "description": "今対応すること、今日把握すること、最近変わったことを確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "schedule", "view": "index", "route": "/workspace/schedule", "label": "勤務表", "short": "月間計画と自分の予定", "description": "公開版、直前版との差分、職員・資格ごとの勤務を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "home", "view": "index", "route": "/workspace/home", "label": "今日", "short": "判断が必要なこと", "description": "今対応すること、今日把握すること、最近変わったことを確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
+    {"screen": "schedule", "view": "index", "route": "/workspace/schedule", "label": "勤務表", "short": "月間計画と自分の予定", "description": "公開版、直前版との差分、職員・資格ごとの勤務を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
     {"screen": "plan", "view": "input", "route": "/workspace/plan/input", "label": "前提・取込", "short": "入力の確定", "description": "契約・資格・必要配置と入力版を確認します。", "roles": ["ADMIN", "LEADER"]},
     {"screen": "plan", "view": "generate", "route": "/workspace/plan/generate", "label": "候補生成", "short": "3案を作成", "description": "同じ前提から探索条件だけを変えた勤務案を作ります。", "roles": ["ADMIN", "LEADER"]},
     {"screen": "plan", "view": "compare", "route": "/workspace/plan/compare", "label": "案の比較", "short": "差を比較", "description": "違反・変更数・希望充足・勤務時間差を同じ定義で比較します。", "roles": ["ADMIN", "LEADER"]},
@@ -21,21 +21,21 @@
     {"screen": "plan", "view": "publications", "route": "/workspace/plan/publications", "label": "公開版", "short": "通知まで確認", "description": "公開前の影響、公開履歴、取消と通知状態を確認します。", "roles": ["ADMIN", "LEADER"]},
     {"screen": "operations", "view": "today", "route": "/workspace/operations/today", "label": "今日の予定", "short": "予定と充足", "description": "予定上の勤務と充足状態を、観測時刻とともに確認します。", "roles": ["ADMIN", "LEADER"]},
     {"screen": "operations", "view": "cases", "route": "/workspace/operations/cases", "label": "欠勤・交換", "short": "判断と通知", "description": "候補・同意・独立承認・通知を一つの判断面で扱います。", "roles": ["ADMIN", "LEADER"]},
-    {"screen": "requests", "view": "mine", "route": "/workspace/requests/mine", "label": "自分の申請", "short": "履歴と次の操作", "description": "自分に関係する申請の状態と、次に必要な操作を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "requests", "view": "leave", "route": "/workspace/requests/leave", "label": "休暇", "short": "残高・予約・取得", "description": "休暇の残高、予約、実取得を分けて申請・確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "requests", "view": "swap", "route": "/workspace/requests/swap", "label": "勤務交換", "short": "相手と責任者", "description": "依頼、相手の同意、責任者の判断を段階ごとに確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "requests", "view": "outside", "route": "/workspace/requests/outside", "label": "兼業・外部勤務", "short": "申告と照合", "description": "本人の申告と管理者による原本照合を分けて記録します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "requests", "view": "mine", "route": "/workspace/requests/mine", "label": "自分の申請", "short": "履歴と次の操作", "description": "自分に関係する申請の状態と、次に必要な操作を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
+    {"screen": "requests", "view": "leave", "route": "/workspace/requests/leave", "label": "休暇", "short": "残高・予約・取得", "description": "休暇の残高、予約、実取得を分けて申請・確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
+    {"screen": "requests", "view": "swap", "route": "/workspace/requests/swap", "label": "勤務交換", "short": "相手と責任者", "description": "依頼、相手の同意、責任者の判断を段階ごとに確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
+    {"screen": "requests", "view": "outside", "route": "/workspace/requests/outside", "label": "兼業・外部勤務", "short": "申告と照合", "description": "本人の申告と管理者による原本照合を分けて記録します。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
     {"screen": "people", "view": "directory", "route": "/workspace/people/directory", "label": "職員一覧", "short": "検索と詳細", "description": "職員を検索し、所属・契約・資格・手続きを一人ずつ確認します。", "roles": ["ADMIN"]},
     {"screen": "people", "view": "memberships", "route": "/workspace/people/memberships", "label": "本人アカウント", "short": "紐付けと無効化", "description": "本人アカウントの紐付けと無効化を確認付きで行います。", "roles": ["ADMIN"]},
     {"screen": "people", "view": "lifecycle", "route": "/workspace/people/lifecycle", "label": "入職・退職", "short": "長期タスク", "description": "システム判定と手動証跡を分けたタスクリストで進めます。", "roles": ["ADMIN"]},
     {"screen": "people", "view": "contracts", "route": "/workspace/people/contracts", "label": "契約・資格", "short": "原本と改訂", "description": "契約・資格・必要配置の原本確認と改訂履歴を扱います。", "roles": ["ADMIN"]},
     {"screen": "governance", "view": "audit", "route": "/workspace/governance/audit", "label": "監査", "short": "匿名化イベント", "description": "氏名や職員IDを含めず、役割・人数・版・時刻を追跡します。", "roles": ["ADMIN"]},
     {"screen": "governance", "view": "actuals", "route": "/workspace/governance/actuals", "label": "実績照合", "short": "取込から確定", "description": "実績原本の取込、行エラー、差分、確定を順に確認します。", "roles": ["ADMIN", "LEADER"]},
-    {"screen": "governance", "view": "privacy", "route": "/workspace/governance/privacy", "label": "個人情報", "short": "請求・保留・消去", "description": "本人請求、法的保留、残存データ、不可逆性を分けて確認します。", "roles": ["ADMIN", "PHARMACIST"]},
+    {"screen": "governance", "view": "privacy", "route": "/workspace/governance/privacy", "label": "個人情報", "short": "請求・保留・消去", "description": "本人請求、法的保留、残存データ、不可逆性を分けて確認します。", "roles": ["ADMIN", "PHARMACIST", "STAFF"]},
     {"screen": "governance", "view": "recovery", "route": "/workspace/governance/recovery", "label": "復旧", "short": "状態と証跡", "description": "復旧後の状態と照合証跡を閲覧します。Webから復元は実行しません。", "roles": ["ADMIN"]},
-    {"screen": "settings", "view": "appearance", "route": "/workspace/settings/appearance", "label": "外観", "short": "個人設定", "description": "配色と動きの設定を端末設定と合わせて選びます。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "settings", "view": "notifications", "route": "/workspace/settings/notifications", "label": "通知", "short": "本人宛て", "description": "本人宛ての通知と確認状態を管理します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
-    {"screen": "settings", "view": "absence-consent", "route": "/workspace/settings/absence-consent", "label": "欠勤の同意", "short": "scope設定", "description": "代替者の同意要否、適用範囲、版、変更履歴を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "settings", "view": "appearance", "route": "/workspace/settings/appearance", "label": "外観", "short": "個人設定", "description": "配色と動きの設定を端末設定と合わせて選びます。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
+    {"screen": "settings", "view": "notifications", "route": "/workspace/settings/notifications", "label": "通知", "short": "本人宛て", "description": "本人宛ての通知と確認状態を管理します。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
+    {"screen": "settings", "view": "absence-consent", "route": "/workspace/settings/absence-consent", "label": "欠勤の同意", "short": "部署の設定", "description": "代替者の同意要否、適用範囲、版、変更履歴を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST", "STAFF"]},
     {"screen": "settings", "view": "flextime", "route": "/workspace/settings/flextime", "label": "フレックス", "short": "二者確認", "description": "第一管理者の登録と別管理者の確認を別の状態として扱います。", "roles": ["ADMIN"]}
   ],
   "use_cases": [
@@ -47,7 +47,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/home",
       "transitions": [
@@ -81,7 +81,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/schedule",
       "transitions": [
@@ -235,7 +235,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/requests/swap",
       "transitions": [
@@ -274,7 +274,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/requests/mine",
       "transitions": [
@@ -308,7 +308,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/settings/absence-consent",
       "transitions": [
@@ -519,7 +519,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/home",
       "transitions": [
@@ -554,7 +554,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/schedule",
       "transitions": [
@@ -626,7 +626,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/home",
       "transitions": [
@@ -662,7 +662,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/settings/appearance",
       "transitions": [
@@ -697,7 +697,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/requests/leave",
       "transitions": [
@@ -902,7 +902,7 @@
       "roles": [
         "ADMIN",
         "LEADER",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/requests/outside",
       "transitions": [
@@ -937,7 +937,7 @@
       "view": "privacy",
       "roles": [
         "ADMIN",
-        "PHARMACIST"
+        "PHARMACIST", "STAFF"
       ],
       "route": "/workspace/governance/privacy",
       "transitions": [
