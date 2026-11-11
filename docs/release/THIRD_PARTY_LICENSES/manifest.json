@@ -958,7 +958,7 @@
         "type": "git",
         "url": "git+https://github.com/digital-go-jp/design-tokens.git"
       },
-      "version": "2.0.1"
+      "version": "2.1.0"
     },
     {
       "author": null,
@@ -16002,10 +16002,11 @@
       "location": "node_modules/tailwind-merge",
       "name": "tailwind-merge",
       "repository": {
+        "directory": "packages/tailwind-merge",
         "type": "git",
         "url": "https://github.com/dcastil/tailwind-merge.git"
       },
-      "version": "3.4.0"
+      "version": "3.7.0"
     },
     {
       "author": null,
@@ -17756,11 +17757,11 @@
       "license_files": [
         {
           "sha256": "eb355a753e020346d33d83bf9769135b89fc610568ac531a01c295bcee7fd998",
-          "source": "pydantic_settings-2.15.0.dist-info/licenses/LICENSE"
+          "source": "pydantic_settings-2.16.2.dist-info/licenses/LICENSE"
         }
       ],
       "name": "pydantic-settings",
-      "version": "2.15.0"
+      "version": "2.16.2"
     },
     {
       "ecosystem": "pypi",
@@ -17821,11 +17822,11 @@
       "license_files": [
         {
           "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
-          "source": "python_multipart-0.0.32.dist-info/licenses/LICENSE.txt"
+          "source": "python_multipart-0.0.33.dist-info/licenses/LICENSE.txt"
         }
       ],
       "name": "python-multipart",
-      "version": "0.0.32"
+      "version": "0.0.33"
     },
     {
       "ecosystem": "pypi",
@@ -17993,8 +17994,8 @@
     }
   ],
   "sources": {
-    "frontend/package-lock.json": "55940ad79ff4b285e94c413b500b05ff366aa538acb20783ef8605c70092815b",
-    "requirements.lock": "15f6d6e039180e8d404eec6bbad8caa5ef0fd7d6039d5102dd535bf7bbb3d766"
+    "frontend/package-lock.json": "fbd026d724a56277a2e7a9910c30c81fb216223a9dc4f85344a51ab8909be4e3",
+    "requirements.lock": "e390864be3fe4a9b00be937420f220865e8832fde4cc64d634e0317d907c0131"
   },
   "unresolved": [],
   "unresolved_count": 0
