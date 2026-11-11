@@ -1,5 +1,5 @@
 {
-  "file_count": 1949,
+  "file_count": 1950,
   "files": [
     {
       "bytes": 279,
@@ -3447,9 +3447,9 @@
       "sha256": "62609c613c56026c26833237fce9288a882ce5308c141b3c01552c8b2b894b2e"
     },
     {
-      "bytes": 14970,
+      "bytes": 15374,
       "path": "frontend/src/ideal/__tests__/live.test.tsx",
-      "sha256": "d57bc2979689299b8ecfa25d45ecaf31887abe3be5a7822640133fe0be4d15dc"
+      "sha256": "731777662423026cc4d5b9fbc52b0259b3740cd0c964955f62cfe1315ab479a0"
     },
     {
       "bytes": 2340,
@@ -3457,9 +3457,9 @@
       "sha256": "bb559bf2945b046a3d27bf015233f1d7efca49a6e6beab0d37334ed0c21208ca"
     },
     {
-      "bytes": 15900,
+      "bytes": 15951,
       "path": "frontend/src/ideal/__tests__/providers.test.tsx",
-      "sha256": "fbb52258dfaf3231431c3fd903b76f2606ef6363d262973c6c147c8083b5e32a"
+      "sha256": "fabf3bef7844d8b0e3f0db992135d54ad532a3acbd686140d295bf0386a6ac57"
     },
     {
       "bytes": 11747,
@@ -3470,6 +3470,11 @@
       "bytes": 4841,
       "path": "frontend/src/ideal/__tests__/toModel.test.ts",
       "sha256": "8d29f80e27523da181b8406e7f76f546e03fc63925c6b7b8c7ca2da9c0418527"
+    },
+    {
+      "bytes": 1433,
+      "path": "frontend/src/ideal/__tests__/workspaceSelection.test.ts",
+      "sha256": "82ade0875f1b100365e806afc6b715bd3cce7b9f7ca9800d2763179061cef1ef"
     },
     {
       "bytes": 12054,
@@ -9749,5 +9754,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9",
-  "source_commit": "206813ac2112f5d19ff1aae33d09ce2de4c25331"
+  "source_commit": "0695bcc742a3f56419b3987532708310d77358f9"
 }

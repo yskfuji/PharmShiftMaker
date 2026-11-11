@@ -48,7 +48,7 @@ test('the API provider reads the viewer scope and role from the server, and only
     urls.push(`${init?.method ?? 'GET'} ${String(url)}`);
     return readResponse(String(url), 'PHARMACIST') ?? ok(publications);
   }) as never;
-  render(<ApiWorkspaceProvider><IdealWorkspace initialScreen="schedule" /></ApiWorkspaceProvider>);
+  render(<ApiWorkspaceProvider period="2026-10"><IdealWorkspace initialScreen="schedule" /></ApiWorkspaceProvider>);
   expect(await screen.findByRole('heading', { level: 1, name: '勤務表' })).toBeInTheDocument();
   const nav = screen.getByRole('navigation', { name: '主要ナビゲーション' });
   expect(within(nav).getAllByRole('button').map((b) => b.textContent)).toEqual(['今日判断が必要なこと', '勤務表月間計画と自分の予定', '申請休暇と勤務交換', 'ガバナンス監査・復旧・個人情報', '設定施設と通知']);
@@ -96,7 +96,7 @@ test('a committed mutation refreshes client data and announces the new shell sum
         : ok(publications))) as never;
   const changed = jest.fn((event: Event) => (event as CustomEvent).detail);
   window.addEventListener('workspace-context-changed', changed);
-  render(<ApiWorkspaceProvider><RefreshWorkspaceButton /></ApiWorkspaceProvider>);
+  render(<ApiWorkspaceProvider period="2026-10"><RefreshWorkspaceButton /></ApiWorkspaceProvider>);
   const button = await screen.findByRole('button', { name: '作業文脈を更新' });
   await waitFor(() => expect(button).toBeEnabled());
   fireEvent.click(button);
@@ -222,7 +222,7 @@ test('on narrow screens the day agenda selects a duty with the keyboard-reachabl
 test('a pharmacist with no duty in the week is told so in words, and sees no other person', async () => {
   const foreign = [{ ...publications[0], assignments: [] }];
   global.fetch = jest.fn(async (url: RequestInfo | URL) => readResponse(String(url), 'PHARMACIST', foreign) ?? ok(foreign)) as never;
-  render(<ApiWorkspaceProvider><IdealWorkspace initialScreen="schedule" /></ApiWorkspaceProvider>);
+  render(<ApiWorkspaceProvider period="2026-10"><IdealWorkspace initialScreen="schedule" /></ApiWorkspaceProvider>);
   expect(await screen.findByRole('heading', { level: 1, name: '勤務表' })).toBeInTheDocument();
   expect(within(screen.getByRole('region', { name: '月間勤務表' })).getByText('表示期間に、あなたの公開済みの勤務はありません。')).toBeInTheDocument();
   expect(within(screen.getByRole('region', { name: '日別勤務予定' })).getByText('表示期間に、あなたの公開済みの勤務はありません。')).toBeInTheDocument();
