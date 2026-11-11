@@ -31,7 +31,7 @@ dependencies = [
     "uvicorn[standard]>=0.27.0",
     "pyyaml>=6.0.1",
     "python-dateutil>=2.8.2",
-    "python-multipart==0.0.32",
+    "python-multipart==0.0.33",
     "httpx>=0.26.0",
     "itsdangerous>=2.1.2",
     "PyJWT[crypto]==2.15.1",
