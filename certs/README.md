@@ -32,4 +32,4 @@ Both development servers pick up the cert/key pair automatically via the followi
 - `NEXT_SSL_CERT_PATH` / `NEXT_SSL_KEY_PATH`
 - `NODE_EXTRA_CA_CERTS` / `NEXT_SSL_CA_PATH`
 
-See the root `README.md` for the full HTTPS setup instructions.
+See [docs/local-isolated-preview.md](../docs/local-isolated-preview.md) for isolated local HTTPS preview steps.

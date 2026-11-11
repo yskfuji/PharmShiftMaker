@@ -1,8 +1,34 @@
+<p align="center">
+  <img src="docs/brand/wordmark-banner.png" alt="PharmShiftMaker" width="720" />
+</p>
+
 # PharmShiftMaker
 
-PharmShiftMakerは、病院薬剤部の勤務計画、当日の変更、休暇・勤務交換、職員手続き及び監査記録を扱うための試作ソフトウェアである。契約、資格、必要配置その他の確認済み情報から勤務案を生成し、編集、サーバー検証、確認及び公開を版として記録する。
+病院薬剤部の勤務計画、当日の変更、休暇・勤務交換、職員手続き及び監査記録を扱うための試作ソフトウェアです。契約・資格・必要配置などの確認済み情報から勤務案を生成し、編集・検証・確認・公開を版として記録します。
 
-本ソフトウェアが示す勤務案は、人事・労務上の最終決定ではない。給与計算、人事原本の決定及び適用法令等への最終的な照合は、導入機関又は外部システムの責務である。
+**本番利用可能、安全性証明済み、WCAG適合、使いやすい、とは扱いません。** 給与計算・人事原本の決定・法令への最終照合は導入機関または外部システムの責務です。30名の利用者評価、VoiceOver/NVDA実機評価、実運用相当の性能測定は未完了です。
+
+<p align="center">
+  <img src="docs/brand/mark.png" alt="PharmShiftMaker マーク" width="120" />
+</p>
+
+## 画面（隔離・合成データ）
+
+下図は隔離環境の合成データで撮った実UIです。架空の完成画面ではなく、受入完了を示すものでもありません。
+
+<p align="center">
+  <img src="docs/brand/window-planning.png" alt="勤務計画（合成データ）" width="720" />
+</p>
+
+<p align="center">
+  <img src="docs/brand/window-dashboard.png" alt="ダッシュボード（合成データ）" width="720" />
+</p>
+
+<p align="center">
+  <img src="docs/brand/window-login.png" alt="ログイン（合成データ）" width="560" />
+  &nbsp;
+  <img src="docs/brand/window-schedule.png" alt="シフト表（合成データ）" width="560" />
+</p>
 
 ## 現在の位置付け
 
@@ -10,7 +36,7 @@ PharmShiftMakerは、病院薬剤部の勤務計画、当日の変更、休暇�
 - `src/shift_scheduler/config`及び`ops/attendance_mapping.example.yaml`の人物は、ID・表示名とも公開試験用の合成データである。導入時は、導入機関が管理する情報へ置き換える。
 - 認知中心UI v3は `IDEAL_UI=1` のときだけ `/workspace` で有効になる。既定値はOFFであり、既存画面を維持する。
 - 27業務系列、認可、版競合、冪等再送、人物消去及び復旧境界の自動試験を収録している。試験結果は、記録された合成条件についての確認に限られる。
-- 30名の利用者評価、VoiceOver/NVDA実機評価及び実運用相当の75パーセンタイル性能測定は未完了である。「使いやすい」「WCAG適合」「本番利用可能」又は「安全性を証明済み」とは扱わない。
+- 30名の利用者評価、VoiceOver/NVDA実機評価及び実運用相当の75パーセンタイル性能測定は未完了である。
 
 ## 主要な画面
 
@@ -27,44 +53,7 @@ PharmShiftMakerは、病院薬剤部の勤務計画、当日の変更、休暇�
 | ガバナンス | 監査、実績照合、本人対応及び復旧状態 |
 | 設定 | 外観、通知、欠勤時の同意及びフレックスタイム |
 
-## 合成データでのローカル起動
-
-要件はPython 3.12.15、Node.js 26.12.1（`.nvmrc`）及び同梱のnpmである。以下の手順は、隔離された開発用SQLiteと合成職員だけを使用する。
-
-```bash
-python3.12 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install --require-hashes -r requirements.lock
-.venv/bin/python -m pip install --no-deps -e .
-npm --prefix frontend ci
-./scripts/generate-dev-certs.sh
-```
-
-ターミナル1で合成APIを起動する。
-
-```bash
-.venv/bin/python -m scripts.remediation_test_server
-```
-
-ターミナル2で認知中心UIを起動する。環境変数名のアンダースコアをエスケープせず、URLをMarkdownリンクにしないこと。
-
-```bash
-cd frontend
-IDEAL_UI=1 \
-NEXT_PUBLIC_API_BASE_URL=https://127.0.0.1:18510 \
-NEXT_DIST_DIR=.next-local \
-npm run dev -- --hostname 127.0.0.1 --port 18511
-```
-
-<https://127.0.0.1:18511/login> を開く。合成環境の開発用アカウントは次のとおりである。
-
-| 役割 | ユーザーID | パスワード |
-|---|---|---|
-| 管理者 | `admin` | `pass-admin` |
-| 責任者 | `leader` | `pass-lead` |
-| 薬剤師 | `pharmacist` | `pass-ph` |
-
-これらの資格情報は `scripts/remediation_test_server.py` が作る一時環境専用である。常設環境又は実データ環境へ流用してはならない。証明書が信頼されない場合は、[開発用証明書の説明](certs/README.md)に従うこと。TLS検証を無効にする手順は採用しない。
+合成データの隔離プレビュー手順（ループバックポート・合成資格情報を含む）は [docs/local-isolated-preview.md](docs/local-isolated-preview.md) にあります。実データ導入には使いません。
 
 ## 検証
 
@@ -89,6 +78,8 @@ npm run build-storybook
 
 ## リポジトリ案内
 
+- [ブランド資産](docs/brand/)
+- [隔離プレビュー（開発者向け）](docs/local-isolated-preview.md)
 - [責務と読み順](docs/repository-map.md)
 - [認知中心UI v3](docs/ideal-ui/README.md)
 - [27業務系列の契約](docs/ideal-ui/usecases.json)
