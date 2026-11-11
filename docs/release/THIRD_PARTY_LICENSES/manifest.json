@@ -1,7 +1,7 @@
 {
   "format": "PharmShiftMaker third-party license manifest v1",
-  "license_text_count": 353,
-  "package_count": 1001,
+  "license_text_count": 350,
+  "package_count": 980,
   "packages": [
     {
       "author": "TJ Holowaychuk <tj@vision-media.ca>",
@@ -2104,21 +2104,21 @@
       "version": "0.35.5"
     },
     {
-      "author": "Ben Coe <ben@npmjs.com>",
+      "author": null,
       "ecosystem": "npm",
       "installed": true,
-      "license": "ISC",
+      "license": "BlueOak-1.0.0",
       "license_files": [
         {
-          "sha256": "2dc0465729366c3a7890dfa9e972a1ba7048a26c02116fb8b419a6a1ac110149",
-          "source": "LICENSE.txt"
+          "sha256": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004",
+          "source": "LICENSE.md"
         }
       ],
       "license_text_basis": "installed distribution",
-      "location": "node_modules/@isaacs/cliui",
-      "name": "@isaacs/cliui",
-      "repository": "yargs/cliui",
-      "version": "8.0.2"
+      "location": "node_modules/@isaacs/nonrecursive-glob-match",
+      "name": "@isaacs/nonrecursive-glob-match",
+      "repository": null,
+      "version": "1.1.0"
     },
     {
       "author": null,
@@ -3548,26 +3548,6 @@
       "name": "@parcel/watcher-win32-x64",
       "repository": null,
       "version": "2.6.0"
-    },
-    {
-      "author": "",
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/@pkgjs/parseargs",
-      "name": "@pkgjs/parseargs",
-      "repository": {
-        "type": "git",
-        "url": "git@github.com:pkgjs/parseargs.git"
-      },
-      "version": "0.11.0"
     },
     {
       "author": "JounQin <admin@1stg.me> (https://www.1stG.me)",
@@ -5806,27 +5786,6 @@
       "author": {
         "email": "sindresorhus@gmail.com",
         "name": "Sindre Sorhus",
-        "url": "https://sindresorhus.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
-          "source": "license"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/@isaacs/cliui/node_modules/ansi-regex",
-      "name": "ansi-regex",
-      "repository": "chalk/ansi-regex",
-      "version": "6.4.0"
-    },
-    {
-      "author": {
-        "email": "sindresorhus@gmail.com",
-        "name": "Sindre Sorhus",
         "url": "sindresorhus.com"
       },
       "ecosystem": "npm",
@@ -6095,27 +6054,6 @@
       "name": "ansi-styles",
       "repository": "chalk/ansi-styles",
       "version": "5.2.0"
-    },
-    {
-      "author": {
-        "email": "sindresorhus@gmail.com",
-        "name": "Sindre Sorhus",
-        "url": "https://sindresorhus.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
-          "source": "license"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/@isaacs/cliui/node_modules/ansi-styles",
-      "name": "ansi-styles",
-      "repository": "chalk/ansi-styles",
-      "version": "6.2.3"
     },
     {
       "author": {
@@ -6662,30 +6600,6 @@
       "version": "1.0.2"
     },
     {
-      "author": {
-        "email": "mail@juliangruber.com",
-        "name": "Julian Gruber",
-        "url": "http://juliangruber.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "a1bd5deadb6a06dd74efa852c1b8b23f63b67f2214fbe9c8bd591da51da69268",
-          "source": "LICENSE.md"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/test-exclude/node_modules/glob/node_modules/balanced-match",
-      "name": "balanced-match",
-      "repository": {
-        "type": "git",
-        "url": "git://github.com/juliangruber/balanced-match.git"
-      },
-      "version": "1.0.2"
-    },
-    {
       "author": null,
       "ecosystem": "npm",
       "installed": true,
@@ -6788,30 +6702,6 @@
         "url": "git://github.com/juliangruber/brace-expansion.git"
       },
       "version": "1.1.21"
-    },
-    {
-      "author": {
-        "email": "mail@juliangruber.com",
-        "name": "Julian Gruber",
-        "url": "http://juliangruber.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "68f12f6e2c33688699249c01d8f9623c534da20aa71989c57b061b7bc1676d14",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/test-exclude/node_modules/glob/node_modules/brace-expansion",
-      "name": "brace-expansion",
-      "repository": {
-        "type": "git",
-        "url": "git://github.com/juliangruber/brace-expansion.git"
-      },
-      "version": "2.1.7"
     },
     {
       "author": null,
@@ -8446,23 +8336,6 @@
       "version": "1.0.1"
     },
     {
-      "author": "Masaki Komagata",
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "b85dcd3e453d05982552c52b5fc9e0bdd6d23c6f8e844b984a88af32570b0cc0",
-          "source": "canonical/MIT.txt"
-        }
-      ],
-      "license_text_basis": "canonical terms; package name, version, author and repository identify the corresponding rights holder notice",
-      "location": "node_modules/eastasianwidth",
-      "name": "eastasianwidth",
-      "repository": "git://github.com/komagata/eastasianwidth.git",
-      "version": "0.2.0"
-    },
-    {
       "author": "Kilian Valkhof",
       "ecosystem": "npm",
       "installed": true,
@@ -8502,29 +8375,6 @@
       "name": "emittery",
       "repository": "sindresorhus/emittery",
       "version": "0.13.1"
-    },
-    {
-      "author": {
-        "name": "Mathias Bynens",
-        "url": "https://mathiasbynens.be/"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "483acb265f182907d1caf6cff9c16c96f31325ed23792832cc5d8b12d5f88c8a",
-          "source": "LICENSE-MIT.txt"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/string-width-cjs/node_modules/emoji-regex",
-      "name": "emoji-regex",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/mathiasbynens/emoji-regex.git"
-      },
-      "version": "8.0.0"
     },
     {
       "author": {
@@ -9570,26 +9420,6 @@
       "version": "0.3.5"
     },
     {
-      "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me/)",
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "ISC",
-      "license_files": [
-        {
-          "sha256": "93f5d82a8d59442fe3275383453a255fef761647fb28265644010ba799806148",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/foreground-child",
-      "name": "foreground-child",
-      "repository": {
-        "type": "git",
-        "url": "git+https://github.com/tapjs/foreground-child.git"
-      },
-      "version": "3.3.1"
-    },
-    {
       "author": null,
       "ecosystem": "npm",
       "installed": true,
@@ -9834,26 +9664,6 @@
       "author": "Isaac Z. Schlueter <i@izs.me> (https://blog.izs.me/)",
       "ecosystem": "npm",
       "installed": true,
-      "license": "ISC",
-      "license_files": [
-        {
-          "sha256": "cdbc258d13806538e727964c2436a8806e6e2496ccd616224aace6f7bf98dbc1",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/test-exclude/node_modules/glob",
-      "name": "glob",
-      "repository": {
-        "type": "git",
-        "url": "git://github.com/isaacs/node-glob.git"
-      },
-      "version": "10.5.0"
-    },
-    {
-      "author": "Isaac Z. Schlueter <i@izs.me> (https://blog.izs.me/)",
-      "ecosystem": "npm",
-      "installed": true,
       "license": "BlueOak-1.0.0",
       "license_files": [
         {
@@ -9868,7 +9678,7 @@
         "type": "git",
         "url": "git@github.com:isaacs/node-glob.git"
       },
-      "version": "13.0.6"
+      "version": "14.0.4"
     },
     {
       "author": "Gulp Team <team@gulpjs.com> (https://gulpjs.com/)",
@@ -11326,26 +11136,6 @@
       "version": "1.1.5"
     },
     {
-      "author": "Isaac Z. Schlueter <i@izs.me>",
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "BlueOak-1.0.0",
-      "license_files": [
-        {
-          "sha256": "2c7c5d22ed5a8ee968c64757710979afcd77438c48b4a265b94e615babd8a901",
-          "source": "LICENSE.md"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/jackspeak",
-      "name": "jackspeak",
-      "repository": {
-        "type": "git",
-        "url": "git+https://github.com/isaacs/jackspeak.git"
-      },
-      "version": "3.4.3"
-    },
-    {
       "author": null,
       "ecosystem": "npm",
       "installed": true,
@@ -12745,26 +12535,6 @@
       "author": "Isaac Z. Schlueter <i@izs.me>",
       "ecosystem": "npm",
       "installed": true,
-      "license": "ISC",
-      "license_files": [
-        {
-          "sha256": "451ec07eeb9c4e1b86de9abdaa426462a8be48f887ec7421cf0bbb9c769555ab",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/test-exclude/node_modules/lru-cache",
-      "name": "lru-cache",
-      "repository": {
-        "type": "git",
-        "url": "git://github.com/isaacs/node-lru-cache.git"
-      },
-      "version": "10.4.3"
-    },
-    {
-      "author": "Isaac Z. Schlueter <i@izs.me>",
-      "ecosystem": "npm",
-      "installed": true,
       "license": "BlueOak-1.0.0",
       "license_files": [
         {
@@ -13035,9 +12805,9 @@
       "name": "minimatch",
       "repository": {
         "type": "git",
-        "url": "git@github.com:isaacs/minimatch"
+        "url": "git+ssh://git@github.com/isaacs/minimatch.git"
       },
-      "version": "10.2.6"
+      "version": "11.0.8"
     },
     {
       "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me)",
@@ -13055,9 +12825,9 @@
       "name": "minimatch",
       "repository": {
         "type": "git",
-        "url": "git@github.com:isaacs/minimatch"
+        "url": "git+ssh://git@github.com/isaacs/minimatch.git"
       },
-      "version": "10.2.6"
+      "version": "11.0.8"
     },
     {
       "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me)",
@@ -13075,9 +12845,9 @@
       "name": "minimatch",
       "repository": {
         "type": "git",
-        "url": "git@github.com:isaacs/minimatch"
+        "url": "git+ssh://git@github.com/isaacs/minimatch.git"
       },
-      "version": "10.2.6"
+      "version": "11.0.8"
     },
     {
       "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me)",
@@ -13098,26 +12868,6 @@
         "url": "git://github.com/isaacs/minimatch.git"
       },
       "version": "3.1.5"
-    },
-    {
-      "author": "Isaac Z. Schlueter <i@izs.me> (http://blog.izs.me)",
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "ISC",
-      "license_files": [
-        {
-          "sha256": "d11323827fa4edeaafc437cc5b91b6971b335f0127efeeb42bf5122fe8657e8f",
-          "source": "LICENSE"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/test-exclude/node_modules/glob/node_modules/minimatch",
-      "name": "minimatch",
-      "repository": {
-        "type": "git",
-        "url": "git://github.com/isaacs/minimatch.git"
-      },
-      "version": "9.0.9"
     },
     {
       "author": {
@@ -13867,26 +13617,6 @@
       "version": "2.2.0"
     },
     {
-      "author": "Isaac Z. Schlueter <i@izs.me> (https://izs.me)",
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "BlueOak-1.0.0",
-      "license_files": [
-        {
-          "sha256": "a49c9ba464796f65b59fca3f1e6ca40912df1e859f575383223f7ec6c5baae09",
-          "source": "LICENSE.md"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/package-json-from-dist",
-      "name": "package-json-from-dist",
-      "repository": {
-        "type": "git",
-        "url": "git+https://github.com/isaacs/package-json-from-dist.git"
-      },
-      "version": "1.0.1"
-    },
-    {
       "author": {
         "email": "sindresorhus@gmail.com",
         "name": "Sindre Sorhus",
@@ -14022,33 +13752,13 @@
         }
       ],
       "license_text_basis": "installed distribution",
-      "location": "node_modules/test-exclude/node_modules/path-scurry",
-      "name": "path-scurry",
-      "repository": {
-        "type": "git",
-        "url": "git+https://github.com/isaacs/path-scurry"
-      },
-      "version": "1.11.1"
-    },
-    {
-      "author": "Isaac Z. Schlueter <i@izs.me> (https://blog.izs.me)",
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "BlueOak-1.0.0",
-      "license_files": [
-        {
-          "sha256": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004",
-          "source": "LICENSE.md"
-        }
-      ],
-      "license_text_basis": "installed distribution",
       "location": "node_modules/path-scurry",
       "name": "path-scurry",
       "repository": {
         "type": "git",
         "url": "git+https://github.com/isaacs/path-scurry"
       },
-      "version": "2.0.2"
+      "version": "3.0.0"
     },
     {
       "author": null,
@@ -15674,26 +15384,6 @@
         }
       ],
       "license_text_basis": "installed distribution",
-      "location": "node_modules/foreground-child/node_modules/signal-exit",
-      "name": "signal-exit",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/tapjs/signal-exit.git"
-      },
-      "version": "4.1.0"
-    },
-    {
-      "author": "Ben Coe <ben@npmjs.com>",
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "ISC",
-      "license_files": [
-        {
-          "sha256": "b173e19b9a78df305577ace0e52ef45a4bcc915ea28b47b256dc3b68dcb1f7e7",
-          "source": "LICENSE.txt"
-        }
-      ],
-      "license_text_basis": "installed distribution",
       "location": "node_modules/write-file-atomic/node_modules/signal-exit",
       "name": "signal-exit",
       "repository": {
@@ -15906,48 +15596,6 @@
     },
     {
       "author": {
-        "email": "sindresorhus@gmail.com",
-        "name": "Sindre Sorhus",
-        "url": "sindresorhus.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0",
-          "source": "license"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/string-width-cjs",
-      "name": "string-width",
-      "repository": "sindresorhus/string-width",
-      "version": "4.2.3"
-    },
-    {
-      "author": {
-        "email": "sindresorhus@gmail.com",
-        "name": "Sindre Sorhus",
-        "url": "https://sindresorhus.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
-          "source": "license"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/@isaacs/cliui/node_modules/string-width",
-      "name": "string-width",
-      "repository": "sindresorhus/string-width",
-      "version": "5.1.2"
-    },
-    {
-      "author": {
         "name": "Mathias Bynens",
         "url": "https://mathiasbynens.be/"
       },
@@ -16096,48 +15744,6 @@
       "name": "strip-ansi",
       "repository": "chalk/strip-ansi",
       "version": "6.0.1"
-    },
-    {
-      "author": {
-        "email": "sindresorhus@gmail.com",
-        "name": "Sindre Sorhus",
-        "url": "sindresorhus.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0",
-          "source": "license"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/strip-ansi-cjs",
-      "name": "strip-ansi",
-      "repository": "chalk/strip-ansi",
-      "version": "6.0.1"
-    },
-    {
-      "author": {
-        "email": "sindresorhus@gmail.com",
-        "name": "Sindre Sorhus",
-        "url": "https://sindresorhus.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
-          "source": "license"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/@isaacs/cliui/node_modules/strip-ansi",
-      "name": "strip-ansi",
-      "repository": "chalk/strip-ansi",
-      "version": "7.2.0"
     },
     {
       "author": {
@@ -17498,48 +17104,6 @@
       "version": "7.0.0"
     },
     {
-      "author": {
-        "email": "sindresorhus@gmail.com",
-        "name": "Sindre Sorhus",
-        "url": "https://sindresorhus.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
-          "source": "license"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/wrap-ansi-cjs",
-      "name": "wrap-ansi",
-      "repository": "chalk/wrap-ansi",
-      "version": "7.0.0"
-    },
-    {
-      "author": {
-        "email": "sindresorhus@gmail.com",
-        "name": "Sindre Sorhus",
-        "url": "https://sindresorhus.com"
-      },
-      "ecosystem": "npm",
-      "installed": true,
-      "license": "MIT",
-      "license_files": [
-        {
-          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
-          "source": "license"
-        }
-      ],
-      "license_text_basis": "installed distribution",
-      "location": "node_modules/@isaacs/cliui/node_modules/wrap-ansi",
-      "name": "wrap-ansi",
-      "repository": "chalk/wrap-ansi",
-      "version": "8.1.0"
-    },
-    {
       "author": "GitHub Inc.",
       "ecosystem": "npm",
       "installed": true,
@@ -18429,7 +17993,7 @@
     }
   ],
   "sources": {
-    "frontend/package-lock.json": "41ce2c7a3daf907e2b037e8ca5a8fc83eda8c0c14387c5851e5675012a3502a2",
+    "frontend/package-lock.json": "55940ad79ff4b285e94c413b500b05ff366aa538acb20783ef8605c70092815b",
     "requirements.lock": "15f6d6e039180e8d404eec6bbad8caa5ef0fd7d6039d5102dd535bf7bbb3d766"
   },
   "unresolved": [],

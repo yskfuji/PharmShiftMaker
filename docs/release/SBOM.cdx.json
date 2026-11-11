@@ -770,10 +770,10 @@
       "version": "0.35.5"
     },
     {
-      "name": "@isaacs/cliui",
-      "purl": "pkg:npm/%40isaacs/cliui@8.0.2",
+      "name": "@isaacs/nonrecursive-glob-match",
+      "purl": "pkg:npm/%40isaacs/nonrecursive-glob-match@1.1.0",
       "type": "library",
-      "version": "8.0.2"
+      "version": "1.1.0"
     },
     {
       "name": "@istanbuljs/load-nyc-config",
@@ -1332,12 +1332,6 @@
       "purl": "pkg:npm/%40parcel/watcher@2.6.0",
       "type": "library",
       "version": "2.6.0"
-    },
-    {
-      "name": "@pkgjs/parseargs",
-      "purl": "pkg:npm/%40pkgjs/parseargs@0.11.0",
-      "type": "library",
-      "version": "0.11.0"
     },
     {
       "name": "@pkgr/core",
@@ -2108,12 +2102,6 @@
       "version": "5.0.1"
     },
     {
-      "name": "ansi-regex",
-      "purl": "pkg:npm/ansi-regex@6.4.0",
-      "type": "library",
-      "version": "6.4.0"
-    },
-    {
       "name": "ansi-styles",
       "purl": "pkg:npm/ansi-styles@4.3.0",
       "type": "library",
@@ -2124,12 +2112,6 @@
       "purl": "pkg:npm/ansi-styles@5.2.0",
       "type": "library",
       "version": "5.2.0"
-    },
-    {
-      "name": "ansi-styles",
-      "purl": "pkg:npm/ansi-styles@6.2.3",
-      "type": "library",
-      "version": "6.2.3"
     },
     {
       "name": "anymatch",
@@ -2304,12 +2286,6 @@
       "purl": "pkg:npm/brace-expansion@1.1.21",
       "type": "library",
       "version": "1.1.21"
-    },
-    {
-      "name": "brace-expansion",
-      "purl": "pkg:npm/brace-expansion@2.1.7",
-      "type": "library",
-      "version": "2.1.7"
     },
     {
       "name": "brace-expansion",
@@ -2678,12 +2654,6 @@
       "version": "1.0.1"
     },
     {
-      "name": "eastasianwidth",
-      "purl": "pkg:npm/eastasianwidth@0.2.0",
-      "type": "library",
-      "version": "0.2.0"
-    },
-    {
       "name": "electron-to-chromium",
       "purl": "pkg:npm/electron-to-chromium@1.5.433",
       "type": "library",
@@ -2984,12 +2954,6 @@
       "version": "0.3.5"
     },
     {
-      "name": "foreground-child",
-      "purl": "pkg:npm/foreground-child@3.3.1",
-      "type": "library",
-      "version": "3.3.1"
-    },
-    {
       "name": "fsevents",
       "purl": "pkg:npm/fsevents@2.3.3",
       "type": "library",
@@ -3069,15 +3033,9 @@
     },
     {
       "name": "glob",
-      "purl": "pkg:npm/glob@10.5.0",
+      "purl": "pkg:npm/glob@14.0.4",
       "type": "library",
-      "version": "10.5.0"
-    },
-    {
-      "name": "glob",
-      "purl": "pkg:npm/glob@13.0.6",
-      "type": "library",
-      "version": "13.0.6"
+      "version": "14.0.4"
     },
     {
       "name": "globals",
@@ -3498,12 +3456,6 @@
       "purl": "pkg:npm/iterator.prototype@1.1.5",
       "type": "library",
       "version": "1.1.5"
-    },
-    {
-      "name": "jackspeak",
-      "purl": "pkg:npm/jackspeak@3.4.3",
-      "type": "library",
-      "version": "3.4.3"
     },
     {
       "name": "jest-changed-files",
@@ -4035,21 +3987,15 @@
     },
     {
       "name": "minimatch",
-      "purl": "pkg:npm/minimatch@10.2.6",
+      "purl": "pkg:npm/minimatch@11.0.8",
       "type": "library",
-      "version": "10.2.6"
+      "version": "11.0.8"
     },
     {
       "name": "minimatch",
       "purl": "pkg:npm/minimatch@3.1.5",
       "type": "library",
       "version": "3.1.5"
-    },
-    {
-      "name": "minimatch",
-      "purl": "pkg:npm/minimatch@9.0.9",
-      "type": "library",
-      "version": "9.0.9"
     },
     {
       "name": "minimist",
@@ -4262,12 +4208,6 @@
       "version": "2.2.0"
     },
     {
-      "name": "package-json-from-dist",
-      "purl": "pkg:npm/package-json-from-dist@1.0.1",
-      "type": "library",
-      "version": "1.0.1"
-    },
-    {
       "name": "parent-module",
       "purl": "pkg:npm/parent-module@1.0.1",
       "type": "library",
@@ -4305,15 +4245,9 @@
     },
     {
       "name": "path-scurry",
-      "purl": "pkg:npm/path-scurry@1.11.1",
+      "purl": "pkg:npm/path-scurry@3.0.0",
       "type": "library",
-      "version": "1.11.1"
-    },
-    {
-      "name": "path-scurry",
-      "purl": "pkg:npm/path-scurry@2.0.2",
-      "type": "library",
-      "version": "2.0.2"
+      "version": "3.0.0"
     },
     {
       "name": "pathe",
@@ -4748,12 +4682,6 @@
       "version": "4.2.3"
     },
     {
-      "name": "string-width",
-      "purl": "pkg:npm/string-width@5.1.2",
-      "type": "library",
-      "version": "5.1.2"
-    },
-    {
       "name": "string.prototype.includes",
       "purl": "pkg:npm/string.prototype.includes@2.0.1",
       "type": "library",
@@ -4794,12 +4722,6 @@
       "purl": "pkg:npm/strip-ansi@6.0.1",
       "type": "library",
       "version": "6.0.1"
-    },
-    {
-      "name": "strip-ansi",
-      "purl": "pkg:npm/strip-ansi@7.2.0",
-      "type": "library",
-      "version": "7.2.0"
     },
     {
       "name": "strip-bom",
@@ -5204,12 +5126,6 @@
       "version": "7.0.0"
     },
     {
-      "name": "wrap-ansi",
-      "purl": "pkg:npm/wrap-ansi@8.1.0",
-      "type": "library",
-      "version": "8.1.0"
-    },
-    {
       "name": "write-file-atomic",
       "purl": "pkg:npm/write-file-atomic@5.0.1",
       "type": "library",
@@ -5573,7 +5489,7 @@
     "properties": [
       {
         "name": "pharmshiftmaker:lockfiles-sha256",
-        "value": "976677663cb459d01367cb0b571d1f3f36ccc192d3f6dd00c02eefa8d2fbf2c0"
+        "value": "7d67c4a9e8eeb2e892f13f1d707f7f0653b9efe2406e9dda28630a4e43304fe6"
       },
       {
         "name": "pharmshiftmaker:vulnerability-attestation",
@@ -5581,7 +5497,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:d576def2-df7a-5484-b20b-b99b8f1b5a96",
+  "serialNumber": "urn:uuid:63aa5aea-b521-5657-997e-0f0e75b5dac3",
   "specVersion": "1.5",
   "version": 1
 }
