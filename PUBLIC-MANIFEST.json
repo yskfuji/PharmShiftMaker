@@ -604,12 +604,12 @@
     {
       "bytes": 137172,
       "path": "docs/release/SBOM.cdx.json",
-      "sha256": "5180b587bfc34818b121cee04021927ba8f6592a7b4cd5c9b24ec1c38944dfff"
+      "sha256": "6730bdf20197ef4f3bae31ff5ded28141773560f7a81e6c1747f23b2c8db1887"
     },
     {
-      "bytes": 648497,
+      "bytes": 648545,
       "path": "docs/release/THIRD_PARTY_LICENSES/manifest.json",
-      "sha256": "46904db645e70fd043c45098b9b1a28001f7c2dc4e4ebd94e92b58d7d36ffa8f"
+      "sha256": "7470d9c866e28c7b08762390ee6d8fafcac79b33770ff847f4a19e85699fca9e"
     },
     {
       "bytes": 1080,
@@ -2432,14 +2432,14 @@
       "sha256": "8afcdecaccf4f290c86390d42d5e4a92fbd7b57f807ebe420364db2ffcc44ab4"
     },
     {
-      "bytes": 499227,
+      "bytes": 499251,
       "path": "frontend/package-lock.json",
-      "sha256": "55940ad79ff4b285e94c413b500b05ff366aa538acb20783ef8605c70092815b"
+      "sha256": "fbd026d724a56277a2e7a9910c30c81fb216223a9dc4f85344a51ab8909be4e3"
     },
     {
       "bytes": 2088,
       "path": "frontend/package.json",
-      "sha256": "dabaa88b92df590b356ae970ba910e54e7f44bd9053ba73d7129e72845b34052"
+      "sha256": "3a7929241a668c9755b5da9baa17eaf7f61d7202d4b1793b092e7f9d6d011057"
     },
     {
       "bytes": 553,
@@ -7504,7 +7504,7 @@
     {
       "bytes": 4162,
       "path": "pyproject.toml",
-      "sha256": "95ab4c3d35066f6211a9ad23ad9ebe752f0618bcc029be46958300bd4bb20d00"
+      "sha256": "2ae86072ceb7460a31d3bedd209dea22c4bf4b2a8771d6cc02c63c7191093f0f"
     },
     {
       "bytes": 184,
@@ -7519,7 +7519,7 @@
     {
       "bytes": 96852,
       "path": "requirements.lock",
-      "sha256": "15f6d6e039180e8d404eec6bbad8caa5ef0fd7d6039d5102dd535bf7bbb3d766"
+      "sha256": "e390864be3fe4a9b00be937420f220865e8832fde4cc64d634e0317d907c0131"
     },
     {
       "bytes": 20063,
@@ -9739,5 +9739,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9",
-  "source_commit": "98cb5dcab6fff220da596aabcaa17797e4123acd"
+  "source_commit": "63d98f98f07ed1ce010887e424a966fca67ddb19"
 }

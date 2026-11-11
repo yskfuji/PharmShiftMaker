@@ -279,9 +279,9 @@
     },
     {
       "name": "@digital-go-jp/design-tokens",
-      "purl": "pkg:npm/%40digital-go-jp/design-tokens@2.0.1",
+      "purl": "pkg:npm/%40digital-go-jp/design-tokens@2.1.0",
       "type": "library",
-      "version": "2.0.1"
+      "version": "2.1.0"
     },
     {
       "name": "@emnapi/core",
@@ -4797,9 +4797,9 @@
     },
     {
       "name": "tailwind-merge",
-      "purl": "pkg:npm/tailwind-merge@3.4.0",
+      "purl": "pkg:npm/tailwind-merge@3.7.0",
       "type": "library",
-      "version": "3.4.0"
+      "version": "3.7.0"
     },
     {
       "name": "tailwindcss",
@@ -5373,9 +5373,9 @@
     },
     {
       "name": "pydantic-settings",
-      "purl": "pkg:pypi/pydantic-settings@2.15.0",
+      "purl": "pkg:pypi/pydantic-settings@2.16.2",
       "type": "library",
-      "version": "2.15.0"
+      "version": "2.16.2"
     },
     {
       "name": "pydantic",
@@ -5403,9 +5403,9 @@
     },
     {
       "name": "python-multipart",
-      "purl": "pkg:pypi/python-multipart@0.0.32",
+      "purl": "pkg:pypi/python-multipart@0.0.33",
       "type": "library",
-      "version": "0.0.32"
+      "version": "0.0.33"
     },
     {
       "name": "pytz",
@@ -5489,7 +5489,7 @@
     "properties": [
       {
         "name": "pharmshiftmaker:lockfiles-sha256",
-        "value": "7d67c4a9e8eeb2e892f13f1d707f7f0653b9efe2406e9dda28630a4e43304fe6"
+        "value": "615da881254d1b84d2bff862d280bc5cde30b1e45ec73c7e6ee639fc19b7af5f"
       },
       {
         "name": "pharmshiftmaker:vulnerability-attestation",
@@ -5497,7 +5497,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:63aa5aea-b521-5657-997e-0f0e75b5dac3",
+  "serialNumber": "urn:uuid:f41adbab-2d49-5c93-87ca-978400e5cf24",
   "specVersion": "1.5",
   "version": 1
 }
