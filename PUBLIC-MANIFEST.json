@@ -1,5 +1,5 @@
 {
-  "file_count": 1950,
+  "file_count": 1947,
   "files": [
     {
       "bytes": 279,
@@ -602,14 +602,14 @@
       "sha256": "79f41b2b48b2625f756441736fa2b0545ed885a6665d623f6ebb459bd9496ac1"
     },
     {
-      "bytes": 139062,
+      "bytes": 137172,
       "path": "docs/release/SBOM.cdx.json",
-      "sha256": "fce08c9392d30e0a469eb9850eb9b5eae889c45487d12d3e8497350034c18ad3"
+      "sha256": "5180b587bfc34818b121cee04021927ba8f6592a7b4cd5c9b24ec1c38944dfff"
     },
     {
-      "bytes": 661606,
+      "bytes": 648497,
       "path": "docs/release/THIRD_PARTY_LICENSES/manifest.json",
-      "sha256": "8bb0369bfbc14f3e82893ac7b077b0628bdd3ce20821527e734bbc3e9bdce3b0"
+      "sha256": "46904db645e70fd043c45098b9b1a28001f7c2dc4e4ebd94e92b58d7d36ffa8f"
     },
     {
       "bytes": 1080,
@@ -1612,11 +1612,6 @@
       "sha256": "92b07a2e5b0e051d37dde85042c736d6d551cfcbc0983f39d7ef903b3986bbc1"
     },
     {
-      "bytes": 775,
-      "path": "docs/release/THIRD_PARTY_LICENSES/texts/93f5d82a8d59442fe3275383453a255fef761647fb28265644010ba799806148.txt",
-      "sha256": "93f5d82a8d59442fe3275383453a255fef761647fb28265644010ba799806148"
-    },
-    {
       "bytes": 1100,
       "path": "docs/release/THIRD_PARTY_LICENSES/texts/942a98cb8846a6354266193f173c1354615827fbb7d67f68399599dff12c4d6a.txt",
       "sha256": "942a98cb8846a6354266193f173c1354615827fbb7d67f68399599dff12c4d6a"
@@ -2047,11 +2042,6 @@
       "sha256": "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164"
     },
     {
-      "bytes": 775,
-      "path": "docs/release/THIRD_PARTY_LICENSES/texts/cdbc258d13806538e727964c2436a8806e6e2496ccd616224aace6f7bf98dbc1.txt",
-      "sha256": "cdbc258d13806538e727964c2436a8806e6e2496ccd616224aace6f7bf98dbc1"
-    },
-    {
       "bytes": 1065,
       "path": "docs/release/THIRD_PARTY_LICENSES/texts/cebc084d54e6dd99e53292ddb4bc1cdb63d9bfcd9ce438fe3aa6eb106d79e2ea.txt",
       "sha256": "cebc084d54e6dd99e53292ddb4bc1cdb63d9bfcd9ce438fe3aa6eb106d79e2ea"
@@ -2085,11 +2075,6 @@
       "bytes": 1091,
       "path": "docs/release/THIRD_PARTY_LICENSES/texts/d0cd141b0c322fded5dfad1d4645bb2fedfc05b7321fe1009469638190d59ef9.txt",
       "sha256": "d0cd141b0c322fded5dfad1d4645bb2fedfc05b7321fe1009469638190d59ef9"
-    },
-    {
-      "bytes": 775,
-      "path": "docs/release/THIRD_PARTY_LICENSES/texts/d11323827fa4edeaafc437cc5b91b6971b335f0127efeeb42bf5122fe8657e8f.txt",
-      "sha256": "d11323827fa4edeaafc437cc5b91b6971b335f0127efeeb42bf5122fe8657e8f"
     },
     {
       "bytes": 1390,
@@ -2447,14 +2432,14 @@
       "sha256": "8afcdecaccf4f290c86390d42d5e4a92fbd7b57f807ebe420364db2ffcc44ab4"
     },
     {
-      "bytes": 509916,
+      "bytes": 499227,
       "path": "frontend/package-lock.json",
-      "sha256": "41ce2c7a3daf907e2b037e8ca5a8fc83eda8c0c14387c5851e5675012a3502a2"
+      "sha256": "55940ad79ff4b285e94c413b500b05ff366aa538acb20783ef8605c70092815b"
     },
     {
-      "bytes": 2008,
+      "bytes": 2088,
       "path": "frontend/package.json",
-      "sha256": "197f1c1b1213acc13a54e9fe19eac762cc26b83c0835924608184c8d11ce4351"
+      "sha256": "dabaa88b92df590b356ae970ba910e54e7f44bd9053ba73d7129e72845b34052"
     },
     {
       "bytes": 553,
@@ -9754,5 +9739,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9",
-  "source_commit": "0695bcc742a3f56419b3987532708310d77358f9"
+  "source_commit": "98cb5dcab6fff220da596aabcaa17797e4123acd"
 }
