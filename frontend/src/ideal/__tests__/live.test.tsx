@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import { useState } from 'react';
 import IdealWorkspace from '@/components/ideal/IdealWorkspace';
 import ApiWorkspaceProvider from '../providers/ApiWorkspaceProvider';
+import { useWorkspace } from '../providers/WorkspaceContext';
 import { EMPTY_EVIDENCE, EvidenceFields } from '../live/parts';
 import type { IdealScreen } from '../types';
 
@@ -32,7 +33,7 @@ function server(role: string, routes: Record<string, (call: Call) => [number, un
   return calls;
 }
 
-const open = (screenName: IdealScreen) => render(<ApiWorkspaceProvider><IdealWorkspace initialScreen={screenName} /></ApiWorkspaceProvider>);
+const open = (screenName: IdealScreen) => render(<ApiWorkspaceProvider period="2026-10"><IdealWorkspace initialScreen={screenName} /></ApiWorkspaceProvider>);
 async function fillEvidence(scope: HTMLElement) {
   fireEvent.change(within(scope).getByLabelText(/^理由/), { target: { value: '本人から連絡' } });
   fireEvent.change(within(scope).getByLabelText(/^参照/), { target: { value: 'TEL-1012' } });
@@ -170,9 +171,12 @@ test('the generation step asks for three seeded plans and carries their exact id
 });
 
 test('approval sends the version of the publication the case was opened against', async () => {
-  // the publication on screen is the one covering now (always this one); the case was
-  // opened against another period's publication (pub-1, version 4)
-  const onScreen = { ...publication, publication_id: 'pub-now', version: 7, period: '2000-01-01T00:00:00+09:00|2999-01-01T00:00:00+09:00' };
+  // The screen selects the highest version in October, but the case refers to version 4.
+  const onScreen = { ...publication, publication_id: 'pub-now', version: 7 };
+  function SelectedPublication() {
+    const { live } = useWorkspace();
+    return <output aria-label="画面で選択中の公開版">{live?.publication?.publication_id}:{live?.publication?.version}</output>;
+  }
   const ready = caseRow({ publication_id: 'pub-1', status: 'READY', version: 2, affected_assignments: [], validation: { findings: [], replacement_duty_ids: [], required_consent_person_ids: [], consented_person_ids: [] } });
   const calls = server('LEADER', {
     'GET /change-cases': () => [200, [ready]],
@@ -181,7 +185,8 @@ test('approval sends the version of the publication the case was opened against'
   const original = global.fetch;
   global.fetch = jest.fn(async (url: RequestInfo | URL, init?: RequestInit) => new URL(String(url)).pathname.endsWith('/publications')
     ? json(200, [publication, onScreen]) : (original as typeof fetch)(url, init)) as never;
-  open('operations');
+  render(<ApiWorkspaceProvider period="2026-10"><SelectedPublication /><IdealWorkspace initialScreen="operations" /></ApiWorkspaceProvider>);
+  await waitFor(() => expect(screen.getByLabelText('画面で選択中の公開版')).toHaveTextContent('pub-now:7'));
   const panel = (await screen.findByRole('heading', { name: '進行中のケース' })).closest('section')!;
   fireEvent.click(await within(panel).findByRole('button', { name: '承認して新しい公開版を作る' }));
   await fillEvidence(panel);
