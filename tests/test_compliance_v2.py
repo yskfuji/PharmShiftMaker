@@ -11,42 +11,8 @@ from shift_scheduler.validation.work_accounting import (
     month_boundary,
     month_index,
 )
+from tests.fixtures.catalogue_v3 import v2  # noqa: F401  (re-exported for other tests)
 from tests.test_reviewed_planning import snapshot
-
-
-def v2():
-    base = snapshot(1, 7)
-    payload = base.model_dump(mode="json")
-    payload.update(
-        schema_version=2,
-        employments=[
-            {
-                "revision_id": "emp-A",
-                "relationship_id": "e0",
-                "person_id": "p0",
-                "employer_id": "hospital",
-                "contract_order": 1,
-                "start": base.context.start,
-                "end": base.context.end,
-                "calendar_confirmed": True,
-                "statutory_holidays": [
-                    (base.context.start + timedelta(days=i)).date().isoformat()
-                    for i in range((base.context.end - base.context.start).days)
-                    if (base.context.start + timedelta(days=i)).weekday() == 6
-                ],
-                "declaration": base.policy_evidence.model_dump(mode="json"),
-            }
-        ],
-        work_terms=[
-            {
-                "duty_id": d.duty_id,
-                "employment_revision_id": "emp-A",
-                "scheduled_work": [w.model_dump(mode="json") for w in d.work],
-            }
-            for d in base.candidates
-        ],
-    )
-    return SolverSnapshotV2.model_validate(payload)
 
 
 def test_unknown_contract_order_is_unverified_without_guessed_attribution():

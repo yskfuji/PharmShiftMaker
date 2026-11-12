@@ -10,10 +10,13 @@ export const metadata: Metadata = NOT_FOUND_METADATA;
 
 /** Unknown addresses and invalid parameters (e.g. a workflow name or month that does not exist). */
 export default function NotFound() {
-  return <main id="main" tabIndex={-1} className="mx-auto max-w-3xl space-y-4 p-6 focus:outline-none">
-    <GlobalNavigation current="" className="border-b pb-2" />
-    <h1 className="text-2xl font-bold">ページが見つかりません</h1>
-    <p>アドレスが間違っているか、ページが移動した可能性があります。上の「主な画面」から目的の画面を選んでください。</p>
-    <p><a className="inline-flex min-h-11 items-center underline" href="/planning">勤務計画・公開へ</a></p>
+  return <main id="main" tabIndex={-1} className="mx-auto max-w-3xl px-4 py-10 focus:outline-none sm:py-16">
+    <div className="space-y-5 rounded-card border border-line bg-surface p-6 shadow-sm sm:p-8">
+      <p className="text-sm font-semibold text-fg-muted">PharmShiftMaker</p>
+      <h1 className="text-2xl font-bold text-fg">ページが見つかりません</h1>
+      <p className="text-fg-muted">アドレスが間違っているか、ページが移動した可能性があります。下の「主な画面」から目的の画面を選んでください。</p>
+      <p><a className="ui-button ui-button-primary inline-flex min-h-11 items-center rounded-control px-4 font-semibold no-underline" href="/planning">勤務計画・公開へ</a></p>
+      <GlobalNavigation current="" className="border-t border-line pt-4" />
+    </div>
   </main>;
 }

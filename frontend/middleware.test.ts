@@ -3,7 +3,9 @@
  */
 import { NextRequest } from "next/server";
 
-import { middleware, config } from "./middleware";
+// Next.js 16 loads src/proxy.ts. A root middleware.ts that re-exports `config` makes
+// `next dev` (Turbopack) answer every page with HTTP 500, so the tests import the proxy itself.
+import { proxy as middleware, config } from "./src/proxy";
 
 // The proxy runs on every page (for the per-request CSP nonce); the sign-in
 // redirect applies to the pages that show or change the facility's data.

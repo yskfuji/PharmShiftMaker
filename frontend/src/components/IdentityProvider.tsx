@@ -6,6 +6,9 @@ import {API_BASE_URL} from '@/lib/apiTarget';
 import {browserNavigation} from '@/lib/browserNavigation';
 
 import {parseIdentity, type VerifiedIdentity} from '@/lib/identity';
+
+// Pages that do not show anyone's data: sign-in and the synthetic showcase (IDEAL_SHOWCASE=1).
+const publicSurface = (path: string | null) => path === '/login' || path === '/showcase' || Boolean(path?.startsWith('/showcase/'));
 type IdentityState = {identity: VerifiedIdentity | null; status: 'checking' | 'verified' | 'unavailable' | 'ended'; httpStatus?: number};
 const IdentityContext = createContext<IdentityState>({identity:null,status:'checking'});
 export const useIdentity = () => useContext(IdentityContext);
@@ -62,7 +65,7 @@ export default function IdentityProvider({children}: {children:ReactNode}) {
     const clear = () => {ended.current=true;verified.current=null;generation.current++;pending.current?.abort();setState({identity:null,status:'ended'});};
     window.addEventListener('session-ending',clear);
     window.addEventListener('session-renewed',read);
-    if (path !== '/login') void read();
+    if (!publicSurface(path)) void read();
     const invalidate=()=>{generation.current++;pending.current?.abort();};
     return () => {invalidate();window.removeEventListener('session-ending',clear);window.removeEventListener('session-renewed',read);};
   },[path,read]);
@@ -76,14 +79,14 @@ export default function IdentityProvider({children}: {children:ReactNode}) {
 export function IdentitySkipLink() {
   const {status} = useIdentity();
   const path = usePathname();
-  if (path !== '/login' && status !== 'verified') return null;
+  if (!publicSurface(path) && status !== 'verified') return null;
   return <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[200] focus:rounded-control focus:bg-surface focus:px-4 focus:py-3 focus:text-fg focus:shadow-overlay">本文へ移動</a>;
 }
 
 export function IdentityBoundary({children}: {children:ReactNode}) {
   const {status} = useIdentity();
   const path=usePathname();
-  if(path==='/login')return <>{children}</>;
+  if(publicSurface(path))return <>{children}</>;
   if (status==='ended') return <p role="status" className="p-6">本人情報を再確認しています。前のアカウントの操作は終了しました。</p>;
   return <div hidden={status!=='verified'} inert={status!=='verified' ? true : undefined}>{children}</div>;
 }

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import UTC, date, datetime, timedelta
-from html import escape
 from typing import Annotated, Any, Literal
 from zoneinfo import ZoneInfo
 
@@ -12,6 +11,7 @@ from fastapi.responses import HTMLResponse, Response
 from pydantic import Field, StringConstraints
 from sqlalchemy import select
 
+from shift_scheduler.api import print_page
 from shift_scheduler.api.routers.planning import DB, RequestModel, Scope, User, access
 from shift_scheduler.application import audit_timeline, plan_comparison
 from shift_scheduler.application import ideal_workflows as service
@@ -1259,11 +1259,6 @@ def period_bounds(publication: PlanningPublication) -> tuple[datetime, datetime]
     return datetime.fromisoformat(start), datetime.fromisoformat(end)
 
 
-def period_label(publication: PlanningPublication) -> str:
-    start, end = period_bounds(publication)
-    return f"{start.date().isoformat()}–{end.date().isoformat()}"
-
-
 def ical_fold(line: str) -> str:
     """Fold a content line at 75 octets without splitting a UTF-8 character (RFC 5545 3.1)."""
     parts, current, limit = [], b"", 75
@@ -1337,15 +1332,13 @@ def personal_schedule_content(
                 "Cache-Control": "private, no-store",
             },
         )
-    rows = "".join(
-        f"<tr><td>{escape(d.start.isoformat())}</td><td>{escape(d.end.isoformat())}</td>"
-        f"<td>{escape(d.kind)}</td><td>{escape(d.location)}</td></tr>"
-        for d in duties
+    start, end = period_bounds(publication)
+    return HTMLResponse(
+        print_page.render(
+            publication.version, print_page.period_text(start, end), duties
+        ),
+        headers={
+            "Cache-Control": "private, no-store",
+            "Content-Security-Policy": print_page.PRINT_CSP,
+        },
     )
-    html = (
-        '<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>自分の勤務表</title></head><body>'
-        f"<h1>自分の勤務表</h1><p>公開版 {publication.version} · 期間 {escape(period_label(publication))}</p>"
-        f"<table><thead><tr><th>開始</th><th>終了</th><th>勤務</th><th>場所</th></tr></thead><tbody>{rows}</tbody></table>"
-        "<p>ブラウザーの印刷機能を使用してください。</p></body></html>"
-    )
-    return HTMLResponse(html, headers={"Cache-Control": "private, no-store"})

@@ -41,7 +41,7 @@ def fingerprint(snapshot: Any, solve_it: bool = True) -> dict[str, Any]:
 def main() -> int:
     from scripts.acceptance_workload import workload
     from scripts.remediation_fixture import snapshot
-    from tests.test_catalogue_v3 import data
+    from tests.fixtures.catalogue_v3 import data
 
     loaded = workload(30, 28, 930011)
     result = {

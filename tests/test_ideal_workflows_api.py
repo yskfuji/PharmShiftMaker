@@ -6,12 +6,15 @@ then exercises change cases and personal export as each role would.
 
 from __future__ import annotations
 
+from datetime import datetime
+
 import pytest
 from fastapi.testclient import TestClient
 from scripts.remediation_fixture import snapshot as remediation_snapshot
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
+from shift_scheduler.api import print_page
 from shift_scheduler.api.main import app
 from shift_scheduler.api.routers import planning as planning_router
 from shift_scheduler.application import ideal_workflows
@@ -441,10 +444,29 @@ def test_personal_export_is_own_current_and_rfc5545_shaped(world):
     assert (meta.json()["period_start"], meta.json()["period_end"]) == (start, end)
     disposition = response.headers["content-disposition"]
     assert disposition == f'attachment; filename="schedule-{start[:10]}.ics"'
-    printed = pharmacist.get(
+    page = pharmacist.get(
         f"/planning/personal-schedule/{publication_id}/content" + SCOPE
-    ).text
-    assert f"期間 {start[:10]}–{end[:10]}" in printed and "|" not in printed
+    )
+    printed = page.text
+    expected_period = print_page.period_text(
+        datetime.fromisoformat(start), datetime.fromisoformat(end)
+    )
+    assert f"期間 {expected_period}" in printed and "|" not in printed
+    # People read the page: Tokyo dates and duty names, not ISO timestamps or codes.
+    assert "T09:00:00" not in printed and "+09:00" not in printed
+    # Its own policy allows only the fixed inline style; nothing can load or run.
+    policy = page.headers["content-security-policy"]
+    assert policy == print_page.PRINT_CSP
+    assert "script-src" not in policy and "default-src 'none'" in policy
+    assert f"<style>{print_page.PRINT_STYLE}</style>" in printed
+    assert '<meta name="viewport"' in printed
+    # Every other API response keeps the deny-all policy.
+    assert (
+        pharmacist.get(f"/planning/personal-schedule/{publication_id}" + SCOPE).headers[
+            "content-security-policy"
+        ]
+        == "default-src 'none'; frame-ancestors 'none'"
+    )
     # After a replacement the old version is no longer exportable.
     case = open_absence(
         world, leader, world["assignments"][-1], "case-export-01"

@@ -7,6 +7,7 @@ import {browserNavigation} from '@/lib/browserNavigation';
 import {loginPath} from '@/lib/loginPath';
 import ThemeToggle from './ThemeToggle';
 import {usePathname} from 'next/navigation';
+import {AUTH_USER_COOKIE} from '@/lib/authConstants';
 
 import {API_BASE_URL as API} from '@/lib/apiTarget';
 const ACTIVITY=['pointerdown','keydown','wheel','touchstart'] as const;
@@ -18,7 +19,9 @@ const DEFAULT_LIMIT=15*60*1000;
 const SHARED_KEY='pharmshift-session-renewed-at';
 const readShared=()=>{try{return Number(window.localStorage.getItem(SHARED_KEY))||0;}catch{return 0;}};
 const writeShared=(value:number)=>{try{window.localStorage.setItem(SHARED_KEY,String(value));}catch{/* storage may be disabled */}};
-const signInDestination=(reason:string)=>reason==='signed_out'?'/login?reason=signed_out':loginPath(browserNavigation.pathAndSearch(),reason==='idle'?'idle':'expired');
+// Someone who never signed in in this browser is not told that a session expired.
+const hadSession=()=>{try{return document.cookie.split('; ').some((item)=>item.startsWith(AUTH_USER_COOKIE+'='));}catch{return true;}};
+const signInDestination=(reason:string)=>reason==='signed_out'?'/login?reason=signed_out':reason==='expired'&&!hadSession()?loginPath(browserNavigation.pathAndSearch()):loginPath(browserNavigation.pathAndSearch(),reason==='idle'?'idle':'expired');
 
 /**
  * Shared terminals (OWASP ASVS 5.0 V7.3/V7.4/V14.3): sign-out on every page; the
@@ -83,7 +86,7 @@ export default function SessionControls(){
   return()=>window.removeEventListener('workspace-signout',signOut);
  },[end]);
  useEffect(()=>{
-  if(browserNavigation.pathname()==='/login')return;
+  if(browserNavigation.pathname()==='/login'||browserNavigation.pathname().startsWith('/showcase'))return;
   generation.current+=1;
   setActive(true);
   renewedAt.current=Date.now();void renew();

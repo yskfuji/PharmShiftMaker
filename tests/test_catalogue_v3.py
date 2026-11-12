@@ -3,57 +3,14 @@ from itertools import product
 
 from shift_scheduler.domain.candidate_generation import generate_catalogue
 from shift_scheduler.domain.compliance import parse_snapshot
-from shift_scheduler.domain.compliance_v3 import SolverSnapshotV3
 from shift_scheduler.domain.planning import Proposal
 from shift_scheduler.optimizer.planning import solve
 from shift_scheduler.validation.planning import validate
-from tests.test_compliance_v2 import v2
-from tests.test_compliance_v3 import upgrade
-
-
-def data():
-    old = v2()
-    payload = upgrade(old)
-    ev = old.policy_evidence.model_dump(mode="json")
-    payload.update(
-        catalogue_evidence=ev,
-        fairness_history_evidence=ev,
-        rule_reviews=[
-            {
-                "review_id": "review",
-                "rule_id": old.rule_revision,
-                "source_url": "synthetic:test",
-                "provision": "general",
-                "transitional_provision": "none in synthetic case",
-                "reviewed_on": "2026-01-01",
-                "next_review_on": "2026-02-01",
-                "evidence": ev,
-                "start": old.context.start,
-                "end": old.context.end,
-            }
-        ],
-        duty_templates=[
-            {
-                "template_id": "day",
-                "kind": "DAY",
-                "task": "dispensing",
-                "location": "main",
-                "dates": [
-                    (old.period.start + timedelta(days=i)).date() for i in range(7)
-                ],
-                "start_second": 9 * 3600,
-                "duration_seconds": 4 * 3600,
-                "work": [{"start_seconds": 0, "end_seconds": 4 * 3600}],
-                "scheduled_work": [{"start_seconds": 0, "end_seconds": 4 * 3600}],
-            }
-        ],
-    )
-    intermediate = SolverSnapshotV3.model_validate(payload)
-    generated = generate_catalogue(intermediate)
-    payload.update(
-        candidates=generated["candidates"], work_terms=generated["work_terms"]
-    )
-    return parse_snapshot(payload)
+from tests.fixtures.catalogue_v3 import (  # noqa: F401  (re-exported for other tests)
+    data,
+    upgrade,
+    v2,
+)
 
 
 def test_complete_catalogue_and_exact_lexicographic_solver_match_enumeration():

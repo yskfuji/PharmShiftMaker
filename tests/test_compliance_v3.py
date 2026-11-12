@@ -9,46 +9,10 @@ from shift_scheduler.domain.compliance import parse_snapshot
 from shift_scheduler.domain.compliance_v3 import SolverSnapshotV3
 from shift_scheduler.validation.leave_accounting import account_leave
 from shift_scheduler.validation.work_accounting import account_work
+from tests.fixtures.catalogue_v3 import (
+    upgrade,  # noqa: F401  (re-exported for other tests)
+)
 from tests.test_compliance_v2 import leave_event, leave_fixture, work_fixture
-
-
-def upgrade(data):
-    payload = data.model_dump(mode="json")
-    payload["schema_version"] = 3
-    sites = {}
-    for row in payload["employments"]:
-        row["establishment_id"] = "site-" + row["employer_id"]
-        sites[row["establishment_id"]] = {
-            "establishment_id": row["establishment_id"],
-            "employer_id": row["employer_id"],
-            "start": row["start"],
-            "end": row["end"],
-            "evidence": row["declaration"],
-        }
-    for row in payload["agreements"]:
-        row["establishment_id"] = "site-" + row["employer_id"]
-    payload["establishments"] = list(sites.values())
-    payload["ledger_recordings"] = [
-        {
-            "recording_id": kind + ":" + row[key],
-            "object_kind": kind,
-            "object_id": row[key],
-            "external_event_id": "hr:" + row[key],
-            "external_revision": 1,
-            "recorded_at": (
-                "2026-01-01T00:00:00+09:00"
-                if kind == "leave_account"
-                else "2026-01-07T00:00:00+09:00"
-            ),
-            "evidence": row["evidence"],
-        }
-        for kind, collection, key in [
-            ("leave_account", "leave_accounts", "account_id"),
-            ("leave_record", "leave_records", "event_id"),
-        ]
-        for row in payload[collection]
-    ]
-    return payload
 
 
 def corrected():
