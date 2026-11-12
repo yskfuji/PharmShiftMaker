@@ -32,7 +32,7 @@
 | 箇所 | 種類 | 行き先 | 対応するルート |
 |---|---|---|---|
 | `app/dashboard/page.tsx:20` | link | `/planning` | `/planning` |
-| `app/not-found.tsx:17` | link | `/planning` | `/planning` |
+| `app/not-found.tsx:18` | link | `/planning` | `/planning` |
 | `app/page.tsx:4` | server-redirect | `/login` | `/login` |
 | `app/preview/page.tsx:8` | server-redirect | `/preview/home` | `/preview/[screen]` |
 | `app/requests/page.tsx:14` | link | `/planning/workflows` | `/planning/workflows` |
@@ -47,7 +47,7 @@
 | `components/BusinessWorkflow.tsx:38` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/BusinessWorkflow.tsx:41` | link | `/planning/workflows` | `/planning/workflows` |
 | `components/ScheduleWorkspace.tsx:136` | link | `/planning` | `/planning` |
-| `components/SessionControls.tsx:21` | document | `/login?redirectTo=<current page>` | `/login` |
+| `components/SessionControls.tsx:28` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:20` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:33` | link | `/planning/workflows/${p}?scope=${encodeURIComponent(m.scope_id)}` | `/planning/workflows/[workflow]` |
 | `components/WorkflowIndex.tsx:40` | link | `/schedule` | `/schedule` |

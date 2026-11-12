@@ -1,6 +1,6 @@
 """Explicit synthetic V3 fixture shared by local UI and API evaluations."""
 
-from tests.test_catalogue_v3 import data
+from tests.fixtures.catalogue_v3 import data
 
 from shift_scheduler.domain.candidate_generation import generate_catalogue
 from shift_scheduler.domain.compliance import parse_snapshot

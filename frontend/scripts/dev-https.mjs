@@ -21,6 +21,8 @@ if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
   process.exit(1);
 }
 
+const caPath = process.env.NEXT_SSL_CA_PATH ?? defaultCa;
+
 if (!process.env.NODE_EXTRA_CA_CERTS && fs.existsSync(defaultCa)) {
   process.env.NODE_EXTRA_CA_CERTS = defaultCa;
 } else if (!process.env.NODE_EXTRA_CA_CERTS) {
@@ -37,6 +39,10 @@ const args = [
   keyPath,
   "--experimental-https-cert",
   certPath,
+  // next dev replaces NODE_EXTRA_CA_CERTS of its render process with this CA (and with
+  // nothing when it is omitted), so the server-side reads of the API only trust the
+  // development certificate when it is passed here.
+  ...(fs.existsSync(caPath) ? ["--experimental-https-ca", caPath] : []),
   ...process.argv.slice(2),
 ];
 

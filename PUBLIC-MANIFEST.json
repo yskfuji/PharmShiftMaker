@@ -1,5 +1,5 @@
 {
-  "file_count": 1947,
+  "file_count": 1961,
   "files": [
     {
       "bytes": 279,
@@ -112,9 +112,9 @@
       "sha256": "a2051423e481cb93c33f8bd83afd476f689f417f2771887a0feba91e5fd9673e"
     },
     {
-      "bytes": 6546,
+      "bytes": 3771,
       "path": "README.md",
-      "sha256": "0aab79e8d72cf723afdec37cc8905f80eaf2126c9058841190b993847248ce77"
+      "sha256": "81602c455b67804ce67d01bb1e13d5c6658015162321ea0881b53ee61256a892"
     },
     {
       "bytes": 1552,
@@ -232,9 +232,9 @@
       "sha256": "5f6bc7209d13a3f4d219c21d96378c39eaae78c1b6213a10e06904c2ffc2278e"
     },
     {
-      "bytes": 1741,
+      "bytes": 1789,
       "path": "certs/README.md",
-      "sha256": "01e13e5848cc54e3db05bde2032c18a7a94e5a63cd83d0514c27df53217d09b3"
+      "sha256": "e4c700ee9775d09a550a800ceba33c287ddc8b5d901df493cbd8a98ad0dceebf"
     },
     {
       "bytes": 85,
@@ -494,7 +494,47 @@
     {
       "bytes": 8911,
       "path": "docs/architecture/navigation.md",
-      "sha256": "1644033e87fa265ff74aa745e65bdff2b2485884454f1b46cf2de4e5f073b07b"
+      "sha256": "b8d01d5fbc24756fb1cfb99783b5600e010fb48decdb6c05f24dadd9e245f32f"
+    },
+    {
+      "bytes": 166,
+      "path": "docs/brand/README.md",
+      "sha256": "f355c7545cc9f7fd7a9d137260006ef50a0725888bb87134483dec4e6774ac33"
+    },
+    {
+      "bytes": 28371,
+      "path": "docs/brand/icon-180.png",
+      "sha256": "b9bf4de88d11650b6db7f49ee20d20e88d019240bbe356b81f23eacf745dec0d"
+    },
+    {
+      "bytes": 31722,
+      "path": "docs/brand/icon-192.png",
+      "sha256": "5f0da6a30e1fa912b3e6213d3b7085e651cbf4fe7136b3a12317c91750d5d55e"
+    },
+    {
+      "bytes": 153493,
+      "path": "docs/brand/icon-512.png",
+      "sha256": "d808fd926d17c889b89092bc723183ad7634b1e92c2e1a2f5c3fda931d74ff7b"
+    },
+    {
+      "bytes": 5803,
+      "path": "docs/brand/icon-64.png",
+      "sha256": "e157beeb871b1dc5b8e89831648ae40a537c22d91d888b3d397fe3c55b186cf0"
+    },
+    {
+      "bytes": 397952,
+      "path": "docs/brand/logo.png",
+      "sha256": "636af1db37e11ce647c1556cfe1b6aa35ee2ffda5c196e0fa44f14c7617fcef6"
+    },
+    {
+      "bytes": 397952,
+      "path": "docs/brand/mark.png",
+      "sha256": "636af1db37e11ce647c1556cfe1b6aa35ee2ffda5c196e0fa44f14c7617fcef6"
+    },
+    {
+      "bytes": 516230,
+      "path": "docs/brand/wordmark-banner.png",
+      "sha256": "0ecf661c540b3eef4f12ef470cf256faace0d582bb3d4b8fcbb310684a29eba2"
     },
     {
       "bytes": 9681,
@@ -595,6 +635,11 @@
       "bytes": 2155,
       "path": "docs/legal/usage-notes.md",
       "sha256": "47079dcc0a72393dd31575715a4b71bd254ea4e1d7f9d2641498886cedddb983"
+    },
+    {
+      "bytes": 2605,
+      "path": "docs/local-isolated-preview.md",
+      "sha256": "149d6ba862c4100d0a880aeca7d3bdf05a2563b3f789c8723e96bde7b67de56e"
     },
     {
       "bytes": 4577,
@@ -2392,9 +2437,9 @@
       "sha256": "674759a1678d29eaccd4006b8fb83fd2f7fa2e5e818ee61aae6d94f650d26c7c"
     },
     {
-      "bytes": 1145,
+      "bytes": 1184,
       "path": "frontend/README.md",
-      "sha256": "1997f5cb3d2682b819caad0fa68674569ada82570ecaf0508763c5ec93dd5e99"
+      "sha256": "118f69c0f34ce75aba5ed4b301bca552c28d66daa4eeb13c3a5382b515e3f5c4"
     },
     {
       "bytes": 2451,
@@ -2412,14 +2457,9 @@
       "sha256": "90ec9100c29e008c3d9194acd818e2cfa6dc6e177154bc8e10c5959aa35619ed"
     },
     {
-      "bytes": 2618,
+      "bytes": 2809,
       "path": "frontend/middleware.test.ts",
-      "sha256": "bbbb18e3ecdad1f220c8287f9896153f938d84171e763b8b9f6c70420a668b03"
-    },
-    {
-      "bytes": 139,
-      "path": "frontend/middleware.ts",
-      "sha256": "940f6bf69064e2ec8c7607eae7b411eac72897113a8411e6585b3651ccda3fa1"
+      "sha256": "681f9a883a665a3c51efba1b14375b304ae21c9d69d52b650d6c20198dab4183"
     },
     {
       "bytes": 288,
@@ -2427,9 +2467,9 @@
       "sha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b"
     },
     {
-      "bytes": 1159,
+      "bytes": 1275,
       "path": "frontend/next.config.js",
-      "sha256": "8afcdecaccf4f290c86390d42d5e4a92fbd7b57f807ebe420364db2ffcc44ab4"
+      "sha256": "674bccf66325c7a06a75cffa37861b454cd229be9a6961dcb080eec14fa2932a"
     },
     {
       "bytes": 499251,
@@ -2512,6 +2552,16 @@
       "sha256": "7ba9a73b8e05ab7658d11753040f0da9afd22b5b256e8f2cbcf18bd4cc1e64bb"
     },
     {
+      "bytes": 5803,
+      "path": "frontend/public/favicon.png",
+      "sha256": "e157beeb871b1dc5b8e89831648ae40a537c22d91d888b3d397fe3c55b186cf0"
+    },
+    {
+      "bytes": 397952,
+      "path": "frontend/public/logo.png",
+      "sha256": "636af1db37e11ce647c1556cfe1b6aa35ee2ffda5c196e0fa44f14c7617fcef6"
+    },
+    {
       "bytes": 903,
       "path": "frontend/scripts/api-contract.cjs",
       "sha256": "30e0c6d75836895300c478ff6bf9a27864e7f9844b64b4d5d71c791f969aa6f2"
@@ -2527,9 +2577,9 @@
       "sha256": "9a5dc989f3e501c585d066ca907d338f84df0d0cd016152e01b37595c21b9114"
     },
     {
-      "bytes": 1664,
+      "bytes": 2022,
       "path": "frontend/scripts/dev-https.mjs",
-      "sha256": "b069673fc3d41cb2970066c5662ef58f4e10eac7ea0736880d7fca651f4ebbd6"
+      "sha256": "22b9e2b814a082338586694ebeb8d467a5b09564282daa0c4f6e5dc07848810d"
     },
     {
       "bytes": 2579,
@@ -2572,19 +2622,19 @@
       "sha256": "0494365bc50d76cdfadaa455f8735bc4bc2856c307c4555aa21481c8ed9751f3"
     },
     {
-      "bytes": 1009,
+      "bytes": 1281,
       "path": "frontend/src/app/error.tsx",
-      "sha256": "57759f2b6caee0a485c7ede340c1f5737ba72121277f2bb70af6822212f5a42d"
+      "sha256": "283c82aca09cee7d309f131e3f4e28a87e551984337ec4127a85666245d60b0f"
     },
     {
-      "bytes": 78663,
+      "bytes": 83376,
       "path": "frontend/src/app/globals.css",
-      "sha256": "1959888bdd6e7ef2007cfc65024f97741b9c396a9bee42d98a618b422ac38811"
+      "sha256": "7a804b82d712d83b0e6da92d0981de1d60fd8df69a87d2dc909bdfff494be170"
     },
     {
-      "bytes": 2209,
+      "bytes": 2355,
       "path": "frontend/src/app/layout.tsx",
-      "sha256": "b9292d97ff39b2853265aa64b14ea1a2938e0b20f05627c6f6199f6a6668c559"
+      "sha256": "e6f8c6240abc4f7c35ca4b4a67ba0f8b4351390692b2624adb18c6de2596d5b3"
     },
     {
       "bytes": 7315,
@@ -2602,9 +2652,9 @@
       "sha256": "d2aa34cb8f489b82a5568b7c6542d4d61e03d76560db0ef88792b4a56aebac98"
     },
     {
-      "bytes": 1338,
+      "bytes": 1648,
       "path": "frontend/src/app/not-found.tsx",
-      "sha256": "89bd13ed4fbcf2617017b09ba936890dd163665f5ff6883d33b6e34ba8da73ab"
+      "sha256": "1356763ec489c8e1a371b516e34cfc5e6de54293770c98fff4e49b07c9d6a2db"
     },
     {
       "bytes": 106,
@@ -2782,9 +2832,9 @@
       "sha256": "a13e210e7b8712474147da52868d95de7d556319a4f2816593ccfb8ee13b1b4a"
     },
     {
-      "bytes": 5653,
+      "bytes": 5893,
       "path": "frontend/src/components/IdentityProvider.tsx",
-      "sha256": "e18df9060bd14660c7a74e8d5b219ea9fbfd2ae439b4fcc7578155ccf9ab4287"
+      "sha256": "ee197ad3065dc7321ccdbcc8b7ef4d33cc70c73ac7af202188a10232c20c418d"
     },
     {
       "bytes": 140,
@@ -2887,9 +2937,9 @@
       "sha256": "8aa6589249412f421f7de73aa68be79b48e2fbf32adbd99331cd9ad62cac1be2"
     },
     {
-      "bytes": 8982,
+      "bytes": 9736,
       "path": "frontend/src/components/SessionControls.tsx",
-      "sha256": "8cca16eb12cfb9b932f5f3188e77d72da6b40384cf2d06ed1acffa2eb36f8b6b"
+      "sha256": "636d08b309107385aab069557712714a8787b47347efc1f723a321a002466633"
     },
     {
       "bytes": 158,
@@ -3067,9 +3117,14 @@
       "sha256": "0e7185a9c8da0f71611f08859c4f48c740c1b8bc68da035f98a07023ca0dc965"
     },
     {
-      "bytes": 11695,
+      "bytes": 12193,
       "path": "frontend/src/components/__tests__/SessionControls.test.tsx",
-      "sha256": "a87305c62916d71adf91e718e932a74f138648b6d69bd3168bf7fb64b010d96d"
+      "sha256": "e298d6982df0ef94cfc7735b34e723731b90f6ec705969a05ddf49dfcbae923a"
+    },
+    {
+      "bytes": 1143,
+      "path": "frontend/src/components/__tests__/SessionControlsAnonymous.test.tsx",
+      "sha256": "579a41d87bc30a850953ea31fb965473be8be0ab63a69c6adfab71f1b3ce0eec"
     },
     {
       "bytes": 936,
@@ -7387,9 +7442,9 @@
       "sha256": "96d1dfccab1f16b4e3d233df72c65338a8598f22efdadf4e0258137c46d4a17c"
     },
     {
-      "bytes": 820,
+      "bytes": 890,
       "path": "frontend/tsconfig.json",
-      "sha256": "b8b55d2ae05efcab172e227cacb01fc23f2240eb2834cb226b369632f3218b9a"
+      "sha256": "70965174d858f3aceaf4548a447ac297708bce83a304dd597769130e667a8867"
     },
     {
       "bytes": 17284,
@@ -7802,9 +7857,9 @@
       "sha256": "a15ba7d8a05db10de40de940bd6721353948d878edcbf6c8ec6e689be8f9c94b"
     },
     {
-      "bytes": 2342,
+      "bytes": 2346,
       "path": "scripts/regression_fingerprint.py",
-      "sha256": "e984615ab6758c319a1df18fc3a67f478430f96ca7801cb80880dc5ad4bbd7a7"
+      "sha256": "524086d207f0b85f257e1618796747d2a2997cbdad2fb4e0e226673eedd49353"
     },
     {
       "bytes": 4194,
@@ -7817,9 +7872,9 @@
       "sha256": "6d344fc92b27fec3fd8b7aee0076d9c68030354cf088d9dd8964dc9bf76e67d8"
     },
     {
-      "bytes": 3901,
+      "bytes": 3905,
       "path": "scripts/remediation_fixture.py",
-      "sha256": "ad9782c5be24b1a4f015dfcdc19ec9de1d31fc1f0dda9d9d776bd5a507e81d64"
+      "sha256": "6a0883077ee01e33a3603891b5ab2981ad2efc0b3e4516123bdadf9dc2a07647"
     },
     {
       "bytes": 5227,
@@ -8007,9 +8062,14 @@
       "sha256": "5c48c74600290d2e5e97ac013fda0c767b951a9147d009d938c5a2aabeb513f2"
     },
     {
-      "bytes": 7373,
+      "bytes": 7763,
       "path": "src/shift_scheduler/api/main.py",
-      "sha256": "ce5f1f451273825e204ec8e823242e4e703af916670fc738c9cd8de7ee0761f8"
+      "sha256": "2f23be9e86854b11ca3b3616e66c7503d479dc1911c3003792bf02d6551d5bac"
+    },
+    {
+      "bytes": 4350,
+      "path": "src/shift_scheduler/api/print_page.py",
+      "sha256": "223a91f185228b766467125751724782b23dc407e3d6cfd7b04a39f481ccbd78"
     },
     {
       "bytes": 211,
@@ -8062,9 +8122,9 @@
       "sha256": "90ce5f66e7333e96969ffeaeacd490ec9f185c71c39812496312185642e85037"
     },
     {
-      "bytes": 45666,
+      "bytes": 45070,
       "path": "src/shift_scheduler/api/routers/workflows.py",
-      "sha256": "cf8ff203bf6af913338d23e95ae85dfc0d59e38ffe22516ba002d39a1e9bba02"
+      "sha256": "308f532de1ffbcaf9cc9b8cda953a3a89cb9e862f2be9d927044a7de69c2d066"
     },
     {
       "bytes": 43,
@@ -8707,6 +8767,11 @@
       "sha256": "8f100afed977f01ae4686959af277eb3170cf5a6f755b4d0cb4a82cf5a32b68b"
     },
     {
+      "bytes": 4698,
+      "path": "tests/fixtures/catalogue_v3.py",
+      "sha256": "a046bca7b4e424fa194fb4ce1918d679be74ebba81aa42becd20af7045503d2b"
+    },
+    {
       "bytes": 5012,
       "path": "tests/fixtures/openapi/operations-2026-09-30.json",
       "sha256": "b2151bd4ac5ad798059e080af89b59d2205cb419a6c488f6a5cd116e4506357e"
@@ -8917,9 +8982,9 @@
       "sha256": "e3aa598fe46c23e9854cd1d4dbf90de96c15c6996ff3844bd57d5aed11d62e5e"
     },
     {
-      "bytes": 8034,
+      "bytes": 6457,
       "path": "tests/test_catalogue_v3.py",
-      "sha256": "0d6409bacaeb93789e59e546cabb9d83f52f4c5add37bc59ce68ff1c01bb35bf"
+      "sha256": "9d99b43d5b8571e2bc4cba9ee7d1b9b4a8156a3484fa443ff844a4f9dbbf16cf"
     },
     {
       "bytes": 7090,
@@ -8952,14 +9017,14 @@
       "sha256": "db5fac94acfe9e9ca97bb56bbfb3b6d47acc34759c7d86d0f205bdb86c9814a2"
     },
     {
-      "bytes": 20920,
+      "bytes": 19795,
       "path": "tests/test_compliance_v2.py",
-      "sha256": "fb68097ddadc5155bec5519647206439d9e276e85e8c3d37536994d998e918f7"
+      "sha256": "c313580594aa2f64686adf3ebd06e3d5fb718064297298f69b3a83b4c4d9d67b"
     },
     {
-      "bytes": 5995,
+      "bytes": 4742,
       "path": "tests/test_compliance_v3.py",
-      "sha256": "32286813e07d072722958540c33e15b0500449cc1f5bfca8a6493f6c75adb861"
+      "sha256": "eaff5d055662898f10acb5842f77d412549720136f2bf099baca4a7c2866fe2b"
     },
     {
       "bytes": 17138,
@@ -9197,9 +9262,9 @@
       "sha256": "a9738e23091236eb774b9d178d744b918e1fcdac9b3234764c1a6daa7b37f311"
     },
     {
-      "bytes": 18224,
+      "bytes": 19331,
       "path": "tests/test_ideal_workflows_api.py",
-      "sha256": "726a9f0432cba3511c896ffc9350f74c66d6bd80dfe56c75d0cd731e19806f53"
+      "sha256": "ece0950cb1172e8993cedc40d004abd105d26b187cc139ae04cdf2668236b5e9"
     },
     {
       "bytes": 3490,
@@ -9430,6 +9495,11 @@
       "bytes": 699,
       "path": "tests/test_planning_test_server.py",
       "sha256": "82f756b2842377a5456bb3a594039d5bea75a217754ea20e2a8c2b3ebe26ba4d"
+    },
+    {
+      "bytes": 2045,
+      "path": "tests/test_print_page.py",
+      "sha256": "852d35b6f364ff449352d799cfe198337542d013ebc8f9b9a5d2ed514bc545d2"
     },
     {
       "bytes": 5365,
@@ -9739,5 +9809,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9",
-  "source_commit": "63d98f98f07ed1ce010887e424a966fca67ddb19"
+  "source_commit": "4c9bdd9bbd8ab090eb22e97b3d9c716d2d0764fa"
 }

@@ -7,6 +7,8 @@ const config = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
   serverExternalPackages: [],
+  // `next dev` would otherwise write frontend/AGENTS.md into the working tree on every start.
+  agentRules: false,
   async rewrites() {
     const internal = process.env.INTERNAL_API_BASE_URL;
     return internal ? [{source:'/api/:path*',destination:`${internal}/:path*`}] : [];

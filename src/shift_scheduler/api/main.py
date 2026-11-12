@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import OperationalError
 from starlette.responses import Response
 
+from shift_scheduler.api import print_page
 from shift_scheduler.api.routers import (
     artifacts,
     auth,
@@ -220,6 +221,13 @@ async def browser_protection(
 ) -> Response:
     # Every response, including early refusals (403/410/503), carries the headers.
     response = await _browser_protection(request, call_next)
+    # The personal print page is the one HTML page; it may keep its own policy, which
+    # only allows its fixed inline style. Any other policy is replaced.
+    page_policy = (
+        response.headers.get("Content-Security-Policy") == print_page.PRINT_CSP
+    )
     for name, value in SECURITY_HEADERS.items():
+        if name == "Content-Security-Policy" and page_policy:
+            continue
         response.headers[name] = value
     return response
