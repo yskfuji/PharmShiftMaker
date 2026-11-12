@@ -494,7 +494,7 @@
     {
       "bytes": 8911,
       "path": "docs/architecture/navigation.md",
-      "sha256": "1644033e87fa265ff74aa745e65bdff2b2485884454f1b46cf2de4e5f073b07b"
+      "sha256": "b8d01d5fbc24756fb1cfb99783b5600e010fb48decdb6c05f24dadd9e245f32f"
     },
     {
       "bytes": 166,
@@ -9809,5 +9809,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "1112b578bdf457bcb74ea4f706ddf882052889055b4cfc178379bc52a84a1de9",
-  "source_commit": "fb9153360341cd98cb7ff31435da89a8eb108803"
+  "source_commit": "4c9bdd9bbd8ab090eb22e97b3d9c716d2d0764fa"
 }
