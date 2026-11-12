@@ -54,10 +54,17 @@ PRINT_CSP = (
 
 
 class Duty(Protocol):
-    start: datetime
-    end: datetime
-    kind: str
-    location: str
+    @property
+    def start(self) -> datetime: ...
+
+    @property
+    def end(self) -> datetime: ...
+
+    @property
+    def kind(self) -> str: ...
+
+    @property
+    def location(self) -> str: ...
 
 
 def _day(value: datetime) -> str:
