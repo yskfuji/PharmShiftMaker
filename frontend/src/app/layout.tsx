@@ -19,7 +19,11 @@ import { NavigationFlagsProvider } from "@/components/NavigationFlags";
 // readers can tell pages apart (WCAG 2.4.2).
 export const metadata: Metadata = {
   title: { default: "PharmShiftMaker", template: "%s | PharmShiftMaker" },
-  description: "病院薬剤部の勤務計画・運用支援システム",
+  description: "病院薬剤部の勤務計画・運用支援の試作（本番利用可能とは扱わない）",
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    apple: [{ url: "/logo.png" }],
+  },
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
