@@ -8,28 +8,6 @@
 
 **本番利用可能、安全性証明済み、WCAG適合、使いやすい、とは扱いません。** 給与計算・人事原本の決定・法令への最終照合は導入機関または外部システムの責務です。30名の利用者評価、VoiceOver/NVDA実機評価、実運用相当の性能測定は未完了です。
 
-<p align="center">
-  <img src="docs/brand/mark.png" alt="PharmShiftMaker マーク" width="120" />
-</p>
-
-## 画面（隔離・合成データ）
-
-下図は隔離環境の合成データで撮った実UIです。架空の完成画面ではなく、受入完了を示すものでもありません。
-
-<p align="center">
-  <img src="docs/brand/window-planning.png" alt="勤務計画（合成データ）" width="720" />
-</p>
-
-<p align="center">
-  <img src="docs/brand/window-dashboard.png" alt="ダッシュボード（合成データ）" width="720" />
-</p>
-
-<p align="center">
-  <img src="docs/brand/window-login.png" alt="ログイン（合成データ）" width="560" />
-  &nbsp;
-  <img src="docs/brand/window-schedule.png" alt="シフト表（合成データ）" width="560" />
-</p>
-
 ## 現在の位置付け
 
 - FastAPI、PostgreSQL及びNext.jsによる業務機能と、合成データ用の試験環境を収録している。
@@ -78,7 +56,6 @@ npm run build-storybook
 
 ## リポジトリ案内
 
-- [ブランド資産](docs/brand/)
 - [隔離プレビュー（開発者向け）](docs/local-isolated-preview.md)
 - [責務と読み順](docs/repository-map.md)
 - [認知中心UI v3](docs/ideal-ui/README.md)
