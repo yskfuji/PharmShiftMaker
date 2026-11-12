@@ -452,6 +452,8 @@ def test_personal_export_is_own_current_and_rfc5545_shaped(world):
         datetime.fromisoformat(start), datetime.fromisoformat(end)
     )
     assert f"期間 {expected_period}" in printed and "|" not in printed
+    # One header row and exactly one row per duty of the signed-in person.
+    assert printed.count("<tr>") == len(own) + 1
     # People read the page: Tokyo dates and duty names, not ISO timestamps or codes.
     assert "T09:00:00" not in printed and "+09:00" not in printed
     # Its own policy allows only the fixed inline style; nothing can load or run.

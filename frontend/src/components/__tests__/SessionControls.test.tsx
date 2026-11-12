@@ -184,3 +184,14 @@ test('an interrupted renewal does not remove the last confirmed absolute deadlin
  await act(async()=>{jest.advanceTimersByTime(30_000);});
  expect(location.replace).toHaveBeenCalledWith('/login?redirectTo=%2Fplanning&reason=expired');
 });
+
+const clearUserCookie=()=>{document.cookie='pharmshift_user=; expires=Thu, 01 Jan 1970 00:00:00 GMT';};
+
+test('a real expiry still says so after sign-out has already removed the user cookie',async()=>{
+ global.fetch=jest.fn(async()=>response({},204)) as any;
+ render(<SessionControls/>);
+ clearUserCookie();
+ act(()=>{window.dispatchEvent(new Event('session-invalidated'));});
+ await waitFor(()=>expect(location.replace).toHaveBeenCalledWith('/login?redirectTo=%2Fplanning&reason=expired'));
+});
+
