@@ -25,6 +25,8 @@
     "shift_arch_manifest.yaml",
     "docs/backlog/main-tree-triage-2026-10-17.md",
     "docs/backlog/unfinished-ledger-2026-10-17.md",
+    "docs/long-run-workflow.md",
+    "docs/design-system/baseline-log.md",
     "PUBLIC-MANIFEST.json",
     "PUBLIC-MANIFEST.sha256"
   ],

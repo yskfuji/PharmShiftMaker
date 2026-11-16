@@ -1,66 +1,65 @@
-# Verification record — 2026-10-04
+# 検証記録
 
-All browser fixtures, exported artifacts and screenshots use synthetic people,
-facilities and work records. A passing automated row is evidence for that row
-only; it is not a WCAG conformance claim, a security proof or a real-user result.
+本書は、認知中心UI v3 について実施した検証の結果及び未完了の評価を記録する。記録日は2026年10月4日である。
 
-| Check | Result |
+## 1. 前提
+
+ブラウザ用の固定データ（fixture）、書き出した成果物及び画面写真は、全て合成の人物、施設及び勤務記録を用いる。自動検証で合格した行は、その行に限った証拠である。合格した行は、WCAG 適合の主張、セキュリティの証明又は実利用者による結果ではない。
+
+## 2. 検証結果
+
+| 検証項目 | 結果 |
 |---|---|
-| Python unit/API/PostgreSQL regression | Final application source: 1,299 passed and 17 conditional skips; failures 0 |
-| Frontend Jest | Final application source: 51 suites, 289 tests and 8 snapshots passed |
-| TypeScript | `tsc --noEmit` passed |
-| Frontend ESLint | 0 errors and 0 warnings |
-| Next.js production build | Node 24.21.0, Next.js 16.3.8, React 19.3; Webpack production build passed |
-| Static Storybook | Storybook 10.6.0; offline build passed with 233 v3 stories (52 role-route, 150 route-state, 31 representative) |
-| Public API contracts | 31 OpenAPI/Pydantic models match their normalized TypeScript declarations |
-| ORM/PostgreSQL ER comparison | 41 business ORM tables and 41 observed business tables; observed PostgreSQL also has the expected `alembic_version` table; semantic difference count 0 |
-| U01–U27 complete browser journeys | 243/243 first attempts passed: 27 journeys × Chromium/Firefox/WebKit × 320/768/1440px; retry 0, failed use cases 0, source/contract/build drift 0 |
-| U25 destructive privacy journey | 9/9; a dedicated synthetic person was erased, residual entity/revision counts were 0, tombstones remained and reintroduction was rejected |
-| U26 restore boundary | Browser journey confirms read-only UI; separate isolated PostgreSQL drill passed all 13 checks, including erasure replay and non-resurrection (`PASS_WITH_STATED_SCOPE`) |
-| Existing flag-OFF matrix | 267/267 selected legacy cases passed against the frozen v3 source and production build; retry 0, failed/unexecuted 0, source/build drift 0 |
-| Role-route optical matrix | 156/156 role-route tests passed. Each test covered four appearances at 320/768/1440px: 1,872 conditions in total; findings, skips, flaky results and source drift 0 |
-| Route-state stories | 25 routes × 6 common states = 150/150 generated stories passed the Chromium 390px presence and semantic-label check. This is not a full optical audit. |
-| Static review gallery | 233 synthetic stories × 390/1024/1920px = 699 Chromium images; automated axe and horizontal-overflow findings 0. Representative human review remains pending. |
-| Dependency vulnerability audit | Current registry-backed `pip-audit`: 46 Python packages and 0 known vulnerabilities. Current `npm audit`: production and full dependency graphs both 0 findings; lockfile graph 955 packages |
-| Dependency license audit | 46 Python distributions and the npm lockfile graph were classified; no unclassified license remained in the recorded reports |
-| Independent review | Final re-review: 0 high, 0 medium and 1 low finding. The remaining low finding is limited to the displayed role in the anonymous audit timeline: an inactive membership can still be selected as the actor's current role. It is not used for authorization and does not disclose a name or staff identifier. |
+| Python の単体・API・PostgreSQL 回帰テスト | 最終のアプリケーションソースで、1,299件成功、条件付きスキップ17件、失敗0件 |
+| フロントエンドの Jest | 最終のアプリケーションソースで、51スイート、289テスト及び8スナップショットが成功 |
+| TypeScript | `tsc --noEmit` が成功 |
+| フロントエンドの ESLint | エラー0件、警告0件 |
+| Next.js の本番ビルド | Node 24.21.0、Next.js 16.3.8、React 19.3（記録時の環境）。Webpack による本番ビルドが成功 |
+| 静的 Storybook | Storybook 10.6.0。オフラインのビルドが成功し、v3 のストーリー233件（役割・画面経路52件、画面経路・状態150件、代表31件）を収録 |
+| 公開 API の契約 | OpenAPI/Pydantic の31モデルが、正規化した TypeScript の宣言と一致 |
+| ORM と PostgreSQL の ER 比較 | 業務用の ORM 表41件と、観測した業務用の表41件。観測した PostgreSQL には、想定どおり `alembic_version` 表もある。意味上の差異は0件 |
+| U01〜U27 のブラウザでの一連の業務操作 | 初回実行243/243件が成功（27業務 × Chromium/Firefox/WebKit × 320/768/1440px）。再試行0件、失敗したユースケース0件、ソース・契約・ビルドの変化0件 |
+| U25 破壊的なプライバシー操作 | 9/9件。専用の合成人物を消去し、残存する実体・改訂の件数は0件であった。削除の痕跡（tombstone）は残り、再登録は拒否された |
+| U26 復元の境界 | ブラウザでの操作により、UI が読取り専用であることを確認した。別に行った隔離 PostgreSQL での演習は、消去の再適用及び復活しないことの確認を含む13項目全てに合格した（`PASS_WITH_STATED_SCOPE`） |
+| 機能フラグ `IDEAL_UI` の既定値（無効）での既存機能 | 凍結した v3 のソース及び本番ビルドに対し、選定した既存ケース267/267件が成功。再試行0件、失敗・未実行0件、ソース・ビルドの変化0件 |
+| 役割・画面経路の光学監査 | 役割・画面経路のテスト156/156件が成功。各テストは4種の外観を320/768/1440pxで確認し、計1,872条件であった。指摘、スキップ、不安定な結果（flaky）及びソースの変化は0件 |
+| 画面経路・状態のストーリー | 25経路 × 共通の6状態 ＝ 150/150件の生成ストーリーが、Chromium 390px での存在及び意味上のラベルの確認に合格。これは完全な光学監査ではない |
+| 静的なレビュー用ギャラリー | 合成ストーリー233件 × 390/1024/1920px ＝ Chromium の画像699枚。自動の axe 及び横方向のはみ出しの指摘は0件。代表画面の人による確認は未実施 |
+| 依存関係の脆弱性監査 | 記録時点のレジストリに基づく `pip-audit` で、Python パッケージ46件、既知の脆弱性0件。記録時点の `npm audit` で、本番用及び全体の依存グラフはともに指摘0件。ロックファイルのグラフは955パッケージ |
+| 依存関係のライセンス監査 | Python の配布物46件及び npm のロックファイルのグラフを分類した。記録した報告書に、未分類のライセンスは残っていない |
+| 独立レビュー | 最終再レビューで、高0件、中0件、低1件。残る低の指摘は、匿名の監査タイムラインに表示する役割に限られる。具体的には、無効化された所属が、操作主体の現在の役割として選ばれ得る。この役割は認可に用いず、氏名及び職員IDを開示しない |
 
-The accepted U01–U27 matrix records exactly one first attempt per case, and the
-parent runner verified and removed only the schema it created. A preceding
-diagnostic run completed 242/243 cases: WebKit at 320px dropped one Japanese
-character sent by the test helper at a 1 ms interval. That run is retained as a
-failure and is not counted as a pass. After changing the helper to one deliberate
-15 ms keyboard sequence with focus commit, the full 243-case matrix was started
-again and passed without retry. U25 additionally records an erasure receipt per
-engine and width. U26 deliberately keeps restore execution out of the Web UI;
-the separate operational drill covers backup restore, access restriction,
-erasure replay and non-resurrection in its stated synthetic scope.
+> **注記** 表中の実行環境の版は、記録時のものである。現行のリポジトリは、`.nvmrc` で Node.js 26.12.1 を指定する。
 
-The role-route audit uses the same generated route contract and production
-feature components as the workspace. A completed run comprises 156 Playwright
-tests, each executing 12 conditions (light, dark, system-light and system-dark
-at 320, 768 and 1440px). The separate gallery is a review aid, not an additional
-browser matrix or a substitute for assistive-technology and human review.
+## 3. 実行の経緯と範囲
 
-The build, U01–U27 run and optical audit each froze their executable inputs and
-recorded source/build hashes. The only source change after the final production
-build and optical audit was the E2E keyboard helper described above; application,
-rendering and build inputs remained byte-identical. Failed setup or pre-fix runs
-are retained outside the package but are not counted as passes.
+### 3.1 U01〜U27 の実行
 
-The following human and field evaluations remain pending and therefore block
-**production adoption**, but do not by themselves block publication of the
-source repository with `IDEAL_UI` OFF by default:
+受け入れた U01〜U27 の行列は、各ケースにつき初回実行をちょうど1回記録する。親の実行器は、自ら作成したスキーマに限って検証し、削除した。
 
-- the moderated 30-participant AB/BA evaluation;
-- VoiceOver and NVDA sessions using the supplied protocol;
-- human 200%/400% zoom and forced-colors sign-off on target platforms;
-- production-like field p75 LCP, INP and CLS.
+これに先立つ診断用の実行では、242/243件が完了した。完了しなかった1件では、WebKit の320pxで、テスト用の補助関数が1 ms 間隔で送った日本語1文字が欠落した。この実行は失敗として保持し、合格には数えない。補助関数を、フォーカスの確定を伴う意図的な15 ms 間隔のキーボード入力1回へ変更した後、243件の行列全体を改めて開始し、再試行なしで合格した。
 
-The repository-publication gate additionally requires a clean committed source
-tree, a history-free public export, and secret, license and file-size scans of
-that exact export. The final independent review is recorded in
-`independent-review-v3.md`; exact-export and package results are recorded in the
-accompanying manifests rather than inferred from this source-tree report.
+U25 は、エンジン及び幅ごとに、消去の受領記録を追加で記録する。U26 は、意図して復元の実行を Web UI の外に置いている。別の運用演習が、記載した合成データの範囲で、バックアップからの復元、アクセス制限、消去の再適用及び復活しないことを確認する。
 
-`IDEAL_UI` therefore remains OFF by default.
+### 3.2 役割・画面経路の監査
+
+役割・画面経路の監査は、作業画面（workspace）と同じ生成済みのルート契約及び本番の機能部品を用いる。完了した1回の実行は156件の Playwright テストから成る。各テストは12条件（ライト、ダーク、システム設定のライト及びシステム設定のダークを、320、768及び1440pxで）を実行する。別に作成したギャラリーはレビューの補助である。当該ギャラリーは、追加のブラウザ行列ではなく、支援技術及び人によるレビューの代わりにもならない。
+
+### 3.3 実行入力の凍結
+
+ビルド、U01〜U27 の実行及び光学監査は、それぞれ実行に用いる入力を凍結し、ソース及びビルドのハッシュを記録した。最終の本番ビルド及び光学監査の後に変更したソースは、3.1 で述べた E2E テストのキーボード用補助関数だけである。アプリケーション、描画及びビルドの入力は、バイト単位で同一のままであった。準備に失敗した実行及び修正前の実行は、パッケージの外に保持するが、合格には数えない。
+
+## 4. 未完了の評価
+
+次の人による評価及び実地評価は未完了であり、**本番採用**を妨げる。ただし、これらの評価は、それだけでは、機能フラグ `IDEAL_UI` の既定値を無効としたソースリポジトリの公開を妨げない。
+
+- 進行役が立ち会う、参加者30名の AB/BA 評価
+- 配布した実施要領を用いた VoiceOver 及び NVDA での評価
+- 対象プラットフォームでの、人による200%・400%拡大表示及び強制色の承認
+- 本番相当の実地での p75 の LCP、INP 及び CLS
+
+## 5. リポジトリ公開の条件
+
+リポジトリ公開の判定には、追加で、コミット済みのクリーンなソースツリー、履歴を含まない公開用の書き出し、並びに当該書き出しそのものに対する秘密情報・ライセンス・ファイルサイズの走査を要する。最終の独立レビューは、[independent-review-v3.md](independent-review-v3.md) に記録する。書き出しそのもの及びパッケージの結果は、本ソースツリーの報告から推測するのではなく、付属のマニフェストに記録する。
+
+したがって、機能フラグ `IDEAL_UI` の既定値は無効のままとする。

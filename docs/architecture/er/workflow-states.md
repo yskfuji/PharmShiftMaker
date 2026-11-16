@@ -1,17 +1,16 @@
-# 業務状態と画面・API・試験の対応
+# 業務状態と画面・API・テストの対応
 
+本書は、公開、休暇申請、人物制御、復元の開放及び本人表示の確認について、業務状態と画面、API 及びテストとの対応を記録する。
 
-公開資料では、[physical.mmd](physical.mmd) をORMが宣言する物理構造、
-[logical.md](logical.md) をJSON内の論理参照として分けている。隔離PostgreSQLの
-読取り観測との照合結果は[検証記録](../../ideal-ui/verification.md)に記載する。
-当該観測は一つの隔離クラスタを用いるものであり、別ホストへの分離を証明するものではない。
+## 1. 適用範囲
 
-2026-09-28 UI/UX改修。以下はソースに基づく説明図であり、全遷移の形式検証証明ではない。
-物理表の図は [physical.mmd](physical.mmd)、JSONの参照は [logical.md](logical.md)。
-観測時の生ログ及び一時的な図は公開リポジトリへ収録せず、公開候補と対応する件数、
-差分及びソースハッシュだけを検証記録へ残す。
+公開資料では、[physical.mmd](physical.mmd) を ORM が宣言する物理構造とし、[logical.md](logical.md) を JSON 内の論理参照として分けている。
+隔離した PostgreSQL の読取りによる観測との照合結果は、[検証記録](../../ideal-ui/verification.md)に記載する。当該観測は一つの隔離クラスタを用いるものであり、別ホストへの分離を証明するものではない。
 
-## 公開と競合
+本書の図は、2026年9月28日の UI/UX 改修に際してソースに基づいて作成した説明図であり、全遷移の形式検証による証明ではない。
+観測時の生ログ及び一時的な図は、公開リポジトリへ収録しない。公開候補と対応する件数、差分及びソースのハッシュだけを、検証記録へ残す。
+
+## 2. 公開と競合
 
 ```mermaid
 stateDiagram-v2
@@ -25,12 +24,11 @@ stateDiagram-v2
   PUBLISHED --> Cancelled: POST publications/id/cancel
 ```
 
-`Reviewed`は画面上の検証状態でありDBのstatus値を増設したものではない。
-`PlanningWorkspace.tsx` → `/planning/drafts/*` → `application/planning.py`。
-`tests/test_planning_retry_api.py`、`tests/test_planning_postgres.py`、`frontend/tests/visual/planning-flow.pw.ts`等の
-実行結果は監査台帳で照合する。図にあることだけで試験済みにしない。
+`Reviewed` は画面上の検証状態であり、DB の status の値を増設したものではない。
+画面、API 及び処理の対応は、`PlanningWorkspace.tsx` → `/planning/drafts/*` → `application/planning.py` である。
+`tests/test_planning_retry_api.py`、`tests/test_planning_postgres.py`、`frontend/tests/visual/planning-flow.pw.ts` 等の実行結果は、公開範囲外に保管している検証記録で照合する。図に記載があることだけをもって、テスト済みとはしない。
 
-## 休暇申請（年休イベント台帳とは別）
+## 3. 休暇申請（年休イベント台帳とは別）
 
 ```mermaid
 stateDiagram-v2
@@ -43,11 +41,11 @@ stateDiagram-v2
   REQUIRES_DISCUSSION --> CANCELLED: 本人のwithdraw
 ```
 
-公開勤務から参照される申請の変更は`require_unpublished_request`が拒否する。
-`PlanningRequests.tsx` → `/planning/requests` → `api/routers/planning.py`。
-予約は取得実績ではない。上図は申請の表示に限定し、年休義務管理や付与訂正の法的適合を表さない。
+公開勤務から参照される申請の変更は、`require_unpublished_request` が拒否する。
+画面、API 及び処理の対応は、`PlanningRequests.tsx` → `/planning/requests` → `api/routers/planning.py` である。
+予約は、取得の実績ではない。上の図は申請の表示に限るものであり、年休の義務管理又は付与の訂正の法的な適合を表さない。
 
-## 人物制御と実行可能分の処理
+## 4. 人物制御と実行可能分の処理
 
 ```mermaid
 flowchart TD
@@ -62,10 +60,10 @@ flowchart TD
   Remain --> Inventory[保全・バックアップ・外部コピー・不明を確認]
 ```
 
-`SubjectControlWorkflow.tsx` → `/planning/compliance/subject-controls/*` → `application/subject_controls.py`。
-`CONTROL_APPLIED_REMAINS`は「全コピー消去完了」ではない。未知自由文を図の矢印だけで自動承認しない。
+画面、API 及び処理の対応は、`SubjectControlWorkflow.tsx` → `/planning/compliance/subject-controls/*` → `application/subject_controls.py` である。
+`CONTROL_APPLIED_REMAINS` は、「全コピーの消去の完了」ではない。未知の自由記述を、図の矢印だけを根拠に自動で承認しない。
 
-## 復元の開放
+## 5. 復元の開放
 
 ```mermaid
 flowchart TD
@@ -79,11 +77,11 @@ flowchart TD
   Latest -->|通信断・未確定| Q
 ```
 
-`BusinessWorkflow.tsx`の復旧画面は読取り専用。実際の復元は運用CLI。
-`control/restore_verification.py`と`control/service.py`の検証を図の参照先とする。
-PITR、25か月、全辺再生、RPO/RTOの従来の未達は今回のUI試験では変更しない。
+`BusinessWorkflow.tsx` の復旧画面は、読取り専用である。実際の復元は、運用 CLI で行う。
+図の参照先は、`control/restore_verification.py` 及び `control/service.py` の検証とする。
+時点復旧（PITR）、25か月の運用を想定した検証、全ての遷移の API 再生並びに目標復旧時点・目標復旧時間（RPO/RTO）について、従来から未達の項目がある。これらの項目の判定は、2026年9月28日の UI/UX 改修のテストでは変更していない。
 
-## 本人表示の確認状態（2026-09-29）
+## 6. 本人表示の確認状態
 
 ```mermaid
 stateDiagram-v2
@@ -96,6 +94,13 @@ stateDiagram-v2
   Verified --> Ended: サインアウト
 ```
 
-Checking・Unavailableは業務入力を保持して非表示・操作不能。Endedは旧業務を破棄する。
-`GET /auth/me` は署名・失効確認済みのアカウント情報。`GET /auth/legacy-context` は旧スコープなしAPI用の単一所属の職員ID・実効権限。両者を名前照合で結び付けない。
-ヘッダーとサイドバーはIdentityProviderの同じメモリ応答を使用する。DBスキーマ変更はない。
+`Checking` 及び `Unavailable` の間は、業務の入力を保持したまま非表示とし、操作できないようにする。`Ended` では、旧業務を破棄する。
+`GET /auth/me` は、署名及び失効を確認済みのアカウント情報を返す。`GET /auth/legacy-context` は、旧来のスコープなしの API のために、単一の所属の職員ID及び実効権限を返す。両者を名前の照合で結び付けない。
+ヘッダー及びサイドバーは、IdentityProvider の同じメモリ上の応答を使用する。DB スキーマの変更はない。
+
+## 7. 改訂履歴
+
+| 日付 | 対象 |
+|---|---|
+| 2026-09-28 | UI/UX 改修に伴う第1節から第5節までの説明図 |
+| 2026-09-29 | 第6節「本人表示の確認状態」 |
