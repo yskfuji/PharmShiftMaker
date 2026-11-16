@@ -77,9 +77,9 @@
       "sha256": "7f5f895583a513ccc93840df280b69bb55d510c112f19c9defc545b87ca84e66"
     },
     {
-      "bytes": 3145,
+      "bytes": 3190,
       "path": "CONTRIBUTING.md",
-      "sha256": "16b3a019b1159112b8227fa456ec062ac007e2dfd3b25ca5240fe3513f37b53e"
+      "sha256": "fa38a70033cd67df9089fce9f758b33d0e4076187ee0fe691192a5ad9efede2f"
     },
     {
       "bytes": 544,
@@ -107,9 +107,9 @@
       "sha256": "6233bc9018f74ba2fb0757458a8f30c354d5d07a517c3f9a6832d7ecd5dcd055"
     },
     {
-      "bytes": 2994,
+      "bytes": 3044,
       "path": "PRIVACY.md",
-      "sha256": "8267a8161ea9cf0cc42dc958a271f1874942deb1653da0922db713f11bd858a6"
+      "sha256": "3c66d9feae30649da8b16d9a203437ddb3b51757e9cc5c121c0f0414b9833f17"
     },
     {
       "bytes": 4486,
@@ -117,14 +117,14 @@
       "sha256": "afe800d59b8f44bca966eccb8dec04cb87855acf5dd675680d2d8189e0488918"
     },
     {
-      "bytes": 1913,
+      "bytes": 1938,
       "path": "SECURITY.md",
-      "sha256": "60486e00ba5e4682fe65712b0b0111336f3db57ca63fe5da8ece29cb80fce580"
+      "sha256": "e9217414f949be0bf7a1a33f788a42f39d1a3e962c07b31bcb005d2893857ba8"
     },
     {
-      "bytes": 1244,
+      "bytes": 1284,
       "path": "SUPPORT.md",
-      "sha256": "1e59a6ca23c589af62a4adf058b336bb34f8ce599dbf48af600f9f302cf9a229"
+      "sha256": "5e218e6e4084d36d90185223c6fc7a30303e31a63aee9c33c2b6188a8c76b5e3"
     },
     {
       "bytes": 2485,
@@ -132,9 +132,9 @@
       "sha256": "48b00972d83c635045a4827d25718cf5dd58db52b326e350b1d61db9a046ae72"
     },
     {
-      "bytes": 2004,
+      "bytes": 2019,
       "path": "TRADEMARKS.md",
-      "sha256": "4c0b70e6649a0a4328205f7252e481c67a9f446a4536b33ca44a16bf5b56fc74"
+      "sha256": "ea2f4a2304667e3d3e61e1222ff9e17b3b1752a4290fb7c33e879aba309463e0"
     },
     {
       "bytes": 665,
@@ -617,19 +617,19 @@
       "sha256": "f28b13ce5d8ad70621210977430d03dc16a26a80b9381f1a8385ab861b4b5c45"
     },
     {
-      "bytes": 4685,
+      "bytes": 4710,
       "path": "docs/legal/evidence-and-limitations.md",
-      "sha256": "a6b848fdf624623346934346dd3cf3ac39cfa4c41c55c40cf14e2177972e719f"
+      "sha256": "29db559464ea42d585f0e909cadc97b818cc7ed90bfbcb0659282b25370ced16"
     },
     {
-      "bytes": 3121,
+      "bytes": 3136,
       "path": "docs/legal/operator-responsibilities.md",
-      "sha256": "cc524fc5a35e4759411ecbc8a717afad11116aae48f21d172724980ed039de99"
+      "sha256": "515c587ecc95cd904b796240ae652dbb9f32dd8c64cb81ef24b15570dcb907e4"
     },
     {
-      "bytes": 2616,
+      "bytes": 2631,
       "path": "docs/legal/usage-notes.md",
-      "sha256": "53ceffa8f7aa703a0db02a33f8d1a29d092e3d683aa7099b83932ab70de478ef"
+      "sha256": "36880222e21995846272e0a82bab26cbed50c7b7b85f59ba148b3f9bab0faa99"
     },
     {
       "bytes": 1950,
@@ -9784,5 +9784,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "e0815c879c33191acd10918f04b4e5dc7d174bec"
+  "source_commit": "0eaecbbdf002f42d64c40cdeabbd839d5d1f2fd9"
 }
