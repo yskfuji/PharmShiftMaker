@@ -7,7 +7,7 @@
 | ファイル | 寸法（ピクセル） | 用途 |
 |---|---|---|
 | `wordmark-banner.png` | 1280×720 | README の製品名表示に使うロゴ |
-| `mark.png` | 1024×1024 | README の製品名表示に使うロゴ。内容は `logo.png` と同一 |
+| `mark.png` | 1024×1024 | 製品名の表示に使うロゴ。内容は `logo.png` と同一 |
 | `logo.png` | 1024×1024 | 内容は `frontend/public/logo.png`（画面がアイコンとして参照する画像）と同一 |
 | `icon-64.png` | 64×64 | 内容は `frontend/public/favicon.png` と同一 |
 | `icon-180.png` | 180×180 | 用途の記載なし（リポジトリ内に参照箇所なし） |

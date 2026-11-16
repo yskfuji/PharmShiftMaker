@@ -5,9 +5,11 @@
 ## 1. 適用範囲
 
 公開資料では、[physical.mmd](physical.mmd) を ORM が宣言する物理構造とし、[logical.md](logical.md) を JSON 内の論理参照として分けている。
+
 隔離した PostgreSQL の読取りによる観測との照合結果は、[検証記録](../../ideal-ui/verification.md)に記載する。当該観測は一つの隔離クラスタを用いるものであり、別ホストへの分離を証明するものではない。
 
 本書の図は、2026年9月28日の UI/UX 改修に際してソースに基づいて作成した説明図であり、全遷移の形式検証による証明ではない。
+
 観測時の生ログ及び一時的な図は、公開リポジトリへ収録しない。公開候補と対応する件数、差分及びソースのハッシュだけを、検証記録へ残す。
 
 ## 2. 公開と競合
@@ -25,8 +27,10 @@ stateDiagram-v2
 ```
 
 `Reviewed` は画面上の検証状態であり、DB の status の値を増設したものではない。
+
 画面、API 及び処理の対応は、`PlanningWorkspace.tsx` → `/planning/drafts/*` → `application/planning.py` である。
-`tests/test_planning_retry_api.py`、`tests/test_planning_postgres.py`、`frontend/tests/visual/planning-flow.pw.ts` 等の実行結果は、公開範囲外に保管している検証記録で照合する。図に記載があることだけをもって、テスト済みとはしない。
+
+`tests/test_planning_retry_api.py`、`tests/test_planning_postgres.py`、`frontend/tests/visual/planning-flow.pw.ts` 等の実行結果は、監査台帳（公開範囲外）で照合する。図に記載があることだけをもって、テスト済みとはしない。
 
 ## 3. 休暇申請（年休イベント台帳とは別）
 
@@ -42,7 +46,9 @@ stateDiagram-v2
 ```
 
 公開勤務から参照される申請の変更は、`require_unpublished_request` が拒否する。
+
 画面、API 及び処理の対応は、`PlanningRequests.tsx` → `/planning/requests` → `api/routers/planning.py` である。
+
 予約は、取得の実績ではない。上の図は申請の表示に限るものであり、年休の義務管理又は付与の訂正の法的な適合を表さない。
 
 ## 4. 人物制御と実行可能分の処理
@@ -61,6 +67,7 @@ flowchart TD
 ```
 
 画面、API 及び処理の対応は、`SubjectControlWorkflow.tsx` → `/planning/compliance/subject-controls/*` → `application/subject_controls.py` である。
+
 `CONTROL_APPLIED_REMAINS` は、「全コピーの消去の完了」ではない。未知の自由記述を、図の矢印だけを根拠に自動で承認しない。
 
 ## 5. 復元の開放
@@ -78,8 +85,10 @@ flowchart TD
 ```
 
 `BusinessWorkflow.tsx` の復旧画面は、読取り専用である。実際の復元は、運用 CLI で行う。
+
 図の参照先は、`control/restore_verification.py` 及び `control/service.py` の検証とする。
-時点復旧（PITR）、25か月の運用を想定した検証、全ての遷移の API 再生並びに目標復旧時点・目標復旧時間（RPO/RTO）について、従来から未達の項目がある。これらの項目の判定は、2026年9月28日の UI/UX 改修のテストでは変更していない。
+
+時点復旧（PITR）、25か月結合の検証、全ての遷移の API 再生並びに目標復旧時点・目標復旧時間（RPO/RTO）について、従来から未達の項目がある。これらの項目の判定は、2026年9月28日の UI/UX 改修のテストでは変更していない。
 
 ## 6. 本人表示の確認状態
 
@@ -95,7 +104,9 @@ stateDiagram-v2
 ```
 
 `Checking` 及び `Unavailable` の間は、業務の入力を保持したまま非表示とし、操作できないようにする。`Ended` では、旧業務を破棄する。
+
 `GET /auth/me` は、署名及び失効を確認済みのアカウント情報を返す。`GET /auth/legacy-context` は、旧来のスコープなしの API のために、単一の所属の職員ID及び実効権限を返す。両者を名前の照合で結び付けない。
+
 ヘッダー及びサイドバーは、IdentityProvider の同じメモリ上の応答を使用する。DB スキーマの変更はない。
 
 ## 7. 改訂履歴

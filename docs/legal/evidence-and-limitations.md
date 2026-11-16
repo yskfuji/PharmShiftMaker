@@ -11,7 +11,7 @@
 
 | 判断 | 根拠 | 採用した内容 | 反証・限界 |
 |---|---|---|---|
-| 独自部分の権利を著作権者が単独で保有し、利用には事前の書面による許諾を要するものとする（2026年10月25日に MIT License から変更） | [GitHub「Licensing a repository」](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)、[SPDX MIT](https://spdx.org/licenses/MIT) | 権利者、対象年及び利用条件を `LICENSE` に記載する。変更前に MIT License の下で取得された複製の権利が遡って消滅しないことを明記する | 公開期間中の複製及び fork は回収できない。免責の条項は、強行法規上の義務を消滅させない |
+| 独自部分の権利を著作権者が単独で保有し、利用には事前の書面による許諾を要するものとする（2026年10月25日に MIT License から変更） | [GitHub「Licensing a repository」](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)、[SPDX MIT](https://spdx.org/licenses/MIT) | 権利者、対象年及び利用条件を `LICENSE` に記載する。変更前に MIT License の下で取得された複製の権利が遡って消滅しないことを明記する | 公開した後の複製及び fork は回収できない。免責の条項は、強行法規上の義務を消滅させない |
 | 導入施設の責務を別の文書にする | [個人情報保護委員会・通則編](https://www.ppc.go.jp/personalinfo/legal/guidelines_tsusoku/) | 利用目的、安全管理措置、従業者・委託先の監督、本人への対応、保存及び消去を、導入施設が定める | 汎用の文書だけでは、個別の事業者又は医療機関の適法性を確認することはできない |
 | 全ての勤務形態について法令への適合を自動判定するとは表示しない | [厚生労働省「いわゆる『シフト制』について」](https://www.mhlw.go.jp/stf/newpage_22954.html) | 勤務案を候補と位置付け、契約、就業規則、労使協定等との照合を求める | 同資料の「シフト制」の定義は固定的な三交替勤務等を除くため、病院の全ての勤務形態へは一般化できない |
 | 医療情報を扱う構成は別途確認する | [厚生労働省「医療情報システムの安全管理に関するガイドライン 第7.0版」](https://www.mhlw.go.jp/stf/shingi/0000516275_00006.html) | 患者情報を既定では扱わない。扱う場合は、導入施設が適用範囲及び追加の措置を確認する | 職員の勤務を扱う合成環境をテストしただけでは、医療情報システムとしての適合を認定することはできない |

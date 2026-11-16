@@ -48,7 +48,7 @@
    | 薬剤師 | `pharmacist` | `pass-ph` |
 
 > **重要**
-> 前項の資格情報は、`scripts/remediation_test_server.py` が作成する一時環境専用である。常設環境又は実データ環境へ流用してはならない。
+> 手順4の資格情報は、`scripts/remediation_test_server.py` が作成する一時環境専用である。常設環境又は実データ環境へ流用してはならない。
 
 ## 4. 証明書が信頼されない場合
 
