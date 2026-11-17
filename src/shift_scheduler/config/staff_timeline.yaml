@@ -1,0 +1,107 @@
+# staff_people.yaml の合成人物に対する公開サンプルである。
+timeline:
+  - person_id: synthetic-pharmacist-01
+    from: 2024-01-01
+    to: null
+    profile_id: manager_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-02
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-03
+    from: 2024-01-01
+    to: null
+    profile_id: daytime_full_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-04
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-05
+    from: 2024-01-01
+    to: null
+    profile_id: weekday_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-06
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-07
+    from: 2024-01-01
+    to: null
+    profile_id: weekday_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-08
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-09
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-10
+    from: 2024-01-01
+    to: null
+    profile_id: newcomer_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-11
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-12
+    from: 2024-01-01
+    to: null
+    profile_id: weekday_newcomer
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-13
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-14
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-15
+    from: 2024-01-01
+    to: null
+    profile_id: newcomer_pharmacist
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-16
+    from: 2024-01-01
+    to: null
+    profile_id: weekday_newcomer
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-17
+    from: 2024-12-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: LEAVE
+  - person_id: synthetic-pharmacist-18
+    from: 2024-01-01
+    to: null
+    profile_id: veteran_pharmacist
+    status: INACTIVE
+  - person_id: synthetic-pharmacist-19
+    from: 2024-01-01
+    to: null
+    profile_id: part_time_mon_thu
+    status: ACTIVE
+  - person_id: synthetic-pharmacist-20
+    from: 2024-01-01
+    to: null
+    profile_id: part_time_mon_wed_fri
+    status: ACTIVE
+  - person_id: synthetic-assistant-01
+    from: 2024-01-01
+    to: null
+    profile_id: assistant_daytime
+    status: ACTIVE

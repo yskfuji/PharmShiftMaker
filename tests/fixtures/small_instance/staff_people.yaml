@@ -1,0 +1,19 @@
+people:
+  - person_id: alice
+    name: アリス
+    role: PHARMACIST
+  - person_id: bob
+    name: ボブ
+    role: PHARMACIST
+  - person_id: dave
+    name: デイブ
+    role: PHARMACIST
+  - person_id: frank
+    name: フランク
+    role: PHARMACIST
+  - person_id: erika
+    name: エリカ
+    role: PHARMACIST
+  - person_id: claire
+    name: クレア
+    role: ASSISTANT

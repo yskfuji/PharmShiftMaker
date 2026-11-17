@@ -1,0 +1,44 @@
+title = "PharmShiftMaker secret scan"
+
+[extend]
+useDefault = true
+
+# These are fixed synthetic identifiers or source-inventory keys.  The
+# allowlist applies to the complete line, not to arbitrary high-entropy text.
+[[allowlists]]
+description = "Synthetic idempotency keys used by deterministic tests"
+regexTarget = "line"
+regexes = [
+  '''["']?idempotency_key["']?\s*[=:]\s*["'](?:synthetic-stale-u14|two-replace-01|derive-v3-catalogue)["']''',
+  # The placeholder keys a unit test hands to the code under test in place of a generated one.
+  '''["']?idempotency_key["']?\s*[=:]\s*["']idempotency-key-[0-9]["']''',
+  '''idempotency_key\)*\]?\)*\.toEqual\(\[(?:"idempotency-key-[0-9]"(?:,\s*)?)+\]\)''',
+]
+
+[[allowlists]]
+description = "Record key of the synthetic Storybook data (not a credential)"
+regexTarget = "match"
+regexes = [
+  '''key:\s*"synthetic-demand-key-1"''',
+]
+
+[[allowlists]]
+description = "Documented non-secret AWS Secrets Manager object names"
+regexTarget = "line"
+regexes = [
+  '''(?:AWS_SECRETS_MANAGER_SECRET_ID[^\n]*(?:pharmshift/prod|prod/pharmshift)|SecretId\s*==\s*["']prod/pharmshift["'])''',
+]
+
+[[allowlists]]
+description = "SHA-256-qualified source inventory symbols"
+regexTarget = "line"
+regexes = [
+  '''LongApiDiagnostics\.apply:[a-f0-9]{64}''',
+]
+
+[[allowlists]]
+description = "Storybook React element formatter expression (not a credential)"
+regexTarget = "secret"
+regexes = [
+  '''^o=e\.childrens$''',
+]

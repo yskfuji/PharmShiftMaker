@@ -1,0 +1,154 @@
+profiles:
+  - profile_id: manager_pharmacist
+    name: 管理者（夜勤不可）
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: false
+    holiday_allowed: false
+    allowed_weekdays: [0, 1, 2, 3, 4]
+    max_consecutive_working_days: 6
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 2
+    evening_max: 4
+  - profile_id: veteran_pharmacist
+    name: ベテラン薬剤師
+    employment_type: FULL_TIME
+    can_night_duty: true
+    can_on_call: true
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: true
+    holiday_allowed: true
+    allowed_weekdays: null
+    max_consecutive_working_days: 6
+    night_duty_min: 1
+    night_duty_max: 4
+    on_call_min: 0
+    on_call_max: 4
+    evening_min: 2
+    evening_max: 4
+  - profile_id: weekday_pharmacist
+    name: 平日限定薬剤師
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: false
+    holiday_allowed: false
+    allowed_weekdays: [0, 1, 2, 3, 4]
+    max_consecutive_working_days: 5
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 2
+    evening_max: 3
+  - profile_id: daytime_full_pharmacist
+    name: 日勤専従正社員
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: true
+    holiday_allowed: true
+    allowed_weekdays: null
+    max_consecutive_working_days: 6
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 2
+    evening_max: 4
+  - profile_id: weekday_newcomer
+    name: 平日限定新人薬剤師
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: false
+    weekend_allowed: false
+    holiday_allowed: false
+    allowed_weekdays: [0, 1, 2, 3, 4]
+    max_consecutive_working_days: 5
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 2
+    evening_max: 3
+  - profile_id: newcomer_pharmacist
+    name: 新人薬剤師
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: false
+    weekend_allowed: true
+    holiday_allowed: true
+    allowed_weekdays: null
+    max_consecutive_working_days: 5
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 2
+    evening_max: 3
+  - profile_id: part_time_mon_thu
+    name: パート（月〜木）
+    employment_type: PART_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: false
+    can_ward_alone: true
+    weekend_allowed: false
+    holiday_allowed: false
+    allowed_weekdays: [0, 1, 2, 3]
+    max_consecutive_working_days: 4
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 0
+    evening_max: 0
+  - profile_id: part_time_mon_wed_fri
+    name: パート（月・水・金）
+    employment_type: PART_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: false
+    can_ward_alone: true
+    weekend_allowed: false
+    holiday_allowed: false
+    allowed_weekdays: [0, 2, 4]
+    max_consecutive_working_days: 4
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 0
+    evening_max: 0
+  - profile_id: assistant_daytime
+    name: 調剤補佐（日勤のみ）
+    employment_type: PART_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: false
+    can_ward_alone: false
+    weekend_allowed: false
+    holiday_allowed: false
+    allowed_weekdays: [0, 2, 3]
+    max_consecutive_working_days: 3
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 0
+    evening_max: 0

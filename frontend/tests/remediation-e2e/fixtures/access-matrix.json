@@ -1,0 +1,180 @@
+{
+  "about": "Role-specific discovery from /planning; hidden pages are separately visited as deep links and must still enforce the declared denial. UI visibility never substitutes for backend authorization.",
+  "scope": "hospital/pharmacy",
+  "pages": [
+    {
+      "key": "/dashboard",
+      "visit": "/dashboard",
+      "title": "ダッシュボード",
+      "h1": "ダッシュボード",
+      "nav": "ダッシュボード",
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "allowed"
+      }
+    },
+    {
+      "key": "/schedule/:year/:month",
+      "visit": "/schedule",
+      "title": "^\\d{4}年\\d{1,2}月のシフト$",
+      "h1": "^\\d{4}年\\d{1,2}月の確定済みシフトはありません$",
+      "nav": "業務管理",
+      "note": "The synthetic server stores no legacy confirmed schedule, so every role sees the no-schedule state (not the permission page).",
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "allowed"
+      }
+    },
+    {
+      "key": "/planning",
+      "visit": "/planning",
+      "title": "勤務表・計画",
+      "h1": "勤務表・計画",
+      "nav": "勤務表・計画",
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "allowed"
+      }
+    },
+    {
+      "key": "/planning/workflows",
+      "visit": "/planning/workflows",
+      "title": "業務管理",
+      "h1": "業務管理",
+      "nav": "業務管理",
+      "links": {
+        "admin": [
+          "契約・制度",
+          "兼業・派遣照合",
+          "休暇",
+          "実績",
+          "個人情報管理",
+          "復旧状況"
+        ],
+        "leader": [
+          "兼業・派遣照合",
+          "休暇",
+          "実績",
+          "個人情報管理"
+        ],
+        "pharmacist": [
+          "兼業・派遣照合",
+          "休暇",
+          "個人情報管理"
+        ]
+      },
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "allowed"
+      }
+    },
+    {
+      "key": "/planning/workflows/contracts",
+      "visit": "/planning/workflows/contracts?scope=hospital%2Fpharmacy",
+      "title": "契約・制度",
+      "h1": "契約・制度",
+      "nav": "業務管理",
+      "state_text": "この業務を操作する権限がありません。",
+      "roles": {
+        "admin": "allowed",
+        "leader": "denied",
+        "pharmacist": "denied"
+      }
+    },
+    {
+      "key": "/planning/workflows/outside",
+      "visit": "/planning/workflows/outside?scope=hospital%2Fpharmacy",
+      "title": "兼業・派遣照合",
+      "h1": "兼業・派遣照合",
+      "nav": "業務管理",
+      "state_text": "この業務を操作する権限がありません。",
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "allowed"
+      }
+    },
+    {
+      "key": "/planning/workflows/leave",
+      "visit": "/planning/workflows/leave?scope=hospital%2Fpharmacy",
+      "title": "休暇",
+      "h1": "休暇",
+      "nav": "業務管理",
+      "state_text": "この業務を操作する権限がありません。",
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "allowed"
+      }
+    },
+    {
+      "key": "/planning/workflows/actuals",
+      "visit": "/planning/workflows/actuals?scope=hospital%2Fpharmacy",
+      "title": "実績",
+      "h1": "実績",
+      "nav": "業務管理",
+      "state_text": "この業務を操作する権限がありません。",
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "denied"
+      }
+    },
+    {
+      "key": "/planning/workflows/privacy",
+      "visit": "/planning/workflows/privacy?scope=hospital%2Fpharmacy",
+      "title": "個人情報管理",
+      "h1": "個人情報管理",
+      "nav": "業務管理",
+      "state_text": "この業務を操作する権限がありません。",
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "allowed"
+      }
+    },
+    {
+      "key": "/planning/workflows/recovery",
+      "visit": "/planning/workflows/recovery?scope=hospital%2Fpharmacy",
+      "title": "復旧状況",
+      "h1": "復旧状況",
+      "nav": "業務管理",
+      "state_text": "この業務を操作する権限がありません。",
+      "roles": {
+        "admin": "allowed",
+        "leader": "denied",
+        "pharmacist": "denied"
+      }
+    },
+    {
+      "key": "/requests",
+      "visit": "/requests",
+      "title": "旧休暇枠 — 互換管理",
+      "h1": "旧休暇枠",
+      "nav": "業務管理",
+      "state_text": "旧休暇枠を参照する権限がありません。本人の請求・残高は休暇の業務画面で確認できます。",
+      "roles": {
+        "admin": "allowed",
+        "leader": "allowed",
+        "pharmacist": "denied"
+      }
+    },
+    {
+      "key": "/settings",
+      "visit": "/settings",
+      "title": "施設設定",
+      "h1": "施設設定",
+      "nav": "施設設定",
+      "state_text": "施設の設定は管理者だけが操作できます。管理者の所属がありません。",
+      "roles": {
+        "admin": "allowed",
+        "leader": "limited",
+        "pharmacist": "limited"
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# 公開デモ専用の合成人物であり、実在の人物とは関係がない。
+people:
+  - person_id: demo-pharmacist-01
+    name: 合成薬剤師D01
+    role: PHARMACIST
+  - person_id: demo-pharmacist-02
+    name: 合成薬剤師D02
+    role: PHARMACIST
+  - person_id: demo-pharmacist-03
+    name: 合成薬剤師D03
+    role: PHARMACIST
+  - person_id: demo-pharmacist-04
+    name: 合成薬剤師D04
+    role: PHARMACIST

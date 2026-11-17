@@ -1,0 +1,17 @@
+{
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "strict",
+  "venvPath": ".",
+  "venv": ".venv",
+  "include": [
+    "src",
+    "tests",
+    "scripts"
+  ],
+  "exclude": [
+    "frontend",
+    "tools",
+    "**/node_modules",
+    "**/__pycache__"
+  ]
+}

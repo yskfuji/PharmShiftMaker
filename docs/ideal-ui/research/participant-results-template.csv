@@ -1,0 +1,3 @@
+participant_id,role,order,condition,task_id,critical,independent_success,critical_error,time_seconds,seq,nasa_tlx,visawi_s
+SYN-001,ADMIN,AB,current,ADM-PUBLISH,1,,,,,,
+SYN-001,ADMIN,AB,ideal,ADM-PUBLISH,1,,,,,,

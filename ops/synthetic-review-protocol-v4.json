@@ -1,0 +1,173 @@
+{
+  "protocol": "synthetic-review-protocol-v4",
+  "registered_at": "2026-09-24",
+  "status": "synthetic_fixture_only",
+  "boundary": "Synthetic 25-month canonical evaluation only. Not the hospital's retention schedule, not a legal determination, and not an approval of real staff data. Values were fixed from category semantics before any reviewed 25-month run and must not be tuned to its outcome.",
+  "reviewer": {
+    "actor": "synthetic-protocol-reviewer",
+    "evidence_reference_prefix": "synthetic-review-protocol-v4",
+    "separate_from_observer": true
+  },
+  "retention_rules": [
+    {
+      "category": "planning_history",
+      "anchor": "last_activity",
+      "retention_days": 365,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: superseded scheduling drafts, jobs, inputs and receipts"
+    },
+    {
+      "category": "planning_history",
+      "anchor": "period_end",
+      "retention_days": 365,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: closed planning inputs counted from their planning period end (same period as other planning history)"
+    },
+    {
+      "category": "audit",
+      "anchor": "last_activity",
+      "retention_days": 365,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: operational event outbox and notification reads"
+    },
+    {
+      "category": "compliance",
+      "anchor": "last_activity",
+      "retention_days": 1095,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: working-time and leave records (placeholder, facility rule unconfirmed)"
+    },
+    {
+      "category": "identity",
+      "anchor": "last_activity",
+      "retention_days": 1825,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: staff identity and membership records (placeholder, facility rule unconfirmed)"
+    },
+    {
+      "category": "privacy_cases",
+      "anchor": "last_activity",
+      "retention_days": 1825,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: privacy request case records"
+    }
+  ],
+  "retention_rule_common": {
+    "effective_from": "2026-01-01",
+    "effective_until": "2036-01-01",
+    "next_review": "2029-01-01",
+    "owner": "synthetic-protocol-officer"
+  },
+  "database_subject_review": {
+    "structured_keys": [
+      "person_id",
+      "person_ids"
+    ],
+    "typed_parent_relations": {
+      "input_hash": "planning_inputs.payload (not for planning_inputs itself)",
+      "draft_id": "planning_drafts -> planning_inputs.payload (not for planning_drafts itself)",
+      "entity_key": "compliance_entities.payload",
+      "event_id": "planning_outbox.payload (planning_notification_reads only)",
+      "planning_leave_events": "publication_id -> planning_publications.payload, plus grant_id -> planning_leave_balances.person_id",
+      "planning_outbox compliance.*": "payload.key -> compliance_entities.payload with matching kind",
+      "planning_outbox request.submit/decision/withdraw, leave.request": "payload.request_id -> planning_requests row",
+      "planning_outbox privacy.request/decision": "payload.case_id -> privacy_cases row",
+      "planning_outbox leave.settled": "payload.event_id -> planning_leave_events -> planning_leave_balances row",
+      "planning_outbox job.cancel": "payload.job_id -> planning_jobs -> planning_inputs.payload",
+      "planning_outbox payload.input_hash / payload.draft_id": "planning_inputs.payload (via planning_drafts)",
+      "precedence": "a matching planning_outbox typed event relation replaces the generic top-level parent"
+    },
+    "approve_only_if": [
+      "source row exists and its jsonb sha256 equals the registered content hash",
+      "scope is the reviewed facility scope (never __unclassified__)",
+      "independently extracted structured subject set equals the registered subject set and contains the requested person",
+      "no known person identifier or registered name occurs in any unstructured string value"
+    ],
+    "reject_reasons": [
+      "source_missing_or_hash_changed",
+      "unclassified_scope",
+      "subject_set_mismatch",
+      "person_reference_in_unstructured_text"
+    ],
+    "typed_actor_accounts": {
+      "keys": [
+        "actor",
+        "created_by",
+        "requested_by",
+        "reviewed_by",
+        "published_by",
+        "decided_by"
+      ],
+      "decision_verified_by_paths": [
+        [
+          "decision"
+        ],
+        [
+          "payload",
+          "decision"
+        ]
+      ],
+      "resolution": "account_memberships.subject equals the value (active or inactive); membership scope equals the row scope unless the row scope is missing/__unclassified__; issuer must match when the object carries an issuer",
+      "excluded_from_unstructured_scan": "only when the value resolved to at least one membership in the row scope"
+    },
+    "name_exemption": "a name value is exempt only when it is a registered name of the person_id in the same object",
+    "verified_status_trust": "only this protocol hash reviewer evidence bound to the current content hash; otherwise independently re-checked and re-recorded"
+  },
+  "shared_preservation_review": {
+    "approve_only_if": [
+      "subject review of the row is VERIFIED",
+      "no owner of the row is under an active legal hold",
+      "no other owner already has an approved erasure control (joint review is required instead)",
+      "projection adapter is partial-planning-history-v1 and its payload hash is the one reviewed",
+      "the projected payload retains no occurrence of the erased person's identifier or name"
+    ],
+    "reject_reasons": [
+      "owner_under_legal_hold",
+      "other_owner_already_controlled_joint_review_required",
+      "projection_unavailable",
+      "projection_retains_subject_reference"
+    ]
+  },
+  "joint_file_review": {
+    "approve_only_if": [
+      "the application exposes a joint-review context for the copy (all owners approved and controlled, no hold, retention expired)",
+      "the file on disk hashes to the context source hash",
+      "the reviewer parses the snapshot itself: its people set equals the registered owners and the context owners",
+      "every owner has an approved erasure control (ErasedSubject) in the facility",
+      "no known person identifier outside the owners occurs anywhere in the snapshot text",
+      "the reviewer read the whole shared text and records shared_text_reviewed"
+    ]
+  },
+  "supersedes": {
+    "protocol": "synthetic-review-protocol-v3",
+    "file": "ops/synthetic-review-protocol-v3.json",
+    "revised_after_observing": "audit/subject-erasure-reviewed-2026-09-23-r3 residual analysis",
+    "observation": "Residuals were blocked by a single-anchor retention rule for planning_history, by the absence of a joint database path, and by the lack of any post-expiry processing.",
+    "change": "Adds a period_end rule with the same 365-day period as the existing planning_history rule, a joint database review with independent checks, a rule reconfirmation step and a pre-registered post-expiry time. Existing criteria are unchanged; v1-v3 and their results are retained."
+  },
+  "retention_rule_reconfirmation": {
+    "when": "a protocol rule is past next_review at review time",
+    "action": "record a new revision with identical values and next_review = review time + 365 days",
+    "boundary": "Synthetic governance step so that post-expiry processing is evaluated under a current rule; not a legal review."
+  },
+  "joint_database_review": {
+    "approve_only_if": [
+      "the application exposes a joint-review context for the row (at least two controlled owners, no hold on any owner, retention expired)",
+      "every controlled participant independently has an approved erasure control and an APPROVED case whose revision equals the control case revision",
+      "the retained owners equal the registered owners minus the controlled participants",
+      "a retained partial history, when present, structurally names only retained owners and contains no identifier or registered name of a controlled participant",
+      "the row subject review is this protocol own VERIFIED evidence for the current content"
+    ],
+    "reject_reasons": [
+      "joint_context_unavailable",
+      "participant_control_or_case_mismatch",
+      "retained_owner_mismatch",
+      "projection_names_controlled_person"
+    ]
+  },
+  "deferred_expiry": {
+    "rule": "deferred time = latest canonical event recorded_at + max(retention_days of this protocol) + 1 day",
+    "action": "reviewer re-reviews, then a new plan and execution per person with new idempotency keys",
+    "boundary": "Evaluated after the canonical PITR target is marked; canonical comparisons use the snapshot before this phase."
+  }
+}

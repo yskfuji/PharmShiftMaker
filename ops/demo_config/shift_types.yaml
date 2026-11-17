@@ -1,0 +1,16 @@
+shift_types:
+  - shift_id: DAY
+    name: 日勤
+    category: DAY_SHIFT
+    required_count: 1
+    applicable_day_types:
+      - WEEKDAY
+      - HOLIDAY
+      - SATURDAY
+      - SUNDAY
+  - shift_id: NIGHT
+    name: 夜勤
+    category: NIGHT_DUTY
+    required_count: 1
+    applicable_day_types:
+      - WEEKDAY

@@ -1,0 +1,53 @@
+name: 不具合報告
+description: 合成データで再現できる不具合を報告する
+title: "[不具合] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        脆弱性は公開issueに記載せず、Securityタブの非公開届出を利用してください。
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 公開前の確認
+      options:
+        - label: 実在する職員、患者、施設担当者その他の本人情報を含めていない。
+          required: true
+        - label: 認証情報、秘密鍵、内部URL又は本番ログを含めていない。
+          required: true
+        - label: 再現に合成データを用いている。
+          required: true
+  - type: input
+    id: commit
+    attributes:
+      label: 対象コミット
+      placeholder: 40文字のcommit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: 最小の手順、役割、画面、合成入力を記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待した結果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の結果
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 実行環境
+      description: OS、Python、Node.js、ブラウザ、DBの版を記載してください。
+    validations:
+      required: true

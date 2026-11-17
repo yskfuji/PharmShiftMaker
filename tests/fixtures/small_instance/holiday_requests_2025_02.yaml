@@ -1,0 +1,9 @@
+requests:
+  - person_id: alice
+    date: 2025-02-03
+    kind: PUBLIC_HOLIDAY_REQUEST
+    order: 1
+  - person_id: dave
+    date: 2025-02-03
+    kind: PUBLIC_HOLIDAY_REQUEST
+    order: 2

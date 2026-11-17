@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "noEmit": true, "incremental": false, "types": ["node"] },
+  "include": ["./*.ts", "./*.tsx", "../stories/**/*.ts", "../stories/**/*.tsx", "../src/**/*.d.ts"]
+}

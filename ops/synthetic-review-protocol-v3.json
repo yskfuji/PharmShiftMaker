@@ -1,0 +1,141 @@
+{
+  "protocol": "synthetic-review-protocol-v3",
+  "registered_at": "2026-09-23",
+  "status": "synthetic_fixture_only",
+  "boundary": "Synthetic 25-month canonical evaluation only. Not the hospital's retention schedule, not a legal determination, and not an approval of real staff data. Values were fixed from category semantics before any reviewed 25-month run and must not be tuned to its outcome.",
+  "reviewer": {
+    "actor": "synthetic-protocol-reviewer",
+    "evidence_reference_prefix": "synthetic-review-protocol-v3",
+    "separate_from_observer": true
+  },
+  "retention_rules": [
+    {
+      "category": "planning_history",
+      "anchor": "last_activity",
+      "retention_days": 365,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: superseded scheduling drafts, jobs, inputs and receipts"
+    },
+    {
+      "category": "audit",
+      "anchor": "last_activity",
+      "retention_days": 365,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: operational event outbox and notification reads"
+    },
+    {
+      "category": "compliance",
+      "anchor": "last_activity",
+      "retention_days": 1095,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: working-time and leave records (placeholder, facility rule unconfirmed)"
+    },
+    {
+      "category": "identity",
+      "anchor": "last_activity",
+      "retention_days": 1825,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: staff identity and membership records (placeholder, facility rule unconfirmed)"
+    },
+    {
+      "category": "privacy_cases",
+      "anchor": "last_activity",
+      "retention_days": 1825,
+      "legal_minimum_days": 0,
+      "purpose": "Synthetic protocol: privacy request case records"
+    }
+  ],
+  "retention_rule_common": {
+    "effective_from": "2026-01-01",
+    "effective_until": "2029-01-01",
+    "next_review": "2029-01-01",
+    "owner": "synthetic-protocol-officer"
+  },
+  "database_subject_review": {
+    "structured_keys": [
+      "person_id",
+      "person_ids"
+    ],
+    "typed_parent_relations": {
+      "input_hash": "planning_inputs.payload (not for planning_inputs itself)",
+      "draft_id": "planning_drafts -> planning_inputs.payload (not for planning_drafts itself)",
+      "entity_key": "compliance_entities.payload",
+      "event_id": "planning_outbox.payload (planning_notification_reads only)",
+      "planning_leave_events": "publication_id -> planning_publications.payload, plus grant_id -> planning_leave_balances.person_id",
+      "planning_outbox compliance.*": "payload.key -> compliance_entities.payload with matching kind",
+      "planning_outbox request.submit/decision/withdraw, leave.request": "payload.request_id -> planning_requests row",
+      "planning_outbox privacy.request/decision": "payload.case_id -> privacy_cases row",
+      "planning_outbox leave.settled": "payload.event_id -> planning_leave_events -> planning_leave_balances row",
+      "planning_outbox job.cancel": "payload.job_id -> planning_jobs -> planning_inputs.payload",
+      "planning_outbox payload.input_hash / payload.draft_id": "planning_inputs.payload (via planning_drafts)",
+      "precedence": "a matching planning_outbox typed event relation replaces the generic top-level parent"
+    },
+    "approve_only_if": [
+      "source row exists and its jsonb sha256 equals the registered content hash",
+      "scope is the reviewed facility scope (never __unclassified__)",
+      "independently extracted structured subject set equals the registered subject set and contains the requested person",
+      "no known person identifier or registered name occurs in any unstructured string value"
+    ],
+    "reject_reasons": [
+      "source_missing_or_hash_changed",
+      "unclassified_scope",
+      "subject_set_mismatch",
+      "person_reference_in_unstructured_text"
+    ],
+    "typed_actor_accounts": {
+      "keys": [
+        "actor",
+        "created_by",
+        "requested_by",
+        "reviewed_by",
+        "published_by",
+        "decided_by"
+      ],
+      "decision_verified_by_paths": [
+        [
+          "decision"
+        ],
+        [
+          "payload",
+          "decision"
+        ]
+      ],
+      "resolution": "account_memberships.subject equals the value (active or inactive); membership scope equals the row scope unless the row scope is missing/__unclassified__; issuer must match when the object carries an issuer",
+      "excluded_from_unstructured_scan": "only when the value resolved to at least one membership in the row scope"
+    },
+    "name_exemption": "a name value is exempt only when it is a registered name of the person_id in the same object",
+    "verified_status_trust": "only this protocol hash reviewer evidence bound to the current content hash; otherwise independently re-checked and re-recorded"
+  },
+  "shared_preservation_review": {
+    "approve_only_if": [
+      "subject review of the row is VERIFIED",
+      "no owner of the row is under an active legal hold",
+      "no other owner already has an approved erasure control (joint review is required instead)",
+      "projection adapter is partial-planning-history-v1 and its payload hash is the one reviewed",
+      "the projected payload retains no occurrence of the erased person's identifier or name"
+    ],
+    "reject_reasons": [
+      "owner_under_legal_hold",
+      "other_owner_already_controlled_joint_review_required",
+      "projection_unavailable",
+      "projection_retains_subject_reference"
+    ]
+  },
+  "joint_file_review": {
+    "approve_only_if": [
+      "the application exposes a joint-review context for the copy (all owners approved and controlled, no hold, retention expired)",
+      "the file on disk hashes to the context source hash",
+      "the reviewer parses the snapshot itself: its people set equals the registered owners and the context owners",
+      "every owner has an approved erasure control (ErasedSubject) in the facility",
+      "no known person identifier outside the owners occurs anywhere in the snapshot text",
+      "the reviewer read the whole shared text and records shared_text_reviewed"
+    ]
+  },
+  "supersedes": {
+    "protocol": "synthetic-review-protocol-v2",
+    "file": "ops/synthetic-review-protocol-v2.json",
+    "revised_after_observing": "audit/subject-erasure-reviewed-2026-09-23-r2 and an independent code review",
+    "observation": "Independent review found that v2 skipped every typed actor value in the unstructured scan even when unresolved, skipped any name next to a person_id, trusted application-set VERIFIED status, and approved joint file erasure without the reviewer comparing the snapshot people itself.",
+    "change": "Stricter only. Actor values are exempt from the unstructured scan only when they resolved to a membership in the row scope; a name is exempt only when it is a registered name of that object person_id; VERIFIED is trusted only with this protocol hash own reviewer evidence bound to the current content hash, otherwise the row is independently re-checked; joint file approval requires the reviewer own comparison of snapshot people, registered owners, context owners and each owner approved control, plus no unregistered known token. Retention values are unchanged. v1/v2 and their results are retained."
+  }
+}

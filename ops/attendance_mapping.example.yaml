@@ -1,0 +1,67 @@
+# 勤怠システム連携用のマッピングサンプル（人物はすべて合成データ）
+# - people: person_id → 勤怠システム上の社員コード等
+# - shifts: shift_id → 勤怠コードや勤務時間帯
+# このファイルを ops/attendance_mapping.yaml としてコピーし、実際のコードに合わせて編集してください。
+# 出力の文字コードは UTF-8（BOM なし）に固定する。CP932（Shift_JIS）で表せない文字（例：𠮷）も
+# 拒否せずそのまま出力するため、CP932 しか読めない勤怠システムでは受け側で変換・確認する。
+# 対応表は UTF-8（BOM 付きも可）で保存する。ほかの文字コードは読み込み時に止まる。
+
+defaults:
+  department_code: "PHARMACY"
+  location_code: "WARD"
+  break_minutes: 60
+  skip_shift_ids: ["OFF"]
+  output_columns:
+    - date
+    - employee_code
+    - person_id
+    - person_name
+    - shift_id
+    - shift_code
+    - start_time
+    - end_time
+    - break_minutes
+    - department_code
+    - location_code
+    - notes
+
+people:
+  synthetic-pharmacist-01:
+    employee_code: "EMP-001"
+    person_name: "合成薬剤師01"
+    department_code: "PHARM-A"
+  synthetic-pharmacist-02:
+    employee_code: "EMP-002"
+    person_name: "合成薬剤師02"
+  synthetic-pharmacist-03:
+    employee_code: "EMP-003"
+    person_name: "合成薬剤師03"
+    location_code: "WARD-3B"
+
+shifts:
+  DAY:
+    attendance_code: "DAY-NORMAL"
+    start_time: "08:30"
+    end_time: "17:15"
+    break_minutes: 60
+    notes: "日勤"
+  EVE:
+    attendance_code: "EVE-SHIFT"
+    start_time: "12:30"
+    end_time: "21:00"
+    break_minutes: 45
+    notes: "夕診"
+  NIGHT:
+    attendance_code: "NIGHT-DUTY"
+    start_time: "17:00"
+    end_time: "09:30"
+    break_minutes: 120
+    notes: "夜勤 (明け休含む)"
+  # 開始と終了が同じ24時間当直は、end_day_offset: 1 で翌日終了を明示し、defaults.output_columns に
+  # end_day_offset を加える（どちらかが欠けると、0時間と区別できないため変換を止める）。
+  # DUTY24:
+  #   attendance_code: "DUTY-24H"
+  #   start_time: "09:00"
+  #   end_time: "09:00"
+  #   end_day_offset: 1
+  #   break_minutes: 120

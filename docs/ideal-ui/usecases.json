@@ -1,0 +1,1064 @@
+{
+  "version": 3,
+  "generated_contract": "Each use case names its routed screen and child view, authorized roles, visible states, safe transitions, Storybook evidence, API and persisted-entity evidence, audit events, and formal browser E2E id.",
+  "workspace_screens": [
+    {"key": "home", "label": "今日", "hint": "判断が必要なこと"},
+    {"key": "schedule", "label": "勤務表", "hint": "月間計画と自分の予定"},
+    {"key": "plan", "label": "計画", "hint": "生成・比較・公開"},
+    {"key": "operations", "label": "当日運用", "hint": "欠勤と代替対応"},
+    {"key": "requests", "label": "申請", "hint": "休暇と勤務交換"},
+    {"key": "people", "label": "職員", "hint": "入職から退職まで"},
+    {"key": "governance", "label": "ガバナンス", "hint": "監査・復旧・個人情報"},
+    {"key": "settings", "label": "設定", "hint": "施設と通知"}
+  ],
+  "workspace_routes": [
+    {"screen": "home", "view": "index", "route": "/workspace/home", "label": "今日", "short": "判断が必要なこと", "description": "今対応すること、今日把握すること、最近変わったことを確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "schedule", "view": "index", "route": "/workspace/schedule", "label": "勤務表", "short": "月間計画と自分の予定", "description": "公開版、直前版との差分、職員・資格ごとの勤務を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "plan", "view": "input", "route": "/workspace/plan/input", "label": "前提・取込", "short": "入力の確定", "description": "契約・資格・必要配置と入力版を確認します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "plan", "view": "generate", "route": "/workspace/plan/generate", "label": "候補生成", "short": "3案を作成", "description": "同じ前提から探索条件だけを変えた勤務案を作ります。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "plan", "view": "compare", "route": "/workspace/plan/compare", "label": "案の比較", "short": "差を比較", "description": "違反・変更数・希望充足・勤務時間差を同じ定義で比較します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "plan", "view": "drafts", "route": "/workspace/plan/drafts", "label": "確認・編集", "short": "検証する", "description": "割当を確認・編集し、サーバー検証と競合解決を行います。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "plan", "view": "publications", "route": "/workspace/plan/publications", "label": "公開版", "short": "通知まで確認", "description": "公開前の影響、公開履歴、取消と通知状態を確認します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "operations", "view": "today", "route": "/workspace/operations/today", "label": "今日の予定", "short": "予定と充足", "description": "予定上の勤務と充足状態を、観測時刻とともに確認します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "operations", "view": "cases", "route": "/workspace/operations/cases", "label": "欠勤・交換", "short": "判断と通知", "description": "候補・同意・独立承認・通知を一つの判断面で扱います。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "requests", "view": "mine", "route": "/workspace/requests/mine", "label": "自分の申請", "short": "履歴と次の操作", "description": "自分に関係する申請の状態と、次に必要な操作を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "requests", "view": "leave", "route": "/workspace/requests/leave", "label": "休暇", "short": "残高・予約・取得", "description": "休暇の残高、予約、実取得を分けて申請・確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "requests", "view": "swap", "route": "/workspace/requests/swap", "label": "勤務交換", "short": "相手と責任者", "description": "依頼、相手の同意、責任者の判断を段階ごとに確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "requests", "view": "outside", "route": "/workspace/requests/outside", "label": "兼業・外部勤務", "short": "申告と照合", "description": "本人の申告と管理者による原本照合を分けて記録します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "people", "view": "directory", "route": "/workspace/people/directory", "label": "職員一覧", "short": "検索と詳細", "description": "職員を検索し、所属・契約・資格・手続きを一人ずつ確認します。", "roles": ["ADMIN"]},
+    {"screen": "people", "view": "memberships", "route": "/workspace/people/memberships", "label": "本人アカウント", "short": "紐付けと無効化", "description": "本人アカウントの紐付けと無効化を確認付きで行います。", "roles": ["ADMIN"]},
+    {"screen": "people", "view": "lifecycle", "route": "/workspace/people/lifecycle", "label": "入職・退職", "short": "長期タスク", "description": "システム判定と手動証跡を分けたタスクリストで進めます。", "roles": ["ADMIN"]},
+    {"screen": "people", "view": "contracts", "route": "/workspace/people/contracts", "label": "契約・資格", "short": "原本と改訂", "description": "契約・資格・必要配置の原本確認と改訂履歴を扱います。", "roles": ["ADMIN"]},
+    {"screen": "governance", "view": "audit", "route": "/workspace/governance/audit", "label": "監査", "short": "匿名化イベント", "description": "氏名や職員IDを含めず、役割・人数・版・時刻を追跡します。", "roles": ["ADMIN"]},
+    {"screen": "governance", "view": "actuals", "route": "/workspace/governance/actuals", "label": "実績照合", "short": "取込から確定", "description": "実績原本の取込、行エラー、差分、確定を順に確認します。", "roles": ["ADMIN", "LEADER"]},
+    {"screen": "governance", "view": "privacy", "route": "/workspace/governance/privacy", "label": "個人情報", "short": "請求・保留・消去", "description": "本人請求、法的保留、残存データ、不可逆性を分けて確認します。", "roles": ["ADMIN", "PHARMACIST"]},
+    {"screen": "governance", "view": "recovery", "route": "/workspace/governance/recovery", "label": "復旧", "short": "状態と証跡", "description": "復旧後の状態と照合証跡を閲覧します。Webから復元は実行しません。", "roles": ["ADMIN"]},
+    {"screen": "settings", "view": "appearance", "route": "/workspace/settings/appearance", "label": "外観", "short": "個人設定", "description": "配色と動きの設定を端末設定と合わせて選びます。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "settings", "view": "notifications", "route": "/workspace/settings/notifications", "label": "通知", "short": "本人宛て", "description": "本人宛ての通知と確認状態を管理します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "settings", "view": "absence-consent", "route": "/workspace/settings/absence-consent", "label": "欠勤の同意", "short": "scope設定", "description": "代替者の同意要否、適用範囲、版、変更履歴を確認します。", "roles": ["ADMIN", "LEADER", "PHARMACIST"]},
+    {"screen": "settings", "view": "flextime", "route": "/workspace/settings/flextime", "label": "フレックス", "short": "二者確認", "description": "第一管理者の登録と別管理者の確認を別の状態として扱います。", "roles": ["ADMIN"]}
+  ],
+  "use_cases": [
+    {
+      "id": "U01",
+      "title": "認証・役割・scope",
+      "screen": "home",
+      "view": "index",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/home",
+      "transitions": [
+        "/workspace/operations/cases",
+        "/workspace/schedule"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--today",
+      "apis": [
+        "GET /auth/me",
+        "GET /planning/scopes"
+      ],
+      "entities": [
+        "account_memberships",
+        "planning_scopes"
+      ],
+      "states": [
+        "ready",
+        "empty",
+        "unauthenticated",
+        "forbidden"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u01-auth-scope",
+      "deep_e2e": "ideal-deep-u01-auth-scope"
+    },
+    {
+      "id": "U02",
+      "title": "本人勤務と個人出力",
+      "screen": "schedule",
+      "view": "index",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/schedule",
+      "transitions": [
+        "/workspace/requests/leave",
+        "/workspace/requests/swap",
+        "/workspace/operations/cases"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--schedule",
+      "apis": [
+        "GET /planning/schedule-calendar",
+        "GET /planning/personal-schedule/{publication_id}",
+        "GET /planning/personal-schedule/{publication_id}/content"
+      ],
+      "entities": [
+        "planning_publications",
+        "account_memberships"
+      ],
+      "states": [
+        "ready",
+        "empty",
+        "conflict",
+        "forbidden"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u02-personal-schedule",
+      "deep_e2e": "ideal-deep-u02-personal-schedule"
+    },
+    {
+      "id": "U03",
+      "title": "三候補生成・比較・公開",
+      "screen": "plan",
+      "view": "compare",
+      "roles": [
+        "ADMIN",
+        "LEADER"
+      ],
+      "route": "/workspace/plan/compare",
+      "transitions": [
+        "/workspace/plan/input",
+        "/workspace/plan/generate",
+        "/workspace/plan/compare",
+        "/workspace/plan/drafts",
+        "/workspace/plan/publications",
+        "/workspace/schedule"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--plan-compare",
+      "apis": [
+        "POST /planning/jobs",
+        "GET /planning/plan-comparison",
+        "POST /planning/drafts/{draft_id}/review",
+        "POST /planning/drafts/{draft_id}/publish"
+      ],
+      "entities": [
+        "planning_jobs",
+        "planning_drafts",
+        "planning_publications"
+      ],
+      "states": [
+        "ready",
+        "loading",
+        "failure",
+        "conflict"
+      ],
+      "audit_events": [
+        "schedule.published"
+      ],
+      "e2e": "ideal-u03-plan-publish",
+      "deep_e2e": "ideal-deep-u03-plan-publish"
+    },
+    {
+      "id": "U04",
+      "title": "古い入力の更新",
+      "screen": "plan",
+      "view": "input",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/plan/input",
+      "transitions": [
+        "/workspace/plan/input",
+        "/workspace/plan/generate",
+        "/workspace/plan/compare",
+        "/workspace/plan/drafts",
+        "/workspace/plan/publications",
+        "/workspace/schedule"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--plan-input",
+      "apis": [
+        "GET /planning/inputs/latest",
+        "POST /planning/inputs/refresh",
+        "POST /planning/candidates/derive"
+      ],
+      "entities": [
+        "planning_inputs",
+        "planning_input_heads"
+      ],
+      "states": [
+        "ready",
+        "stale",
+        "conflict"
+      ],
+      "audit_events": [
+        "candidates.derived"
+      ],
+      "e2e": "ideal-u04-stale-input",
+      "deep_e2e": "ideal-deep-u04-stale-input"
+    },
+    {
+      "id": "U05",
+      "title": "同意不要の欠勤",
+      "screen": "operations",
+      "view": "cases",
+      "roles": [
+        "ADMIN",
+        "LEADER"
+      ],
+      "route": "/workspace/operations/cases",
+      "transitions": [
+        "/workspace/home",
+        "/workspace/schedule",
+        "/workspace/governance/audit"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--operations-cases",
+      "apis": [
+        "POST /planning/change-cases",
+        "POST /planning/change-cases/{case_id}/approve"
+      ],
+      "entities": [
+        "planning_change_cases",
+        "planning_change_events",
+        "planning_publications"
+      ],
+      "states": [
+        "ready",
+        "awaiting_independent_approval",
+        "approved",
+        "conflict"
+      ],
+      "audit_events": [
+        "change.absence.created",
+        "change.approved"
+      ],
+      "e2e": "ideal-u05-absence",
+      "deep_e2e": "ideal-deep-u05-absence"
+    },
+    {
+      "id": "U06",
+      "title": "勤務交換と同意",
+      "screen": "requests",
+      "view": "swap",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/requests/swap",
+      "transitions": [
+        "/workspace/schedule",
+        "/workspace/operations/cases"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-swap",
+      "apis": [
+        "GET /planning/change-cases/options",
+        "POST /planning/change-cases",
+        "POST /planning/change-cases/{case_id}/consent",
+        "POST /planning/change-cases/{case_id}/decline"
+      ],
+      "entities": [
+        "planning_change_cases",
+        "planning_change_events"
+      ],
+      "states": [
+        "awaiting_consent",
+        "ready",
+        "declined"
+      ],
+      "audit_events": [
+        "change.swap.created",
+        "change.swap.consented",
+        "change.swap.declined"
+      ],
+      "e2e": "ideal-u06-swap",
+      "deep_e2e": "ideal-deep-u06-swap"
+    },
+    {
+      "id": "U07",
+      "title": "申請取下げ",
+      "screen": "requests",
+      "view": "mine",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/requests/mine",
+      "transitions": [
+        "/workspace/schedule",
+        "/workspace/operations/cases"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-mine",
+      "apis": [
+        "POST /planning/change-cases/{case_id}/withdraw"
+      ],
+      "entities": [
+        "planning_change_cases",
+        "planning_change_events"
+      ],
+      "states": [
+        "ready",
+        "withdrawn",
+        "conflict"
+      ],
+      "audit_events": [
+        "change.withdrawn"
+      ],
+      "e2e": "ideal-u07-withdraw",
+      "deep_e2e": "ideal-deep-u07-withdraw"
+    },
+    {
+      "id": "U08",
+      "title": "欠勤同意設定",
+      "screen": "settings",
+      "view": "absence-consent",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/settings/absence-consent",
+      "transitions": [
+        "/workspace/settings/appearance",
+        "/workspace/settings/notifications",
+        "/workspace/settings/absence-consent",
+        "/workspace/settings/flextime"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--settings-absence-consent",
+      "apis": [
+        "GET /planning/scope-settings",
+        "POST /planning/scope-settings/absence-consent"
+      ],
+      "entities": [
+        "compliance_entities",
+        "compliance_revisions"
+      ],
+      "states": [
+        "enabled",
+        "disabled",
+        "forbidden",
+        "conflict"
+      ],
+      "audit_events": [
+        "scope_setting.saved"
+      ],
+      "e2e": "ideal-u08-absence-consent",
+      "deep_e2e": "ideal-deep-u08-absence-consent"
+    },
+    {
+      "id": "U09",
+      "title": "本人アカウント紐付け",
+      "screen": "people",
+      "view": "memberships",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/people/memberships",
+      "transitions": [
+        "/workspace/people/directory",
+        "/workspace/people/memberships",
+        "/workspace/people/lifecycle",
+        "/workspace/people/contracts"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--people-memberships",
+      "apis": [
+        "GET /planning/memberships",
+        "POST /planning/memberships"
+      ],
+      "entities": [
+        "account_memberships"
+      ],
+      "states": [
+        "ready",
+        "validation",
+        "conflict"
+      ],
+      "audit_events": [
+        "membership.linked"
+      ],
+      "e2e": "ideal-u09-membership-link",
+      "deep_e2e": "ideal-deep-u09-membership-link"
+    },
+    {
+      "id": "U10",
+      "title": "所属無効化",
+      "screen": "people",
+      "view": "memberships",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/people/memberships",
+      "transitions": [
+        "/workspace/people/directory",
+        "/workspace/people/memberships",
+        "/workspace/people/lifecycle",
+        "/workspace/people/contracts"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--people-memberships",
+      "apis": [
+        "POST /planning/memberships/{membership_id}/deactivate"
+      ],
+      "entities": [
+        "account_memberships"
+      ],
+      "states": [
+        "ready",
+        "self_blocked",
+        "last_admin_blocked",
+        "inactive"
+      ],
+      "audit_events": [
+        "membership.deactivated"
+      ],
+      "e2e": "ideal-u10-membership-deactivate",
+      "deep_e2e": "ideal-deep-u10-membership-deactivate"
+    },
+    {
+      "id": "U11",
+      "title": "入職タスク",
+      "screen": "people",
+      "view": "lifecycle",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/people/lifecycle",
+      "transitions": [
+        "/workspace/people/directory",
+        "/workspace/people/memberships",
+        "/workspace/people/lifecycle",
+        "/workspace/people/contracts"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--people-lifecycle",
+      "apis": [
+        "POST /planning/lifecycle-cases",
+        "GET /planning/lifecycle-cases",
+        "POST /planning/lifecycle-cases/{case_id}/tasks/{task_key}/attest"
+      ],
+      "entities": [
+        "staff_lifecycle_cases",
+        "staff_lifecycle_events"
+      ],
+      "states": [
+        "in_progress",
+        "ready"
+      ],
+      "audit_events": [
+        "lifecycle.onboard.created",
+        "lifecycle.task.completed"
+      ],
+      "e2e": "ideal-u11-onboarding",
+      "deep_e2e": "ideal-deep-u11-onboarding"
+    },
+    {
+      "id": "U12",
+      "title": "退職タスク",
+      "screen": "people",
+      "view": "lifecycle",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/people/lifecycle",
+      "transitions": [
+        "/workspace/people/directory",
+        "/workspace/people/memberships",
+        "/workspace/people/lifecycle",
+        "/workspace/people/contracts"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--people-lifecycle",
+      "apis": [
+        "POST /planning/lifecycle-cases",
+        "GET /planning/lifecycle-cases",
+        "POST /planning/lifecycle-cases/{case_id}/tasks/{task_key}/attest"
+      ],
+      "entities": [
+        "staff_lifecycle_cases",
+        "staff_lifecycle_events"
+      ],
+      "states": [
+        "in_progress",
+        "ready"
+      ],
+      "audit_events": [
+        "lifecycle.offboard.created",
+        "lifecycle.task.completed"
+      ],
+      "e2e": "ideal-u12-offboarding",
+      "deep_e2e": "ideal-deep-u12-offboarding"
+    },
+    {
+      "id": "U13",
+      "title": "監査タイムライン",
+      "screen": "governance",
+      "view": "audit",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/governance/audit",
+      "transitions": [
+        "/workspace/governance/audit",
+        "/workspace/governance/actuals",
+        "/workspace/governance/privacy",
+        "/workspace/governance/recovery"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-audit",
+      "apis": [
+        "GET /planning/audit-timeline"
+      ],
+      "entities": [
+        "planning_outbox",
+        "planning_change_events",
+        "staff_lifecycle_events"
+      ],
+      "states": [
+        "ready",
+        "empty",
+        "failure"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u13-audit",
+      "deep_e2e": "ideal-deep-u13-audit"
+    },
+    {
+      "id": "U14",
+      "title": "異常系と再送",
+      "screen": "home",
+      "view": "index",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/home",
+      "transitions": [
+        "/workspace/operations/cases",
+        "/workspace/schedule"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--today",
+      "apis": [
+        "POST /planning/scope-settings/absence-consent",
+        "POST /planning/change-cases"
+      ],
+      "entities": [
+        "planning_receipts"
+      ],
+      "states": [
+        "unauthenticated",
+        "forbidden",
+        "validation",
+        "conflict",
+        "unknown",
+        "partial_failure"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u14-failure-retry",
+      "deep_e2e": "ideal-deep-u14-failure-retry"
+    },
+    {
+      "id": "U15",
+      "title": "月間勤務・版差分・部署出力",
+      "screen": "schedule",
+      "view": "index",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/schedule",
+      "transitions": [
+        "/workspace/requests/leave",
+        "/workspace/requests/swap",
+        "/workspace/operations/cases"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--schedule",
+      "apis": [
+        "GET /planning/schedule-calendar",
+        "POST /planning/publications/{publication_id}/artifacts",
+        "POST /planning/artifacts/{copy_id}/download"
+      ],
+      "entities": [
+        "planning_publications",
+        "planning_heads",
+        "managed_copies"
+      ],
+      "states": [
+        "ready",
+        "empty",
+        "changed",
+        "self_only"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u15-monthly-schedule",
+      "deep_e2e": "ideal-deep-u15-monthly-schedule"
+    },
+    {
+      "id": "U16",
+      "title": "当日運用",
+      "screen": "operations",
+      "view": "today",
+      "roles": [
+        "ADMIN",
+        "LEADER"
+      ],
+      "route": "/workspace/operations/today",
+      "transitions": [
+        "/workspace/home",
+        "/workspace/schedule",
+        "/workspace/governance/audit"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--operations-today",
+      "apis": [
+        "GET /planning/daily-operations",
+        "GET /planning/change-cases"
+      ],
+      "entities": [
+        "planning_publications",
+        "planning_change_cases",
+        "planning_outbox"
+      ],
+      "states": [
+        "ready",
+        "empty",
+        "warning",
+        "failure"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u16-daily-operations",
+      "deep_e2e": "ideal-deep-u16-daily-operations"
+    },
+    {
+      "id": "U17",
+      "title": "役割別ホーム",
+      "screen": "home",
+      "view": "index",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/home",
+      "transitions": [
+        "/workspace/operations/cases",
+        "/workspace/schedule"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--today",
+      "apis": [
+        "GET /planning/dashboard",
+        "GET /planning/daily-operations",
+        "GET /planning/schedule-stability",
+        "GET /planning/notifications"
+      ],
+      "entities": [
+        "planning_publications",
+        "planning_change_cases",
+        "planning_outbox"
+      ],
+      "states": [
+        "ready",
+        "empty",
+        "failure"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u17-role-home",
+      "deep_e2e": "ideal-deep-u17-role-home"
+    },
+    {
+      "id": "U18",
+      "title": "施設・個人設定",
+      "screen": "settings",
+      "view": "appearance",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/settings/appearance",
+      "transitions": [
+        "/workspace/settings/appearance",
+        "/workspace/settings/notifications",
+        "/workspace/settings/absence-consent",
+        "/workspace/settings/flextime"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--settings-appearance",
+      "apis": [
+        "GET /planning/scope-settings",
+        "GET /planning/compliance/flex-adoptions"
+      ],
+      "entities": [
+        "compliance_entities",
+        "compliance_revisions"
+      ],
+      "states": [
+        "ready",
+        "forbidden",
+        "conflict"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u18-settings",
+      "deep_e2e": "ideal-deep-u18-settings"
+    },
+    {
+      "id": "U19",
+      "title": "休暇",
+      "screen": "requests",
+      "view": "leave",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/requests/leave",
+      "transitions": [
+        "/workspace/schedule",
+        "/workspace/operations/cases"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-leave",
+      "apis": [
+        "GET /planning/requests",
+        "POST /planning/requests",
+        "POST /planning/requests/{request_id}/decision",
+        "GET /planning/leave-balances",
+        "GET /planning/compliance/workflow-context",
+        "GET /planning/compliance/leave-report",
+        "POST /planning/compliance/leave-events",
+        "POST /planning/compliance/grant-amendments"
+      ],
+      "entities": [
+        "planning_requests",
+        "planning_leave_balances",
+        "compliance_entities",
+        "compliance_revisions"
+      ],
+      "states": [
+        "ready",
+        "pending",
+        "approved",
+        "rejected",
+        "conflict"
+      ],
+      "audit_events": [
+        "request.created",
+        "request.decided"
+      ],
+      "e2e": "ideal-u19-leave",
+      "deep_e2e": "ideal-deep-u19-leave"
+    },
+    {
+      "id": "U20",
+      "title": "契約・資格",
+      "screen": "people",
+      "view": "contracts",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/people/contracts",
+      "transitions": [
+        "/workspace/people/directory",
+        "/workspace/people/memberships",
+        "/workspace/people/lifecycle",
+        "/workspace/people/contracts"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--people-contracts",
+      "apis": [
+        "GET /planning/compliance/workflow-context",
+        "POST /planning/compliance/records/{kind}"
+      ],
+      "entities": [
+        "compliance_entities",
+        "compliance_revisions"
+      ],
+      "states": [
+        "ready",
+        "validation",
+        "conflict"
+      ],
+      "audit_events": [
+        "compliance.saved"
+      ],
+      "e2e": "ideal-u20-contracts",
+      "deep_e2e": "ideal-deep-u20-contracts"
+    },
+    {
+      "id": "U21",
+      "title": "必要配置",
+      "screen": "plan",
+      "view": "input",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/plan/input",
+      "transitions": [
+        "/workspace/plan/input",
+        "/workspace/plan/generate",
+        "/workspace/plan/compare",
+        "/workspace/plan/drafts",
+        "/workspace/plan/publications",
+        "/workspace/schedule"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--plan-input",
+      "apis": [
+        "GET /planning/compliance/workflow-context",
+        "POST /planning/compliance/records/{kind}"
+      ],
+      "entities": [
+        "compliance_entities",
+        "compliance_revisions"
+      ],
+      "states": [
+        "ready",
+        "validation",
+        "conflict"
+      ],
+      "audit_events": [
+        "compliance.saved"
+      ],
+      "e2e": "ideal-u21-demand",
+      "deep_e2e": "ideal-deep-u21-demand"
+    },
+    {
+      "id": "U22",
+      "title": "フレックスタイム採用",
+      "screen": "settings",
+      "view": "flextime",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/settings/flextime",
+      "transitions": [
+        "/workspace/settings/appearance",
+        "/workspace/settings/notifications",
+        "/workspace/settings/absence-consent",
+        "/workspace/settings/flextime"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--settings-flextime",
+      "apis": [
+        "GET /planning/compliance/flex-adoptions",
+        "POST /planning/compliance/flex-adoptions",
+        "GET /planning/compliance/flex-adoptions/{adoption_id}/impact",
+        "POST /planning/compliance/flex-adoptions/{adoption_id}/confirm",
+        "POST /planning/compliance/flex-adoptions/{adoption_id}/withdraw",
+        "POST /planning/compliance/flex-adoptions/{adoption_id}/end",
+        "POST /planning/compliance/flex-enrollments",
+        "POST /planning/compliance/flex-enrollments/{enrollment_id}/confirm",
+        "POST /planning/compliance/flex-enrollments/{enrollment_id}/withdraw",
+        "GET /planning/compliance/flex-settlements"
+      ],
+      "entities": [
+        "compliance_entities",
+        "compliance_revisions"
+      ],
+      "states": [
+        "registered",
+        "confirmed",
+        "withdrawn",
+        "conflict"
+      ],
+      "audit_events": [
+        "flex.registered",
+        "flex.confirmed",
+        "flex.withdrawn",
+        "flex.ended"
+      ],
+      "e2e": "ideal-u22-flextime",
+      "deep_e2e": "ideal-deep-u22-flextime"
+    },
+    {
+      "id": "U23",
+      "title": "実績照合",
+      "screen": "governance",
+      "view": "actuals",
+      "roles": [
+        "ADMIN",
+        "LEADER"
+      ],
+      "route": "/workspace/governance/actuals",
+      "transitions": [
+        "/workspace/governance/audit",
+        "/workspace/governance/actuals",
+        "/workspace/governance/privacy",
+        "/workspace/governance/recovery"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-actuals",
+      "apis": [
+        "GET /planning/compliance/workflow-context",
+        "POST /planning/compliance/actual-import/preview",
+        "POST /planning/compliance/actual-import/commit",
+        "POST /planning/compliance/actual-events",
+        "POST /planning/compliance/actual-reviews"
+      ],
+      "entities": [
+        "actual_work_events",
+        "compliance_entities"
+      ],
+      "states": [
+        "ready",
+        "preview",
+        "row_error",
+        "conflict"
+      ],
+      "audit_events": [
+        "actual.import"
+      ],
+      "e2e": "ideal-u23-actuals",
+      "deep_e2e": "ideal-deep-u23-actuals"
+    },
+    {
+      "id": "U24",
+      "title": "兼業・外部勤務",
+      "screen": "requests",
+      "view": "outside",
+      "roles": [
+        "ADMIN",
+        "LEADER",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/requests/outside",
+      "transitions": [
+        "/workspace/schedule",
+        "/workspace/operations/cases"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--requests-outside",
+      "apis": [
+        "GET /planning/compliance/declaration-context",
+        "POST /planning/compliance/outside-declarations"
+      ],
+      "entities": [
+        "compliance_entities",
+        "compliance_revisions"
+      ],
+      "states": [
+        "draft",
+        "submitted",
+        "returned",
+        "confirmed"
+      ],
+      "audit_events": [
+        "outside.saved"
+      ],
+      "e2e": "ideal-u24-outside",
+      "deep_e2e": "ideal-deep-u24-outside"
+    },
+    {
+      "id": "U25",
+      "title": "個人情報・人物消去",
+      "screen": "governance",
+      "view": "privacy",
+      "roles": [
+        "ADMIN",
+        "PHARMACIST"
+      ],
+      "route": "/workspace/governance/privacy",
+      "transitions": [
+        "/workspace/governance/audit",
+        "/workspace/governance/actuals",
+        "/workspace/governance/privacy",
+        "/workspace/governance/recovery"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-privacy",
+      "apis": [
+        "POST /planning/compliance/privacy/requests",
+        "POST /planning/compliance/privacy/cases/{case_id}",
+        "GET /planning/compliance/subject-controls/{person_id}",
+        "POST /planning/compliance/subject-controls/{person_id}",
+        "POST /planning/compliance/subject-controls/{person_id}/plans",
+        "POST /planning/compliance/subject-controls/{person_id}/execute"
+      ],
+      "entities": [
+        "privacy_cases",
+        "compliance_entities",
+        "compliance_revisions",
+        "erased_subjects",
+        "planning_receipts"
+      ],
+      "states": [
+        "requested",
+        "held",
+        "blocked",
+        "executed",
+        "residual"
+      ],
+      "audit_events": [
+        "privacy.requested",
+        "erasure.executed"
+      ],
+      "e2e": "ideal-u25-privacy-erasure",
+      "deep_e2e": "ideal-deep-u25-privacy-erasure"
+    },
+    {
+      "id": "U26",
+      "title": "復旧と照合",
+      "screen": "governance",
+      "view": "recovery",
+      "roles": [
+        "ADMIN"
+      ],
+      "route": "/workspace/governance/recovery",
+      "transitions": [
+        "/workspace/governance/audit",
+        "/workspace/governance/actuals",
+        "/workspace/governance/privacy",
+        "/workspace/governance/recovery"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--governance-recovery",
+      "apis": [
+        "GET /planning/compliance/recovery-status"
+      ],
+      "entities": [
+        "restore_gates",
+        "control_commits",
+        "erased_subjects"
+      ],
+      "states": [
+        "no_restore",
+        "quarantined",
+        "replayed",
+        "failure"
+      ],
+      "audit_events": [],
+      "e2e": "ideal-u26-recovery",
+      "deep_e2e": "ideal-deep-u26-recovery"
+    },
+    {
+      "id": "U27",
+      "title": "詳細計画操作",
+      "screen": "plan",
+      "view": "drafts",
+      "roles": [
+        "ADMIN",
+        "LEADER"
+      ],
+      "route": "/workspace/plan/drafts",
+      "transitions": [
+        "/workspace/plan/input",
+        "/workspace/plan/generate",
+        "/workspace/plan/compare",
+        "/workspace/plan/drafts",
+        "/workspace/plan/publications",
+        "/workspace/schedule"
+      ],
+      "storybook_id": "ideal-ui-v3-cognitive-workspace--plan-drafts",
+      "apis": [
+        "POST /planning/inputs",
+        "POST /planning/jobs/{job_id}/cancel",
+        "PUT /planning/drafts/{draft_id}",
+        "GET /planning/publications",
+        "POST /planning/publications/{publication_id}/cancel",
+        "GET /planning/notifications",
+        "POST /planning/notifications/{event_id}/read"
+      ],
+      "entities": [
+        "planning_inputs",
+        "planning_jobs",
+        "planning_drafts",
+        "planning_publications",
+        "planning_notification_reads"
+      ],
+      "states": [
+        "ready",
+        "loading",
+        "cancelled",
+        "conflict",
+        "unknown"
+      ],
+      "audit_events": [
+        "job.cancel",
+        "draft.edit",
+        "schedule.cancelled"
+      ],
+      "e2e": "ideal-u27-advanced-planning",
+      "deep_e2e": "ideal-deep-u27-advanced-planning"
+    }
+  ]
+}

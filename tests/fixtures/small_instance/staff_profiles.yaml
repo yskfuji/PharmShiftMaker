@@ -1,0 +1,86 @@
+profiles:
+  - profile_id: night_full
+    name: 夜勤可能正社員
+    employment_type: FULL_TIME
+    can_night_duty: true
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: true
+    holiday_allowed: true
+    allowed_weekdays: null
+    max_consecutive_working_days: 6
+    night_duty_min: 1
+    night_duty_max: 3
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 0
+    evening_max: 4
+  - profile_id: night_full_late
+    name: 夜勤可能正社員(後半)
+    employment_type: FULL_TIME
+    can_night_duty: true
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: true
+    holiday_allowed: true
+    allowed_weekdays: [1, 2, 3, 4, 5, 6]
+    max_consecutive_working_days: 6
+    night_duty_min: 1
+    night_duty_max: 3
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 0
+    evening_max: 4
+  - profile_id: day_full
+    name: 日勤のみ正社員
+    employment_type: FULL_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: false
+    holiday_allowed: true
+    allowed_weekdays: null
+    max_consecutive_working_days: 6
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 0
+    evening_max: 4
+  - profile_id: part_time_day
+    name: 日勤のみパート
+    employment_type: PART_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: true
+    can_ward_alone: true
+    weekend_allowed: true
+    holiday_allowed: true
+    allowed_weekdays: null
+    max_consecutive_working_days: 5
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 0
+    evening_max: 0
+  - profile_id: assistant
+    name: 調剤補佐
+    employment_type: PART_TIME
+    can_night_duty: false
+    can_on_call: false
+    can_evening: false
+    can_ward_alone: false
+    weekend_allowed: true
+    holiday_allowed: true
+    allowed_weekdays: [0, 1, 2, 3, 4]
+    max_consecutive_working_days: 4
+    night_duty_min: 0
+    night_duty_max: 0
+    on_call_min: 0
+    on_call_max: 0
+    evening_min: 0
+    evening_max: 0

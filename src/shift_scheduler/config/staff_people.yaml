@@ -1,0 +1,65 @@
+# 公開サンプル用の合成人物であり、実在の人物とは関係がない。
+people:
+  - person_id: synthetic-pharmacist-01
+    name: 合成薬剤師01
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-02
+    name: 合成薬剤師02
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-03
+    name: 合成薬剤師03
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-04
+    name: 合成薬剤師04
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-05
+    name: 合成薬剤師05
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-06
+    name: 合成薬剤師06
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-07
+    name: 合成薬剤師07
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-08
+    name: 合成薬剤師08
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-09
+    name: 合成薬剤師09
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-10
+    name: 合成薬剤師10
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-11
+    name: 合成薬剤師11
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-12
+    name: 合成薬剤師12
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-13
+    name: 合成薬剤師13
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-14
+    name: 合成薬剤師14
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-15
+    name: 合成薬剤師15
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-16
+    name: 合成薬剤師16
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-17
+    name: 合成薬剤師17
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-18
+    name: 合成薬剤師18
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-19
+    name: 合成薬剤師19
+    role: PHARMACIST
+  - person_id: synthetic-pharmacist-20
+    name: 合成薬剤師20
+    role: PHARMACIST
+  - person_id: synthetic-assistant-01
+    name: 合成補佐01
+    role: ASSISTANT

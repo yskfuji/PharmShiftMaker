@@ -1,0 +1,66 @@
+# staff_people.yaml の合成人物に対する公開サンプルである。
+leave_quotas:
+  - person_id: synthetic-pharmacist-01
+    year: 2025
+    kind: PAID_LEAVE_REQUEST
+    total_days: 15
+  - person_id: synthetic-pharmacist-01
+    year: 2025
+    kind: SUMMER_LEAVE_REQUEST
+    total_days: 3
+  - person_id: synthetic-pharmacist-01
+    year: 2025
+    kind: REFRESH_LEAVE_REQUEST
+    total_days: 2
+
+  - person_id: synthetic-pharmacist-02
+    year: 2025
+    kind: PAID_LEAVE_REQUEST
+    total_days: 15
+  - person_id: synthetic-pharmacist-02
+    year: 2025
+    kind: SUMMER_LEAVE_REQUEST
+    total_days: 3
+  - person_id: synthetic-pharmacist-02
+    year: 2025
+    kind: REFRESH_LEAVE_REQUEST
+    total_days: 2
+
+  - person_id: synthetic-pharmacist-03
+    year: 2025
+    kind: PAID_LEAVE_REQUEST
+    total_days: 15
+  - person_id: synthetic-pharmacist-03
+    year: 2025
+    kind: SUMMER_LEAVE_REQUEST
+    total_days: 3
+  - person_id: synthetic-pharmacist-03
+    year: 2025
+    kind: REFRESH_LEAVE_REQUEST
+    total_days: 2
+
+  - person_id: synthetic-pharmacist-04
+    year: 2025
+    kind: PAID_LEAVE_REQUEST
+    total_days: 15
+  - person_id: synthetic-pharmacist-04
+    year: 2025
+    kind: SUMMER_LEAVE_REQUEST
+    total_days: 3
+  - person_id: synthetic-pharmacist-04
+    year: 2025
+    kind: REFRESH_LEAVE_REQUEST
+    total_days: 2
+
+  - person_id: synthetic-pharmacist-05
+    year: 2025
+    kind: PAID_LEAVE_REQUEST
+    total_days: 15
+  - person_id: synthetic-pharmacist-05
+    year: 2025
+    kind: SUMMER_LEAVE_REQUEST
+    total_days: 3
+  - person_id: synthetic-pharmacist-05
+    year: 2025
+    kind: REFRESH_LEAVE_REQUEST
+    total_days: 2
