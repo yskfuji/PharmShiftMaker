@@ -1,44 +1,80 @@
-# Evidence register and bounded conclusions
+# 根拠の一覧と範囲を限った結論
 
-| Decision | Supporting source | What it supports | Counterevidence / limit | Product consequence |
+本書は、認知中心UI v3 の設計判断ごとに、根拠資料が支持する内容、反証・限界及び製品への反映を記録し、根拠から言える結論の範囲を定めます。
+
+## 1. 根拠の一覧
+
+根拠資料欄の番号は、第4節の参考文献の番号に対応します。
+
+| 判断 | 根拠資料 | 根拠資料が支持する内容 | 反証・限界 | 製品への反映 |
 |---|---|---|---|---|
-| Measure aesthetics separately from usability | [VisAWI-S](https://doi.org/10.1080/0144929X.2012.694910); [Tuch et al. 2012](https://doi.org/10.1016/j.chb.2012.03.024) | A validated short visual-aesthetics instrument; experimental separation of perceived aesthetics and usability | Attractive appearance is not evidence of task success; study settings do not establish outcomes in Japanese pharmacy staffing | Collect VisAWI-S separately from completion, error, time, SEQ and NASA-TLX |
-| Emphasize schedule stability and visible revisions | [Hospital pharmacist staffing survey](https://pubmed.ncbi.nlm.nih.gov/34416922/) | In one hospital sample, consistency ranked highly among scheduling considerations | Single-site letter; no causal health, retention or compliance result | Show publication version, changes and stability; make no health or retention claim |
-| Use task lists for long-running lifecycle work | [GOV.UK complete multiple tasks](https://design-system.service.gov.uk/patterns/complete-multiple-tasks/) | A task-list pattern for journeys completed over time and potentially out of order | It is not a controlled trial and does not justify a wizard for short actions | Onboarding/offboarding use persistent tasks; routine absence/swap actions remain direct |
-| Provide non-drag alternatives | [WCAG 2.2 Dragging Movements](https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements) | Drag functionality needs a non-drag pointer alternative unless essential | Conformance to one criterion is not whole-product accessibility | All schedule selection/reassignment actions are buttons/radios; no drag-only operation |
-| Preserve table relationships and provide a narrow-screen alternative | [W3C Tables Tutorial](https://www.w3.org/WAI/tutorials/tables/) | Header/data associations make tabular relationships available to assistive technology | A semantically correct two-dimensional table can still be cognitively or optically difficult on a narrow screen | Use scoped row/column headers on desktop and an equivalent day agenda on mobile |
-| Combine automated and human accessibility evaluation | [WCAG 2.2](https://www.w3.org/TR/WCAG22/); [W3C conformance evaluation](https://www.w3.org/WAI/WCAG22/Understanding/conformance) | Normative success criteria and the need for complete-page/process evaluation | Automated checks cannot certify usability with assistive technology | Run axe plus keyboard, zoom/reflow, forced-colors and screen-reader evaluation |
-| Use self-hosted Japanese typography and restrained hierarchy | [Digital Agency Design System typography](https://design.digital.go.jp/dads/foundations/typography/) | Japanese public-service typography guidance | Guidance does not prove this product's task performance | Self-host Noto Sans JP; preserve readable line-height and tabular numerals |
-| Use a larger formative sample than five | [Faulkner 2003](https://doi.org/10.3758/BF03195514) | Five-user problem discovery varied substantially across random samples | Thirty participants still cannot prove population-level generality | Ten participants per role; report uncertainty and sample characteristics |
-| Treat field performance separately from lab audits | [Core Web Vitals](https://web.dev/articles/vitals) | 75th-percentile LCP/INP/CLS field thresholds | Lighthouse is lab data and cannot substitute for field INP | Keep lab budgets, but accept performance only from production-like 75th-percentile telemetry |
-| Harden the rendering boundary | [Next.js production checklist](https://nextjs.org/docs/app/guides/production-checklist) | Production concerns including rendering, security and performance | Framework guidance does not validate domain rules | Server rendering, local fonts, strict CSP and server-side authorization; legal rules stay on the API |
-| Enforce object- and function-level authorization on the server | [OWASP API1:2023](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/); [OWASP API5:2023](https://api-security.owasp.org/editions/2023/en/0xa5-broken-function-level-authorization/) | IDs and administrative functions need authorization checks on every request | OWASP categories identify risks; they do not prove this implementation secure | Test URL, body, scope and person-ID tampering directly; UI hiding is never the control |
-| Show consequential answers immediately before committing | [GOV.UK Check answers](https://design-system.service.gov.uk/patterns/check-answers/) | A review step can help users verify submitted information | The pattern is guidance, not evidence that confirmation prompts prevent all errors | Show scope, subject, version and change delta before publication, erasure and deactivation |
-| Keep validation near the field and preserve entered values | [GOV.UK validation](https://design-system.service.gov.uk/patterns/validation/); [W3C form notifications](https://www.w3.org/WAI/tutorials/forms/notifications/) | Error summaries, field-level messages and programmatic association make recovery more direct | Clear error prose does not make an invalid domain decision safe | U19–U24 retain submitted values, distinguish row/file errors, and focus the first actionable error |
-| Announce asynchronous results without moving focus | [WCAG 2.2 Status Messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html) | Success, loading and error outcomes can be exposed through status roles | A live region can become noisy or duplicate visible content; screen-reader behavior still needs manual testing | Mutation results use bounded `status`/`alert` regions; focus moves only for route changes, review steps and conflicts |
-| Use review and reversal controls for consequential data changes | [WCAG 2.2 Error Prevention](https://www.w3.org/WAI/WCAG22/Understanding/error-prevention-legal-financial-data.html) | Reversible, checked or confirmed submissions reduce avoidable high-consequence errors | The criterion is not proof that a particular confirmation is understood | U22 requires independent confirmation; U25 previews residuals and can be blocked by legal hold; U27 preserves versions and exposes conflicts |
-| Keep pointer targets at least 24 CSS px, with a larger product default | [WCAG 2.2 Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html) | AA defines a 24×24 CSS px minimum subject to listed exceptions | Meeting the geometric threshold does not establish motor accessibility or task success | Shared controls remain 44px high; compact native choices are at least 24×24 and retain a keyboard path |
-| Treat uploaded planning and attendance files as hostile input | [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) | Allowlisting, size limits, generated storage names and server-side validation reduce file-upload risk | No checklist eliminates parser flaws or malicious content; JSON-only input is still untrusted | Browser previews are non-authoritative; the API revalidates schema, scope, version and size before commit, and never uses the client filename as a storage path |
-| Separate restore execution from application UI and verify the backup set | [PostgreSQL `pg_verifybackup`](https://www.postgresql.org/docs/16/app-pgverifybackup.html) | A backup manifest can be checked against backup contents before restore | `pg_verifybackup` cannot prove that restored application behavior or external copies are correct | U26 is read-only status and evidence display; restore remains an operational runbook followed by quarantine and application-level reconciliation |
-| Reduce memory and comprehension demands without claiming a cognitive cure | [W3C COGA usable guidance](https://www.w3.org/TR/coga-usable/) | Consistent language, visible context and recoverable steps can help people with cognitive and learning disabilities | The guidance is broad and not a conformance standard or evidence that one layout serves every user | U19–U27 keep scope/version visible, use task-language labels, show next actions, and avoid hiding destructive consequences behind icons |
-| Resolve known dependency advisories before packaging | [Next.js September 2026 security release](https://nextjs.org/blog); [PyJWT 2.15.0 changelog](https://pyjwt.readthedocs.io/en/2.15.0/changelog.html) | Next.js 16.3.8 is the current security release in its line; PyJWT 2.15.0 wraps deeply nested payload recursion failures instead of exposing raw `RecursionError` | A zero-result package audit is time-bounded and does not prove absence of unknown vulnerabilities or unsafe application use | Pin Next.js 16.3.8 and PyJWT 2.15.0, retain CycloneDX inventory and dated npm/pip audit results, and keep server-side authorization tests |
-| Distinguish tabs from an ordered process | [Digital Agency Design System tabs](https://design.digital.go.jp/dads/components/tab/) | Tabs are alternative views of one subject; step navigation is the referenced alternative for a process | Design-system guidance is not a controlled evaluation of this product | v3 uses numbered process navigation for planning, and ordinary local navigation for requests, people, governance and settings |
-| Reduce visual complexity without removing decision evidence | [Michailidou et al., CHI 2020](https://doi.org/10.1145/3313831.3376849) | Visual complexity can impair search and recall in the studied conditions | Minimal interfaces can hide clinically or operationally necessary context | v3 limits visual planes and defers forms, while retaining scope, version, findings, notification effects and evidence at the decision point |
-| Bound healthcare-dashboard claims | [2026 healthcare dashboard umbrella review](https://pubmed.ncbi.nlm.nih.gov/41788668/); [patient-safety dashboard systematic review](https://pmc.ncbi.nlm.nih.gov/articles/PMC8496385/) | Dashboards can support efficiency or situational awareness in some settings | Heterogeneous methods, integration/data-quality problems and limited user evaluation prevent broad causal claims | Measure synthetic task performance; do not claim clinical safety, health improvement or retention effects |
+| 美観を使いやすさと分けて測る | ［1］VisAWI-S、［2］Tuch et al. 2012 | 検証済みの短い視覚的美観の尺度。知覚された美観と使いやすさを実験で分離した研究 | 見た目の魅力は、課題の成功の証拠ではありません。研究の条件は、日本の薬剤部の勤務編成における結果を示しません | VisAWI-S を、完遂、誤り、時間、SEQ 及び NASA-TLX とは別に収集します |
+| 勤務表の安定性と目に見える改訂を重視する | ［3］病院薬剤師の勤務編成の調査 | ある病院の標本では、勤務表作成で考慮する事項のうち、一貫性が上位でした | 単一施設の書簡（letter）であり、健康、定着又は法令順守についての因果的な結果を示しません | 公開版、変更点及び安定性を表示します。健康又は定着についての主張はしません |
+| 長期にわたるライフサイクル業務にタスクリストを使う | ［4］GOV.UK「複数のタスクを完了する」 | 時間をかけて、場合によっては順不同で完了する手続のための、タスクリストのパターン | 対照を置いた評価ではありません。短い操作にウィザードを使う根拠にもなりません | 入職・退職の手続は、継続するタスクとして扱います。日常の欠勤・交換の操作は直接行えるままとします |
+| ドラッグ以外の代替手段を設ける | ［5］WCAG 2.2 ドラッグ操作 | ドラッグによる機能には、必須である場合を除き、ドラッグ以外のポインタによる代替手段を要します | 一つの達成基準への適合は、製品全体のアクセシビリティではありません | 勤務表の選択・再割当ての操作は、全てボタン又はラジオボタンで行います。ドラッグ専用の操作はありません |
+| 表の関係を保ち、狭い画面用の代替を設ける | ［6］W3C 表のチュートリアル | 見出しとデータの関連付けにより、表の関係を支援技術が利用できます | 意味的に正しい二次元の表でも、狭い画面では、認知上又は視覚上の難しさが残り得ます | デスクトップでは範囲（scope）を指定した行見出し・列見出しを用い、モバイルでは同等の日別アジェンダを用います |
+| 自動の評価と人による評価を組み合わせる | ［7］WCAG 2.2、［8］W3C 適合性の評価 | 規範となる達成基準、並びにページ全体及びプロセス全体を評価する必要性 | 自動検査は、支援技術での使いやすさを認定できません | axe に加え、キーボード、拡大・リフロー、強制色及びスクリーンリーダーの評価を行います |
+| 自己ホストの日本語書体と抑制した階層を使う | ［9］デジタル庁デザインシステム タイポグラフィ | 日本の公共サービス向けのタイポグラフィの指針 | 指針は、本製品での課題の遂行を証明しません | Noto Sans JP を自己ホストし、読みやすい行間及び等幅の数字（tabular numerals）を保ちます |
+| 形成的評価の標本を5人より大きくする | ［10］Faulkner 2003 | 5人での問題発見は、無作為の標本の間で大きくばらつきました | 30名でも、母集団全体への一般化は証明できません | 役割ごとに10名とし、不確かさ及び標本の特性を報告します |
+| 実地の性能を、実験室での監査と分けて扱う | ［11］Core Web Vitals | 75パーセンタイルでの LCP・INP・CLS の実地の閾値 | Lighthouse は実験室のデータであり、実地の INP の代わりになりません | 実験室での性能予算は保ちます。ただし、性能の受入れは、本番相当の75パーセンタイルの計測に限ります |
+| 描画の境界を強化する | ［12］Next.js 本番チェックリスト | 描画、セキュリティ及び性能を含む本番上の考慮事項 | フレームワークの指針は、ドメインの規則を検証しません | サーバーでの描画、ローカルの書体、厳格な CSP 及びサーバー側の認可を用います。法令上の規則は API に置きます |
+| オブジェクト単位・機能単位の認可をサーバーで強制する | ［13］OWASP API1:2023、［14］OWASP API5:2023 | ID 及び管理機能には、全てのリクエストで認可の確認を要します | OWASP の分類はリスクを示すが、本実装が安全であることを証明しません | URL、本文、対象範囲及び人物 ID の改ざんを直接テストします。UI での非表示を制御手段にはしません |
+| 重大な結果を伴う内容を、確定の直前に示す | ［15］GOV.UK「回答を確認する」 | 確認の段階は、利用者が送信した情報を確かめる助けになり得ます | パターンは指針であり、確認の問いが全ての誤りを防ぐ証拠ではありません | 公開、消去及び無効化の前に、対象範囲、対象者、版及び変更差分を示します |
+| 入力検査を入力欄の近くに置き、入力値を保持する | ［16］GOV.UK 入力検査、［17］W3C フォームの通知 | エラーの要約、入力欄ごとのメッセージ及びプログラム上の関連付けにより、回復が直接的になります | 明確なエラー文は、無効な業務判断を安全にはしません | U19〜U24 は、送信値を保持し、行のエラーとファイルのエラーを区別し、最初に対処できるエラーへフォーカスを移します |
+| 非同期の結果を、フォーカスを動かさずに通知する | ［18］WCAG 2.2 ステータスメッセージ | 成功、読込み中及びエラーの結果は、status ロールで伝えられます | ライブリージョンは、うるさくなること及び表示内容と重複することがあります。スクリーンリーダーでの挙動は、引き続き手動テストを要します | 変更操作の結果は、範囲を限った `status`・`alert` 領域で伝えます。フォーカスは、画面の遷移、確認の段階及び競合の場合に限り移します |
+| 重大なデータ変更に、確認及び取消しの手段を設ける | ［19］WCAG 2.2 エラー防止（法的、金融、データ） | 取消し可能な、検査済みの又は確認済みの送信は、避けられる重大な誤りを減らします | 当該基準は、特定の確認が理解されることの証明ではありません | U22 は別担当による確認を要します。U25 は残存を事前に示し、法的保全（legal hold）により停止され得ます。U27 は版を保持し、競合を表示します |
+| ポインタの対象を少なくとも24 CSS px とし、製品の既定値はより大きくする | ［20］WCAG 2.2 ターゲットサイズ（最低限） | AA は、列挙された例外を除き、24×24 CSS px の最小値を定めます | 幾何学的な閾値を満たしても、運動機能のアクセシビリティ又は課題の成功は確立しません | 共通の操作部品は高さ44pxを保ちます。小型のネイティブの選択肢は少なくとも24×24とし、キーボードでの経路を保ちます |
+| アップロードされる計画・勤怠のファイルを、敵対的な入力として扱う | ［21］OWASP ファイルアップロードのチートシート | 許可リスト、サイズの上限、生成した保存名及びサーバー側の検証により、ファイルアップロードのリスクを減らします | どのチェックリストも、解析器の欠陥や悪意ある内容をなくせません。JSON に限った入力も、信頼できない入力です | ブラウザでのプレビューは正としません。API は、確定の前にスキーマ、対象範囲、版及びサイズを再検証し、クライアントのファイル名を保存パスに使いません |
+| 復元の実行をアプリケーションの UI から分け、バックアップ一式を検証する | ［22］PostgreSQL `pg_verifybackup` | 復元の前に、バックアップのマニフェストをバックアップの内容と照合できます | `pg_verifybackup` は、復元後のアプリケーションの挙動や外部の複製が正しいことを証明できません | U26 は、読取り専用の状態・証跡の表示とします。復元は運用手順書（runbook）に残し、その後に隔離及びアプリケーション単位の照合を行います |
+| 記憶と理解の負担を減らす。ただし、認知面の解決は主張しない | ［23］W3C COGA の指針 | 一貫した言葉、見える文脈及び回復可能な手順は、認知・学習障害のある人の助けになり得ます | 当該指針は範囲が広く、適合基準ではありません。一つの配置が全ての利用者に役立つ証拠でもありません | U19〜U27 は、対象範囲・版を表示し続け、業務の言葉でラベルを付け、次の操作を示し、破壊的な結果をアイコンの陰に隠しません |
+| 既知の依存関係の勧告を、パッケージ化の前に解消する | ［24］Next.js 2026年9月のセキュリティリリース、［25］PyJWT 2.15.0 の変更履歴 | 確認時点で、Next.js 16.3.8 は当該系列の現行のセキュリティリリースです。PyJWT 2.15.0 は、深く入れ子になったペイロードでの再帰の失敗を、生の `RecursionError` として露出させずに包みます | 結果0件のパッケージ監査は時点に限られ、未知の脆弱性又は安全でないアプリケーション上の使い方がないことを証明しません | Next.js 16.3.8 及び PyJWT 2.15.0 に固定し、CycloneDX の目録並びに日付付きの npm・pip の監査結果を保持し、サーバー側の認可テストを維持します |
+| タブと順序のある工程を区別する | ［26］デジタル庁デザインシステム タブ | タブは一つの主題の別の見え方であり、工程には、参照先が示すステップナビゲーションが代替となります | デザインシステムの指針は、本製品についての対照を置いた評価ではありません | v3 は、計画に番号付きの工程ナビゲーションを使い、申請、職員、ガバナンス及び設定には通常のローカルナビゲーションを使います |
+| 判断の根拠を消さずに、視覚的複雑性を減らす | ［27］Michailidou et al., CHI 2020 | 研究の条件下では、視覚的複雑性が検索及び記憶を損ない得ます | 最小限の画面は、臨床上又は運用上必要な文脈を隠し得ます | v3 は視覚上の面の数を限り、フォームは後から開くようにします。判断の時点では、対象範囲、版、検出事項、通知の効果及び証跡を保ちます |
+| 医療ダッシュボードについての主張を限る | ［28］2026年の医療ダッシュボードのアンブレラレビュー、［29］患者安全ダッシュボードのシステマティックレビュー | ダッシュボードは、一部の環境で効率又は状況認識を支え得ます | 方法の異質性、統合・データ品質の問題及び限られた利用者評価により、広い因果的な主張はできません | 合成課題での遂行を測ります。臨床上の安全性、健康の改善又は定着への効果は主張しません |
 
-## Conclusion
+## 2. 結論
 
-The evidence supports the selected interaction patterns, dependency remediation and measurement plan,
-not a claim that the interface is already universally “beautiful”, “usable”,
-legally compliant or health-improving. The defensible conclusion for the v3 implementation candidate is:
+本書の根拠が支持するのは、選んだ操作パターン、依存関係の是正及び測定計画です。画面が既に普遍的に「美しい」又は「使いやすい」こと、法令に適合していること、又は健康を改善することは支持しません。v3 の実装候補について正当に言える結論は、次のとおりです。
 
-1. the design is testable across roles and failure states using synthetic data;
-2. consequential mutations are server-authorized, revisioned and idempotent;
-3. publication history is immutable and personal exports are subject-filtered;
-4. production-shell default adoption requires the recorded 30-person evaluation and all
-   accessibility/browser gates to pass.
+1. 設計は、合成データを用いて、役割及び失敗状態をまたいでテストできます。
+2. 重大な結果を伴う変更操作は、サーバーで認可され、版管理され、冪等です。
+3. 公開の履歴は不変であり、個人向けの書き出しは対象者で絞り込まれます。
+4. 本番シェルの既定として採用するには、記録した30名の評価と、全てのアクセシビリティ・ブラウザの判定に合格しなければなりません。
 
-Source versions and content were rechecked on 2026-10-02. This register separates
-what each source supports from product-specific inferences; dependency scans were
-also re-run on this date, but remain point-in-time observations. This is not a claim of
-legal compliance, clinical benefit, population-wide usability, or WCAG certification.
+## 3. 確認日と限界
+
+根拠資料の版及び内容は、2026年10月2日に再確認しました。本書は、各資料が支持する内容と、製品固有の推論とを分けて記録します。依存関係の走査も同日に再実行しましたが、その結果はその時点の観測にとどまります。本書は、法令への適合、臨床上の利益、母集団全体での使いやすさ又は WCAG の認証を主張しません。
+
+## 4. 参考文献
+
+参照日は、いずれも2026年10月2日（第3節の再確認日）です。
+
+1. 『VisAWI-S』（<https://doi.org/10.1080/0144929X.2012.694910>）
+2. Tuch et al.（2012）（<https://doi.org/10.1016/j.chb.2012.03.024>）
+3. 病院薬剤師の勤務編成に関する調査（PubMed 34416922）（<https://pubmed.ncbi.nlm.nih.gov/34416922/>）
+4. GOV.UK Design System『Complete multiple tasks』（<https://design-system.service.gov.uk/patterns/complete-multiple-tasks/>）
+5. W3C『WCAG 2.2 Dragging Movements』（<https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements>）
+6. W3C『Tables Tutorial』（<https://www.w3.org/WAI/tutorials/tables/>）
+7. W3C『WCAG 2.2』（<https://www.w3.org/TR/WCAG22/>）
+8. W3C『Conformance』（WCAG 2.2 解説）（<https://www.w3.org/WAI/WCAG22/Understanding/conformance>）
+9. デジタル庁『デジタル庁デザインシステム タイポグラフィ』（<https://design.digital.go.jp/dads/foundations/typography/>）
+10. Faulkner（2003）（<https://doi.org/10.3758/BF03195514>）
+11. web.dev『Core Web Vitals』（<https://web.dev/articles/vitals>）
+12. Next.js『Production checklist』（<https://nextjs.org/docs/app/guides/production-checklist>）
+13. OWASP『API1:2023 Broken Object Level Authorization』（<https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/>）
+14. OWASP『API5:2023 Broken Function Level Authorization』（<https://api-security.owasp.org/editions/2023/en/0xa5-broken-function-level-authorization/>）
+15. GOV.UK Design System『Check answers』（<https://design-system.service.gov.uk/patterns/check-answers/>）
+16. GOV.UK Design System『Validation』（<https://design-system.service.gov.uk/patterns/validation/>）
+17. W3C『Form notifications』（<https://www.w3.org/WAI/tutorials/forms/notifications/>）
+18. W3C『WCAG 2.2 Status Messages』（<https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html>）
+19. W3C『WCAG 2.2 Error Prevention (Legal, Financial, Data)』（<https://www.w3.org/WAI/WCAG22/Understanding/error-prevention-legal-financial-data.html>）
+20. W3C『WCAG 2.2 Target Size (Minimum)』（<https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html>）
+21. OWASP『File Upload Cheat Sheet』（<https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html>）
+22. PostgreSQL『pg_verifybackup』（PostgreSQL 16 文書）（<https://www.postgresql.org/docs/16/app-pgverifybackup.html>）
+23. W3C『COGA usable guidance』（<https://www.w3.org/TR/coga-usable/>）
+24. Next.js『September 2026 security release』（Next.js ブログ）（<https://nextjs.org/blog>）
+25. PyJWT『2.15.0 changelog』（<https://pyjwt.readthedocs.io/en/2.15.0/changelog.html>）
+26. デジタル庁『デジタル庁デザインシステム タブ』（<https://design.digital.go.jp/dads/components/tab/>）
+27. Michailidou et al.（CHI 2020）（<https://doi.org/10.1145/3313831.3376849>）
+28. 2026年の医療ダッシュボードのアンブレラレビュー（PubMed 41788668）（<https://pubmed.ncbi.nlm.nih.gov/41788668/>）
+29. 患者安全ダッシュボードのシステマティックレビュー（PMC8496385）（<https://pmc.ncbi.nlm.nih.gov/articles/PMC8496385/>）

@@ -7,8 +7,8 @@ import { defineConfig, devices } from '@playwright/test';
  * are reproducible. The container reaches the host's loopback servers through
  * exposeNetwork: Storybook static build on 18530, the synthetic app on 18531.
  * Screenshot baselines (chromium only) live in tests/visual/__screenshots__ and are
- * rewritten only with VISUAL_BASELINE_UPDATE=1 (reason recorded in
- * docs/design-system/baseline-log.md). Optical checks run in all three engines.
+ * rewritten only with VISUAL_BASELINE_UPDATE=1 (reason recorded in the pull
+ * request description). Optical checks run in all three engines.
  */
 const output = process.env.VISUAL_OUTPUT ?? 'tests/visual/.output';
 const connect = { wsEndpoint: process.env.VISUAL_BROWSER_WS ?? 'ws://127.0.0.1:18526', exposeNetwork: '<loopback>' };

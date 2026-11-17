@@ -1,25 +1,31 @@
-# Acceptance matrix
+# 受入条件の一覧
 
-| Layer | Acceptance requirement | Automated evidence | Human/field evidence | v3 status |
+本書は、認知中心UI v3 の受入条件と、条件ごとの証拠及び現在の状態を定めます。
+
+## 1. 受入条件
+
+| 層 | 受入条件 | 自動検証の証拠 | 人・実地の証拠 | v3 の状態 |
 |---|---|---|---|---|
-| Critical tasks | 0 critical mis-confirmations in 30 participants | API/workflow tests and browser scenarios | Moderated AB/BA study | Pending participants |
-| Completion | At least 9/10 independently complete each critical role task | U01–U27 reachability matrix | Moderated study | Pending participants |
-| Ease | Median SEQ ≥5/7 | Blank analysis workbook/protocol | Participant ratings | Pending participants |
-| Non-inferiority | Completion not down >1 person; median time not worse >15% | Prespecified analysis | Paired AB/BA observations | Pending participants |
-| Accessibility | WCAG 2.2 AA; keyboard, 200/400%, 320px, spacing, forced colors, focus, VO/NVDA | Jest plus 1,872 role-route axe/optical/reflow conditions | Manual zoom/forced-colors and assistive technology | Automated subset passed; VoiceOver/NVDA and target-platform manual sign-off pending |
-| Rendering | Chromium/Firefox/WebKit at 320/768/1440 and four themes | 156 role-route tests and 1,872 conditions passed; 150 route-state stories passed; 233-story/699-image gallery generated | Representative human optical review | Automated matrix passed; representative human review pending |
-| Existing behavior | Flag OFF retains the established product | 267/267 selected legacy cases, retry 0, failed/unexecuted 0, source/build drift 0 | Regression triage | Passed in the recorded synthetic environment |
-| Declared use cases | U01–U27 are complete browser journeys through real API/PostgreSQL | 243/243 first-attempt cases; disposable schema per engine/width; U25 performs actual synthetic erasure | Task-level validation | Passed in the recorded synthetic environment |
-| API safety | Scope authorization, expected version, idempotency, evidence, actor, four-eyes and self-lockout prevention | Python/API/PostgreSQL tests, adversarial cases and existing workflow E2E | Independent review and deployment-specific review | Automated gates passed; final release-candidate review pending |
-| Erasure | Every ORM table classified; deterministic residuals and no resurrection | Inventory/copy-graph tests and subject-erasure suite; physical PostgreSQL copy triggers and erased-subject barrier verified for all four workflow case/event tables | Privacy review | Automated gates passed |
-| Contracts | Public OpenAPI schemas match TypeScript | 31 models checked by `devtools/ideal_ui/check_contracts.py` | Diff review | Passed |
-| Data model | ORM and observed PostgreSQL agree | 41/41 business tables; expected migration table excluded from business count; semantic difference 0 | Generated diagram review | Automated observation passed; human diagram review pending |
-| Dependencies | Fixed runtime versions and no known audit findings at the recorded time | Node 24.21.0, Next 16.3.8, React 19.3, Playwright 1.56.1; registry-backed npm and Python audits found 0 known vulnerabilities | Operational patch process | Recorded dependency gate passed; continuous monitoring remains necessary |
-| Performance | p75 LCP≤2.5s, INP≤200ms, CLS≤0.1 | Production build only | Production-like field telemetry | Field gate pending |
-| Privacy | Synthetic data only in UI, recording and package | Public sample checks passed; package scan/checksum | Consent/retention review before real study | Exact public-export/package scan pending; real study pending |
+| 重大な課題 | 参加者30名で、重大な誤確定が0件 | API・ワークフローのテスト及びブラウザのシナリオ | 進行役が立ち会う AB/BA 評価 | 参加者による評価は未実施 |
+| 完遂 | 重大な役割課題ごとに、少なくとも9/10（10名中9名）が独力で完遂します | U01〜U27 の到達可能性の行列 | 進行役が立ち会う評価 | 参加者による評価は未実施 |
+| 容易さ | SEQ の中央値が5/7以上 | 未記入の解析用ワークブック及び実施要領 | 参加者の評定 | 参加者による評価は未実施 |
+| 非劣性 | 完遂者の減少が1名以内、所要時間の中央値の悪化が15%以内 | 事前に定めた解析 | 対応のある AB/BA の観察 | 参加者による評価は未実施 |
+| アクセシビリティ | WCAG 2.2 AA。キーボード、200/400%、320px、文字間隔、強制色、フォーカス、VO/NVDA | Jest 及び役割・画面経路の axe・光学・リフロー検査1,872条件 | 拡大・強制色の手動確認及び支援技術 | 自動検査の範囲は合格。VoiceOver/NVDA 及び対象プラットフォームでの手動の承認は未実施 |
+| 描画 | Chromium/Firefox/WebKit、320/768/1440、4種の配色 | 役割・画面経路のテスト156件・1,872条件が合格。画面経路・状態のストーリー150件が合格。233ストーリー・699画像のギャラリーを生成 | 代表画面の人による光学確認 | 自動の行列は合格。代表画面の人による確認は未実施 |
+| 既存の動作 | 機能フラグ `IDEAL_UI` の既定値（無効）で、従来の製品を維持します | 選定した既存ケース267/267件。再試行0件、失敗・未実行0件、ソース・ビルドの変化0件 | 回帰の切り分け | 記録した合成環境で合格 |
+| 宣言したユースケース | U01〜U27 を、実際の API・PostgreSQL を通した、ブラウザでの一連の業務操作とします | 初回実行243/243件。エンジン・幅ごとに使い捨てのスキーマを用います。U25 は合成データの実消去を行います | 課題単位の妥当性確認 | 記録した合成環境で合格 |
+| API の安全性 | 対象範囲の認可、期待版、冪等性、証跡、操作主体、別担当による承認（four-eyes）及び自己締め出しの防止 | Python・API・PostgreSQL のテスト、敵対的なケース及び既存ワークフローの E2E テスト | 独立レビュー及び配備環境ごとのレビュー | 自動の判定は合格。最終リリース候補のレビューは未実施 |
+| 消去 | 全ての ORM 表を分類します。残存が決定的に定まり、復活しません | 目録・複写グラフのテスト及び対象者消去のテスト群。ワークフローのケース・イベントの4表全てについて、PostgreSQL の物理的な複写トリガー及び消去済み対象者の遮断を確認 | プライバシーのレビュー | 自動の判定は合格 |
+| 契約 | 公開 OpenAPI のスキーマが TypeScript と一致します | `devtools/ideal_ui/check_contracts.py` で31モデルを確認 | 差分のレビュー | 合格 |
+| データモデル | ORM と観測した PostgreSQL が一致します | 業務表41/41件。想定どおりのマイグレーション表は、業務表の件数から除外。意味上の差異0件 | 生成した図のレビュー | 自動の観測は合格。人による図のレビューは未実施 |
+| 依存関係 | 実行環境の版を固定し、記録時点で既知の監査指摘がありません | 記録時の環境：Node 24.21.0、Next 16.3.8、React 19.3、Playwright 1.56.1。レジストリに基づく npm 及び Python の監査で、既知の脆弱性0件 | 運用上のパッチ適用手順 | 記録時の依存関係の判定は合格。継続的な監視は引き続き必要 |
+| 性能 | p75 で LCP≤2.5s、INP≤200ms、CLS≤0.1 | 本番ビルドのみ | 本番相当の実地計測 | 実地の判定は未実施 |
+| プライバシー | UI、録画及びパッケージで、合成データだけを用います | 公開サンプルの確認は合格。パッケージの走査・チェックサム | 実際の利用者評価の前に、同意・保存期間をレビューします | 公開用の書き出しそのもの及びパッケージに対する走査は未実施。実際の利用者評価は未実施 |
 
-“Pending” is not a pass. The production-adoption gate remains closed until the
-human, assistive-technology and field-performance rows pass. Source-code
-publication is a separate gate: it requires the automated checks, final
-independent release review and exact public-export audit, while retaining
-`IDEAL_UI` OFF by default.
+> **注記** 「依存関係」の行に示す Node 24.21.0 等の版は、記録時の環境です。現行のリポジトリは、`.nvmrc` で Node.js 26.12.1 を指定します。
+
+## 2. 判定の扱い
+
+「未実施」は合格ではありません。本番採用は、人、支援技術及び実地性能の行が合格するまで認めません。
+
+ソースコードの公開は、別の判定とします。ソースコードの公開には、自動検証、最終の独立リリースレビュー及び公開用の書き出しそのものの監査を要します。ソースコードの公開に当たっては、機能フラグ `IDEAL_UI` の既定値を無効のまま維持します。

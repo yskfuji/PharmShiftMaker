@@ -1,24 +1,27 @@
-# Controlled usability evaluation protocol
+# 対照を置いた使いやすさ評価の実施要領
 
-Recruit 30 consenting participants: 10 administrators, 10 department leaders
-and 10 pharmacists. Within each role assign five to AB and five to BA order.
-Use equivalent months and different synthetic staff data in the two conditions.
-The facilitator may clarify the task wording but may not teach the interface.
+本書は、認知中心UI v3 について、対照を置いた使いやすさ評価の参加者、記録、評定尺度及び解析の方法を定めます。
 
-Record one row per participant, condition and task in
-`participant-results-template.csv`. “Independent success” excludes facilitator
-intervention. Mark a critical error when a participant confirms publication,
-leave, swap, account-linking or erasure for the wrong subject/version/scope.
-Capture elapsed time only for successful attempts; preserve timeout separately.
+## 1. 参加者と割付け
 
-After each task capture SEQ (1–7). After each condition capture NASA-TLX and
-VisAWI-S according to their scoring instructions. Do not merge aesthetics and
-usability into one score. Record device, assistive technology, experience and
-order, but exclude directly identifying information from the analysis file.
+評価の実施者は、同意を得た参加者30名を募集します。内訳は、管理者10名、部署責任者10名及び薬剤師10名とします。各役割の中で、5名を AB 順に、5名を BA 順に割り付けます。二つの条件では、同等の月及び異なる合成の職員データを用います。
 
-The pre-registered pass rules are those in `acceptance-matrix.md`. Report Wilson
-95% intervals for proportions, participant-paired bootstrap 95% intervals for
-continuous differences, effect sizes and AB/BA order strata. If confirmatory
-hypothesis tests are added, list the family before inspection and apply Holm's
-step-down correction. Ten people per role is formative evidence, not population
-proof.
+進行役は、課題の文言を明確にしてもかまいませんが、画面の使い方を教えてはなりません。
+
+## 2. 記録
+
+実施者は、参加者、条件及び課題の組合せごとに1行を [participant-results-template.csv](participant-results-template.csv) に記録します。「独力での成功」には、進行役が介入したものを含めません。
+
+参加者が、誤った対象者・版・対象範囲について、公開、休暇、交換、アカウントの紐付け又は消去を確定した場合は、重大な誤りとして記録します。経過時間は、成功した試行に限り記録します。時間切れは、別に記録して保持します。
+
+## 3. 評定尺度
+
+各課題の後に、SEQ（1〜7）を記録します。各条件の後に、NASA-TLX 及び VisAWI-S を、それぞれの採点方法に従って記録します。美観と使いやすさを一つの得点に統合してはなりません。
+
+実施者は、端末、支援技術、経験及び順序を記録します。ただし、直接に個人を識別できる情報は、解析用のファイルから除きます。
+
+## 4. 解析
+
+事前に登録した合格基準は、[acceptance-matrix.md](../acceptance-matrix.md) に定めるものとします。比率には Wilson の95%区間を、連続量の差には参加者ごとに対応を取ったブートストラップの95%区間を報告します。あわせて、効果量及び AB/BA の順序ごとの層を報告します。
+
+確証的な仮説検定を追加する場合は、データを見る前に検定の族（family）を列挙し、Holm のステップダウン法による補正を適用します。役割ごとに10名の評価は形成的な証拠であり、母集団についての証明ではありません。

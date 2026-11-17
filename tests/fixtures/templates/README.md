@@ -1,32 +1,36 @@
-# Fixture Templates
+# フィクスチャのテンプレート
 
-`tests/fixtures/templates/` には **小規模インスタンスを素早く組み立てるための YAML スニペット** を格納します。Phase3 以降で追加してきた回帰テストや property-based テストから再利用できるよう、以下のルールで運用します。
+本書は、`tests/fixtures/templates/` に置くテンプレートの方針、使い方及び収録内容を定めます。
 
-## ディレクトリ方針
+## 1. 目的
 
-- 1 ファイル = 1 コンセプト（例：週末制約を検証するスタッフ構成、夜勤ペアなど）
-- ファイル名は `snake_case`、拡張子は `.yaml`
-- 各 YAML は `people`, `profiles`, `timeline_entries`, `shift_types`, `holiday_requests`, `leave_quotas` のいずれかのキーを持つ部分断片です
-- 断片同士は `tests/utils/fixture_factory.py` の `build_config_from_templates()` でマージします
+`tests/fixtures/templates/` には、**小規模インスタンスを素早く組み立てるための YAML の断片**（スニペット）を格納します。これまでに追加してきた回帰テスト及びプロパティベーステストから再利用できるよう、次の規則で運用します。
 
-## 使い方フロー
+## 2. ディレクトリの方針
 
-1. 必要なスニペット名を配列で指定して `build_config_from_templates(["baseline_staff"], ...)` を呼び出す
-2. テスト側で `day_infos` や追加の `shift_types` をプログラム的に生成して引き渡す
-3. 生成された `LoadedConfig` を `solve_schedule()` へ投入し、制約を検証する
+- 1ファイルにつき、1つの概念を扱います（例：週末制約を検証する職員の構成、夜勤の組合せ等）。
+- ファイル名は `snake_case` とし、拡張子は `.yaml` とします。
+- 各 YAML は、`people`、`profiles`、`timeline_entries`、`shift_types`、`holiday_requests` 又は `leave_quotas` のいずれかのキーを持つ部分的な断片です。
+- 断片同士は、`tests/utils/fixture_factory.py` の `build_config_from_templates()` で統合（マージ）します。
 
-### 追加時のチェックリスト
+## 3. 使い方
 
-- [ ] YAML の値は `shift_scheduler.domain` の Enum 名に揃える（例：`role: PHARMACIST`）
-- [ ] `timeline_entries` の `from` / `to` は ISO8601 文字列で記載
-- [ ] README（本ファイル）に用途を 1 行で追記
-- [ ] テンプレートを利用するテストを 1 つ以上追加 or 更新
+1. 必要な断片の名前を配列で指定して、`build_config_from_templates(["baseline_staff"], ...)` を呼び出してください。
+2. テスト側で、`day_infos` 及び追加の `shift_types` をプログラムで生成して引き渡してください。
+3. 生成された `LoadedConfig` を `solve_schedule()` へ渡し、制約を検証してください。
 
-## 収録済みテンプレート
+### 3.1 追加時の確認項目
 
-| テンプレート | 用途 | メモ |
+- [ ] YAML の値を、`shift_scheduler.domain` の Enum 名にそろえます（例：`role: PHARMACIST`）。
+- [ ] `timeline_entries` の `from` 及び `to` は、ISO 8601 の文字列で記載します。
+- [ ] 本書（README）に、用途を1行で追記します。
+- [ ] テンプレートを利用するテストを、1つ以上追加し、又は更新します。
+
+## 4. 収録済みテンプレート
+
+| テンプレート | 用途 | 備考 |
 | --- | --- | --- |
-| `baseline_staff.yaml` | 週末禁止スタッフ + 週末対応スタッフ + 夜勤対応スタッフをまとめた最小構成 | property-based テストや追加フィクスチャの土台として使用 |
-| `balanced_fulltime_pool.yaml` | フェアネス検証向けの常勤 4 名セット。休日可否や連勤制限を緩め、日勤フェアネスだけを観察する用途 | Phase4 の day-shift fairness property テストで使用 |
+| `baseline_staff.yaml` | 週末に勤務できない職員、週末に勤務できる職員及び夜勤ができる職員をまとめた最小構成 | プロパティベーステスト及び追加フィクスチャの土台として使用 |
+| `balanced_fulltime_pool.yaml` | 公平性の検証に向けた常勤 4 名の組。休日可否及び連勤制限を緩め、日勤の公平性だけを観察する用途 | 日勤の公平性のプロパティベーステスト（`test_day_shift_fairness_scales_with_randomized_horizon`）で使用 |
 
-必要に応じてテンプレートを増やし、`tests/fixtures/README.md` と併せてメンテナンスしてください。
+必要に応じてテンプレートを追加し、[`tests/fixtures/README.md`](../README.md) と併せて保守します。
