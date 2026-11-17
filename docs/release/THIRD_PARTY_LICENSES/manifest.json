@@ -2743,7 +2743,7 @@
         "type": "git",
         "url": "https://github.com/vercel/next.js"
       },
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -2764,7 +2764,7 @@
         "type": "git",
         "url": "https://github.com/vercel/next.js"
       },
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -2776,7 +2776,7 @@
       "location": "node_modules/@next/swc-darwin-x64",
       "name": "@next/swc-darwin-x64",
       "repository": null,
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -2788,7 +2788,7 @@
       "location": "node_modules/@next/swc-linux-arm64-gnu",
       "name": "@next/swc-linux-arm64-gnu",
       "repository": null,
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -2800,7 +2800,7 @@
       "location": "node_modules/@next/swc-linux-arm64-musl",
       "name": "@next/swc-linux-arm64-musl",
       "repository": null,
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -2812,7 +2812,7 @@
       "location": "node_modules/@next/swc-linux-x64-gnu",
       "name": "@next/swc-linux-x64-gnu",
       "repository": null,
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -2824,7 +2824,7 @@
       "location": "node_modules/@next/swc-linux-x64-musl",
       "name": "@next/swc-linux-x64-musl",
       "repository": null,
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -2836,7 +2836,7 @@
       "location": "node_modules/@next/swc-win32-arm64-msvc",
       "name": "@next/swc-win32-arm64-msvc",
       "repository": null,
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -2848,7 +2848,7 @@
       "location": "node_modules/@next/swc-win32-x64-msvc",
       "name": "@next/swc-win32-x64-msvc",
       "repository": null,
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -13073,7 +13073,7 @@
       "location": "node_modules/next",
       "name": "next",
       "repository": "vercel/next.js",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "author": null,
@@ -17994,7 +17994,7 @@
     }
   ],
   "sources": {
-    "frontend/package-lock.json": "fbd026d724a56277a2e7a9910c30c81fb216223a9dc4f85344a51ab8909be4e3",
+    "frontend/package-lock.json": "09f433843581827de371a4299f540bcbcf73c3551a1333ca7cdbc6c3f59c006e",
     "requirements.lock": "e390864be3fe4a9b00be937420f220865e8832fde4cc64d634e0317d907c0131"
   },
   "unresolved": [],
