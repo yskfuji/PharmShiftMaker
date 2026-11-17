@@ -957,57 +957,57 @@
     },
     {
       "name": "@next/env",
-      "purl": "pkg:npm/%40next/env@16.4.3",
+      "purl": "pkg:npm/%40next/env@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@next/swc-darwin-arm64",
-      "purl": "pkg:npm/%40next/swc-darwin-arm64@16.4.3",
+      "purl": "pkg:npm/%40next/swc-darwin-arm64@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@next/swc-darwin-x64",
-      "purl": "pkg:npm/%40next/swc-darwin-x64@16.4.3",
+      "purl": "pkg:npm/%40next/swc-darwin-x64@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@next/swc-linux-arm64-gnu",
-      "purl": "pkg:npm/%40next/swc-linux-arm64-gnu@16.4.3",
+      "purl": "pkg:npm/%40next/swc-linux-arm64-gnu@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@next/swc-linux-arm64-musl",
-      "purl": "pkg:npm/%40next/swc-linux-arm64-musl@16.4.3",
+      "purl": "pkg:npm/%40next/swc-linux-arm64-musl@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@next/swc-linux-x64-gnu",
-      "purl": "pkg:npm/%40next/swc-linux-x64-gnu@16.4.3",
+      "purl": "pkg:npm/%40next/swc-linux-x64-gnu@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@next/swc-linux-x64-musl",
-      "purl": "pkg:npm/%40next/swc-linux-x64-musl@16.4.3",
+      "purl": "pkg:npm/%40next/swc-linux-x64-musl@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@next/swc-win32-arm64-msvc",
-      "purl": "pkg:npm/%40next/swc-win32-arm64-msvc@16.4.3",
+      "purl": "pkg:npm/%40next/swc-win32-arm64-msvc@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@next/swc-win32-x64-msvc",
-      "purl": "pkg:npm/%40next/swc-win32-x64-msvc@16.4.3",
+      "purl": "pkg:npm/%40next/swc-win32-x64-msvc@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "@oxc-parser/binding-android-arm-eabi",
@@ -4059,9 +4059,9 @@
     },
     {
       "name": "next",
-      "purl": "pkg:npm/next@16.4.3",
+      "purl": "pkg:npm/next@16.4.6",
       "type": "library",
-      "version": "16.4.3"
+      "version": "16.4.6"
     },
     {
       "name": "node-addon-api",
@@ -5489,7 +5489,7 @@
     "properties": [
       {
         "name": "pharmshiftmaker:lockfiles-sha256",
-        "value": "615da881254d1b84d2bff862d280bc5cde30b1e45ec73c7e6ee639fc19b7af5f"
+        "value": "7c800a3dbbe7f8f89d66def5afa1c486b80c1382ebd766d00cba7e58839e0062"
       },
       {
         "name": "pharmshiftmaker:vulnerability-attestation",
@@ -5497,7 +5497,7 @@
       }
     ]
   },
-  "serialNumber": "urn:uuid:f41adbab-2d49-5c93-87ca-978400e5cf24",
+  "serialNumber": "urn:uuid:d9d5e1ef-90b3-59fa-851f-48a16e82b702",
   "specVersion": "1.5",
   "version": 1
 }
