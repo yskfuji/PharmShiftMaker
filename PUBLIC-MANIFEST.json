@@ -1,5 +1,5 @@
 {
-  "file_count": 1956,
+  "file_count": 1967,
   "files": [
     {
       "bytes": 279,
@@ -32,24 +32,29 @@
       "sha256": "ee122fb8ecbfb23545a9e2e2a632069b9f60ec11521f721b6681c53939fdd333"
     },
     {
-      "bytes": 384,
+      "bytes": 1039,
       "path": ".github/dependabot.yml",
-      "sha256": "b15972bf8532551f75aac173e1698f78d4552d5c14f15792a82120de7879fd42"
+      "sha256": "c6c9dab9bb1748aa62bcb372438946e87bc6d135d7c0f38c6a1fceb949e57d66"
     },
     {
-      "bytes": 6929,
+      "bytes": 1060,
+      "path": ".github/workflows/ci-metrics.yml",
+      "sha256": "7f68bf4a3db2b788e17bd8fc63f3610bd133f9970df719f2f641875ac7718720"
+    },
+    {
+      "bytes": 7624,
       "path": ".github/workflows/ci.yml",
-      "sha256": "dd4276f27955d6acb9546892745b8b20d2f1b194a0b9ee0279e1d431739988b9"
+      "sha256": "e754143db3678e0a79e3ee08f085a65c381fb804e690691bfc94fc14d5f908ef"
     },
     {
-      "bytes": 1357,
+      "bytes": 1689,
       "path": ".github/workflows/export-dry-run.yml",
-      "sha256": "529f886b328d5e3fd6a14cc0dd60e99b2239ec4502c3bfd6734e656ddccd2790"
+      "sha256": "fe0fb51ac41f225daf2b42062ffdf77fa56372940168f25ab53a93b9cd477576"
     },
     {
-      "bytes": 1771,
+      "bytes": 3002,
       "path": ".github/workflows/security.yml",
-      "sha256": "4ebcfc20a1302b9774336dc9b37c1bf6094e5e1e601439e8377df8c1c33ca9c5"
+      "sha256": "0c4d449e6b97a5d5df92c400ce7416f15ad4d83df4d68cda97592930922962c2"
     },
     {
       "bytes": 6430,
@@ -240,6 +245,31 @@
       "bytes": 85,
       "path": "devtools/__init__.py",
       "sha256": "54bc2f68cdd55b1ea665a42934ffae050248ef927a3a4d2ae692ca74d2fb81ed"
+    },
+    {
+      "bytes": 40,
+      "path": "devtools/ci/__init__.py",
+      "sha256": "9ded469e55b1c7f00eb978f3df564f462f47d46c1ccb7ebb77fde1b28d099745"
+    },
+    {
+      "bytes": 6799,
+      "path": "devtools/ci/metrics.py",
+      "sha256": "f4034e1ef2bd0fd9c688d0dec095c6c5e2f7c7671acb5cdacedb90d53b0e87a5"
+    },
+    {
+      "bytes": 6469,
+      "path": "devtools/ci/requirements-zizmor.txt",
+      "sha256": "aa11a9ca01c77da4ef738787f837939c81437d7cebb9606f9b42ffb606f4a56e"
+    },
+    {
+      "bytes": 1866,
+      "path": "devtools/ci/risk_matrix.py",
+      "sha256": "606dedcadbfd7e923b03c19be63c583f593f9b5a78d36a0050590755d4f9540e"
+    },
+    {
+      "bytes": 4032,
+      "path": "devtools/ci/workflow_policy.py",
+      "sha256": "7c922c370bdc74fe50c1006f365972f4e79d3d0a1f7cb8d49b9cfe387f6e44a0"
     },
     {
       "bytes": 3674,
@@ -535,6 +565,16 @@
       "bytes": 516230,
       "path": "docs/brand/wordmark-banner.png",
       "sha256": "0ecf661c540b3eef4f12ef470cf256faace0d582bb3d4b8fcbb310684a29eba2"
+    },
+    {
+      "bytes": 2551,
+      "path": "docs/ci/dependabot.md",
+      "sha256": "8905800c204cfa6e61f2a707cabb2f6881e7bd3136d25f52e0224fb3730a6a23"
+    },
+    {
+      "bytes": 4099,
+      "path": "docs/ci/risk-test-matrix.md",
+      "sha256": "b5c023df9925e2f2fb9cf3b375fb19349ab0d579b9457b7acd204e6dd8c96993"
     },
     {
       "bytes": 11134,
@@ -8967,6 +9007,21 @@
       "sha256": "0d6409bacaeb93789e59e546cabb9d83f52f4c5add37bc59ce68ff1c01bb35bf"
     },
     {
+      "bytes": 2528,
+      "path": "tests/test_ci_metrics.py",
+      "sha256": "98bbbf274677e4914ca081d648530bf9aadf42feb0e5d1c6f3602aebfc8c9d77"
+    },
+    {
+      "bytes": 519,
+      "path": "tests/test_ci_risk_matrix.py",
+      "sha256": "6681d360e640dfa096424d562bd43fbca7d54412340aefd4d85942a4588edada"
+    },
+    {
+      "bytes": 2251,
+      "path": "tests/test_ci_workflow_policy.py",
+      "sha256": "de21a86671e7d24350318b506cddf6b98e80adc88045af2b49cafc391bfc32e1"
+    },
+    {
       "bytes": 7090,
       "path": "tests/test_codeql_boundaries.py",
       "sha256": "2c29af453ee6537a073f903f9b99454d8de5dfea20e370be69dd43f6af095b67"
@@ -9784,5 +9839,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "a86dfbc536edeba850047132159b9dd032547552"
+  "source_commit": "2e8b4251e2b0640154395ac48318c7145da35d2c"
 }
