@@ -312,6 +312,26 @@ class LocalAccount(Base):
     )
 
 
+class LocalAccountEvent(Base):
+    """Append-only audit of local sign-in and account administration.
+
+    Kept apart from PlanningOutbox: these records are not notifications and are
+    never delivered, so they must not count as undelivered business events.
+    """
+
+    __tablename__ = "local_account_events"
+    event_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    account_id: Mapped[str] = mapped_column(String(64))
+    scope_id: Mapped[str] = mapped_column(String(256))
+    actor: Mapped[str] = mapped_column(String(128))
+    kind: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        server_default=func.now(),
+    )
+
+
 class ActualWorkEvent(Base):
     __tablename__ = "actual_work_events"
     key: Mapped[str] = mapped_column(String(256), primary_key=True)

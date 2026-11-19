@@ -1,8 +1,9 @@
 """Local sign-in accounts for the desktop profile (AUTH_MODE=local).
 
-The table holds personal data (display names and the optional link to a staff
-person), so on PostgreSQL it is attached to the same fail-closed copy-tracking
-trigger as every other application table.
+``local_accounts`` holds personal data (display names and the optional link to a
+staff person) and ``local_account_events`` its append-only audit, so on
+PostgreSQL both are attached to the same fail-closed copy-tracking trigger as
+every other application table.
 """
 
 import sqlalchemy as sa
@@ -44,6 +45,20 @@ def upgrade() -> None:
             server_default=sa.func.now(),
         ),
     )
+    op.create_table(
+        "local_account_events",
+        sa.Column("event_id", sa.String(64), primary_key=True),
+        sa.Column("account_id", sa.String(64), nullable=False),
+        sa.Column("scope_id", sa.String(256), nullable=False),
+        sa.Column("actor", sa.String(128), nullable=False),
+        sa.Column("kind", sa.String(64), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+    )
     bind = op.get_bind()
     if bind.dialect.name != "postgresql":
         return
@@ -54,11 +69,15 @@ def upgrade() -> None:
         raise RuntimeError(
             "Copy tracking function is missing; refuse an untracked table"
         )
-    op.execute(
-        "CREATE TRIGGER pharmshift_copy_write AFTER INSERT OR UPDATE OR DELETE "
-        "ON local_accounts FOR EACH ROW "
-        "EXECUTE FUNCTION pharmshift_record_copy('account_id')"
-    )
+    for table, key in (
+        ("local_accounts", "account_id"),
+        ("local_account_events", "event_id"),
+    ):
+        op.execute(
+            "CREATE TRIGGER pharmshift_copy_write AFTER INSERT OR UPDATE OR DELETE "
+            f"ON {table} FOR EACH ROW "
+            f"EXECUTE FUNCTION pharmshift_record_copy('{key}')"
+        )
 
 
 def downgrade() -> None:

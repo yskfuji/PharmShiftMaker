@@ -11,6 +11,7 @@ import {
   type LocalAccountView,
   createAccount,
   deactivateAccount,
+  linkPerson,
   listAccounts,
   resetPassword,
   unlockAccount,
@@ -67,6 +68,16 @@ export function AccountsView() {
     });
   };
 
+  const link = async (event: FormEvent<HTMLFormElement>, account: LocalAccountView) => {
+    event.preventDefault();
+    const personId = String(new FormData(event.currentTarget).get("person_id") ?? "").trim();
+    if (!personId) return;
+    if (!window.confirm(`${account.display_name} さんを職員ID ${personId} に結び付けます。結び付けは後から変更できません。よろしいですか？`)) {
+      return;
+    }
+    await act(() => linkPerson(account.account_id, personId));
+  };
+
   return (
     <div className="space-y-8">
       {error && (
@@ -99,6 +110,7 @@ export function AccountsView() {
                 <th scope="col">ログインID</th>
                 <th scope="col">役割</th>
                 <th scope="col">状態</th>
+                <th scope="col">職員ID</th>
                 <th scope="col">操作</th>
               </tr>
             </thead>
@@ -110,6 +122,27 @@ export function AccountsView() {
                   <td>{ROLE_LABEL[a.role] ?? a.role}</td>
                   <td>
                     {!a.active ? "無効" : a.locked ? "ロック中" : a.must_change_password ? "パスワード変更待ち" : "利用中"}
+                  </td>
+                  <td className="py-2">
+                    {a.person_id ? (
+                      a.person_id
+                    ) : a.active ? (
+                      <form className="flex gap-2" onSubmit={(event) => void link(event, a)}>
+                        <Input
+                          aria-label={`${a.display_name} さんの職員ID`}
+                          name="person_id"
+                          required
+                          maxLength={64}
+                          autoComplete="off"
+                          className="w-32"
+                        />
+                        <Button size="sm" variant="outline" type="submit">
+                          結び付ける
+                        </Button>
+                      </form>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="space-x-2 py-2">
                     {a.active && (

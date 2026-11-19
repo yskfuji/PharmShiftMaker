@@ -102,7 +102,6 @@ async def bootstrap(
 
 
 def _create_first_admin(payload: Bootstrap, password_hash: str) -> BootstrapResult:
-    from shift_scheduler.application.planning import emit
     from shift_scheduler.db.planning_models import AccountMembership, LocalAccount
     from shift_scheduler.db.session import get_session_factory
 
@@ -114,19 +113,18 @@ def _create_first_admin(payload: Bootstrap, password_hash: str) -> BootstrapResu
             session.execute(text("LOCK TABLE local_accounts IN EXCLUSIVE MODE"))
         if session.scalar(select(func.count()).select_from(LocalAccount)):
             raise HTTPException(409, "Setup has already been completed")
-        session.add(
-            LocalAccount(
-                account_id=account_id,
-                login_id=local.normalize_login(payload.login_id),
-                display_name=payload.display_name,
-                role=AppRole.ADMIN.value,
-                scope_id=scope_id,
-                person_id=None,
-                password_hash=password_hash,
-                must_change_password=False,
-                created_by="setup",
-            )
+        account = LocalAccount(
+            account_id=account_id,
+            login_id=local.normalize_login(payload.login_id),
+            display_name=payload.display_name,
+            role=AppRole.ADMIN.value,
+            scope_id=scope_id,
+            person_id=None,
+            password_hash=password_hash,
+            must_change_password=False,
+            created_by="setup",
         )
+        session.add(account)
         session.add(
             AccountMembership(
                 membership_id=uuid4().hex,
@@ -139,13 +137,7 @@ def _create_first_admin(payload: Bootstrap, password_hash: str) -> BootstrapResu
                 created_by="setup",
             )
         )
-        emit(
-            session,
-            scope_id,
-            account_id,
-            "local_account.bootstrap",
-            {"account_id": account_id, "role": AppRole.ADMIN.value},
-        )
+        local.record_event(session, account, "setup", "local_account.bootstrap")
     return BootstrapResult(account_id=account_id, scope_id=scope_id)
 
 

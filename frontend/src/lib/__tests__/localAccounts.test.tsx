@@ -99,3 +99,44 @@ describe("local sign-in", () => {
     expect(JSON.parse(loginCall[1].body).password).toBe(" spaced pass phrase ");
   });
 });
+
+describe("account administration", () => {
+  const original = global.fetch;
+  const confirm = window.confirm;
+  afterEach(() => {
+    global.fetch = original;
+    window.confirm = confirm;
+  });
+
+  it("links an unlinked account to a staff member after confirmation", async () => {
+    const account = {
+      account_id: "a1",
+      login_id: "pharmacist.f",
+      display_name: "薬剤師F",
+      role: "PHARMACIST",
+      scope_id: "hospital/pharmacy",
+      person_id: null,
+      active: true,
+      locked: false,
+      must_change_password: false,
+      created_at: "2026-11-19T00:00:00Z",
+    };
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(json(200, [account]))
+      .mockResolvedValueOnce({ ok: true, status: 204, json: async () => undefined } as unknown as Response)
+      .mockResolvedValueOnce(json(200, [{ ...account, person_id: "P-001" }]));
+    global.fetch = fetchMock as unknown as typeof fetch;
+    window.confirm = jest.fn(() => true);
+    const { AccountsView } = await import("@/app/settings/accounts/AccountsView");
+    render(<AccountsView />);
+    const input = await screen.findByLabelText("薬剤師F さんの職員ID");
+    fireEvent.change(input, { target: { value: " P-001 " } });
+    fireEvent.submit(input.closest("form") as HTMLFormElement);
+    expect(await screen.findByText("P-001")).toBeInTheDocument();
+    const [url, init] = fetchMock.mock.calls[1];
+    expect(String(url)).toMatch(/\/local-accounts\/a1\/person$/);
+    expect(JSON.parse(init.body)).toEqual({ person_id: "P-001" });
+    expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining("後から変更できません"));
+  });
+});

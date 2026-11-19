@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import OperationalError
 from starlette.responses import Response
 
+from shift_scheduler.api.auth.local import HashBusy
 from shift_scheduler.api.routers import (
     artifacts,
     auth,
@@ -76,6 +77,17 @@ async def restore_unavailable(
         status_code=503,
         content={"detail": "復元の隔離・検証中です。通常アクセスは停止しています。"},
         headers={"Retry-After": "30"},
+    )
+
+
+@app.exception_handler(HashBusy)
+async def password_hash_busy(_request: Request, _error: HashBusy) -> JSONResponse:
+    return JSONResponse(
+        status_code=429,
+        content={
+            "detail": "処理が混み合っています。少し待ってからやり直してください。"
+        },
+        headers={"Retry-After": "2", "Cache-Control": "no-store"},
     )
 
 
@@ -160,6 +172,17 @@ async def _browser_protection(
         "/redoc",
         "/auth/logout",
     }
+    if (
+        is_desktop()
+        and request.method not in {"GET", "HEAD", "OPTIONS"}
+        and request.headers.get("origin") not in _resolve_cors_origins()
+    ):
+        # Desktop: no state-changing request without the app's own Origin, even
+        # without a cookie (sign-in and setup cannot be driven by another page).
+        # Checked first, so a foreign page cannot even trigger the control lookup.
+        return JSONResponse(
+            {"detail": "Requests require the application's Origin"}, status_code=403
+        )
     if not public and request.method != "OPTIONS":
         try:
             await run_in_threadpool(require_access)
@@ -184,16 +207,6 @@ async def _browser_protection(
         return JSONResponse(
             {"detail": "Legacy writes are disabled; use reviewed /planning operations"},
             status_code=410,
-        )
-    if (
-        is_desktop()
-        and request.method not in {"GET", "HEAD", "OPTIONS"}
-        and request.headers.get("origin") not in _resolve_cors_origins()
-    ):
-        # Desktop: no state-changing request without the app's own Origin, even
-        # without a cookie (sign-in and setup cannot be driven by another page).
-        return JSONResponse(
-            {"detail": "Requests require the application's Origin"}, status_code=403
         )
     if (
         request.method not in {"GET", "HEAD", "OPTIONS"}

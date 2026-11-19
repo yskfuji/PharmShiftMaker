@@ -8,9 +8,12 @@ to development behaviour, stops the process at start-up.
 
 from __future__ import annotations
 
+import ctypes
+import ctypes.util
 import ipaddress
 import os
 import stat
+import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -21,6 +24,87 @@ from shift_scheduler.api.auth.settings import (
 )
 from shift_scheduler.config.profile import is_desktop
 from shift_scheduler.db.settings import DatabaseSettings
+
+_MNT_LOCAL = 0x00001000  # macOS <sys/mount.h>
+_NETWORK_FILESYSTEMS = {
+    "nfs",
+    "nfs4",
+    "cifs",
+    "smb3",
+    "smbfs",
+    "afs",
+    "9p",
+    "ceph",
+    "glusterfs",
+    "lustre",
+    "fuse.sshfs",
+    "fuse.rclone",
+    "davfs",
+    "fuse.davfs2",
+}
+
+
+class _MacStatfs(ctypes.Structure):
+    # struct statfs with 64-bit inodes (the only layout on arm64).
+    _fields_ = [
+        ("f_bsize", ctypes.c_uint32),
+        ("f_iosize", ctypes.c_int32),
+        ("f_blocks", ctypes.c_uint64),
+        ("f_bfree", ctypes.c_uint64),
+        ("f_bavail", ctypes.c_uint64),
+        ("f_files", ctypes.c_uint64),
+        ("f_ffree", ctypes.c_uint64),
+        ("f_fsid", ctypes.c_int32 * 2),
+        ("f_owner", ctypes.c_uint32),
+        ("f_type", ctypes.c_uint32),
+        ("f_flags", ctypes.c_uint32),
+        ("f_fssubtype", ctypes.c_uint32),
+        ("f_fstypename", ctypes.c_char * 16),
+        ("f_mntonname", ctypes.c_char * 1024),
+        ("f_mntfromname", ctypes.c_char * 1024),
+        ("f_flags_ext", ctypes.c_uint32),
+        ("f_reserved", ctypes.c_uint32 * 7),
+    ]
+
+
+def _local_filesystem(path: Path) -> bool:
+    """True only when the directory is on a local file system of this PC.
+
+    Anything that cannot be determined counts as not local (fail closed).
+    """
+    if sys.platform == "darwin":
+        libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+        try:
+            function = libc["statfs$INODE64"]
+        except AttributeError:
+            function = libc["statfs"]
+        result = _MacStatfs()
+        if function(os.fsencode(path), ctypes.byref(result)) != 0:
+            return False
+        return bool(result.f_flags & _MNT_LOCAL)
+    if sys.platform.startswith("linux"):
+        try:
+            mountinfo = Path("/proc/self/mountinfo").read_text()
+        except OSError:
+            return False
+        kind = mount_type(mountinfo, str(path))
+        return kind is not None and kind not in _NETWORK_FILESYSTEMS
+    return False
+
+
+def mount_type(mountinfo: str, target: str) -> str | None:
+    """File-system type of the innermost mount holding ``target`` (Linux mountinfo)."""
+    best, kind = "", None
+    for line in mountinfo.splitlines():
+        left, _, right = line.partition(" - ")
+        fields = left.split()
+        if len(fields) < 5 or not right.split():
+            continue
+        mount = fields[4].replace("\\040", " ")
+        inside = target == mount or target.startswith(mount.rstrip("/") + "/")
+        if inside and len(mount) >= len(best):
+            best, kind = mount, right.split()[0]
+    return kind
 
 
 def _loopback(host: str | None) -> bool:
@@ -97,6 +181,13 @@ def check_desktop() -> None:
             "Desktop storage permissions cannot be verified on this platform yet"
         )
     if os.name == "posix":
+        if path.resolve() != path.absolute():
+            # A link anywhere in the path could point the data at another place.
+            raise RuntimeError("Desktop managed storage must not go through a link")
+        if not _local_filesystem(path.resolve()):
+            raise RuntimeError(
+                "Desktop managed storage must be on this PC, not a share"
+            )
         mode = path.stat().st_mode
         if mode & (stat.S_IRWXG | stat.S_IRWXO):
             raise RuntimeError("Desktop managed storage must be private to this user")

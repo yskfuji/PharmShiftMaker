@@ -436,3 +436,181 @@ def test_desktop_profile_is_hardened_like_production(
     assert is_hardened()
     with pytest.raises(RuntimeError):
         require_development_storage()
+
+
+# --- second review: audit store, staff link, refresh, load and storage ------------
+
+
+def test_account_events_stay_out_of_the_notification_outbox(
+    client: TestClient, sqlite_session_factory: Any
+) -> None:
+    from shift_scheduler.db.planning_models import LocalAccountEvent, PlanningOutbox
+
+    _bootstrap(client)
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    _login(client, ADMIN["login_id"], "wrong passphrase 0000")
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    _new_user(client, "pharmacist.e")
+    with sqlite_session_factory() as session:
+        kinds = sorted(session.scalars(select(LocalAccountEvent.kind)))
+        assert session.scalars(select(PlanningOutbox)).all() == []
+    assert kinds == sorted(
+        [
+            "local_account.bootstrap",
+            "local_account.signed_in",
+            "local_account.signed_in",
+            "local_account.created",
+        ]
+    )
+
+
+def _register_person(factory: Any, person_id: str) -> None:
+    from uuid import uuid4
+
+    from shift_scheduler.db.compliance_models import ComplianceEntity
+
+    with factory.begin() as session:
+        session.add(
+            ComplianceEntity(
+                key=uuid4().hex,
+                scope_id="hospital/pharmacy",
+                kind="person",
+                entity_id=person_id,
+                payload={},
+            )
+        )
+
+
+def test_admin_links_an_account_to_a_staff_member_once(
+    client: TestClient, sqlite_session_factory: Any
+) -> None:
+    from shift_scheduler.db.planning_models import AccountMembership
+
+    _bootstrap(client)
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    user = _new_user(client, "pharmacist.f")
+    other = _new_user(client, "pharmacist.g")
+    _register_person(sqlite_session_factory, "P-001")
+    path = f"/local-accounts/{user['account_id']}/person"
+    # Only a staff member of the account's own department can be linked.
+    assert client.post(path, json={"person_id": "P-999"}).status_code == 422
+    assert client.post(path, json={"person_id": "P-001"}).status_code == 204
+    # The link is never moved, and one person has one account.
+    assert client.post(path, json={"person_id": "P-001"}).status_code == 409
+    taken = client.post(
+        f"/local-accounts/{other['account_id']}/person", json={"person_id": "P-001"}
+    )
+    assert taken.status_code == 409
+    with sqlite_session_factory() as session:
+        membership = session.scalar(
+            select(AccountMembership).where(
+                AccountMembership.subject == user["account_id"]
+            )
+        )
+        assert membership is not None and membership.person_id == "P-001"
+    listed = {a["login_id"]: a for a in client.get("/local-accounts").json()}
+    assert listed["pharmacist.f"]["person_id"] == "P-001"
+    assert listed["pharmacist.g"]["person_id"] is None
+
+
+def test_refresh_does_not_renew_an_ended_session(client: TestClient) -> None:
+    _bootstrap(client)
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    user = _new_user(client, "pharmacist.h")
+    member = _second_client()
+    member.post(
+        "/auth/login",
+        json={"username": "pharmacist.h", "password": user["temporary_password"]},
+    )
+    assert member.post("/auth/refresh").status_code == 200
+    assert (
+        client.post(f"/local-accounts/{user['account_id']}/deactivate").status_code
+        == 204
+    )
+    assert member.post("/auth/refresh").status_code == 401
+
+
+def test_busy_password_hashing_answers_429(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import threading
+
+    _bootstrap(client)
+    monkeypatch.setattr(local, "_HASH_SLOTS", threading.BoundedSemaphore(1))
+    monkeypatch.setattr(local, "_HASH_WAIT_SECONDS", 0.01)
+    local._HASH_SLOTS.acquire()
+    try:
+        response = _login(client, ADMIN["login_id"], ADMIN["password"])
+    finally:
+        local._HASH_SLOTS.release()
+    assert response.status_code == 429
+    assert response.headers["Retry-After"] == "2"
+    assert _login(client, ADMIN["login_id"], ADMIN["password"]).status_code == 200
+
+
+def test_foreign_origin_is_refused_before_the_control_lookup(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[int] = []
+    monkeypatch.setenv("PHARMSHIFT_ENV", "desktop")
+    monkeypatch.setattr(
+        "shift_scheduler.control.client.require_access", lambda: calls.append(1)
+    )
+    response = client.post(
+        "/auth/login",
+        json={"username": "x", "password": "y"},
+        headers={"Origin": "https://evil.example"},
+    )
+    assert response.status_code == 403
+    assert calls == []
+
+
+def test_storage_behind_a_link_stops_start_up(
+    desktop_env: dict[str, str], monkeypatch: pytest.MonkeyPatch, tmp_path: Any
+) -> None:
+    import os
+
+    from shift_scheduler.config.desktop import check_desktop
+
+    if os.name != "posix":
+        pytest.skip("POSIX links")
+    real = tmp_path / "real"
+    (real / "storage").mkdir(parents=True, mode=0o700)
+    os.chmod(real, 0o700)
+    (tmp_path / "alias").symlink_to(real)
+    monkeypatch.setenv(
+        "PHARMSHIFT_MANAGED_STORAGE", str(tmp_path / "alias" / "storage")
+    )
+    with pytest.raises(RuntimeError, match="link"):
+        check_desktop()
+
+
+def test_storage_on_a_network_file_system_stops_start_up(
+    desktop_env: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import os
+
+    from shift_scheduler.config import desktop
+
+    if os.name != "posix":
+        pytest.skip("POSIX file systems")
+    monkeypatch.setattr(desktop, "_local_filesystem", lambda _path: False)
+    with pytest.raises(RuntimeError, match="share"):
+        desktop.check_desktop()
+
+
+def test_linux_mount_type_uses_the_innermost_mount() -> None:
+    from shift_scheduler.config.desktop import mount_type
+
+    mountinfo = "\n".join(
+        [
+            "22 1 8:1 / / rw,relatime shared:1 - ext4 /dev/sda1 rw",
+            "40 22 0:50 / /home/user/share rw shared:9 - cifs //nas/share rw",
+            "41 22 0:51 / /home/user/share\\040b rw shared:9 - nfs4 nas:/b rw",
+        ]
+    )
+    assert mount_type(mountinfo, "/home/user/data") == "ext4"
+    assert mount_type(mountinfo, "/home/user/share/pharmshift") == "cifs"
+    assert mount_type(mountinfo, "/home/user/share b/x") == "nfs4"
+    assert mount_type(mountinfo, "/home/user/shareX") == "ext4"
+    assert mount_type("", "/x") is None

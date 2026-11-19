@@ -27,7 +27,7 @@ def test_every_physical_table_and_key_is_drawn():
     text = physical.mermaid(tables)
     # 37 + the four ideal-workflow tables (planning_change_cases/events, staff_lifecycle_cases/events)
     # + local_accounts (desktop profile, AUTH_MODE=local).
-    assert len(tables) == 42
+    assert len(tables) == 43
     for t in tables:
         assert f"    {t['name']} {{" in text
         for column, target, _ in t["foreign_keys"]:

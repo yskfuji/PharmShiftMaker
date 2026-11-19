@@ -5,7 +5,12 @@ minimum) from the standard library, so no extra native dependency is bundled.
 Unknown login IDs are verified against a dummy hash so that the response time
 does not reveal which IDs exist. Five consecutive failures (sign-in or the
 current password on the change form) lock the account for fifteen minutes.
-At most two hashes run at once, so unauthenticated requests cannot exhaust memory.
+At most two hashes run at once, so unauthenticated requests cannot exhaust memory;
+a request that cannot get a slot within two seconds is refused (``HashBusy``).
+Hashes are computed outside any transaction and row lock: the account is read,
+the password is verified, and only the counter update takes a short row lock.
+Sign-in and administration events go to ``local_account_events`` (append-only),
+not to the business notification outbox.
 
 Every authenticated request re-reads the account (see ``current_account``): a
 deactivated account, a password changed or reset after the token was issued,
@@ -23,12 +28,13 @@ import threading
 import unicodedata
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 from shift_scheduler.api.auth.models import AppRole, UserPrincipal
-from shift_scheduler.db.planning_models import LocalAccount
+from shift_scheduler.db.planning_models import LocalAccount, LocalAccountEvent
 
 SCRYPT_N = 2**17
 SCRYPT_R = 8
@@ -39,14 +45,15 @@ MAX_PASSWORD_LENGTH = 256
 MAX_FAILURES = 5
 LOCK_DURATION = timedelta(minutes=15)
 _HASH_SLOTS = threading.BoundedSemaphore(2)
-
-
-class LocalAuthError(Exception):
-    """Sign-in failed. The message never says which part was wrong."""
+_HASH_WAIT_SECONDS = 2.0
 
 
 class PasswordPolicyError(ValueError):
     """The new password does not satisfy the policy."""
+
+
+class HashBusy(RuntimeError):
+    """Too many password hashes are running; the caller answers 429."""
 
 
 def issuer() -> str:
@@ -63,10 +70,14 @@ def _normalize(password: str) -> bytes:
 
 
 def _scrypt(password: str, salt: bytes, n: int, r: int, p: int, dklen: int) -> bytes:
-    with _HASH_SLOTS:
+    if not _HASH_SLOTS.acquire(timeout=_HASH_WAIT_SECONDS):
+        raise HashBusy("Too many sign-in attempts at once")
+    try:
         return hashlib.scrypt(
             _normalize(password), salt=salt, n=n, r=r, p=p, maxmem=_MAXMEM, dklen=dklen
         )
+    finally:
+        _HASH_SLOTS.release()
 
 
 def hash_password(password: str) -> str:
@@ -126,15 +137,23 @@ def _aware(value: datetime | None) -> datetime | None:
     return value.replace(tzinfo=UTC)
 
 
-def _audit(session: Session, account: LocalAccount, kind: str) -> None:
-    from shift_scheduler.application.planning import emit
+def _locked(account: LocalAccount) -> bool:
+    locked = _aware(account.locked_until)
+    return bool(locked and locked > _now())
 
-    emit(
-        session,
-        account.scope_id,
-        account.account_id,
-        kind,
-        {"account_id": account.account_id},
+
+def record_event(
+    session: Session, account: LocalAccount, actor: str, kind: str
+) -> None:
+    """Append an audit record in the caller's transaction."""
+    session.add(
+        LocalAccountEvent(
+            event_id=uuid4().hex,
+            account_id=account.account_id,
+            scope_id=account.scope_id,
+            actor=actor,
+            kind=kind,
+        )
     )
 
 
@@ -143,7 +162,7 @@ def _record_failure(session: Session, account: LocalAccount) -> None:
     if account.failed_count >= MAX_FAILURES:
         account.locked_until = _now() + LOCK_DURATION
         account.failed_count = 0
-        _audit(session, account, "local_account.locked")
+        record_event(session, account, account.account_id, "local_account.locked")
 
 
 @dataclass(frozen=True)
@@ -161,59 +180,83 @@ def principal_for(account: LocalAccount) -> UserPrincipal:
     )
 
 
-def authenticate(session: Session, login_id: str, password: str) -> SignIn | None:
-    """Verify a sign-in inside the caller's transaction.
+def _usable(account: LocalAccount) -> bool:
+    return bool(account.active) and not _locked(account)
 
-    A failure returns None instead of raising, so the caller commits the updated
-    failure counter and lock before answering 401.
+
+def sign_in(
+    factory: sessionmaker[Session], login_id: str, password: str
+) -> SignIn | None:
+    """Verify a sign-in; None for any failure (the failure counter is committed).
+
+    The hash runs with no transaction open. The counter update then re-reads the
+    account under a row lock and ignores the result if the password or the lock
+    changed in between.
     """
-    account = session.scalar(
-        select(LocalAccount)
-        .where(LocalAccount.login_id == normalize_login(login_id))
-        .with_for_update()
-    )
-    if account is None or not account.active:
+    with factory() as session:
+        found = session.scalar(
+            select(LocalAccount).where(
+                LocalAccount.login_id == normalize_login(login_id)
+            )
+        )
+        snapshot = (
+            (found.account_id, found.password_hash)
+            if found is not None and _usable(found)
+            else None
+        )
+    if snapshot is None:
         verify_password(password, _dummy_hash())
         return None
-    locked = _aware(account.locked_until)
-    if locked and locked > _now():
-        verify_password(password, _dummy_hash())
-        return None
-    if not verify_password(password, account.password_hash):
-        _record_failure(session, account)
-        return None
-    account.failed_count = 0
-    account.locked_until = None
-    _audit(session, account, "local_account.signed_in")
-    return SignIn(principal_for(account), bool(account.must_change_password))
+    account_id, stored = snapshot
+    correct = verify_password(password, stored)
+    with factory.begin() as session:
+        account = session.get(LocalAccount, account_id, with_for_update=True)
+        if account is None or not _usable(account) or account.password_hash != stored:
+            return None
+        if not correct:
+            _record_failure(session, account)
+            return None
+        account.failed_count = 0
+        account.locked_until = None
+        record_event(session, account, account.account_id, "local_account.signed_in")
+        return SignIn(principal_for(account), bool(account.must_change_password))
 
 
 def change_password(
-    session: Session, account_id: str, current: str, new: str
-) -> LocalAccount | None:
-    """Change the password in the caller's transaction; None for a wrong current password.
+    factory: sessionmaker[Session], account_id: str, current: str, new: str
+) -> UserPrincipal | None:
+    """Change the password; None for a wrong current password.
 
-    A wrong current password counts towards the lock like a failed sign-in, and the
-    caller commits that before answering.
+    A wrong current password counts towards the lock like a failed sign-in. As in
+    ``sign_in``, both hashes run before the short locked update.
     """
-    account = session.get(LocalAccount, account_id, with_for_update=True)
-    if account is None or not account.active:
-        return None
-    locked = _aware(account.locked_until)
-    if locked and locked > _now():
-        return None
-    if not verify_password(current, account.password_hash):
-        _record_failure(session, account)
-        return None
-    if current == new:
-        raise PasswordPolicyError("現在と異なるパスワードにしてください。")
-    check_policy(new, account.login_id)
-    account.password_hash = hash_password(new)
-    account.must_change_password = False
-    account.failed_count = 0
-    account.password_changed_at = _now()
-    _audit(session, account, "local_account.password_changed")
-    return account
+    with factory() as session:
+        found = session.get(LocalAccount, account_id)
+        if found is None or not _usable(found):
+            return None
+        stored, login = found.password_hash, found.login_id
+    correct = verify_password(current, stored)
+    new_hash = None
+    if correct:
+        if current == new:
+            raise PasswordPolicyError("現在と異なるパスワードにしてください。")
+        check_policy(new, login)
+        new_hash = hash_password(new)
+    with factory.begin() as session:
+        account = session.get(LocalAccount, account_id, with_for_update=True)
+        if account is None or not _usable(account) or account.password_hash != stored:
+            return None
+        if new_hash is None:
+            _record_failure(session, account)
+            return None
+        account.password_hash = new_hash
+        account.must_change_password = False
+        account.failed_count = 0
+        account.password_changed_at = _now()
+        record_event(
+            session, account, account.account_id, "local_account.password_changed"
+        )
+        return principal_for(account)
 
 
 class AccountState:
@@ -247,10 +290,9 @@ def temporary_password() -> str:
 
 __all__ = [
     "AccountState",
-    "LocalAuthError",
+    "HashBusy",
     "PasswordPolicyError",
     "SignIn",
-    "authenticate",
     "change_password",
     "check_policy",
     "current_account",
@@ -258,6 +300,8 @@ __all__ = [
     "issuer",
     "normalize_login",
     "principal_for",
+    "record_event",
+    "sign_in",
     "temporary_password",
     "verify_password",
 ]

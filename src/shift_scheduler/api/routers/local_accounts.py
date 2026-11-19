@@ -4,8 +4,14 @@ Only an administrator of the account's own department (``LocalAccount.scope_id``
 may manage it. The acting administrator is identified by the token subject
 (account_id), never by a person ID. An administrator cannot deactivate their own
 account or the department's last active administrator. Every change is recorded
-in the transactional audit outbox. Deactivation and password resets end every
-existing session of the account (each request re-reads the account).
+in ``local_account_events`` in the same transaction. Deactivation and password
+resets end every existing session of the account (each request re-reads the
+account). Every change locks the department's administrator memberships first
+(in a fixed order) and re-checks the actor among them, so two administrators
+cannot remove each other concurrently.
+
+A new account is not yet a staff member: an administrator links it once to a
+person of the same department (``/person``); the link is never moved afterwards.
 """
 
 from __future__ import annotations
@@ -17,6 +23,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.concurrency import run_in_threadpool
 
@@ -52,6 +59,7 @@ class AccountView(BaseModel):
     display_name: str
     role: str
     scope_id: str
+    person_id: str | None
     active: bool
     locked: bool
     must_change_password: bool
@@ -63,6 +71,10 @@ class NewAccount(BaseModel):
     display_name: str = Field(..., min_length=1, max_length=128)
     role: str
     scope_id: str = Field(..., min_length=3, max_length=127)
+
+
+class PersonLink(BaseModel):
+    person_id: str = Field(..., min_length=1, max_length=64)
 
 
 class IssuedPassword(BaseModel):
@@ -93,6 +105,7 @@ def _view(account: LocalAccount) -> AccountView:
         display_name=account.display_name,
         role=account.role,
         scope_id=account.scope_id,
+        person_id=account.person_id,
         active=account.active,
         locked=bool(locked_until and locked_until > datetime.now(UTC)),
         must_change_password=account.must_change_password,
@@ -100,20 +113,44 @@ def _view(account: LocalAccount) -> AccountView:
     )
 
 
+def _lock_scope_admins(session: Session, scope_id: str) -> list[AccountMembership]:
+    """Active administrators of a department, row-locked in a fixed order."""
+    return list(
+        session.scalars(
+            select(AccountMembership)
+            .where(
+                AccountMembership.issuer == local.issuer(),
+                AccountMembership.scope_id == scope_id,
+                AccountMembership.role == AppRole.ADMIN.value,
+                AccountMembership.active.is_(True),
+            )
+            .order_by(AccountMembership.membership_id)
+            .with_for_update()
+        )
+    )
+
+
 def _load_for_admin(
     session: Session, account_id: str, actor: str, *, lock: bool = True
 ) -> LocalAccount:
     account = session.get(LocalAccount, account_id, with_for_update=lock)
+    if account is None:
+        raise HTTPException(404, "Account not found")
+    if lock:
+        # Re-checked under the lock: an actor removed meanwhile is no longer admin.
+        allowed = any(
+            m.subject == actor for m in _lock_scope_admins(session, account.scope_id)
+        )
+    else:
+        allowed = account.scope_id in _admin_scopes(session, actor)
     # Missing and foreign accounts look the same to the caller.
-    if account is None or account.scope_id not in _admin_scopes(session, actor):
+    if not allowed:
         raise HTTPException(404, "Account not found")
     return account
 
 
 def _emit(session: Session, account: LocalAccount, actor: str, kind: str) -> None:
-    from shift_scheduler.application.planning import emit
-
-    emit(session, account.scope_id, actor, kind, {"account_id": account.account_id})
+    local.record_event(session, account, actor, kind)
 
 
 @router.get("", response_model=list[AccountView])
@@ -160,7 +197,10 @@ async def create_account(
         account_id = uuid4().hex
         login_id = local.normalize_login(payload.login_id)
         with get_session_factory().begin() as session:
-            if payload.scope_id not in _admin_scopes(session, actor):
+            if not any(
+                m.subject == actor
+                for m in _lock_scope_admins(session, payload.scope_id)
+            ):
                 raise HTTPException(403, "この所属の管理者ではありません。")
             if session.scalar(
                 select(LocalAccount.account_id).where(LocalAccount.login_id == login_id)
@@ -190,6 +230,12 @@ async def create_account(
                     created_by=actor,
                 )
             )
+            try:
+                session.flush()
+            except IntegrityError as exc:  # the same ID created concurrently
+                raise HTTPException(
+                    409, "このログインIDは既に使われています。"
+                ) from exc
             _emit(session, account, actor, "local_account.created")
         return account_id
 
@@ -276,6 +322,53 @@ def deactivate(account_id: str, user: UserPrincipal = Admin) -> Response:
             membership.active = False
             membership.deactivated_at = now
         _emit(session, account, actor, "local_account.deactivated")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/{account_id}/person", status_code=status.HTTP_204_NO_CONTENT)
+def link_person(
+    account_id: str, payload: PersonLink, user: UserPrincipal = Admin
+) -> Response:
+    """Link the account once to a staff member of its own department."""
+    _require_local()
+    actor = _actor(user)
+    from shift_scheduler.application.ideal_workflows import scope_people
+    from shift_scheduler.db.session import get_session_factory
+
+    with get_session_factory().begin() as session:
+        account = _load_for_admin(session, account_id, actor)
+        if account.person_id is not None:
+            # ops/reviewed-planning.md: an account is never re-pointed at another
+            # person; a mistake is corrected with a new account.
+            raise HTTPException(409, "このアカウントは既に職員に結び付いています。")
+        if payload.person_id not in scope_people(session, account.scope_id):
+            raise HTTPException(422, "この所属の職員ではありません。")
+        if session.scalar(
+            select(AccountMembership.membership_id).where(
+                AccountMembership.scope_id == account.scope_id,
+                AccountMembership.person_id == payload.person_id,
+                AccountMembership.active.is_(True),
+            )
+        ):
+            raise HTTPException(
+                409, "この職員には既に別のアカウントが結び付いています。"
+            )
+        memberships = session.scalars(
+            select(AccountMembership)
+            .where(
+                AccountMembership.issuer == local.issuer(),
+                AccountMembership.subject == account_id,
+            )
+            .with_for_update()
+        ).all()
+        for membership in memberships:
+            # Until linked, the membership carries the account ID as a placeholder.
+            if membership.person_id != account_id:
+                raise HTTPException(409, "このアカウントは既に職員に結び付いています。")
+            membership.person_id = payload.person_id
+            membership.revision = (membership.revision or 0) + 1
+        account.person_id = payload.person_id
+        _emit(session, account, actor, "local_account.person_linked")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

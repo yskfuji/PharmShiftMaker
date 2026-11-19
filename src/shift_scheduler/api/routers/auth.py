@@ -237,8 +237,7 @@ def _authenticate_local(login_id: str, password: str) -> Any:
     from shift_scheduler.db.session import get_session_factory
 
     # The failure counter and lock are committed even when the sign-in fails.
-    with get_session_factory().begin() as session:
-        return local.authenticate(session, login_id, password)
+    return local.sign_in(get_session_factory(), login_id, password)
 
 
 class PasswordChange(BaseModel):
@@ -266,11 +265,12 @@ async def change_local_password(
 
     def _change() -> UserPrincipal | None:
         # A wrong current password is committed as a failure (towards the lock).
-        with get_session_factory().begin() as session:
-            account = local.change_password(
-                session, account_id, payload.current_password, payload.new_password
-            )
-            return None if account is None else local.principal_for(account)
+        return local.change_password(
+            get_session_factory(),
+            account_id,
+            payload.current_password,
+            payload.new_password,
+        )
 
     try:
         refreshed = await run_in_threadpool(_change)
@@ -388,6 +388,20 @@ class SessionState(BaseModel):
     absolute_expires_at: datetime
 
 
+async def _local_session_valid(principal: UserPrincipal) -> bool:
+    from starlette.concurrency import run_in_threadpool
+
+    from shift_scheduler.api.auth import local
+    from shift_scheduler.db.session import get_session_factory
+
+    def _check() -> bool:
+        with get_session_factory()() as session:
+            state = local.current_account(session, principal)
+        return state != local.AccountState.INVALID
+
+    return await run_in_threadpool(_check)
+
+
 @router.post("/refresh", response_model=SessionState)
 async def refresh(request: Request, response: Response) -> SessionState:
     """Renew the browser session while the person is working (idle limit).
@@ -411,6 +425,13 @@ async def refresh(request: Request, response: Response) -> SessionState:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired"
         ) from exc
+    if AUTH_MODE == AuthMode.LOCAL and not await _local_session_valid(principal):
+        # A deactivated account or a session older than the last password change
+        # is not renewed (the page would otherwise believe it is still signed in).
+        _clear_session_cookie(response)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired"
+        )
     issued = (
         principal.issued_at
         if principal.issued_at.tzinfo

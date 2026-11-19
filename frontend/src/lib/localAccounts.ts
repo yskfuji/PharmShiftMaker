@@ -14,6 +14,8 @@ export interface LocalAccountView {
   role: string;
   /** The department that owns the account (facility/department). */
   scope_id: string;
+  /** The staff member this account acts as; null until an administrator links it. */
+  person_id: string | null;
   active: boolean;
   locked: boolean;
   must_change_password: boolean;
@@ -99,5 +101,14 @@ export function deactivateAccount(accountId: string): Promise<void> {
     `/local-accounts/${encodeURIComponent(accountId)}/deactivate`,
     { method: "POST" },
     "利用者を無効にできませんでした。",
+  );
+}
+
+/** Link the account once to a staff member of its own department (never moved later). */
+export function linkPerson(accountId: string, person_id: string): Promise<void> {
+  return call(
+    `/local-accounts/${encodeURIComponent(accountId)}/person`,
+    { method: "POST", body: JSON.stringify({ person_id }) },
+    "職員に結び付けられませんでした。",
   );
 }
