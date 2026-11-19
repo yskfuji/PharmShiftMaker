@@ -128,7 +128,9 @@ def finish_and_measure(
 def main() -> None:
     from shift_scheduler.config.desktop import check_desktop
     from shift_scheduler.config.production import check_production
+    from shift_scheduler.config.profile import validate_environment
 
+    validate_environment()
     check_production()
     check_desktop()
     import logging

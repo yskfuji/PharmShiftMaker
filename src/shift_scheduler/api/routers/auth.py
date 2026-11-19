@@ -80,14 +80,17 @@ def legacy_identity_context(
 class LoginRequest(BaseModel):
     """開発用ログインリクエスト."""
 
-    username: str = Field(..., description="ユーザーID")
-    password: str = Field(..., description="パスワード（開発用ダミー）")
+    username: str = Field(..., max_length=256, description="ユーザーID")
+    password: str = Field(..., max_length=256, description="パスワード")
 
 
 class LoginResponse(BaseModel):
     """擬似トークンレスポンス."""
 
-    access_token: str = Field(..., description="Bearer トークン")
+    access_token: str | None = Field(
+        default=None,
+        description="Bearer トークン（ローカルアカウントでは返さず、HttpOnly cookie だけを使う）",
+    )
     token_type: str = Field(default="bearer", description="常に bearer")
     role: AppRole
     user_id: str
@@ -194,8 +197,6 @@ async def login(payload: LoginRequest, response: Response) -> LoginResponse:
             )
         principal: UserPrincipal = signed_in.principal
         change_required = signed_in.must_change_password
-        if change_required:
-            principal = _with_claim(principal, "password_change_required", True)
     elif AUTH_MODE != AuthMode.MOCK:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -214,7 +215,9 @@ async def login(payload: LoginRequest, response: Response) -> LoginResponse:
     from secrets import token_urlsafe
 
     principal = replace(principal, session_id=principal.session_id or token_urlsafe(16))
-    token = issue_development_token(principal)
+    # Local accounts use only the HttpOnly cookie: a token in the response body could
+    # be read by page scripts and has no idle limit.
+    token = None if AUTH_MODE == AuthMode.LOCAL else issue_development_token(principal)
     # The cookie is the browser session (idle limit); the returned token is for
     # scripts that authenticate with a header and has only the absolute limit.
     _apply_session_cookie(
@@ -238,14 +241,6 @@ def _authenticate_local(login_id: str, password: str) -> Any:
         return local.authenticate(session, login_id, password)
 
 
-def _with_claim(principal: UserPrincipal, key: str, value: Any) -> UserPrincipal:
-    from dataclasses import replace
-
-    claims = dict(principal.claims or {})
-    claims[key] = value
-    return replace(principal, claims=claims)
-
-
 class PasswordChange(BaseModel):
     current_password: str = Field(..., min_length=1, max_length=256)
     new_password: str = Field(..., min_length=1, max_length=256)
@@ -267,24 +262,24 @@ async def change_local_password(
     from shift_scheduler.api.auth import local
     from shift_scheduler.db.session import get_session_factory
 
-    def _change() -> UserPrincipal:
+    account_id = str((principal.claims or {}).get("sub") or "")
+
+    def _change() -> UserPrincipal | None:
+        # A wrong current password is committed as a failure (towards the lock).
         with get_session_factory().begin() as session:
             account = local.change_password(
-                session,
-                principal.user_id,
-                payload.current_password,
-                payload.new_password,
+                session, account_id, payload.current_password, payload.new_password
             )
-            return local.principal_for(account)
+            return None if account is None else local.principal_for(account)
 
     try:
         refreshed = await run_in_threadpool(_change)
     except local.PasswordPolicyError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except local.LocalAuthError as exc:
+    if refreshed is None:
         raise HTTPException(
             status_code=401, detail="現在のパスワードが正しくありません。"
-        ) from exc
+        )
     # The old session (which may carry the change-required mark) ends here.
     old = request.cookies.get(SESSION_SETTINGS.cookie_name)
     if old:

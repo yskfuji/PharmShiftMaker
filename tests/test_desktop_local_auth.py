@@ -42,7 +42,9 @@ def client(monkeypatch: pytest.MonkeyPatch, sqlite_session_factory: Any) -> Test
 
 
 def _bootstrap(client: TestClient) -> dict[str, Any]:
-    response = client.post("/setup/bootstrap", json=ADMIN, headers={"X-Setup-Token": TOKEN})
+    response = client.post(
+        "/setup/bootstrap", json=ADMIN, headers={"X-Setup-Token": TOKEN}
+    )
     assert response.status_code == 201, response.text
     return response.json()
 
@@ -73,12 +75,16 @@ def test_bootstrap_needs_the_shell_token_and_runs_only_once(client: TestClient) 
     assert client.get("/setup/status").json() == {"initialized": False}
     assert client.post("/setup/bootstrap", json=ADMIN).status_code == 403
     assert (
-        client.post("/setup/bootstrap", json=ADMIN, headers={"X-Setup-Token": "w" * 40}).status_code
+        client.post(
+            "/setup/bootstrap", json=ADMIN, headers={"X-Setup-Token": "w" * 40}
+        ).status_code
         == 403
     )
     result = _bootstrap(client)
     assert result["scope_id"] == "hospital/pharmacy"
-    again = client.post("/setup/bootstrap", json=ADMIN, headers={"X-Setup-Token": TOKEN})
+    again = client.post(
+        "/setup/bootstrap", json=ADMIN, headers={"X-Setup-Token": TOKEN}
+    )
     assert again.status_code == 409
     assert client.get("/setup/status").json() == {"initialized": True}
 
@@ -87,7 +93,9 @@ def test_bootstrap_without_configured_token_is_refused(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("PHARMSHIFT_SETUP_TOKEN", "short")
-    response = client.post("/setup/bootstrap", json=ADMIN, headers={"X-Setup-Token": "short"})
+    response = client.post(
+        "/setup/bootstrap", json=ADMIN, headers={"X-Setup-Token": "short"}
+    )
     assert response.status_code == 403
 
 
@@ -112,7 +120,9 @@ def test_login_locks_after_five_failures_and_hides_which_part_failed(
     assert _login(client, ADMIN["login_id"], ADMIN["password"]).status_code == 200
 
 
-def test_new_account_must_change_password_before_using_the_api(client: TestClient) -> None:
+def test_new_account_must_change_password_before_using_the_api(
+    client: TestClient,
+) -> None:
     _bootstrap(client)
     assert _login(client, ADMIN["login_id"], ADMIN["password"]).status_code == 200
     created = client.post(
@@ -132,7 +142,10 @@ def test_new_account_must_change_password_before_using_the_api(client: TestClien
     assert client.get("/planning/scopes").status_code == 403
     changed = client.post(
         "/auth/password",
-        json={"current_password": temporary, "new_password": "a much better passphrase"},
+        json={
+            "current_password": temporary,
+            "new_password": "a much better passphrase",
+        },
     )
     assert changed.status_code == 204, changed.text
     assert client.get("/planning/scopes").status_code == 200
@@ -165,11 +178,13 @@ def test_non_admin_cannot_manage_accounts(client: TestClient) -> None:
 def test_admin_cannot_deactivate_self_or_the_last_admin(client: TestClient) -> None:
     result = _bootstrap(client)
     _login(client, ADMIN["login_id"], ADMIN["password"])
-    assert client.post(f"/local-accounts/{result['account_id']}/deactivate").status_code == 409
+    assert (
+        client.post(f"/local-accounts/{result['account_id']}/deactivate").status_code
+        == 409
+    )
     listed = client.get("/local-accounts").json()
-    assert [a["login_id"] for a in listed] == [ADMIN["login_id"]]
-    assert listed[0]["memberships"] == [
-        {"scope_id": "hospital/pharmacy", "role": "ADMIN", "active": True}
+    assert [(a["login_id"], a["scope_id"]) for a in listed] == [
+        (ADMIN["login_id"], "hospital/pharmacy")
     ]
 
 
@@ -186,6 +201,136 @@ def test_logout_is_persisted_for_local_sessions(
         assert session.scalar(select(RevokedSession))
     client.cookies.set("pharmshift_token", token)
     assert client.get("/auth/me").status_code == 401
+
+
+def _new_user(
+    admin: TestClient, login_id: str, role: str = "PHARMACIST"
+) -> dict[str, Any]:
+    created = admin.post(
+        "/local-accounts",
+        json={
+            "login_id": login_id,
+            "display_name": login_id,
+            "role": role,
+            "scope_id": "hospital/pharmacy",
+        },
+    )
+    assert created.status_code == 201, created.text
+    return created.json()
+
+
+def _second_client() -> TestClient:
+    from shift_scheduler.api.main import app
+
+    other = TestClient(app)
+    other.headers["Origin"] = "https://localhost:3000"
+    return other
+
+
+def test_reset_and_deactivation_end_every_existing_session(client: TestClient) -> None:
+    _bootstrap(client)
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    user = _new_user(client, "pharmacist.c")
+    member = _second_client()
+    member.post(
+        "/auth/login",
+        json={"username": "pharmacist.c", "password": user["temporary_password"]},
+    )
+    member.post(
+        "/auth/password",
+        json={
+            "current_password": user["temporary_password"],
+            "new_password": "member passphrase 2026",
+        },
+    )
+    assert member.get("/planning/scopes").status_code == 200
+    reset = client.post(f"/local-accounts/{user['account_id']}/reset-password")
+    assert reset.status_code == 200
+    # The session signed before the reset no longer works anywhere.
+    assert member.get("/planning/scopes").status_code == 401
+    assert member.get("/auth/me").status_code == 401
+    member.cookies.clear()
+    member.post(
+        "/auth/login",
+        json={
+            "username": "pharmacist.c",
+            "password": reset.json()["temporary_password"],
+        },
+    )
+    assert member.get("/auth/me").status_code == 200
+    assert (
+        client.post(f"/local-accounts/{user['account_id']}/deactivate").status_code
+        == 204
+    )
+    assert member.get("/auth/me").status_code == 401
+
+
+def test_pending_change_allows_only_the_change_endpoints(client: TestClient) -> None:
+    _bootstrap(client)
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    user = _new_user(client, "pharmacist.d")
+    _login(client, "pharmacist.d", user["temporary_password"])
+    assert client.get("/auth/me").status_code == 200
+    assert client.get("/auth/legacy-context").status_code == 403
+    assert client.get("/planning/scopes").status_code == 403
+
+
+def test_local_login_returns_no_token_and_ignores_id_case(client: TestClient) -> None:
+    _bootstrap(client)
+    response = _login(client, "HEAD.Pharmacist", ADMIN["password"])
+    assert response.status_code == 200
+    assert response.json()["access_token"] is None
+    assert client.cookies.get("pharmshift_token")
+
+
+def test_wrong_current_password_on_change_counts_towards_the_lock(
+    client: TestClient,
+) -> None:
+    _bootstrap(client)
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    for _ in range(5):
+        wrong = client.post(
+            "/auth/password",
+            json={"current_password": "not the password", "new_password": "x" * 20},
+        )
+        assert wrong.status_code == 401
+    assert _login(client, ADMIN["login_id"], ADMIN["password"]).status_code == 401
+
+
+def test_desktop_requires_the_app_origin_for_every_write(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _bootstrap(client)
+    monkeypatch.setenv("PHARMSHIFT_ENV", "desktop")
+    monkeypatch.setattr("shift_scheduler.control.client.require_access", lambda: None)
+    del client.headers["Origin"]
+    no_origin = client.post(
+        "/auth/login",
+        json={"username": ADMIN["login_id"], "password": ADMIN["password"]},
+    )
+    assert no_origin.status_code == 403
+    foreign = client.post(
+        "/auth/login",
+        json={"username": ADMIN["login_id"], "password": ADMIN["password"]},
+        headers={"Origin": "https://evil.example"},
+    )
+    assert foreign.status_code == 403
+    own = client.post(
+        "/auth/login",
+        json={"username": ADMIN["login_id"], "password": ADMIN["password"]},
+        headers={"Origin": "https://localhost:3000"},
+    )
+    assert own.status_code == 200
+
+
+def test_unknown_profile_name_stops_start_up(monkeypatch: pytest.MonkeyPatch) -> None:
+    from shift_scheduler.config.profile import validate_environment
+
+    monkeypatch.setenv("PHARMSHIFT_ENV", "prodution")
+    with pytest.raises(RuntimeError):
+        validate_environment()
+    monkeypatch.setenv("PHARMSHIFT_ENV", "desktop")
+    validate_environment()
 
 
 # --- fail-closed desktop configuration -------------------------------------------
@@ -213,7 +358,9 @@ def desktop_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Any) -> dict[str, str
     for key, value in env.items():
         monkeypatch.setenv(key, value)
     monkeypatch.delenv("SHIFT_SCHEDULER_DB_URL", raising=False)
-    monkeypatch.setattr("shift_scheduler.control.client.configured_client", lambda: None)
+    monkeypatch.setattr(
+        "shift_scheduler.control.client.configured_client", lambda: None
+    )
     auth_settings.get_auth_mode.cache_clear()
     auth_settings.get_session_settings.cache_clear()
     yield env
@@ -256,6 +403,16 @@ def test_each_unsafe_desktop_setting_stops_start_up(
         check_desktop()
 
 
+def test_network_share_storage_stops_start_up(
+    desktop_env: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from shift_scheduler.config.desktop import check_desktop
+
+    monkeypatch.setenv("PHARMSHIFT_MANAGED_STORAGE", "\\\\server\\share\\pharmshift")
+    with pytest.raises(RuntimeError):
+        check_desktop()
+
+
 def test_shared_storage_permissions_stop_start_up(
     desktop_env: dict[str, str], tmp_path: Any
 ) -> None:
@@ -270,7 +427,9 @@ def test_shared_storage_permissions_stop_start_up(
         check_desktop()
 
 
-def test_desktop_profile_is_hardened_like_production(desktop_env: dict[str, str]) -> None:
+def test_desktop_profile_is_hardened_like_production(
+    desktop_env: dict[str, str],
+) -> None:
     from shift_scheduler.config.profile import is_hardened
     from shift_scheduler.ops.legacy_storage import require_development_storage
 

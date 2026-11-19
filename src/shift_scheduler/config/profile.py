@@ -26,6 +26,17 @@ def is_desktop() -> bool:
     return environment() == DESKTOP
 
 
+KNOWN = frozenset({"development", PRODUCTION, DESKTOP})
+
+
+def validate_environment() -> None:
+    """A misspelt profile must not silently start as development."""
+    if environment() not in KNOWN:
+        raise RuntimeError(
+            f"Unknown PHARMSHIFT_ENV {environment()!r}; use one of {sorted(KNOWN)}"
+        )
+
+
 def is_hardened() -> bool:
     """Production or desktop: no development fallbacks are allowed."""
     return environment() in {PRODUCTION, DESKTOP}
@@ -38,4 +49,5 @@ __all__ = [
     "is_desktop",
     "is_hardened",
     "is_production",
+    "validate_environment",
 ]

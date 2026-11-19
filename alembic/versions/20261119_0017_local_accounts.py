@@ -21,6 +21,7 @@ def upgrade() -> None:
         sa.Column("login_id", sa.String(64), nullable=False, unique=True),
         sa.Column("display_name", sa.String(128), nullable=False),
         sa.Column("role", sa.String(32), nullable=False),
+        sa.Column("scope_id", sa.String(256), nullable=False),
         sa.Column("person_id", sa.String(64), nullable=True),
         sa.Column("password_hash", sa.String(256), nullable=False),
         sa.Column("failed_count", sa.Integer(), nullable=False, server_default="0"),
@@ -61,4 +62,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table("local_accounts")
+    raise RuntimeError(
+        "Local accounts hold personal data under copy tracking; restore only to an "
+        "isolated target instead of dropping the table"
+    )

@@ -12,12 +12,12 @@ export interface LocalAccountView {
   login_id: string;
   display_name: string;
   role: string;
-  person_id: string | null;
+  /** The department that owns the account (facility/department). */
+  scope_id: string;
   active: boolean;
   locked: boolean;
   must_change_password: boolean;
   created_at: string;
-  memberships: { scope_id: string; role: string; active: boolean }[];
 }
 
 export interface IssuedPassword {

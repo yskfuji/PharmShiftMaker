@@ -639,7 +639,8 @@
       "password_changed_at",
       "password_hash",
       "person_id",
-      "role"
+      "role",
+      "scope_id"
     ],
     "policy": "exclusive-or-reviewed-residual",
     "adapter": null,

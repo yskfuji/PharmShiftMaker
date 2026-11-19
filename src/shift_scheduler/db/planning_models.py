@@ -283,9 +283,12 @@ class LocalAccount(Base):
 
     __tablename__ = "local_accounts"
     account_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    # Stored case-folded, so sign-in ignores the letter case of the ID.
     login_id: Mapped[str] = mapped_column(String(64), unique=True)
     display_name: Mapped[str] = mapped_column(String(128))
     role: Mapped[str] = mapped_column(String(32))
+    # The department that owns and administers the account (facility/department).
+    scope_id: Mapped[str] = mapped_column(String(256))
     person_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     password_hash: Mapped[str] = mapped_column(String(256))
     failed_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")

@@ -43,7 +43,6 @@ class Bootstrap(BaseModel):
     password: str = Field(..., min_length=1, max_length=256)
     facility_id: str = Field(..., min_length=1, max_length=63)
     department_id: str = Field(..., min_length=1, max_length=63)
-    person_id: str | None = Field(default=None, max_length=64)
 
 
 class BootstrapResult(BaseModel):
@@ -118,10 +117,11 @@ def _create_first_admin(payload: Bootstrap, password_hash: str) -> BootstrapResu
         session.add(
             LocalAccount(
                 account_id=account_id,
-                login_id=payload.login_id,
+                login_id=local.normalize_login(payload.login_id),
                 display_name=payload.display_name,
                 role=AppRole.ADMIN.value,
-                person_id=payload.person_id,
+                scope_id=scope_id,
+                person_id=None,
                 password_hash=password_hash,
                 must_change_password=False,
                 created_by="setup",
@@ -132,7 +132,7 @@ def _create_first_admin(payload: Bootstrap, password_hash: str) -> BootstrapResu
                 membership_id=uuid4().hex,
                 issuer=local.issuer(),
                 subject=account_id,
-                person_id=payload.person_id or account_id,
+                person_id=account_id,
                 scope_id=scope_id,
                 role=AppRole.ADMIN.value,
                 active=True,

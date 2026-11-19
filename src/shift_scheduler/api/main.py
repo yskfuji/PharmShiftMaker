@@ -26,7 +26,7 @@ from shift_scheduler.api.routers import (
     staff,
     workflows,
 )
-from shift_scheduler.config.profile import is_hardened
+from shift_scheduler.config.profile import is_desktop, is_hardened
 from shift_scheduler.db.restore_lock import RestoreUnavailable
 
 
@@ -48,7 +48,9 @@ def _resolve_cors_origins() -> list[str]:
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     from shift_scheduler.config.desktop import check_desktop
     from shift_scheduler.config.production import check_production
+    from shift_scheduler.config.profile import validate_environment
 
+    validate_environment()
     check_production()
     check_desktop()
     yield
@@ -182,6 +184,16 @@ async def _browser_protection(
         return JSONResponse(
             {"detail": "Legacy writes are disabled; use reviewed /planning operations"},
             status_code=410,
+        )
+    if (
+        is_desktop()
+        and request.method not in {"GET", "HEAD", "OPTIONS"}
+        and request.headers.get("origin") not in _resolve_cors_origins()
+    ):
+        # Desktop: no state-changing request without the app's own Origin, even
+        # without a cookie (sign-in and setup cannot be driven by another page).
+        return JSONResponse(
+            {"detail": "Requests require the application's Origin"}, status_code=403
         )
     if (
         request.method not in {"GET", "HEAD", "OPTIONS"}

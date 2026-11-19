@@ -24,7 +24,9 @@ export function AccountsView() {
   const [accounts, setAccounts] = useState<LocalAccountView[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [issued, setIssued] = useState<(IssuedPassword & { login_id: string }) | null>(null);
-  const scope = accounts?.flatMap((a) => a.memberships.map((m) => m.scope_id))[0] ?? "";
+  // The list holds only accounts of departments this administrator manages.
+  const scopes = Array.from(new Set((accounts ?? []).map((a) => a.scope_id)));
+  const scope = scopes.length === 1 ? scopes[0] : "";
 
   const reload = useCallback(async () => {
     try {

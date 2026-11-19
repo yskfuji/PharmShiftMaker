@@ -82,8 +82,20 @@ def check_desktop() -> None:
     if not storage:
         raise RuntimeError("Desktop requires managed storage")
     path = Path(storage)
-    if not path.is_dir() or path.is_symlink():
+    if storage.startswith(("\\\\", "//")):
+        raise RuntimeError("Desktop managed storage must be on this PC, not a share")
+    if (
+        not path.is_dir()
+        or path.is_symlink()
+        or (hasattr(path, "is_junction") and path.is_junction())
+    ):
         raise RuntimeError("Desktop managed storage must be an existing directory")
+    if os.name != "posix":
+        # Windows ACLs (owner, inherited and explicit grants) are verified in the
+        # Windows milestone. Until then the desktop profile does not start there.
+        raise RuntimeError(
+            "Desktop storage permissions cannot be verified on this platform yet"
+        )
     if os.name == "posix":
         mode = path.stat().st_mode
         if mode & (stat.S_IRWXG | stat.S_IRWXO):
