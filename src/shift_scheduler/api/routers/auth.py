@@ -55,7 +55,9 @@ def current_identity(
         user_id=principal.user_id,
         display_name=principal.display_name,
         global_role=principal.role,
-        identifier_kind="account_id" if AUTH_MODE == AuthMode.OIDC else "login_id",
+        identifier_kind=(
+            "account_id" if AUTH_MODE in (AuthMode.OIDC, AuthMode.LOCAL) else "login_id"
+        ),
     )
 
 
@@ -93,6 +95,10 @@ class LoginResponse(BaseModel):
     expires_in: int = Field(
         default=3600,
         description="モック環境のトークン寿命（秒）。実運用では IdP 依存。",
+    )
+    password_change_required: bool = Field(
+        default=False,
+        description="ローカルアカウントで、初回又は再設定後のパスワード変更が必要なとき真。",
     )
 
 
@@ -174,19 +180,34 @@ def _build_frontend_redirect(path: str) -> str:
 async def login(payload: LoginRequest, response: Response) -> LoginResponse:
     """ユーザー名/パスワードで簡易認証し、擬似トークンを発行する (開発モードのみ)."""
 
-    if AUTH_MODE != AuthMode.MOCK:
+    change_required = False
+    if AUTH_MODE == AuthMode.LOCAL:
+        from starlette.concurrency import run_in_threadpool
+
+        signed_in = await run_in_threadpool(
+            _authenticate_local, payload.username, payload.password
+        )
+        if signed_in is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="ログインIDまたはパスワードが正しくありません。",
+            )
+        principal: UserPrincipal = signed_in.principal
+        change_required = signed_in.must_change_password
+        if change_required:
+            principal = _with_claim(principal, "password_change_required", True)
+    elif AUTH_MODE != AuthMode.MOCK:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Username/password login is disabled",
         )
-    try:
-        principal: UserPrincipal = authenticate_mock_user(
-            payload.username, payload.password
-        )
-    except InvalidCredentialsError as exc:  # pragma: no cover - error branch
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)
-        ) from exc
+    else:
+        try:
+            principal = authenticate_mock_user(payload.username, payload.password)
+        except InvalidCredentialsError as exc:  # pragma: no cover - error branch
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)
+            ) from exc
 
     # One session for both tokens, so signing out revokes the header token too.
     from dataclasses import replace
@@ -204,7 +225,82 @@ async def login(payload: LoginRequest, response: Response) -> LoginResponse:
         role=principal.role,
         user_id=principal.user_id,
         issued_at=principal.issued_at,
+        password_change_required=change_required,
     )
+
+
+def _authenticate_local(login_id: str, password: str) -> Any:
+    from shift_scheduler.api.auth import local
+    from shift_scheduler.db.session import get_session_factory
+
+    # The failure counter and lock are committed even when the sign-in fails.
+    with get_session_factory().begin() as session:
+        return local.authenticate(session, login_id, password)
+
+
+def _with_claim(principal: UserPrincipal, key: str, value: Any) -> UserPrincipal:
+    from dataclasses import replace
+
+    claims = dict(principal.claims or {})
+    claims[key] = value
+    return replace(principal, claims=claims)
+
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(..., min_length=1, max_length=256)
+    new_password: str = Field(..., min_length=1, max_length=256)
+
+
+@router.post("/password", status_code=status.HTTP_204_NO_CONTENT)
+async def change_local_password(
+    payload: PasswordChange,
+    request: Request,
+    response: Response,
+    principal: UserPrincipal = Depends(get_authenticated_principal),
+) -> Response:
+    """ローカルアカウントのパスワードを変更し、セッションを更新する。"""
+
+    if AUTH_MODE != AuthMode.LOCAL:
+        raise HTTPException(status_code=404, detail="Not available")
+    from starlette.concurrency import run_in_threadpool
+
+    from shift_scheduler.api.auth import local
+    from shift_scheduler.db.session import get_session_factory
+
+    def _change() -> UserPrincipal:
+        with get_session_factory().begin() as session:
+            account = local.change_password(
+                session,
+                principal.user_id,
+                payload.current_password,
+                payload.new_password,
+            )
+            return local.principal_for(account)
+
+    try:
+        refreshed = await run_in_threadpool(_change)
+    except local.PasswordPolicyError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except local.LocalAuthError as exc:
+        raise HTTPException(
+            status_code=401, detail="現在のパスワードが正しくありません。"
+        ) from exc
+    # The old session (which may carry the change-required mark) ends here.
+    old = request.cookies.get(SESSION_SETTINGS.cookie_name)
+    if old:
+        from shift_scheduler.api.auth.session import SessionTokenError
+
+        with suppress(SessionTokenError):
+            SESSION_MANAGER.revoke(old)
+    from dataclasses import replace
+    from secrets import token_urlsafe
+
+    refreshed = replace(refreshed, session_id=token_urlsafe(16))
+    _apply_session_cookie(
+        response, SESSION_MANAGER.issue(refreshed, browser=True), refreshed
+    )
+    response.status_code = status.HTTP_204_NO_CONTENT
+    return response
 
 
 @router.get("/oidc/authorize")

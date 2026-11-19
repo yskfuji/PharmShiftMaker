@@ -17,6 +17,7 @@ from shift_scheduler.api.auth.settings import (
     get_auth_mode,
     get_session_settings,
 )
+from shift_scheduler.config.profile import is_hardened
 from shift_scheduler.security.secrets import get_secret
 
 
@@ -129,9 +130,12 @@ def get_current_user(
 ) -> UserPrincipal:
     """Legacy/scoped authorization projection, separate from account identity."""
     principal = get_authenticated_principal(request, credentials)
+    if (principal.claims or {}).get("password_change_required") and not (
+        request.url.path.startswith("/auth")
+    ):
+        raise HTTPException(status_code=403, detail="Password change required")
     if not request.url.path.startswith(("/planning", "/auth")) and (
-        os.getenv("SHIFT_SCHEDULER_DATA_BACKEND") == "db"
-        or os.getenv("PHARMSHIFT_ENV") == "production"
+        os.getenv("SHIFT_SCHEDULER_DATA_BACKEND") == "db" or is_hardened()
     ):
         from sqlalchemy import select
 
@@ -155,7 +159,7 @@ def get_current_user(
                 raise HTTPException(
                     423, "Legacy unscoped access is suspended by use restriction policy"
                 )
-    if get_auth_mode() == AuthMode.OIDC:
+    if get_auth_mode() in (AuthMode.OIDC, AuthMode.LOCAL):
         from shift_scheduler.api.routers.planning import memberships
         from shift_scheduler.db.session import get_session_factory
 

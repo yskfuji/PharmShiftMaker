@@ -624,5 +624,26 @@
     "purpose": "Retain minimal event state for the lifecycle subject and resolved actor",
     "retention_required": true,
     "boundary": "Subject comes from the physically referenced lifecycle case; evidence prose and source keys are omitted"
+  },
+  "local_accounts": {
+    "columns": [
+      "account_id",
+      "active",
+      "created_at",
+      "created_by",
+      "display_name",
+      "failed_count",
+      "locked_until",
+      "login_id",
+      "must_change_password",
+      "password_changed_at",
+      "password_hash",
+      "person_id",
+      "role"
+    ],
+    "policy": "exclusive-or-reviewed-residual",
+    "adapter": null,
+    "purpose": "operational record and its documented retention",
+    "retention_required": true
   }
 }

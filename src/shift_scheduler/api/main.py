@@ -19,11 +19,14 @@ from shift_scheduler.api.routers import (
     health,
     holiday_requests,
     leave_quotas,
+    local_accounts,
     planning,
     schedules,
+    setup,
     staff,
     workflows,
 )
+from shift_scheduler.config.profile import is_hardened
 from shift_scheduler.db.restore_lock import RestoreUnavailable
 
 
@@ -43,9 +46,11 @@ def _resolve_cors_origins() -> list[str]:
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    from shift_scheduler.config.desktop import check_desktop
     from shift_scheduler.config.production import check_production
 
     check_production()
+    check_desktop()
     yield
 
 
@@ -57,9 +62,7 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url=None,
     redoc_url=None,
-    openapi_url=(
-        None if os.getenv("PHARMSHIFT_ENV") == "production" else "/openapi.json"
-    ),
+    openapi_url=(None if is_hardened() else "/openapi.json"),
 )
 
 
@@ -109,6 +112,8 @@ app.add_middleware(
     expose_headers=["X-Transfer-ID", "X-Content-SHA256", "Content-Disposition"],
 )
 app.include_router(health.router)
+app.include_router(setup.router)
+app.include_router(local_accounts.router)
 app.include_router(auth.router)
 app.include_router(holiday_requests.router)
 app.include_router(leave_quotas.router)
@@ -167,7 +172,7 @@ async def _browser_protection(
 
     settings = get_session_settings()
     if (
-        os.getenv("PHARMSHIFT_ENV") == "production"
+        is_hardened()
         and request.method not in {"GET", "HEAD", "OPTIONS"}
         and any(
             request.url.path.startswith(prefix)

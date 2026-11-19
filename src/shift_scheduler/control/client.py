@@ -8,6 +8,7 @@ from uuid import uuid4
 import httpx
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
+from shift_scheduler.config.profile import is_hardened
 from shift_scheduler.db.restore_lock import RestoreUnavailable
 from shift_scheduler.domain.planning import content_hash
 
@@ -22,10 +23,7 @@ class AuthorityClient:
         *,
         transport: httpx.BaseTransport | None = None,
     ) -> None:
-        if (
-            urlsplit(url).scheme != "https"
-            and os.getenv("PHARMSHIFT_ENV") == "production"
-        ):
+        if urlsplit(url).scheme != "https" and is_hardened():
             raise ValueError("Production authority requires authenticated TLS")
         self.url, self.client_id, self.token = url, client_id, token
         self.public_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(public_key))
@@ -72,7 +70,7 @@ class AuthorityClient:
 def configured_client() -> AuthorityClient | None:
     url = os.getenv("PHARMSHIFT_CONTROL_URL")
     if not url:
-        if os.getenv("PHARMSHIFT_ENV") == "production":
+        if is_hardened():
             raise RestoreUnavailable("Independent control configuration is required")
         return None  # Compatibility only for explicitly non-production development.
     try:
