@@ -5,7 +5,7 @@ import { AUTH_TOKEN_COOKIE } from "./lib/authConstants";
 
 // Every page that shows or changes the facility's data needs a signed-in session
 // (the API checks authorization again on each request).
-const PROTECTED = ["/schedule", "/planning", "/settings", "/dashboard", "/requests", "/preview", "/workspace"];
+const PROTECTED = ["/schedule", "/planning", "/settings", "/dashboard", "/requests", "/preview", "/workspace", "/account"];
 
 /** Origin of the API the browser calls (cross-origin fetch), or none when same-origin. */
 export function apiOrigin(base: string | undefined): string | null {

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Loader2, Lock, User } from "lucide-react";
 
 import { AUTH_STRATEGY } from "@/lib/authConstants";
@@ -10,7 +10,11 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 
 import {API_BASE_URL} from '@/lib/apiTarget';
+import { fetchSetupStatus, readDetail } from "@/lib/localAccounts";
+import { navigate } from "@/lib/navigate";
 const AUTH_MODE = AUTH_STRATEGY?.toLowerCase() ?? "mock";
+/** Desktop profile: accounts kept in the local database. */
+const LOCAL = AUTH_MODE === "local";
 
 interface LoginViewProps {
   redirectPath: string;
@@ -21,7 +25,7 @@ interface LoginViewProps {
 export function LoginView({ redirectPath, notice }: LoginViewProps) {
   return (
     <>
-      {AUTH_MODE === "mock" ? <LoginForm redirectPath={redirectPath} notice={notice} /> : <OidcLoginCard redirectPath={redirectPath} notice={notice} />}
+      {AUTH_MODE === "mock" || LOCAL ? <LoginForm redirectPath={redirectPath} notice={notice} /> : <OidcLoginCard redirectPath={redirectPath} notice={notice} />}
     </>
   );
 }
@@ -40,6 +44,16 @@ function LoginForm({ redirectPath, notice }: LoginFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!LOCAL) return;
+    // A new installation has no account yet: start the first-run setup instead.
+    fetchSetupStatus()
+      .then((status) => {
+        if (!status.initialized) navigate("/setup");
+      })
+      .catch(() => undefined);
+  }, []);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
@@ -47,7 +61,9 @@ function LoginForm({ redirectPath, notice }: LoginFormProps) {
 
     const formData = new FormData(event.currentTarget);
     const username = String(formData.get("username") ?? "").trim();
-    const password = String(formData.get("password") ?? "").trim();
+    // A local passphrase may contain spaces; only development accounts are trimmed.
+    const rawPassword = String(formData.get("password") ?? "");
+    const password = LOCAL ? rawPassword : rawPassword.trim();
 
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -60,14 +76,17 @@ function LoginForm({ redirectPath, notice }: LoginFormProps) {
       });
 
       if (!response.ok) {
-        const detail = await response.text();
-        throw new Error(detail || "ログインに失敗しました");
+        throw new Error(await readDetail(response, "ログインに失敗しました"));
       }
 
-      await response.json();
+      const body = (await response.json()) as { password_change_required?: boolean };
       // Start one authenticated document navigation. A separate asynchronous
       // refresh could replace the user's next workflow navigation after login.
-      window.location.assign(redirectPath);
+      if (LOCAL && body.password_change_required) {
+        navigate(`/account/password?next=${encodeURIComponent(redirectPath)}`);
+        return;
+      }
+      navigate(redirectPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : "ログインに失敗しました");
     } finally {
@@ -80,7 +99,7 @@ function LoginForm({ redirectPath, notice }: LoginFormProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <h1 className="text-3xl font-bold leading-none tracking-tight text-fg">PharmShiftMaker</h1>
-          <CardDescription>開発用アカウントでサインインしてください</CardDescription>
+          <CardDescription>{LOCAL ? "ログインIDとパスワードでサインインしてください" : "開発用アカウントでサインインしてください"}</CardDescription>
           <SessionNotice notice={notice} />
         </CardHeader>
         <CardContent>
@@ -99,7 +118,7 @@ function LoginForm({ redirectPath, notice }: LoginFormProps) {
                     type="text"
                     required
                     autoComplete="username"
-                    placeholder="admin"
+                    placeholder={LOCAL ? undefined : "admin"}
                   />
                 </div>
               </div>
@@ -164,7 +183,7 @@ function OidcLoginCard({ redirectPath, notice }: OidcLoginCardProps) {
     try {
       setRedirecting(true);
       const target = `${API_BASE_URL}/auth/oidc/authorize?redirect_to=${encodeURIComponent(redirectPath)}`;
-      window.location.assign(new URL(target));
+      navigate(new URL(target));
     } catch (err) {
       setRedirecting(false);
       setError(err instanceof Error ? err.message : "SSO リダイレクトに失敗しました");
