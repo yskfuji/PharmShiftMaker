@@ -12,6 +12,7 @@ import ctypes
 import ctypes.util
 import ipaddress
 import os
+import re
 import stat
 import sys
 from pathlib import Path
@@ -26,21 +27,19 @@ from shift_scheduler.config.profile import is_desktop
 from shift_scheduler.db.settings import DatabaseSettings
 
 _MNT_LOCAL = 0x00001000  # macOS <sys/mount.h>
-_NETWORK_FILESYSTEMS = {
-    "nfs",
-    "nfs4",
-    "cifs",
-    "smb3",
-    "smbfs",
-    "afs",
-    "9p",
-    "ceph",
-    "glusterfs",
-    "lustre",
-    "fuse.sshfs",
-    "fuse.rclone",
-    "davfs",
-    "fuse.davfs2",
+# Linux: only these disk file systems count as local; any other type (network,
+# FUSE, virtual-machine shares, unknown) is refused.
+_LOCAL_FILESYSTEMS = {
+    "ext2",
+    "ext3",
+    "ext4",
+    "xfs",
+    "btrfs",
+    "zfs",
+    "f2fs",
+    "jfs",
+    "reiserfs",
+    "bcachefs",
 }
 
 
@@ -88,7 +87,7 @@ def _local_filesystem(path: Path) -> bool:
         except OSError:
             return False
         kind = mount_type(mountinfo, str(path))
-        return kind is not None and kind not in _NETWORK_FILESYSTEMS
+        return kind in _LOCAL_FILESYSTEMS
     return False
 
 
@@ -100,7 +99,7 @@ def mount_type(mountinfo: str, target: str) -> str | None:
         fields = left.split()
         if len(fields) < 5 or not right.split():
             continue
-        mount = fields[4].replace("\\040", " ")
+        mount = re.sub(r"\\([0-7]{3})", lambda m: chr(int(m.group(1), 8)), fields[4])
         inside = target == mount or target.startswith(mount.rstrip("/") + "/")
         if inside and len(mount) >= len(best):
             best, kind = mount, right.split()[0]

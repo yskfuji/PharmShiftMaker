@@ -614,3 +614,111 @@ def test_linux_mount_type_uses_the_innermost_mount() -> None:
     assert mount_type(mountinfo, "/home/user/share b/x") == "nfs4"
     assert mount_type(mountinfo, "/home/user/shareX") == "ext4"
     assert mount_type("", "/x") is None
+
+
+# --- third review: placeholder persons, link gates ---------------------------------
+
+
+def _signed_in_member(login_id: str, password: str) -> TestClient:
+    member = _second_client()
+    member.post("/auth/login", json={"username": login_id, "password": password})
+    member.post(
+        "/auth/password",
+        json={"current_password": password, "new_password": "member passphrase 2026"},
+    )
+    return member
+
+
+def test_unlinked_staff_account_cannot_act_until_linked(
+    client: TestClient, sqlite_session_factory: Any
+) -> None:
+    from shift_scheduler.db.planning_models import PlanningOutbox
+
+    _bootstrap(client)
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    user = _new_user(client, "pharmacist.j")
+    member = _signed_in_member("pharmacist.j", user["temporary_password"])
+    scope = {"scope_id": "hospital/pharmacy"}
+    refused = member.get("/planning/requests", params=scope)
+    assert refused.status_code == 403
+    assert "結び付け" in refused.json()["detail"]
+    # The administrator is usable unlinked, to set the department up.
+    assert client.get("/planning/requests", params=scope).status_code == 200
+    _register_person(sqlite_session_factory, "P-010")
+    assert (
+        client.post(
+            f"/local-accounts/{user['account_id']}/person",
+            json={"person_id": "P-010"},
+        ).status_code
+        == 204
+    )
+    assert member.get("/planning/requests", params=scope).status_code == 200
+    with sqlite_session_factory() as session:
+        linked = session.scalars(
+            select(PlanningOutbox).where(PlanningOutbox.kind == "membership.linked")
+        ).all()
+        assert [row.payload["person_ids"] for row in linked] == [["P-010"]]
+        assert linked[0].payload["evidence"]["kind"] == "local_account_person_link"
+
+
+def test_link_is_refused_for_inactive_foreign_or_gated_accounts(
+    client: TestClient, sqlite_session_factory: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from uuid import uuid4
+
+    from shift_scheduler.db.planning_models import LocalAccount
+
+    _bootstrap(client)
+    _login(client, ADMIN["login_id"], ADMIN["password"])
+    _register_person(sqlite_session_factory, "P-020")
+    gone = _new_user(client, "pharmacist.k")
+    client.post(f"/local-accounts/{gone['account_id']}/deactivate")
+    body = {"person_id": "P-020"}
+    assert (
+        client.post(f"/local-accounts/{gone['account_id']}/person", json=body)
+    ).status_code == 409
+    foreign_id = uuid4().hex
+    with sqlite_session_factory.begin() as session:
+        session.add(
+            LocalAccount(
+                account_id=foreign_id,
+                login_id="other.dept",
+                display_name="他部署",
+                role="PHARMACIST",
+                scope_id="hospital/ward",
+                password_hash="scrypt$1$1$1$AA==$AA==",
+                created_by="test",
+            )
+        )
+    assert (
+        client.post(f"/local-accounts/{foreign_id}/person", json=body)
+    ).status_code == 404
+    user = _new_user(client, "pharmacist.l")
+    monkeypatch.setattr(
+        "shift_scheduler.application.privacy.restricted_people",
+        lambda _session, _scope: {"P-999"},
+    )
+    assert (
+        client.post(f"/local-accounts/{user['account_id']}/person", json=body)
+    ).status_code == 423
+
+
+def test_linux_only_listed_disk_file_systems_count_as_local(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from shift_scheduler.config import desktop
+
+    mountinfo = "\n".join(
+        [
+            "22 1 8:1 / / rw - ext4 /dev/sda1 rw",
+            "40 22 0:50 / /run/user/1000/gvfs rw - fuse.gvfsd-fuse gvfsd rw",
+            "41 22 0:51 / /mnt/back\\134slash rw - nfs4 nas:/b rw",
+            "42 22 0:52 / /media/vm rw - vboxsf share rw",
+        ]
+    )
+    assert desktop.mount_type(mountinfo, "/mnt/back\\slash/x") == "nfs4"
+    monkeypatch.setattr(desktop.sys, "platform", "linux")
+    monkeypatch.setattr(desktop.Path, "read_text", lambda _self: mountinfo)
+    assert desktop._local_filesystem(desktop.Path("/home/user/data"))
+    for refused in ("/run/user/1000/gvfs/smb", "/mnt/back\\slash/x", "/media/vm/x"):
+        assert not desktop._local_filesystem(desktop.Path(refused)), refused

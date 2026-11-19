@@ -332,11 +332,18 @@ def link_person(
     """Link the account once to a staff member of its own department."""
     _require_local()
     actor = _actor(user)
+    from shift_scheduler.api.routers.planning import access
+    from shift_scheduler.application import planning
     from shift_scheduler.application.ideal_workflows import scope_people
     from shift_scheduler.db.session import get_session_factory
 
     with get_session_factory().begin() as session:
         account = _load_for_admin(session, account_id, actor)
+        # The same gates as /workflows/memberships: restore quarantine (503) and an
+        # approved use restriction in the department (423).
+        access(session, user, account.scope_id, admin=True)
+        if not account.active:
+            raise HTTPException(409, "無効にしたアカウントは結び付けられません。")
         if account.person_id is not None:
             # ops/reviewed-planning.md: an account is never re-pointed at another
             # person; a mistake is corrected with a new account.
@@ -367,6 +374,24 @@ def link_person(
                 raise HTTPException(409, "このアカウントは既に職員に結び付いています。")
             membership.person_id = payload.person_id
             membership.revision = (membership.revision or 0) + 1
+            membership.evidence = {
+                "kind": "local_account_person_link",
+                "linked_by": actor,
+                "linked_at": datetime.now(UTC).isoformat(),
+                "previous": membership.evidence,
+            }
+            planning.emit(
+                session,
+                account.scope_id,
+                actor,
+                "membership.linked",
+                {
+                    "membership_id": membership.membership_id,
+                    "person_ids": [payload.person_id],
+                    "revision": membership.revision,
+                    "evidence": membership.evidence,
+                },
+            )
         account.person_id = payload.person_id
         _emit(session, account, actor, "local_account.person_linked")
     return Response(status_code=status.HTTP_204_NO_CONTENT)

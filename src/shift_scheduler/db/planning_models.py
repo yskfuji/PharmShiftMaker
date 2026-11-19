@@ -313,7 +313,7 @@ class LocalAccount(Base):
 
 
 class LocalAccountEvent(Base):
-    """Append-only audit of local sign-in and account administration.
+    """Audit of local sign-in and account administration (the application only appends).
 
     Kept apart from PlanningOutbox: these records are not notifications and are
     never delivered, so they must not count as undelivered business events.
