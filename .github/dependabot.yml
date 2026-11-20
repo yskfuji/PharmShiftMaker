@@ -1,17 +1,37 @@
 version: 2
 updates:
+  # Minor and patch updates arrive as one pull request per ecosystem; major
+  # updates stay separate. A seven-day cooldown lets the ecosystem notice a
+  # compromised release before it is proposed here (supply-chain safeguard).
+  # Each update must regenerate the lockfile evidence (SBOM, licences); see
+  # docs/ci/dependabot.md.
   - package-ecosystem: pip
     directory: "/"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    groups:
+      pip-minor-and-patch:
+        update-types: ["minor", "patch"]
   - package-ecosystem: npm
     directory: "/frontend"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    groups:
+      npm-minor-and-patch:
+        update-types: ["minor", "patch"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    groups:
+      actions-all:
+        patterns: ["*"]

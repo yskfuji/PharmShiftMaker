@@ -1,0 +1,38 @@
+name: CI metrics
+
+# Weekly description of CI duration, failure rate and suspected flakiness.
+# Read-only: it only lists workflow runs and jobs of this repository.
+on:
+  schedule:
+    - cron: "41 18 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  metrics:
+    name: CI metrics
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12.15"
+      - name: Describe the last 100 CI runs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: python -m devtools.ci.metrics "$REPOSITORY" --workflow ci.yml --runs 100
