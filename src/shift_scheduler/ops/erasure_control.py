@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from shift_scheduler.config.profile import is_hardened
 from shift_scheduler.domain.planning import content_hash
 
 
@@ -58,10 +59,7 @@ def locked_control(
 def advance(
     directory: str | Path, manifest_hash: str, secret: bytes, expected_generation: int
 ) -> dict[str, Any]:
-    if (
-        os.getenv("PHARMSHIFT_CONTROL_URL")
-        or os.getenv("PHARMSHIFT_ENV") == "production"
-    ):
+    if os.getenv("PHARMSHIFT_CONTROL_URL") or is_hardened():
         raise ValueError(
             "Legacy file control is migration-read-only when independent authority is configured"
         )

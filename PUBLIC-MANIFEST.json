@@ -1,5 +1,5 @@
 {
-  "file_count": 1967,
+  "file_count": 1984,
   "files": [
     {
       "bytes": 279,
@@ -237,6 +237,11 @@
       "sha256": "5f6bc7209d13a3f4d219c21d96378c39eaae78c1b6213a10e06904c2ffc2278e"
     },
     {
+      "bytes": 3182,
+      "path": "alembic/versions/20261119_0017_local_accounts.py",
+      "sha256": "8e6bc53819f55d30905d9e359a1b002094c94f2f36f0a8db787173d81a0a346c"
+    },
+    {
       "bytes": 2773,
       "path": "certs/README.md",
       "sha256": "f4ba8f2bd6d1a47aa9d2440777809a2f078f9e31ba6f00c49f8b9914f462afea"
@@ -457,9 +462,9 @@
       "sha256": "d0c11bc78593d710f08f1755ca28f1f4a86e1265639d638e9fad40781f75542b"
     },
     {
-      "bytes": 21971,
+      "bytes": 23103,
       "path": "docs/architecture/er/ia-map.md",
-      "sha256": "e301c620ca71b45e18ac47ed637ba184c2fbe73fb7890128cfa870a0b1b3add8"
+      "sha256": "af7c31002d81c7955eea76a77eb9ae590249a76672d5aa1bb581245b120b0133"
     },
     {
       "bytes": 4737,
@@ -487,19 +492,19 @@
       "sha256": "90f844b096ca904fb3de4aaaaa968ea2928b4045e88c35d36dc3c54f21dd4311"
     },
     {
-      "bytes": 30317,
+      "bytes": 32140,
       "path": "docs/architecture/er/physical.dot",
-      "sha256": "511c16c4cb75e76cc6978f9c8cb4cf018914da767616d5463b4b5eafcc7e4a20"
+      "sha256": "af45dcb17bff6eee00a94de05bd261373bb902ba9acc361706ae136baac49c6c"
     },
     {
-      "bytes": 14150,
+      "bytes": 15015,
       "path": "docs/architecture/er/physical.mmd",
-      "sha256": "a35ea727bf943667dada9af50339d272f4573ad9b73932565e0dd88d0d84f914"
+      "sha256": "7ca2aebad75132039438b5c08e666d86fffd592481597f7480a685dcbe88b15e"
     },
     {
-      "bytes": 109072,
+      "bytes": 115568,
       "path": "docs/architecture/er/physical.svg",
-      "sha256": "f09f0b85cb757a4c4e69513ff2768e164401ec6c6161083da8cdfaaa96dcaa1e"
+      "sha256": "0c6af9ecbd85616ca461adedb583b9fa313314cdb28fb88c8d67f30d6ed5ed41"
     },
     {
       "bytes": 56957,
@@ -522,9 +527,9 @@
       "sha256": "6fe1487bfc22bcbcff77c0181150040d168675d22f32f8201d18e8431d8d181a"
     },
     {
-      "bytes": 8911,
+      "bytes": 8967,
       "path": "docs/architecture/navigation.md",
-      "sha256": "1644033e87fa265ff74aa745e65bdff2b2485884454f1b46cf2de4e5f073b07b"
+      "sha256": "a916b0fa8582bc4aee610994b738c7bffb763297c75421271c5005ee95d50f27"
     },
     {
       "bytes": 1080,
@@ -585,6 +590,11 @@
       "bytes": 21371,
       "path": "docs/design-system/interaction-contract.md",
       "sha256": "1584a802cd162fbdbd9d42fe648ff78b06b86707d9864a0257b213d9191e686b"
+    },
+    {
+      "bytes": 5771,
+      "path": "docs/desktop/m0-verification.md",
+      "sha256": "7f78d670c8f8ff1988cd3d0fba5785da06cf9009146140851938813d13b02a03"
     },
     {
       "bytes": 8530,
@@ -2652,6 +2662,16 @@
       "sha256": "8fd2836df1de22c01b1c2517586ae4dbacc50edfdbe1e971c837113fcbca8585"
     },
     {
+      "bytes": 3528,
+      "path": "frontend/src/app/account/password/PasswordView.tsx",
+      "sha256": "91a9d6c696e01c00279ec4a5b3b8807a20f820446c47d6f2958e63826a0a603b"
+    },
+    {
+      "bytes": 557,
+      "path": "frontend/src/app/account/password/page.tsx",
+      "sha256": "3a525a6214c6c7a01bb73248271f1dc5098a9fdc06a295ff06c52ce26cf5aa49"
+    },
+    {
       "bytes": 1260,
       "path": "frontend/src/app/dashboard/page.tsx",
       "sha256": "0494365bc50d76cdfadaa455f8735bc4bc2856c307c4555aa21481c8ed9751f3"
@@ -2672,9 +2692,9 @@
       "sha256": "e6f8c6240abc4f7c35ca4b4a67ba0f8b4351390692b2624adb18c6de2596d5b3"
     },
     {
-      "bytes": 7315,
+      "bytes": 8230,
       "path": "frontend/src/app/login/LoginView.tsx",
-      "sha256": "9db36e72668db039a387e3e993edecea10ad94a6ad2dc64ae6b812b9c29c6fd8"
+      "sha256": "d767dbc570afd3e33c1dc6988678222588e122be87d3e4991566eceb885647d0"
     },
     {
       "bytes": 1430,
@@ -2747,9 +2767,29 @@
       "sha256": "7acd49de2b95c5d3493fdd63f815e1563016088cb5f4faf6d8c9df60a69e1cbc"
     },
     {
+      "bytes": 8865,
+      "path": "frontend/src/app/settings/accounts/AccountsView.tsx",
+      "sha256": "8465c3b41366c058625f6b1a51ad49f12b955f587bedea4e3b5be143389c1ae8"
+    },
+    {
+      "bytes": 759,
+      "path": "frontend/src/app/settings/accounts/page.tsx",
+      "sha256": "b79c4998654f14889a6b525b219688e049fe1301150ee0e3dfbe25e585102900"
+    },
+    {
       "bytes": 814,
       "path": "frontend/src/app/settings/page.tsx",
       "sha256": "ea96fbef994d2daadd370a3cd73ea6582a0b7e88c5827ea857b38352e080ce61"
+    },
+    {
+      "bytes": 5740,
+      "path": "frontend/src/app/setup/SetupView.tsx",
+      "sha256": "71a091286f5b4689e3152e0e965cef245de31bf0676aa5285d200520056bb643"
+    },
+    {
+      "bytes": 207,
+      "path": "frontend/src/app/setup/page.tsx",
+      "sha256": "b25938036e3f3ad06f0b4cde3421e83e156e4d98b4e4785372fe2fa0ccd4b3b6"
     },
     {
       "bytes": 1131,
@@ -3737,6 +3777,11 @@
       "sha256": "5aa3672b5bf1cae2882fb31eb8e317ba478395f1fe9beb2bdf70886e3db7fe7a"
     },
     {
+      "bytes": 7663,
+      "path": "frontend/src/lib/__tests__/localAccounts.test.tsx",
+      "sha256": "551684edcf8182ec77230a3ce862d2b645cd287a6b7b16795ffcceaba877628f"
+    },
+    {
       "bytes": 2136,
       "path": "frontend/src/lib/__tests__/newStaffProgress.test.ts",
       "sha256": "a46c9bd4df9674ba81fb5723f84eecc6dc40563c8bd6c1b1d71a8119516d2a40"
@@ -3817,9 +3862,19 @@
       "sha256": "77bdf9c1a47db03019a2ad4574dd6c895a69667e8e702e468bdc4a8ac1f7baf5"
     },
     {
+      "bytes": 4016,
+      "path": "frontend/src/lib/localAccounts.ts",
+      "sha256": "b33576c0548b76449e7641be2ad8b2caadd0814b9702390b3ed7b86674bed0e8"
+    },
+    {
       "bytes": 1354,
       "path": "frontend/src/lib/loginPath.ts",
       "sha256": "6ef97d7b87f17c3bb51318c267953128feb8d6d2b832a01b4cfb880f079e100b"
+    },
+    {
+      "bytes": 165,
+      "path": "frontend/src/lib/navigate.ts",
+      "sha256": "d4455bf9512d644f7ff92433b001e87ee4dc0a7b34e9f3ebd7fc6bb3104b14cf"
     },
     {
       "bytes": 1825,
@@ -3887,9 +3942,9 @@
       "sha256": "6db0f5544ae54ae620122ede060c7ebcb6a6fc3e71e4894b8e5e8bb798d03236"
     },
     {
-      "bytes": 3460,
+      "bytes": 3472,
       "path": "frontend/src/proxy.ts",
-      "sha256": "f7f12cacfaab43ef8e533282aa6f63419fe8330935e911e13db512192e75aa30"
+      "sha256": "a16e8a2566cdc0c3903c6f900c5763544f752b282bd2c3218b14c649d0a8d379"
     },
     {
       "bytes": 8260,
@@ -8067,6 +8122,11 @@
       "sha256": "7293c3be5fc8b01fe0cca22df0c104dc4b31abc58b0976ef54973d160ba42c56"
     },
     {
+      "bytes": 10368,
+      "path": "src/shift_scheduler/api/auth/local.py",
+      "sha256": "0e0357157ff03bec150523e21151ebf021a82321a8b5b6a59c9b79ba6c352b3c"
+    },
+    {
       "bytes": 835,
       "path": "src/shift_scheduler/api/auth/models.py",
       "sha256": "a9c841726cef6e55a3a37a7aa46e1cb533590951c41901ef69091325d00e9d06"
@@ -8077,24 +8137,24 @@
       "sha256": "3d275a60c293bae93ca33bfc5f696d0999c8a1caa3b58658fcdbde097e701ceb"
     },
     {
-      "bytes": 7407,
+      "bytes": 7443,
       "path": "src/shift_scheduler/api/auth/session.py",
-      "sha256": "44d0ba2e940e18c79755a61c51aed6d13dd9621172e27bbb8ddddfb5f40ecc90"
+      "sha256": "9d136f6e86ec1a15091f9a86701903f7f4c2f06bbf51e73ce57be741ae884592"
     },
     {
-      "bytes": 7546,
+      "bytes": 7647,
       "path": "src/shift_scheduler/api/auth/settings.py",
-      "sha256": "23b1af4a76bfb275ee4a660d595fdb997bb74f759b4305cb5684d5f1476f6a05"
+      "sha256": "5fb0faac071c041b1baddb4f7f5cd0315faecad9f4db487417616cc9fe90e49f"
     },
     {
-      "bytes": 7369,
+      "bytes": 8450,
       "path": "src/shift_scheduler/api/dependencies.py",
-      "sha256": "5c48c74600290d2e5e97ac013fda0c767b951a9147d009d938c5a2aabeb513f2"
+      "sha256": "090a47fbc5a672810f2b53792f3cc50e101241fc11806c5089fa2fa659f3d24a"
     },
     {
-      "bytes": 7373,
+      "bytes": 8621,
       "path": "src/shift_scheduler/api/main.py",
-      "sha256": "ce5f1f451273825e204ec8e823242e4e703af916670fc738c9cd8de7ee0761f8"
+      "sha256": "dfca507e883b3a21754ff83c448d758368a2096e9f1b847b2102be4e3e82bf2e"
     },
     {
       "bytes": 211,
@@ -8107,9 +8167,9 @@
       "sha256": "abb8be8fee5efc717d9b1f8fd621bf82dfe50dfd0ff7f7e431f37f0888a64325"
     },
     {
-      "bytes": 12806,
+      "bytes": 17328,
       "path": "src/shift_scheduler/api/routers/auth.py",
-      "sha256": "e11756eefe758189846fd15421fadc24c9f8f8fc006befba2e8bbc976417ce9b"
+      "sha256": "6c25a761a8b539ed0d45b25f68976cc68895ad59d4d00f9734d955ec62fbeb50"
     },
     {
       "bytes": 76632,
@@ -8132,14 +8192,24 @@
       "sha256": "8957fcbdd655698b709588f095fba7da3dbdf62a440fa20000d29d2157297cae"
     },
     {
-      "bytes": 36053,
+      "bytes": 15987,
+      "path": "src/shift_scheduler/api/routers/local_accounts.py",
+      "sha256": "4670e976069424d3d0650df22d94d96b9b3bd01df7304cfa3ad531d1bef15fb8"
+    },
+    {
+      "bytes": 36723,
       "path": "src/shift_scheduler/api/routers/planning.py",
-      "sha256": "02ce1cb218fd70bfc7b62eac154d90c7e9db215ae5b74ded2d880e83b808b08c"
+      "sha256": "e3f3f296cccd4682359d665c32d4b952ed60ee6173fc3dfd6f52ae86f957f297"
     },
     {
       "bytes": 8587,
       "path": "src/shift_scheduler/api/routers/schedules.py",
       "sha256": "2ffc06892be0639be94e88fa901bd970afb479fcd74d54f374f631901125a6ef"
+    },
+    {
+      "bytes": 5261,
+      "path": "src/shift_scheduler/api/routers/setup.py",
+      "sha256": "6564e6eac0113ae9622608ca9760fd4db09a1554da9930b2e92d8a8d8781860f"
     },
     {
       "bytes": 15621,
@@ -8212,9 +8282,9 @@
       "sha256": "334fa5d35e6282902b43d9cf7296a7ce29a56e0a2953fd76b1048e85ff97ef0b"
     },
     {
-      "bytes": 15892,
+      "bytes": 16728,
       "path": "src/shift_scheduler/application/copy_schema_inventory.json",
-      "sha256": "8db0740f63daefd6d76444625e6de2cad60b4522bcd7bf464660428eb4ce4c6d"
+      "sha256": "899e8ba19e1c3a1e2e28f531eaa47e64d6164ea73b0708c5f00ad397416d8daa"
     },
     {
       "bytes": 3407,
@@ -8332,9 +8402,9 @@
       "sha256": "80d8e2391ba5eb70f3017b9339c73ab6b254bf2b391e1e1f629166185dac3607"
     },
     {
-      "bytes": 5497,
+      "bytes": 5673,
       "path": "src/shift_scheduler/application/worker.py",
-      "sha256": "287f36180208ee27125e8a39728174df19f46fa1366a5453b3ed5cb6260053a6"
+      "sha256": "73bb9ca34c6b121d2779752bd96980634aeda1c2950af2f3c57c6952eded24cb"
     },
     {
       "bytes": 351,
@@ -8357,6 +8427,11 @@
       "sha256": "213a6d1e6af2c203cbfa0bb704a840633c9031e8d0827d35d0754337bc3a92c9"
     },
     {
+      "bytes": 7450,
+      "path": "src/shift_scheduler/config/desktop.py",
+      "sha256": "e201d65d09d9876e0e98c8fad008d1bd125c55f2fc4c79ee5d107346633dc10b"
+    },
+    {
       "bytes": 712,
       "path": "src/shift_scheduler/config/holiday_requests_2025_02.yaml",
       "sha256": "fd713de45b0ab57c32a500c4d860e5f519289683839f1119f1c0f2b24043ae04"
@@ -8370,6 +8445,11 @@
       "bytes": 1838,
       "path": "src/shift_scheduler/config/production.py",
       "sha256": "5c3203e5fc18c9589b181360e7c6d068e298eaf441de06d52cc0cebcf0896ee6"
+    },
+    {
+      "bytes": 1275,
+      "path": "src/shift_scheduler/config/profile.py",
+      "sha256": "88703172a4097d2d6bb0bc52251b9603bdeba6db665c862d154edb5e4cb426b3"
     },
     {
       "bytes": 592,
@@ -8427,9 +8507,9 @@
       "sha256": "5bc0b2f22aa2f20f01b2889a60e17b08beca5a45e2d586af16d69d5d2bbc0893"
     },
     {
-      "bytes": 3370,
+      "bytes": 3329,
       "path": "src/shift_scheduler/control/client.py",
-      "sha256": "05fe02f41da6337d1417b4741803b3d56512ef5ef97057df98a71ebfcc4a7303"
+      "sha256": "c36b76398953b55195301814da35aa892a01fa55014f202899fdd7019cb2d007"
     },
     {
       "bytes": 3357,
@@ -8507,9 +8587,9 @@
       "sha256": "33b401c0c950666b744c50c562aeccfbb5e48d5c2b07e2b6766a980de80a3538"
     },
     {
-      "bytes": 13538,
+      "bytes": 15984,
       "path": "src/shift_scheduler/db/planning_models.py",
-      "sha256": "889bfa21ada5f64b80990f67ee4bcea19d17a3fa79aad336084c66eacabf2f43"
+      "sha256": "468bde6e37d418c9db2e70f8482c87dcf03af61bcb99f9079bf8729c75471cbd"
     },
     {
       "bytes": 282,
@@ -8542,9 +8622,9 @@
       "sha256": "1e324969539ce9fecee10a203dc8c2349a031710b2e6463c749d4db5bc86c14c"
     },
     {
-      "bytes": 1294,
+      "bytes": 1323,
       "path": "src/shift_scheduler/db/settings.py",
-      "sha256": "860ee93bedb1630613cb8fc44afe4cec33c1a64d621597282a6ad906326cbd09"
+      "sha256": "dc6b9a0623fe1c5e5109cb2f65ed1d08e924c8fe4fd6677b78b3b37ebb5cce27"
     },
     {
       "bytes": 763,
@@ -8632,9 +8712,9 @@
       "sha256": "0c5bc1615ce8fa4c172c3a65be781d90921be22e8abf438a371ec5b50811ce69"
     },
     {
-      "bytes": 29120,
+      "bytes": 29127,
       "path": "src/shift_scheduler/ops/archive.py",
-      "sha256": "35327a9d8bea31ea3b06672eb7109e412fe7976497735ce792070c725685e7ce"
+      "sha256": "0e7f861cb2f8b6e8a5f57afeba0dd70a9adb305d9badff5079d725b655150e3d"
     },
     {
       "bytes": 26433,
@@ -8642,9 +8722,9 @@
       "sha256": "66032d57109236603f2fb2bbbb85f9c8e83f173d7c516f59f111e5fd21a578db"
     },
     {
-      "bytes": 4443,
+      "bytes": 4444,
       "path": "src/shift_scheduler/ops/erasure_control.py",
-      "sha256": "96fe0a8c3cbeebe844113b52a8a6c050f15342c7b75e69d2331586a87eaa30ba"
+      "sha256": "24a108d99f04764f080c5279dc873ae414acb3850aee16266743cfcbbbd9ea98"
     },
     {
       "bytes": 19717,
@@ -8657,9 +8737,9 @@
       "sha256": "09e133db859f5525797debb9f7b6cea979bf885d335c5b17c9d0e2a027a1e6cd"
     },
     {
-      "bytes": 525,
+      "bytes": 537,
       "path": "src/shift_scheduler/ops/legacy_storage.py",
-      "sha256": "46dce26f93fac0eddd97d94107ac8a093b6033f629496f3a37e02cfb6e14a581"
+      "sha256": "5757ca2a883a9de0d6b11eca626462ea3d416f6f083b0019ce105279bd464ba3"
     },
     {
       "bytes": 2753,
@@ -9177,6 +9257,11 @@
       "sha256": "59f0c27e9d743c35853ae9b4e499a3a2f1e29cc8f5ca69ec9f313fcc6d9477c6"
     },
     {
+      "bytes": 26337,
+      "path": "tests/test_desktop_local_auth.py",
+      "sha256": "10c5a130478964611ef7b6975fc40e45edd659f30f4fb9ba38f0218d4124d8e8"
+    },
+    {
       "bytes": 6815,
       "path": "tests/test_domain.py",
       "sha256": "c9b0796fd8ff7f504aabe3a8a9ca507aac156fcefd4d9a895da380270db16b87"
@@ -9202,9 +9287,9 @@
       "sha256": "62b5b5c32598e97b03c939f465790263acaa8543956d63c2cec3f32d3a9b38eb"
     },
     {
-      "bytes": 1657,
+      "bytes": 1715,
       "path": "tests/test_er_fresh.py",
-      "sha256": "af7f1c7f23b789c3a95c036a99a80176df42f402ec06b01bc37ec96ab7c8fb9c"
+      "sha256": "d378d291524a2e06969de91058f95d1386c75d978e350042e100f08ff0114f14"
     },
     {
       "bytes": 1544,
@@ -9839,5 +9924,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "2e8b4251e2b0640154395ac48318c7145da35d2c"
+  "source_commit": "a63b8333e7c78395b0782e8c3086ca0ebfa9b900"
 }

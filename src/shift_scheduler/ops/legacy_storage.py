@@ -6,11 +6,11 @@ need scoped authorization, the independent access gate and managed registration.
 
 import os
 
+from shift_scheduler.config.profile import is_hardened
+
 
 def require_development_storage() -> None:
-    if os.getenv("PHARMSHIFT_ENV") == "production" or os.getenv(
-        "PHARMSHIFT_CONTROL_URL"
-    ):
+    if is_hardened() or os.getenv("PHARMSHIFT_CONTROL_URL"):
         raise RuntimeError(
             "Unregistered legacy storage is disabled; use scoped managed storage"
         )

@@ -55,7 +55,9 @@ def current_identity(
         user_id=principal.user_id,
         display_name=principal.display_name,
         global_role=principal.role,
-        identifier_kind="account_id" if AUTH_MODE == AuthMode.OIDC else "login_id",
+        identifier_kind=(
+            "account_id" if AUTH_MODE in (AuthMode.OIDC, AuthMode.LOCAL) else "login_id"
+        ),
     )
 
 
@@ -78,14 +80,17 @@ def legacy_identity_context(
 class LoginRequest(BaseModel):
     """開発用ログインリクエスト."""
 
-    username: str = Field(..., description="ユーザーID")
-    password: str = Field(..., description="パスワード（開発用ダミー）")
+    username: str = Field(..., max_length=256, description="ユーザーID")
+    password: str = Field(..., max_length=256, description="パスワード")
 
 
 class LoginResponse(BaseModel):
     """擬似トークンレスポンス."""
 
-    access_token: str = Field(..., description="Bearer トークン")
+    access_token: str | None = Field(
+        default=None,
+        description="Bearer トークン（ローカルアカウントでは返さず、HttpOnly cookie だけを使う）",
+    )
     token_type: str = Field(default="bearer", description="常に bearer")
     role: AppRole
     user_id: str
@@ -93,6 +98,10 @@ class LoginResponse(BaseModel):
     expires_in: int = Field(
         default=3600,
         description="モック環境のトークン寿命（秒）。実運用では IdP 依存。",
+    )
+    password_change_required: bool = Field(
+        default=False,
+        description="ローカルアカウントで、初回又は再設定後のパスワード変更が必要なとき真。",
     )
 
 
@@ -174,26 +183,41 @@ def _build_frontend_redirect(path: str) -> str:
 async def login(payload: LoginRequest, response: Response) -> LoginResponse:
     """ユーザー名/パスワードで簡易認証し、擬似トークンを発行する (開発モードのみ)."""
 
-    if AUTH_MODE != AuthMode.MOCK:
+    change_required = False
+    if AUTH_MODE == AuthMode.LOCAL:
+        from starlette.concurrency import run_in_threadpool
+
+        signed_in = await run_in_threadpool(
+            _authenticate_local, payload.username, payload.password
+        )
+        if signed_in is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="ログインIDまたはパスワードが正しくありません。",
+            )
+        principal: UserPrincipal = signed_in.principal
+        change_required = signed_in.must_change_password
+    elif AUTH_MODE != AuthMode.MOCK:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Username/password login is disabled",
         )
-    try:
-        principal: UserPrincipal = authenticate_mock_user(
-            payload.username, payload.password
-        )
-    except InvalidCredentialsError as exc:  # pragma: no cover - error branch
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)
-        ) from exc
+    else:
+        try:
+            principal = authenticate_mock_user(payload.username, payload.password)
+        except InvalidCredentialsError as exc:  # pragma: no cover - error branch
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)
+            ) from exc
 
     # One session for both tokens, so signing out revokes the header token too.
     from dataclasses import replace
     from secrets import token_urlsafe
 
     principal = replace(principal, session_id=principal.session_id or token_urlsafe(16))
-    token = issue_development_token(principal)
+    # Local accounts use only the HttpOnly cookie: a token in the response body could
+    # be read by page scripts and has no idle limit.
+    token = None if AUTH_MODE == AuthMode.LOCAL else issue_development_token(principal)
     # The cookie is the browser session (idle limit); the returned token is for
     # scripts that authenticate with a header and has only the absolute limit.
     _apply_session_cookie(
@@ -204,7 +228,74 @@ async def login(payload: LoginRequest, response: Response) -> LoginResponse:
         role=principal.role,
         user_id=principal.user_id,
         issued_at=principal.issued_at,
+        password_change_required=change_required,
     )
+
+
+def _authenticate_local(login_id: str, password: str) -> Any:
+    from shift_scheduler.api.auth import local
+    from shift_scheduler.db.session import get_session_factory
+
+    # The failure counter and lock are committed even when the sign-in fails.
+    return local.sign_in(get_session_factory(), login_id, password)
+
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(..., min_length=1, max_length=256)
+    new_password: str = Field(..., min_length=1, max_length=256)
+
+
+@router.post("/password", status_code=status.HTTP_204_NO_CONTENT)
+async def change_local_password(
+    payload: PasswordChange,
+    request: Request,
+    response: Response,
+    principal: UserPrincipal = Depends(get_authenticated_principal),
+) -> Response:
+    """ローカルアカウントのパスワードを変更し、セッションを更新する。"""
+
+    if AUTH_MODE != AuthMode.LOCAL:
+        raise HTTPException(status_code=404, detail="Not available")
+    from starlette.concurrency import run_in_threadpool
+
+    from shift_scheduler.api.auth import local
+    from shift_scheduler.db.session import get_session_factory
+
+    account_id = str((principal.claims or {}).get("sub") or "")
+
+    def _change() -> UserPrincipal | None:
+        # A wrong current password is committed as a failure (towards the lock).
+        return local.change_password(
+            get_session_factory(),
+            account_id,
+            payload.current_password,
+            payload.new_password,
+        )
+
+    try:
+        refreshed = await run_in_threadpool(_change)
+    except local.PasswordPolicyError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    if refreshed is None:
+        raise HTTPException(
+            status_code=401, detail="現在のパスワードが正しくありません。"
+        )
+    # The old session (which may carry the change-required mark) ends here.
+    old = request.cookies.get(SESSION_SETTINGS.cookie_name)
+    if old:
+        from shift_scheduler.api.auth.session import SessionTokenError
+
+        with suppress(SessionTokenError):
+            SESSION_MANAGER.revoke(old)
+    from dataclasses import replace
+    from secrets import token_urlsafe
+
+    refreshed = replace(refreshed, session_id=token_urlsafe(16))
+    _apply_session_cookie(
+        response, SESSION_MANAGER.issue(refreshed, browser=True), refreshed
+    )
+    response.status_code = status.HTTP_204_NO_CONTENT
+    return response
 
 
 @router.get("/oidc/authorize")
@@ -297,6 +388,20 @@ class SessionState(BaseModel):
     absolute_expires_at: datetime
 
 
+async def _local_session_valid(principal: UserPrincipal) -> bool:
+    from starlette.concurrency import run_in_threadpool
+
+    from shift_scheduler.api.auth import local
+    from shift_scheduler.db.session import get_session_factory
+
+    def _check() -> bool:
+        with get_session_factory()() as session:
+            state = local.current_account(session, principal)
+        return state != local.AccountState.INVALID
+
+    return await run_in_threadpool(_check)
+
+
 @router.post("/refresh", response_model=SessionState)
 async def refresh(request: Request, response: Response) -> SessionState:
     """Renew the browser session while the person is working (idle limit).
@@ -320,6 +425,13 @@ async def refresh(request: Request, response: Response) -> SessionState:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired"
         ) from exc
+    if AUTH_MODE == AuthMode.LOCAL and not await _local_session_valid(principal):
+        # A deactivated account or a session older than the last password change
+        # is not renewed (the page would otherwise believe it is still signed in).
+        _clear_session_cookie(response)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired"
+        )
     issued = (
         principal.issued_at
         if principal.issued_at.tzinfo

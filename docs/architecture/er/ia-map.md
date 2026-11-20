@@ -7,8 +7,9 @@
 
 | 経路 | ページ | 部品の数 | API の数 |
 |---|---|---|---|
+| `/account/password` | `app/account/password/page` | 10 | 0 |
 | `/dashboard` | `app/dashboard/page` | 22 | 4 |
-| `/login` | `app/login/page` | 10 | 2 |
+| `/login` | `app/login/page` | 12 | 2 |
 | `/` | `app/page` | 0 | 0 |
 | `/planning` | `app/planning/page` | 13 | 1 |
 | `/planning/workflows/[workflow]` | `app/planning/workflows/[workflow]/page` | 23 | 3 |
@@ -18,7 +19,9 @@
 | `/requests` | `app/requests/page` | 22 | 4 |
 | `/schedule/[year]/[month]` | `app/schedule/[year]/[month]/page` | 37 | 4 |
 | `/schedule` | `app/schedule/page` | 0 | 0 |
+| `/settings/accounts` | `app/settings/accounts/page` | 17 | 1 |
 | `/settings` | `app/settings/page` | 13 | 1 |
+| `/setup` | `app/setup/page` | 9 | 0 |
 | `/showcase/[screen]` | `app/showcase/[screen]/page` | 37 | 30 |
 | `/showcase` | `app/showcase/page` | 1 | 0 |
 | `/workspace/[screen]/[view]` | `app/workspace/[screen]/[view]/page` | 29 | 31 |
@@ -129,8 +132,9 @@
 
 ## 経路ごとの部品
 
+- `/account/password`：`app/account/password/PasswordView`、`components/ui/Button`、`components/ui/Card`、`components/ui/Input`、`components/ui/Label`、`lib/apiTarget`、`lib/localAccounts`、`lib/loginPath`、`lib/navigate`、`lib/utils`
 - `/dashboard`：`components/ContextLink`、`components/GlobalNavigation`、`components/IdentityProvider`、`components/MembershipHelp`、`components/NavigationFlags`、`components/dashboard/LiveDashboard`、`components/layout/AppLayout`、`components/layout/PageHeader`、`components/layout/SidebarNavigation`、`components/ui/Button`、`components/ui/Card`、`components/useNavigationContext`、`lib/apiTarget`、`lib/browserNavigation`、`lib/calendar`、`lib/departmentRole`、`lib/errorText`、`lib/identity`、`lib/navigation`、`lib/planningRead`、`lib/types`、`lib/utils`
-- `/login`：`app/login/LoginView`、`components/ui/Button`、`components/ui/Card`、`components/ui/Input`、`components/ui/Label`、`lib/apiTarget`、`lib/authConstants`、`lib/featureFlags`、`lib/loginPath`、`lib/utils`
+- `/login`：`app/login/LoginView`、`components/ui/Button`、`components/ui/Card`、`components/ui/Input`、`components/ui/Label`、`lib/apiTarget`、`lib/authConstants`、`lib/featureFlags`、`lib/localAccounts`、`lib/loginPath`、`lib/navigate`、`lib/utils`
 - `/`：—
 - `/planning`：`components/ContextLink`、`components/GlobalNavigation`、`components/IdentityProvider`、`components/NavigationFlags`、`components/PlanningWorkspace`、`components/layout/AppLayout`、`components/layout/PageHeader`、`components/layout/SidebarNavigation`、`lib/apiTarget`、`lib/browserNavigation`、`lib/identity`、`lib/navigation`、`lib/utils`
 - `/planning/workflows/[workflow]`：`components/ActualWorkflow`、`components/BusinessWorkflow`、`components/CompliancePanel`、`components/ContextLink`、`components/GlobalNavigation`、`components/IdentityProvider`、`components/MembershipHelp`、`components/NavigationFlags`、`components/PlanningRequests`、`components/WorkflowNavigation`、`components/layout/AppLayout`、`components/layout/PageHeader`、`components/layout/SidebarNavigation`、`components/useUnsavedNavigation`、`lib/apiTarget`、`lib/browserNavigation`、`lib/departmentRole`、`lib/errorText`、`lib/identity`、`lib/loginPath`、`lib/navigation`、`lib/utils`、`lib/workflowAccess`
@@ -140,7 +144,9 @@
 - `/requests`：`components/ContextLink`、`components/GlobalNavigation`、`components/IdentityProvider`、`components/LeaveQuotaManager`、`components/NavigationFlags`、`components/layout/AppLayout`、`components/layout/PageHeader`、`components/layout/SidebarNavigation`、`components/ui/Badge`、`components/ui/Button`、`components/ui/Card`、`components/ui/Input`、`components/ui/Label`、`components/useUnsavedNavigation`、`hooks/useLeaveQuotas`、`hooks/useStaffDirectory`、`lib/apiTarget`、`lib/browserNavigation`、`lib/identity`、`lib/navigation`、`lib/types`、`lib/utils`
 - `/schedule/[year]/[month]`：`components/ContextLink`、`components/DayCell`、`components/GlobalNavigation`、`components/HolidayRequestEditor`、`components/IdentityProvider`、`components/ManualAssignmentEditor`、`components/NavigationFlags`、`components/ScheduleCalendar`、`components/ScheduleMatrixView`、`components/ScheduleWarningsPanel`、`components/ScheduleWorkspace`、`components/ShiftDetailDrawer`、`components/layout/AppLayout`、`components/layout/PageHeader`、`components/layout/SidebarNavigation`、`components/ui/Badge`、`components/ui/Button`、`components/ui/Card`、`components/ui/Input`、`components/useModalDialog`、`components/useUnsavedNavigation`、`hooks/useHolidayRequests`、`lib/apiClient`、`lib/apiTarget`、`lib/auth`、`lib/authConstants`、`lib/browserNavigation`、`lib/calendar`、`lib/httpsDispatcher`、`lib/identity`、`lib/navigation`、`lib/scheduleClient`、`lib/scheduleMonth`、`lib/scheduleTransformers`、`lib/shiftLabels`、`lib/types`、`lib/utils`
 - `/schedule`：—
+- `/settings/accounts`：`app/settings/accounts/AccountsView`、`components/ContextLink`、`components/GlobalNavigation`、`components/IdentityProvider`、`components/NavigationFlags`、`components/layout/AppLayout`、`components/layout/PageHeader`、`components/layout/SidebarNavigation`、`components/ui/Button`、`components/ui/Input`、`components/ui/Label`、`lib/apiTarget`、`lib/browserNavigation`、`lib/identity`、`lib/localAccounts`、`lib/navigation`、`lib/utils`
 - `/settings`：`components/ContextLink`、`components/FlexAdoptionSettings`、`components/GlobalNavigation`、`components/IdentityProvider`、`components/NavigationFlags`、`components/layout/AppLayout`、`components/layout/PageHeader`、`components/layout/SidebarNavigation`、`lib/apiTarget`、`lib/browserNavigation`、`lib/identity`、`lib/navigation`、`lib/utils`
+- `/setup`：`app/setup/SetupView`、`components/ui/Button`、`components/ui/Card`、`components/ui/Input`、`components/ui/Label`、`lib/apiTarget`、`lib/localAccounts`、`lib/navigate`、`lib/utils`
 - `/showcase/[screen]`：`components/ContextLink`、`components/PublicationExport`、`components/ThemeToggle`、`components/ideal/IdealWorkspace`、`ideal/api/client`、`ideal/api/contracts`、`ideal/api/mutations`、`ideal/api/workspaceSelection`、`ideal/data`、`ideal/live/context`、`ideal/model`、`ideal/providers/SyntheticWorkspaceProvider`、`ideal/providers/WorkspaceContext`、`ideal/screens/GovernanceScreen`、`ideal/screens/HomeScreen`、`ideal/screens/OperationsScreen`、`ideal/screens/PeopleScreen`、`ideal/screens/PlanScreen`、`ideal/screens/RequestsScreen`、`ideal/screens/ScheduleScreen`、`ideal/screens/SettingsScreen`、`ideal/screens/live/IntegratedFeatureView`、`ideal/screens/live/LiveAdminScreens`、`ideal/screens/live/LiveCaseScreens`、`ideal/screens/live/LivePlan`、`ideal/screens/live/NewCaseForm`、`ideal/screens/live/cases`、`ideal/screens/shared`、`ideal/synthetic`、`ideal/types`、`ideal/views`、`lib/apiTarget`、`lib/browserNavigation`、`lib/featureFlags`、`lib/loginPath`、`lib/planningTransport`、`lib/theme`
 - `/showcase`：`lib/featureFlags`
 - `/workspace/[screen]/[view]`：`components/IdentityProvider`、`ideal/api/client`、`ideal/api/contracts`、`ideal/api/errors`、`ideal/api/mutations`、`ideal/api/serverInitial`、`ideal/api/toModel`、`ideal/api/workspaceSelection`、`ideal/data`、`ideal/live/context`、`ideal/model`、`ideal/providers/ApiWorkspaceProvider`、`ideal/providers/WorkspaceContext`、`ideal/providers/contextEvent`、`ideal/providers/initial`、`ideal/screens/shared`、`ideal/synthetic`、`ideal/types`、`ideal/views`、`lib/apiTarget`、`lib/auth`、`lib/authConstants`、`lib/browserNavigation`、`lib/errorText`、`lib/featureFlags`、`lib/httpsDispatcher`、`lib/identity`、`lib/loginPath`、`lib/planningTransport`
