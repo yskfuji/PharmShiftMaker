@@ -41,6 +41,8 @@ class AuthMode(str, Enum):
 
     MOCK = "mock"
     OIDC = "oidc"
+    # Desktop profile: accounts stored in the local database (hashed passwords).
+    LOCAL = "local"
 
 
 @dataclass(frozen=True)

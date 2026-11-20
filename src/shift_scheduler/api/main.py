@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import OperationalError
 from starlette.responses import Response
 
+from shift_scheduler.api.auth.local import HashBusy
 from shift_scheduler.api.routers import (
     artifacts,
     auth,
@@ -19,11 +20,14 @@ from shift_scheduler.api.routers import (
     health,
     holiday_requests,
     leave_quotas,
+    local_accounts,
     planning,
     schedules,
+    setup,
     staff,
     workflows,
 )
+from shift_scheduler.config.profile import is_desktop, is_hardened
 from shift_scheduler.db.restore_lock import RestoreUnavailable
 
 
@@ -43,9 +47,13 @@ def _resolve_cors_origins() -> list[str]:
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    from shift_scheduler.config.desktop import check_desktop
     from shift_scheduler.config.production import check_production
+    from shift_scheduler.config.profile import validate_environment
 
+    validate_environment()
     check_production()
+    check_desktop()
     yield
 
 
@@ -57,9 +65,7 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url=None,
     redoc_url=None,
-    openapi_url=(
-        None if os.getenv("PHARMSHIFT_ENV") == "production" else "/openapi.json"
-    ),
+    openapi_url=(None if is_hardened() else "/openapi.json"),
 )
 
 
@@ -71,6 +77,17 @@ async def restore_unavailable(
         status_code=503,
         content={"detail": "復元の隔離・検証中です。通常アクセスは停止しています。"},
         headers={"Retry-After": "30"},
+    )
+
+
+@app.exception_handler(HashBusy)
+async def password_hash_busy(_request: Request, _error: HashBusy) -> JSONResponse:
+    return JSONResponse(
+        status_code=429,
+        content={
+            "detail": "処理が混み合っています。少し待ってからやり直してください。"
+        },
+        headers={"Retry-After": "2", "Cache-Control": "no-store"},
     )
 
 
@@ -109,6 +126,8 @@ app.add_middleware(
     expose_headers=["X-Transfer-ID", "X-Content-SHA256", "Content-Disposition"],
 )
 app.include_router(health.router)
+app.include_router(setup.router)
+app.include_router(local_accounts.router)
 app.include_router(auth.router)
 app.include_router(holiday_requests.router)
 app.include_router(leave_quotas.router)
@@ -153,6 +172,17 @@ async def _browser_protection(
         "/redoc",
         "/auth/logout",
     }
+    if (
+        is_desktop()
+        and request.method not in {"GET", "HEAD", "OPTIONS"}
+        and request.headers.get("origin") not in _resolve_cors_origins()
+    ):
+        # Desktop: no state-changing request without the app's own Origin, even
+        # without a cookie (sign-in and setup cannot be driven by another page).
+        # Checked first, so a foreign page cannot even trigger the control lookup.
+        return JSONResponse(
+            {"detail": "Requests require the application's Origin"}, status_code=403
+        )
     if not public and request.method != "OPTIONS":
         try:
             await run_in_threadpool(require_access)
@@ -167,7 +197,7 @@ async def _browser_protection(
 
     settings = get_session_settings()
     if (
-        os.getenv("PHARMSHIFT_ENV") == "production"
+        is_hardened()
         and request.method not in {"GET", "HEAD", "OPTIONS"}
         and any(
             request.url.path.startswith(prefix)

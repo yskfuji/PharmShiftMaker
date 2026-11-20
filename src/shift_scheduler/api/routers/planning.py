@@ -97,6 +97,19 @@ def access(
     if not matching:
         raise HTTPException(403, "No active membership in this facility/department")
     member = matching[0]
+    if (
+        member.issuer.startswith("local:")
+        and member.person_id == member.subject
+        and member.role != "ADMIN"
+    ):
+        # A local account not yet linked to a staff member carries its own ID as a
+        # placeholder person. Records made under it would be lost to the person
+        # (and to disclosure and erasure) once linked, so it cannot act yet.
+        # Administrators may, to set the department up; their records name the account.
+        raise HTTPException(
+            403,
+            "このアカウントはまだ職員に結び付けられていません。管理者に結び付けを依頼してください。",
+        )
     if admin and member.role != "ADMIN":
         raise HTTPException(403, "Administrator membership required")
     if write and member.role not in ("ADMIN", "LEADER"):

@@ -274,6 +274,64 @@ class RevokedSession(Base):
     )
 
 
+class LocalAccount(Base):
+    """A sign-in account of the desktop profile (AUTH_MODE=local).
+
+    Business authority still comes from AccountMembership rows whose issuer is
+    ``local:<install id>`` and whose subject is ``account_id``.
+    """
+
+    __tablename__ = "local_accounts"
+    account_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    # Stored case-folded, so sign-in ignores the letter case of the ID.
+    login_id: Mapped[str] = mapped_column(String(64), unique=True)
+    display_name: Mapped[str] = mapped_column(String(128))
+    role: Mapped[str] = mapped_column(String(32))
+    # The department that owns and administers the account (facility/department).
+    scope_id: Mapped[str] = mapped_column(String(256))
+    person_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    password_hash: Mapped[str] = mapped_column(String(256))
+    failed_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    locked_until: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    must_change_password: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default=text("true")
+    )
+    active: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default=text("true")
+    )
+    password_changed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
+    created_by: Mapped[str] = mapped_column(String(128))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        server_default=func.now(),
+    )
+
+
+class LocalAccountEvent(Base):
+    """Audit of local sign-in and account administration (the application only appends).
+
+    Kept apart from PlanningOutbox: these records are not notifications and are
+    never delivered, so they must not count as undelivered business events.
+    """
+
+    __tablename__ = "local_account_events"
+    event_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    account_id: Mapped[str] = mapped_column(String(64))
+    scope_id: Mapped[str] = mapped_column(String(256))
+    actor: Mapped[str] = mapped_column(String(128))
+    kind: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        server_default=func.now(),
+    )
+
+
 class ActualWorkEvent(Base):
     __tablename__ = "actual_work_events"
     key: Mapped[str] = mapped_column(String(256), primary_key=True)

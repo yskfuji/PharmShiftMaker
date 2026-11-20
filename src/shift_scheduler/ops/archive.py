@@ -23,6 +23,8 @@ from typing import IO
 
 from sqlalchemy.orm import Session, sessionmaker
 
+from shift_scheduler.config.profile import is_hardened
+
 MAX_FILES = 100_000
 MAX_BYTES = 10 * 1024**3
 SIGNATURE = "manifest.sig"
@@ -58,9 +60,7 @@ def _now() -> datetime:
 
 def _production() -> bool:
     """As legacy_storage: an independent control configuration also means production."""
-    return os.environ.get("PHARMSHIFT_ENV") == "production" or bool(
-        os.environ.get("PHARMSHIFT_CONTROL_URL")
-    )
+    return is_hardened() or bool(os.environ.get("PHARMSHIFT_CONTROL_URL"))
 
 
 def _instant(value: object, name: str) -> datetime | None:
