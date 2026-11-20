@@ -107,9 +107,9 @@
       "sha256": "250004dc194dc3abee97c4ecf50ac5b449db09a0c4279ca0e52010590a60fe0e"
     },
     {
-      "bytes": 2076,
+      "bytes": 5701,
       "path": "LICENSE",
-      "sha256": "0e467edf9addfb09214f5a478e992e992473a3eaa9c32905d9dc21b5c68664c2"
+      "sha256": "3bd3a63c70b2e8b8e80f3b87824c441e693ae3ae0053eda486b367ce16e2e45b"
     },
     {
       "bytes": 3149,
@@ -592,9 +592,9 @@
       "sha256": "1584a802cd162fbdbd9d42fe648ff78b06b86707d9864a0257b213d9191e686b"
     },
     {
-      "bytes": 5771,
+      "bytes": 6047,
       "path": "docs/desktop/m0-verification.md",
-      "sha256": "7f78d670c8f8ff1988cd3d0fba5785da06cf9009146140851938813d13b02a03"
+      "sha256": "31026bd3ca2dba8dabfe7292d0cf5f0e2c88e01c09fc9c46a0c3c6cefe7d6733"
     },
     {
       "bytes": 8530,
@@ -9924,5 +9924,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "a63b8333e7c78395b0782e8c3086ca0ebfa9b900"
+  "source_commit": "977bc61635c7c7cc1a3baeeb0e6d6ef73dcccab4"
 }
