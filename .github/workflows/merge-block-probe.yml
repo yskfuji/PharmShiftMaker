@@ -1,0 +1,10 @@
+# マージ阻止の確認用（PR を閉じて破棄します）。意図的に timeout-minutes を書いていません。
+name: merge-block-probe
+on:
+  workflow_dispatch:
+permissions: {}
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "probe"
