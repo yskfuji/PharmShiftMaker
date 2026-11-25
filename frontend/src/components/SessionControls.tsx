@@ -5,6 +5,7 @@ import useModalDialog from './useModalDialog';
 import {IdentityDisplay} from './IdentityProvider';
 import {browserNavigation} from '@/lib/browserNavigation';
 import {loginPath} from '@/lib/loginPath';
+import {isSessionlessPage} from '@/lib/sessionlessPages';
 import ThemeToggle from './ThemeToggle';
 import {usePathname} from 'next/navigation';
 
@@ -83,7 +84,9 @@ export default function SessionControls(){
   return()=>window.removeEventListener('workspace-signout',signOut);
  },[end]);
  useEffect(()=>{
-  if(browserNavigation.pathname()==='/login')return;
+  // Sign-in and first-run setup exist before any session; renewing there would
+  // bounce a new installation between /setup and /login.
+  if(isSessionlessPage(browserNavigation.pathname()))return;
   generation.current+=1;
   setActive(true);
   renewedAt.current=Date.now();void renew();

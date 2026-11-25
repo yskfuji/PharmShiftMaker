@@ -4065,6 +4065,262 @@
           "handler_status": "UNVERIFIED"
         }
       ]
+    },
+    "src/shift_scheduler/desktop/launcher.py:emit:f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "emit",
+      "line": 73,
+      "expression_hash": "f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5",
+      "call": "sys.stdout.write",
+      "status": "UNVERIFIED",
+      "policy": "launcher-protocol-stream",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5",
+        "reason": "Writes launcher protocol lines (stage names, readiness, startup error summaries) or usage text to the shell pipe; no staff or schedule data is processed before readiness.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:main:55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "main",
+      "line": 749,
+      "expression_hash": "55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d",
+      "call": "sys.stderr.write",
+      "status": "UNVERIFIED",
+      "policy": "launcher-protocol-stream",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d",
+        "reason": "Writes launcher protocol lines (stage names, readiness, startup error summaries) or usage text to the shell pipe; no staff or schedule data is processed before readiness.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_log:645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_log",
+      "line": 100,
+      "expression_hash": "645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Owner-only desktop log files (0600 in a 0700 directory), one 10 MB rotation generation checked at each launch; erasure and retention reconciliation are not verified.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf",
+        "reason": "Child process logs may contain personal data in error output (e.g. PostgreSQL statement errors), so the log files are treated as personal-data stores.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_log:ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_log",
+      "line": 101,
+      "expression_hash": "ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6",
+      "call": "os.fdopen",
+      "status": "UNVERIFIED",
+      "policy": "Owner-only desktop log files (0600 in a 0700 directory), one 10 MB rotation generation checked at each launch; erasure and retention reconciliation are not verified.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6",
+        "reason": "Child process logs may contain personal data in error output (e.g. PostgreSQL statement errors), so the log files are treated as personal-data stores.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 68,
+      "expression_hash": "5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 69,
+      "expression_hash": "6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346",
+      "call": "os.fdopen",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 70,
+      "expression_hash": "cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397",
+      "call": "handle.write",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:Supervisor._popen:3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "Supervisor._popen",
+      "line": 132,
+      "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
+      "call": "subprocess.Popen",
+      "status": "UNVERIFIED",
+      "policy": "Desktop launcher starts bundled programs (initdb/pg_ctl/PostgreSQL, alembic, control authority, API, worker, web) whose stores and logs hold application data; per-store reconciliation is not verified.",
+      "classification": "DELEGATED_PROGRAM",
+      "classification_evidence": {
+        "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
+        "reason": "Desktop launcher delegates to bundled native/Python/Node programs; the child programs own database and file bytes. Output goes to owner-only log files.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 311,
+      "expression_hash": "590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec",
+      "call": "conf.write",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 310,
+      "expression_hash": "85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f",
+      "call": "(data.pgdata_new / 'postgresql.conf').open",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 312,
+      "expression_hash": "89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04",
+      "call": "(data.pgdata_new / 'pg_hba.conf').write_text",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:pg_running:e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "pg_running",
+      "line": 265,
+      "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "read-only-status-query",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+        "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:_command_of:8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "_command_of",
+      "line": 218,
+      "expression_hash": "8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "read-only-status-query",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740",
+        "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:wait_http.probe:7b50b567d4a7bcaf40ab5a73257a6900968c84129761e039ee9d8322cf51db95": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "wait_http.probe",
+      "line": 465,
+      "expression_hash": "7b50b567d4a7bcaf40ab5a73257a6900968c84129761e039ee9d8322cf51db95",
+      "call": "opener.open",
+      "status": "UNVERIFIED",
+      "policy": "launcher-readiness-probe",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "7b50b567d4a7bcaf40ab5a73257a6900968c84129761e039ee9d8322cf51db95",
+        "reason": "Requests the launcher's own loopback health and login endpoints and reads only the status code; nothing is written to storage.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_lock:38c42bcb6c33a57f9eb236e83b7036f8bddc0d7c0b7a6067f4c6f60ad3a1637f": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_lock",
+      "line": 637,
+      "expression_hash": "38c42bcb6c33a57f9eb236e83b7036f8bddc0d7c0b7a6067f4c6f60ad3a1637f",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "launcher-instance-lock",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "38c42bcb6c33a57f9eb236e83b7036f8bddc0d7c0b7a6067f4c6f60ad3a1637f",
+        "reason": "Opens the empty state/launcher.lock file (0600 in a 0700 directory) only to hold an exclusive lock for one launcher per data folder; nothing is written to it.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_lock:f2d9594a2330c6bffa6020d167e2292ff4ccbe8e1b91e470307395644582ae23": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_lock",
+      "line": 640,
+      "expression_hash": "f2d9594a2330c6bffa6020d167e2292ff4ccbe8e1b91e470307395644582ae23",
+      "call": "os.fdopen",
+      "status": "UNVERIFIED",
+      "policy": "launcher-instance-lock",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "f2d9594a2330c6bffa6020d167e2292ff4ccbe8e1b91e470307395644582ae23",
+        "reason": "Opens the empty state/launcher.lock file (0600 in a 0700 directory) only to hold an exclusive lock for one launcher per data folder; nothing is written to it.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
     }
   }
 }

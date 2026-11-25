@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Electron (V8) and the bundled Node.js need JIT. -->
+  <key>com.apple.security.cs.allow-jit</key>
+  <true/>
+  <!-- The bundled CPython uses libffi closures (ctypes, cffi in cryptography). -->
+  <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+  <true/>
+</dict>
+</plist>

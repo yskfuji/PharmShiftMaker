@@ -50,7 +50,7 @@
 | `components/BusinessWorkflow.tsx:38` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/BusinessWorkflow.tsx:41` | link | `/planning/workflows` | `/planning/workflows` |
 | `components/ScheduleWorkspace.tsx:136` | link | `/planning` | `/planning` |
-| `components/SessionControls.tsx:21` | document | `/login?redirectTo=<current page>` | `/login` |
+| `components/SessionControls.tsx:22` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:20` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:33` | link | `/planning/workflows/${p}?scope=${encodeURIComponent(m.scope_id)}` | `/planning/workflows/[workflow]` |
 | `components/WorkflowIndex.tsx:40` | link | `/schedule` | `/schedule` |

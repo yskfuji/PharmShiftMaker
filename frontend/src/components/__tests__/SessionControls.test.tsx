@@ -22,6 +22,16 @@ test('nothing is shown on the sign-in page or without a session',()=>{
  expect(container).toBeEmptyDOMElement();expect(global.fetch).not.toHaveBeenCalled();
 });
 
+test('first-run setup has no session yet, so nothing renews or redirects there',async()=>{
+ global.fetch=jest.fn(async()=>response({detail:'unauthenticated'},401)) as any;
+ location.pathname='/setup';
+ const {container}=render(<SessionControls/>);
+ await act(async()=>{await Promise.resolve();});
+ expect(container).toBeEmptyDOMElement();
+ expect(global.fetch).not.toHaveBeenCalled();
+ expect(location.replace).not.toHaveBeenCalled();
+});
+
 test('sign-out revokes the session, covers the page and replaces the location',async()=>{
  const calls:string[]=[];
  global.fetch=jest.fn(async(u:any)=>{calls.push(String(u));return String(u).endsWith('/auth/refresh')?response({idle_timeout_seconds:900}):response({},204);}) as any;

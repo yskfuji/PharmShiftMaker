@@ -4,6 +4,8 @@ const {PHASE_PRODUCTION_SERVER} = require('next/constants');
 const config = {
   env: {NEXT_PUBLIC_API_BASE_URL: apiTarget(process.env.NEXT_PUBLIC_API_BASE_URL)},
   reactStrictMode: true,
+  // The desktop edition ships the standalone output (NEXT_OUTPUT=standalone at build).
+  ...(process.env.NEXT_OUTPUT === 'standalone' ? {output: 'standalone'} : {}),
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
   serverExternalPackages: [],
