@@ -1,5 +1,5 @@
 {
-  "file_count": 1984,
+  "file_count": 1987,
   "files": [
     {
       "bytes": 279,
@@ -42,9 +42,9 @@
       "sha256": "7f68bf4a3db2b788e17bd8fc63f3610bd133f9970df719f2f641875ac7718720"
     },
     {
-      "bytes": 7624,
+      "bytes": 9964,
       "path": ".github/workflows/ci.yml",
-      "sha256": "e754143db3678e0a79e3ee08f085a65c381fb804e690691bfc94fc14d5f908ef"
+      "sha256": "e2496db0224a5f94ec82a44fa9821c5895b33e583f71047498f9c1e94905b8a1"
     },
     {
       "bytes": 1689,
@@ -595,6 +595,11 @@
       "bytes": 6047,
       "path": "docs/desktop/m0-verification.md",
       "sha256": "31026bd3ca2dba8dabfe7292d0cf5f0e2c88e01c09fc9c46a0c3c6cefe7d6733"
+    },
+    {
+      "bytes": 16216,
+      "path": "docs/desktop/windows-storage.md",
+      "sha256": "cd5dd324776e5511459e74b6313eb49377d93c4d21b496f2f4c6c4e072ae62ba"
     },
     {
       "bytes": 8530,
@@ -8257,9 +8262,9 @@
       "sha256": "de6ed5ae7e5074140dd1d8343a90eba20559892e24dc505d74af2441e0f99e4f"
     },
     {
-      "bytes": 31574,
+      "bytes": 31703,
       "path": "src/shift_scheduler/application/copies.py",
-      "sha256": "c72bcda3aa1df3b6d1066f49af70f2e9fc1217e4c70ea44071fa09697b36ebf5"
+      "sha256": "841b732dac0e702639efb2b84130b1e52e2c3635e6019d3ea12383a9e214b5c6"
     },
     {
       "bytes": 2980,
@@ -8337,9 +8342,9 @@
       "sha256": "5df568dfe0669ddc607e94f8d28facd7705d0b3f1366fd59586d994401127786"
     },
     {
-      "bytes": 7660,
+      "bytes": 7757,
       "path": "src/shift_scheduler/application/publication_artifacts.py",
-      "sha256": "15693b99387ddec2ea3274dc5ebdcc73312a45a3140a6c7d7d02debe0cf9411c"
+      "sha256": "43a52470dcd3b552ecb70f9bf85849dd1a940d6fe69c2c6ccd2fc996fa352525"
     },
     {
       "bytes": 6268,
@@ -8372,9 +8377,9 @@
       "sha256": "27d97d94e61d849d06509e5ad6e4dbae7b73e4f75c1ed00d43d95816fba3dc2e"
     },
     {
-      "bytes": 239565,
+      "bytes": 238083,
       "path": "src/shift_scheduler/application/storage_routes.json",
-      "sha256": "9ecdfa6ef96a081e252d8dc27b55ea6b21056a0dd9988d332515b03a879a6b44"
+      "sha256": "e09aecee43122995e69ff1d2f4d3ab3262621629d53ff141f7bfda223ac50c91"
     },
     {
       "bytes": 5618,
@@ -8427,9 +8432,9 @@
       "sha256": "213a6d1e6af2c203cbfa0bb704a840633c9031e8d0827d35d0754337bc3a92c9"
     },
     {
-      "bytes": 7450,
+      "bytes": 7720,
       "path": "src/shift_scheduler/config/desktop.py",
-      "sha256": "e201d65d09d9876e0e98c8fad008d1bd125c55f2fc4c79ee5d107346633dc10b"
+      "sha256": "1af69185168ea9219d000b806477dcd3dbea38a1afedba957ff5399088c16f4c"
     },
     {
       "bytes": 712,
@@ -8712,9 +8717,9 @@
       "sha256": "0c5bc1615ce8fa4c172c3a65be781d90921be22e8abf438a371ec5b50811ce69"
     },
     {
-      "bytes": 29127,
+      "bytes": 29344,
       "path": "src/shift_scheduler/ops/archive.py",
-      "sha256": "0e7f861cb2f8b6e8a5f57afeba0dd70a9adb305d9badff5079d725b655150e3d"
+      "sha256": "c713cadae6152f9925e3d5908c0bb81a24d12bbe941b18b8b8eb849d0def365d"
     },
     {
       "bytes": 26433,
@@ -8722,9 +8727,9 @@
       "sha256": "66032d57109236603f2fb2bbbb85f9c8e83f173d7c516f59f111e5fd21a578db"
     },
     {
-      "bytes": 4444,
+      "bytes": 4641,
       "path": "src/shift_scheduler/ops/erasure_control.py",
-      "sha256": "24a108d99f04764f080c5279dc873ae414acb3850aee16266743cfcbbbd9ea98"
+      "sha256": "6d8f0170dea17cea0407d05fce528a9e8a2226238e1256e553bfb6cd651c687c"
     },
     {
       "bytes": 19717,
@@ -8742,14 +8747,19 @@
       "sha256": "5757ca2a883a9de0d6b11eca626462ea3d416f6f083b0019ce105279bd464ba3"
     },
     {
-      "bytes": 2753,
+      "bytes": 2997,
       "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "sha256": "86efdee62cd886b0b87688dfcbf81cf829b78d76d851db8593a28b2088323644"
+      "sha256": "b9f1dcab7f20a711c69badf43069176c30f159d94a03d2c52f45c7bc209e5f8c"
     },
     {
-      "bytes": 21497,
+      "bytes": 21780,
       "path": "src/shift_scheduler/ops/managed_writer.py",
-      "sha256": "fd8807a951059b6c94eb8ee0bb06371d7409c5468d28ce6d8d657843ae189263"
+      "sha256": "92d108bad4f37cdd050b566fb21447c30ca80b4e0d2bbd0b654f7179a9b33d3f"
+    },
+    {
+      "bytes": 29744,
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "sha256": "182444db7b5febb5e056d61f77545d99b69434a67f616189ba2e7dae4d06c082"
     },
     {
       "bytes": 119,
@@ -9257,9 +9267,9 @@
       "sha256": "59f0c27e9d743c35853ae9b4e499a3a2f1e29cc8f5ca69ec9f313fcc6d9477c6"
     },
     {
-      "bytes": 26337,
+      "bytes": 26686,
       "path": "tests/test_desktop_local_auth.py",
-      "sha256": "10c5a130478964611ef7b6975fc40e45edd659f30f4fb9ba38f0218d4124d8e8"
+      "sha256": "d9453ef8369a026343c8d275fde4d1b2ea88bc87c3ed70eac0ec5f0d8adc2a18"
     },
     {
       "bytes": 6815,
@@ -9617,6 +9627,11 @@
       "sha256": "82f756b2842377a5456bb3a594039d5bea75a217754ea20e2a8c2b3ebe26ba4d"
     },
     {
+      "bytes": 23347,
+      "path": "tests/test_platform_fs.py",
+      "sha256": "008cc52f9b152593348acd5f95064370143a53b183604daff02faea36cec037e"
+    },
+    {
       "bytes": 5365,
       "path": "tests/test_privacy_workflow.py",
       "sha256": "31d8748fb687d9730382f4ac4de29a418af01c0eb492407367149bab1128f69c"
@@ -9924,5 +9939,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "977bc61635c7c7cc1a3baeeb0e6d6ef73dcccab4"
+  "source_commit": "89548a267689de659dc75bf6cf3e5ff9185b6e08"
 }

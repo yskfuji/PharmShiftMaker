@@ -96,6 +96,56 @@ jobs:
         # Raise it when coverage rises; never lower it without a recorded reason.
         run: python -m pytest --cov-fail-under=87
 
+  backend-windows:
+    name: Backend (Windows)
+    # Not a required check. Exercises the Windows storage layer (ACL lock-out,
+    # reparse-point refusal, LockFileEx) that Linux runners cannot reach; see
+    # docs/desktop/windows-storage.md. Only tests that need no PostgreSQL run here.
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      # The desktop shell starts Python in UTF-8 mode; the tests do the same.
+      PYTHONUTF8: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          # The desktop bundle ships python-build-standalone 3.12.15. setup-python
+          # has no Windows build of every 3.12 security release, so the latest
+          # available 3.12 is used here.
+          python-version: "3.12"
+
+      - name: Install dependencies
+        # requirements.lock carries hashes for the Linux and macOS wheels only.
+        # This test-only job installs the same pinned versions WITHOUT hashes and
+        # leaves out uvloop, which does not support Windows. The release
+        # dependency audit and SBOM stay in the Linux backend job.
+        run: |
+          grep -E '^[A-Za-z0-9_.-]+==' requirements.lock | sed 's/ .*//' | grep -v '^uvloop==' > windows-requirements.txt
+          python -m pip install -r windows-requirements.txt
+          python -m pip install --no-deps -e .
+          python -m pip install pytest==9.1.1 pytest-cov==7.1.0 pytest-asyncio==1.4.0 hypothesis==6.168.3
+
+      - name: Platform, desktop and storage tests
+        # The deselected test injects its fault into the directory fsync, which
+        # is a no-op on Windows; test_platform_fs.py injects the same fault into
+        # the platform layer instead (test_failure_after_publication_is_retried).
+        run: >-
+          python -m pytest -q --no-cov
+          tests/test_platform_fs.py
+          tests/test_desktop_local_auth.py
+          tests/test_managed_writer.py
+          tests/test_erasure_control.py
+          --deselect tests/test_managed_writer.py::test_crash_after_publication_before_ack_and_suppression_during_write
+
   frontend:
     name: Frontend lint & unit tests
     runs-on: ubuntu-latest

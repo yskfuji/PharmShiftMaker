@@ -173,9 +173,15 @@ def check_desktop() -> None:
         or (hasattr(path, "is_junction") and path.is_junction())
     ):
         raise RuntimeError("Desktop managed storage must be an existing directory")
-    if os.name != "posix":
-        # Windows ACLs (owner, inherited and explicit grants) are verified in the
-        # Windows milestone. Until then the desktop profile does not start there.
+    if sys.platform == "win32":  # pragma: no cover - measured by the Windows CI job
+        # Fixed local drive, no reparse point in any component, and the protected
+        # user/SYSTEM/Administrators DACL (docs/desktop/windows-storage.md).
+        from shift_scheduler.ops.platform_fs import windows_storage_problem
+
+        problem = windows_storage_problem(storage)
+        if problem:
+            raise RuntimeError(problem)
+    elif os.name != "posix":
         raise RuntimeError(
             "Desktop storage permissions cannot be verified on this platform yet"
         )

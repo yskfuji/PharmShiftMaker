@@ -4,7 +4,6 @@ The directory must be outside backup/restore targets. All writers and restore
 operators share this lock; it is not a distributed consensus service.
 """
 
-import fcntl
 import hashlib
 import hmac
 import json
@@ -17,6 +16,7 @@ from uuid import uuid4
 
 from shift_scheduler.config.profile import is_hardened
 from shift_scheduler.domain.planning import content_hash
+from shift_scheduler.ops import platform_fs
 
 
 def signature(payload: Any, secret: bytes) -> str:
@@ -37,23 +37,32 @@ def locked_control(
         raise ValueError(
             "Control register cannot be inside managed backup/erasure storage"
         )
-    fd = os.open(root / ".lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    fd = platform_fs.open_path(
+        root / ".lock", os.O_CREAT | os.O_RDWR | platform_fs.O_NOFOLLOW, 0o600
+    )
     with os.fdopen(fd, "r+") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        path = root / "current.json"
-        current = None
-        if path.is_symlink():
-            raise ValueError("Control symlink rejected")
-        if path.exists():
-            current = json.loads(path.read_text())
-            body = current["payload"]
-            if (
-                not hmac.compare_digest(signature(body, secret), current["signature"])
-                or type(body.get("generation")) is not int
-                or body["generation"] < 1
-            ):
-                raise ValueError("Independent control signature or generation invalid")
-        yield root, current
+        platform_fs.lock_exclusive(lock.fileno(), blocking=True)
+        try:
+            path = root / "current.json"
+            current = None
+            if path.is_symlink():
+                raise ValueError("Control symlink rejected")
+            if path.exists():
+                current = json.loads(path.read_text())
+                body = current["payload"]
+                if (
+                    not hmac.compare_digest(
+                        signature(body, secret), current["signature"]
+                    )
+                    or type(body.get("generation")) is not int
+                    or body["generation"] < 1
+                ):
+                    raise ValueError(
+                        "Independent control signature or generation invalid"
+                    )
+            yield root, current
+        finally:
+            platform_fs.unlock(lock.fileno())
 
 
 def advance(
@@ -85,11 +94,7 @@ def advance(
                 stream.flush()
                 os.fsync(stream.fileno())
             os.replace(temporary, root / "current.json")
-            directory_fd = os.open(root, os.O_RDONLY)
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            platform_fs.fsync_directory_path(root)
         finally:
             temporary.unlink(missing_ok=True)
         return envelope

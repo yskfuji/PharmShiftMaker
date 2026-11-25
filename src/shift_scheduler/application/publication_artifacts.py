@@ -189,6 +189,7 @@ def read_registered(
     import os
 
     from shift_scheduler.application.copies import storage_root
+    from shift_scheduler.ops import platform_fs
     from shift_scheduler.ops.managed_writer import allowed_subjects, file_lock
 
     lock_facility(session, scope)
@@ -204,8 +205,10 @@ def read_registered(
     )
     allowed_subjects(session, scope, people)
     with file_lock(storage_root(), copy_id) as directory:
-        fd = os.open(
-            row.locator["relative_path"], os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory
+        fd = platform_fs.open_at(
+            row.locator["relative_path"],
+            os.O_RDONLY | platform_fs.O_NOFOLLOW,
+            directory=directory,
         )
         with os.fdopen(fd, "rb") as stream:
             data = stream.read()

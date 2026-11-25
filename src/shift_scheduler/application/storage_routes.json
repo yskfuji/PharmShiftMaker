@@ -333,22 +333,6 @@
         "tests/test_request_leave_preservation_postgres.py"
       ]
     },
-    "src/shift_scheduler/ops/erasure_control.py:locked_control:c20285fc4bbd4d7ff11b58b2bea5ed72d0f4cf4f080ebe561a69acc32583e114": {
-      "path": "src/shift_scheduler/ops/erasure_control.py",
-      "symbol": "locked_control",
-      "line": 32,
-      "expression_hash": "c20285fc4bbd4d7ff11b58b2bea5ed72d0f4cf4f080ebe561a69acc32583e114",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "empty-lock-synchronization-only",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "c20285fc4bbd4d7ff11b58b2bea5ed72d0f4cf4f080ebe561a69acc32583e114",
-        "basis": "source_expression_and_enclosing_function_review",
-        "reason": "An empty .lock file descriptor used only for flock synchronization; current.json is separately read/validated and no staff/subject/control payload is written to the lock."
-      },
-      "handler_status": "UNVERIFIED"
-    },
     "src/shift_scheduler/ops/erasure_control.py:locked_control:7bcf3c13d73968a191bb5a59a0ecafa833c212cbe03cfd3e8e9386d571197127": {
       "path": "src/shift_scheduler/ops/erasure_control.py",
       "symbol": "locked_control",
@@ -501,98 +485,6 @@
         "tests/test_managed_capture_postgres.py",
         "tests/test_request_leave_preservation_postgres.py"
       ]
-    },
-    "src/shift_scheduler/ops/managed_erasure.py:erase_verified:21cd1b23374c7ee76a9f6653aba58edf3109852d8be3281e2b16d96bd8910135": {
-      "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "symbol": "erase_verified",
-      "line": 18,
-      "expression_hash": "21cd1b23374c7ee76a9f6653aba58edf3109852d8be3281e2b16d96bd8910135",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "Conservative scanner matches os.open with variable flags; flags are O_RDONLY|O_DIRECTORY|O_NOFOLLOW or explicit O_RDONLY. These expressions open existing directories/files for hash verification, create no file bytes. Rename/unlink erasure remains separately tested.",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "21cd1b23374c7ee76a9f6653aba58edf3109852d8be3281e2b16d96bd8910135",
-        "reason": "Erasure quarantine temporarily holds personal bytes; directory opens can be false-positive producers, but lifecycle requires observation.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION",
-      "handler_evidence": [
-        "tests/test_coupled_erasure_faults.py",
-        "tests/test_storage_reconciliation.py"
-      ]
-    },
-    "src/shift_scheduler/ops/managed_erasure.py:erase_verified:58440735495de431c5ae6c87f574209e3d5fa16378bc78730fd2f19df9ee7553": {
-      "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "symbol": "erase_verified",
-      "line": 26,
-      "expression_hash": "58440735495de431c5ae6c87f574209e3d5fa16378bc78730fd2f19df9ee7553",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "Conservative scanner matches os.open with variable flags; flags are O_RDONLY|O_DIRECTORY|O_NOFOLLOW or explicit O_RDONLY. These expressions open existing directories/files for hash verification, create no file bytes. Rename/unlink erasure remains separately tested.",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "58440735495de431c5ae6c87f574209e3d5fa16378bc78730fd2f19df9ee7553",
-        "reason": "Erasure quarantine temporarily holds personal bytes; directory opens can be false-positive producers, but lifecycle requires observation.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION",
-      "handler_evidence": [
-        "tests/test_coupled_erasure_faults.py",
-        "tests/test_storage_reconciliation.py"
-      ]
-    },
-    "src/shift_scheduler/ops/managed_erasure.py:erase_verified:5621f21e38d5d6c2db6c494dd27ca726203e43fd0590223de48e57f2c8abd130": {
-      "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "symbol": "erase_verified",
-      "line": 36,
-      "expression_hash": "5621f21e38d5d6c2db6c494dd27ca726203e43fd0590223de48e57f2c8abd130",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "Conservative scanner matches os.open with variable flags; flags are O_RDONLY|O_DIRECTORY|O_NOFOLLOW or explicit O_RDONLY. These expressions open existing directories/files for hash verification, create no file bytes. Rename/unlink erasure remains separately tested.",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "5621f21e38d5d6c2db6c494dd27ca726203e43fd0590223de48e57f2c8abd130",
-        "reason": "Erasure quarantine temporarily holds personal bytes; directory opens can be false-positive producers, but lifecycle requires observation.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION",
-      "handler_evidence": [
-        "tests/test_coupled_erasure_faults.py",
-        "tests/test_storage_reconciliation.py"
-      ]
-    },
-    "src/shift_scheduler/ops/managed_writer.py:file_lock:d8811ad3873860d42fffb442673ad8eb158b80a452c87d3fb59b475ba7c7d9d9": {
-      "path": "src/shift_scheduler/ops/managed_writer.py",
-      "symbol": "file_lock",
-      "line": 68,
-      "expression_hash": "d8811ad3873860d42fffb442673ad8eb158b80a452c87d3fb59b475ba7c7d9d9",
-      "call": "os.open",
-      "status": "REGISTERED",
-      "policy": "管理ファイル予約・検証・再試行。実呼出し元の網羅性は別検査",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "d8811ad3873860d42fffb442673ad8eb158b80a452c87d3fb59b475ba7c7d9d9",
-        "reason": "Durable reservation and immutable source/hash are checked before bytes become available; staging/lock residuals must be observed.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "REGISTERED"
-    },
-    "src/shift_scheduler/ops/managed_writer.py:publish_bytes:8539188fbfeea8a47a44bc67159fe009a55d2ba1282f76cddc7c6f29a5bc2351": {
-      "path": "src/shift_scheduler/ops/managed_writer.py",
-      "symbol": "publish_bytes",
-      "line": 116,
-      "expression_hash": "8539188fbfeea8a47a44bc67159fe009a55d2ba1282f76cddc7c6f29a5bc2351",
-      "call": "os.open",
-      "status": "REGISTERED",
-      "policy": "管理ファイル予約・検証・再試行。実呼出し元の網羅性は別検査",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "8539188fbfeea8a47a44bc67159fe009a55d2ba1282f76cddc7c6f29a5bc2351",
-        "reason": "Durable reservation and immutable source/hash are checked before bytes become available; staging/lock residuals must be observed.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "REGISTERED"
     },
     "src/shift_scheduler/ops/managed_writer.py:publish_bytes:6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346": {
       "path": "src/shift_scheduler/ops/managed_writer.py",
@@ -2477,26 +2369,6 @@
         "tests/test_managed_database_backup_postgres.py"
       ]
     },
-    "src/shift_scheduler/ops/managed_writer.py:capture:07b050525c3627d6a6bc159414ba5471d523e01e6cb1a7f14d1ebf50b9ee08c0": {
-      "path": "src/shift_scheduler/ops/managed_writer.py",
-      "symbol": "capture",
-      "line": 279,
-      "expression_hash": "07b050525c3627d6a6bc159414ba5471d523e01e6cb1a7f14d1ebf50b9ee08c0",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "durable-reservation-private-staging-hash-before-availability-source-provenance-unverified-subjects",
-      "handler_status": "REGISTERED_CAPTURE_TESTED",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "07b050525c3627d6a6bc159414ba5471d523e01e6cb1a7f14d1ebf50b9ee08c0",
-        "basis": "source_expression_and_enclosing_function_review",
-        "reason": "Operational managed artifact stream producer; contains data derived from scoped registered sources."
-      },
-      "handler_evidence": [
-        "tests/test_managed_capture_postgres.py",
-        "tests/test_managed_database_backup_postgres.py"
-      ]
-    },
     "src/shift_scheduler/ops/managed_writer.py:capture:6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346": {
       "path": "src/shift_scheduler/ops/managed_writer.py",
       "symbol": "capture",
@@ -4088,6 +3960,111 @@
         "basis": "source_expression_and_enclosing_function_review"
       },
       "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/ops/platform_fs.py:_open_checked:34b0dae4cfbac39459efb747a585ced94db08b6c1b5bf416ba1ff5d08f8cff86": {
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "symbol": "_open_checked",
+      "line": 522,
+      "expression_hash": "34b0dae4cfbac39459efb747a585ced94db08b6c1b5bf416ba1ff5d08f8cff86",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Delegated descriptor primitive (ops/platform_fs). Each caller keeps its registered durable intent; the primitive itself adds no reservation. Moved call sites need re-review of this delegation.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "34b0dae4cfbac39459efb747a585ced94db08b6c1b5bf416ba1ff5d08f8cff86",
+        "reason": "Windows-only path of the storage platform layer: os.open(full, flags | O_BINARY, mode) after per-component reparse-point refusal, followed by an fstat/lstat identity comparison. Same callers and bytes as open_at/open_path on POSIX; runs only on Windows.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED",
+      "handler_evidence": [
+        "tests/test_platform_fs.py",
+        "tests/test_managed_writer.py",
+        "tests/test_erasure_control.py",
+        "tests/test_archive_attacks.py"
+      ]
+    },
+    "src/shift_scheduler/ops/platform_fs.py:open_at:12dca90dc5a15d0f823777f0554af001bbe45e01323994af07ce655f7d0fa8df": {
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "symbol": "open_at",
+      "line": 728,
+      "expression_hash": "12dca90dc5a15d0f823777f0554af001bbe45e01323994af07ce655f7d0fa8df",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Delegated descriptor primitive (ops/platform_fs). Each caller keeps its registered durable intent; the primitive itself adds no reservation. Moved call sites need re-review of this delegation.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "12dca90dc5a15d0f823777f0554af001bbe45e01323994af07ce655f7d0fa8df",
+        "reason": "POSIX primitive of the storage platform layer: os.open(name, flags, mode, dir_fd=directory) with the caller's exact flags. Callers: managed_writer.file_lock (empty .lock-<id>), managed_writer.publish_bytes/capture (.pending-<id> staging, O_CREAT|O_TRUNC|O_NOFOLLOW, then os.fdopen 'wb' inventoried at the caller), managed_erasure.erase_verified and publication_artifacts.read_registered (O_RDONLY). Bytes written through the descriptor are personal managed copies.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED",
+      "handler_evidence": [
+        "tests/test_platform_fs.py",
+        "tests/test_managed_writer.py",
+        "tests/test_erasure_control.py",
+        "tests/test_archive_attacks.py"
+      ],
+      "replaces": [
+        {
+          "entry": "src/shift_scheduler/ops/managed_erasure.py:erase_verified:21cd1b23374c7ee76a9f6653aba58edf3109852d8be3281e2b16d96bd8910135",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_erasure.py:erase_verified:5621f21e38d5d6c2db6c494dd27ca726203e43fd0590223de48e57f2c8abd130",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_erasure.py:erase_verified:58440735495de431c5ae6c87f574209e3d5fa16378bc78730fd2f19df9ee7553",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_writer.py:capture:07b050525c3627d6a6bc159414ba5471d523e01e6cb1a7f14d1ebf50b9ee08c0",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "REGISTERED_CAPTURE_TESTED"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_writer.py:file_lock:d8811ad3873860d42fffb442673ad8eb158b80a452c87d3fb59b475ba7c7d9d9",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "REGISTERED"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_writer.py:publish_bytes:8539188fbfeea8a47a44bc67159fe009a55d2ba1282f76cddc7c6f29a5bc2351",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "REGISTERED"
+        }
+      ]
+    },
+    "src/shift_scheduler/ops/platform_fs.py:open_path:847226b13f16439f5871c8941de1c2a1d60e208c67ec81bce6824c792e02bc1a": {
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "symbol": "open_path",
+      "line": 731,
+      "expression_hash": "847226b13f16439f5871c8941de1c2a1d60e208c67ec81bce6824c792e02bc1a",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Delegated descriptor primitive (ops/platform_fs). Each caller keeps its registered durable intent; the primitive itself adds no reservation. Moved call sites need re-review of this delegation.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "847226b13f16439f5871c8941de1c2a1d60e208c67ec81bce6824c792e02bc1a",
+        "reason": "POSIX primitive of the storage platform layer: os.open(path, flags, mode) with the caller's exact flags. Callers: erasure_control.locked_control (empty .lock, O_CREAT|O_RDWR|O_NOFOLLOW) and archive backups (O_RDONLY|O_NOFOLLOW|O_NONBLOCK). Classified conservatively as the personal route because the primitive is shared.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED",
+      "handler_evidence": [
+        "tests/test_platform_fs.py",
+        "tests/test_managed_writer.py",
+        "tests/test_erasure_control.py",
+        "tests/test_archive_attacks.py"
+      ],
+      "replaces": [
+        {
+          "entry": "src/shift_scheduler/ops/erasure_control.py:locked_control:c20285fc4bbd4d7ff11b58b2bea5ed72d0f4cf4f080ebe561a69acc32583e114",
+          "classification": "NON_PERSONAL",
+          "handler_status": "UNVERIFIED"
+        }
+      ]
     }
   }
 }
