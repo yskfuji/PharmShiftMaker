@@ -64,6 +64,10 @@ if [ "$KIND" = win ]; then
     icuio*.dll icutu*.dll isolationtester.exe pg_isolation_regress.exe pg_regress.exe \
     pg_regress_ecpg.exe libpq_pipeline.exe libpq_testclient.exe libpq_uri_regress.exe test_cloexec.exe)
 fi
+if [ "$KIND" = mac ]; then
+  # Not loaded by any shipped program or module (checked with otool -L).
+  rm -f "$WORK/pg/pgsql/lib"/libintl*.dylib "$WORK/pg/pgsql/lib"/libuuid*.dylib
+fi
 mv "$WORK/pg/pgsql" "$OUT/pg"
 
 # --- Python (python-build-standalone) + locked dependencies + product code
@@ -137,5 +141,9 @@ cp -R "$ROOT/frontend/.next/standalone" "$OUT/web"
 cp -R "$ROOT/frontend/.next/static" "$OUT/web/.next/static"
 cp -R "$ROOT/frontend/public" "$OUT/web/public"
 cp "$ROOT/desktop/web/desktop-server.cjs" "$OUT/web/desktop-server.cjs"
+
+# --- License texts of everything bundled (checked against desktop/licenses/manifest.json)
+if [ "$KIND" = mac ]; then platform=macos; else platform=windows; fi
+"$PY" -I -B "$ROOT/desktop/scripts/copy_licenses.py" "$ROOT" "$platform" "$OUT"
 
 du -sh "$OUT"/* | sed 's/^/size /'

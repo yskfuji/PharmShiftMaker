@@ -111,7 +111,7 @@
 1. 署名、公証、Gatekeeper の評価は、資格情報の登録の後に確かめます。
 2. macOS のメニューで、コピーと貼り付け、Cmd+Q が効くことは、実際のキー操作ではまだ確かめていません。
 3. アドホック署名の配布物を作り直すと、署名が変わるため、macOS が Cookie の暗号化の鍵（キーチェーンの「PharmShiftMaker Safe Storage」）の使用の許可を求めます。画面がロックされていると応答できず、画面の読込みが止まります。Developer ID で署名した配布物では、版を上げても署名の主体が変わらないため、この問題は起きない見込みです（未確認）。
-4. 同梱する PostgreSQL、Python、Node.js、Electron の許諾表示を、配布物と `THIRD_PARTY_NOTICES.md` に加える作業が残っています。
+4. 同梱する実行環境の許諾文は、配布物の `runtime/licenses/` に置いています（[desktop/licenses/README.md](../../desktop/licenses/README.md)）。EDB の PostgreSQL に含まれるライブラリのうち、libedit、GNU libiconv、GNU gettext、winpthreads は、版を確かめられていません。SBOM（`docs/release/SBOM.cdx.json`）には、同梱の実行環境をまだ加えていません。
 5. バックアップと復元の操作は、画面からはまだ行えません。
 6. PostgreSQL のメジャー版を上げるときのデータの移行は、まだ設計していません。
 7. Intel の Mac には対応していません。

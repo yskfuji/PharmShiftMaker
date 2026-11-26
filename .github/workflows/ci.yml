@@ -145,6 +145,7 @@ jobs:
           tests/test_desktop_launcher.py
           tests/test_desktop_launcher_process.py
           tests/test_windows_lock.py
+          tests/test_desktop_licenses.py
           --deselect tests/test_managed_writer.py::test_crash_after_publication_before_ack_and_suppression_during_write
 
   frontend:

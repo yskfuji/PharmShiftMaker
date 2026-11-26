@@ -65,6 +65,15 @@ jobs:
           codesign --force --deep --sign - dist/mac-arm64/PharmShiftMaker.app
           codesign --verify --deep --strict dist/mac-arm64/PharmShiftMaker.app
           du -sh dist/mac-arm64/PharmShiftMaker.app | tee ../results/app-size.txt
+      - name: The app carries the license texts and notices
+        run: |
+          res=desktop/dist/mac-arm64/PharmShiftMaker.app/Contents/Resources
+          for f in LICENSE THIRD_PARTY_NOTICES.md LICENSE.electron.txt LICENSES.chromium.html \
+            runtime/licenses/README.md runtime/licenses/manifest.json runtime/licenses/node/LICENSE \
+            runtime/licenses/dependencies/manifest.json runtime/licenses/postgresql/postgresql-16.13-COPYRIGHT.txt \
+            runtime/licenses/python-build-standalone/LICENSE.cpython.txt; do
+            test -s "$res/$f" || { echo "missing $f"; exit 1; }
+          done
       - name: Packaged app smoke test (window loads the pinned login page)
         run: |
           PSM_DATA_DIR="$RUNNER_TEMP/psm-data" PSM_SMOKE_RESULT="$PWD/results/app-smoke.json" \
@@ -142,6 +151,17 @@ jobs:
           npm ci --no-audit --no-fund
           npx --no-install electron-builder --win dir --publish never
           du -sh dist/win-unpacked | tee ../results/app-size.txt
+      - name: The app carries the license texts and notices
+        run: |
+          app=desktop/dist/win-unpacked
+          for f in LICENSE.electron.txt LICENSES.chromium.html resources/LICENSE resources/THIRD_PARTY_NOTICES.md \
+            resources/runtime/licenses/README.md resources/runtime/licenses/manifest.json \
+            resources/runtime/licenses/node/LICENSE resources/runtime/licenses/dependencies/manifest.json \
+            resources/runtime/licenses/postgresql/postgresql-16.13-COPYRIGHT.txt \
+            resources/runtime/licenses/postgresql/winpthreads-COPYING.txt \
+            resources/runtime/licenses/python-build-standalone/LICENSE.cpython.txt; do
+            test -s "$app/$f" || { echo "missing $f"; exit 1; }
+          done
       - name: Packaged app smoke test (window loads the pinned login page)
         run: |
           PSM_DATA_DIR="$(cygpath -w "$RUNNER_TEMP/psm-data")" PSM_SMOKE_RESULT="$(cygpath -w "$PWD/results/app-smoke.json")" \
