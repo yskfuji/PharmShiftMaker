@@ -28,6 +28,7 @@ from shift_scheduler.domain.copies import (
 )
 from shift_scheduler.domain.planning import content_hash
 from shift_scheduler.domain.privacy import RetentionPolicy
+from shift_scheduler.ops import platform_fs
 from shift_scheduler.validation.work_accounting import verified
 
 
@@ -50,7 +51,8 @@ def checked_file(relative: str) -> Path:
     current = root
     for part in path.parts:
         current = current / part
-        if current.is_symlink():
+        # POSIX: Path.is_symlink(). Windows: junctions and mount points too.
+        if platform_fs.is_link(current):
             raise ValueError("Links are not managed erasure targets")
     if not current.resolve().is_relative_to(root):
         raise ValueError("File escapes the managed root")

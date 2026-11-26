@@ -3,12 +3,13 @@
 
 画面を移す箇所（リンク、ページの読み込み、サーバーの転送、プロキシのサインイン転送、共通の導線の一覧）をソースから抜き出し、行き先を実在するルートの型と照合した。画面の中の開閉（ダイアログ・開閉の欄・段階の切替）は、E2E で確かめる。
 
-- ルート：17 件
+- ルート：20 件
 - 遷移の箇所：53 件
 - 行き先が実在しない箇所：0 件
 
 ## ルート
 
+- `/account/password`
 - `/dashboard`
 - `/login`
 - `/`
@@ -20,7 +21,9 @@
 - `/requests`
 - `/schedule/[year]/[month]`
 - `/schedule`
+- `/settings/accounts`
 - `/settings`
+- `/setup`
 - `/showcase/[screen]`
 - `/showcase`
 - `/workspace/[screen]/[view]`
@@ -47,7 +50,7 @@
 | `components/BusinessWorkflow.tsx:38` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/BusinessWorkflow.tsx:41` | link | `/planning/workflows` | `/planning/workflows` |
 | `components/ScheduleWorkspace.tsx:136` | link | `/planning` | `/planning` |
-| `components/SessionControls.tsx:21` | document | `/login?redirectTo=<current page>` | `/login` |
+| `components/SessionControls.tsx:22` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:20` | document | `/login?redirectTo=<current page>` | `/login` |
 | `components/WorkflowIndex.tsx:33` | link | `/planning/workflows/${p}?scope=${encodeURIComponent(m.scope_id)}` | `/planning/workflows/[workflow]` |
 | `components/WorkflowIndex.tsx:40` | link | `/schedule` | `/schedule` |

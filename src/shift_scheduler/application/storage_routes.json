@@ -333,22 +333,6 @@
         "tests/test_request_leave_preservation_postgres.py"
       ]
     },
-    "src/shift_scheduler/ops/erasure_control.py:locked_control:c20285fc4bbd4d7ff11b58b2bea5ed72d0f4cf4f080ebe561a69acc32583e114": {
-      "path": "src/shift_scheduler/ops/erasure_control.py",
-      "symbol": "locked_control",
-      "line": 32,
-      "expression_hash": "c20285fc4bbd4d7ff11b58b2bea5ed72d0f4cf4f080ebe561a69acc32583e114",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "empty-lock-synchronization-only",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "c20285fc4bbd4d7ff11b58b2bea5ed72d0f4cf4f080ebe561a69acc32583e114",
-        "basis": "source_expression_and_enclosing_function_review",
-        "reason": "An empty .lock file descriptor used only for flock synchronization; current.json is separately read/validated and no staff/subject/control payload is written to the lock."
-      },
-      "handler_status": "UNVERIFIED"
-    },
     "src/shift_scheduler/ops/erasure_control.py:locked_control:7bcf3c13d73968a191bb5a59a0ecafa833c212cbe03cfd3e8e9386d571197127": {
       "path": "src/shift_scheduler/ops/erasure_control.py",
       "symbol": "locked_control",
@@ -501,98 +485,6 @@
         "tests/test_managed_capture_postgres.py",
         "tests/test_request_leave_preservation_postgres.py"
       ]
-    },
-    "src/shift_scheduler/ops/managed_erasure.py:erase_verified:21cd1b23374c7ee76a9f6653aba58edf3109852d8be3281e2b16d96bd8910135": {
-      "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "symbol": "erase_verified",
-      "line": 18,
-      "expression_hash": "21cd1b23374c7ee76a9f6653aba58edf3109852d8be3281e2b16d96bd8910135",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "Conservative scanner matches os.open with variable flags; flags are O_RDONLY|O_DIRECTORY|O_NOFOLLOW or explicit O_RDONLY. These expressions open existing directories/files for hash verification, create no file bytes. Rename/unlink erasure remains separately tested.",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "21cd1b23374c7ee76a9f6653aba58edf3109852d8be3281e2b16d96bd8910135",
-        "reason": "Erasure quarantine temporarily holds personal bytes; directory opens can be false-positive producers, but lifecycle requires observation.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION",
-      "handler_evidence": [
-        "tests/test_coupled_erasure_faults.py",
-        "tests/test_storage_reconciliation.py"
-      ]
-    },
-    "src/shift_scheduler/ops/managed_erasure.py:erase_verified:58440735495de431c5ae6c87f574209e3d5fa16378bc78730fd2f19df9ee7553": {
-      "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "symbol": "erase_verified",
-      "line": 26,
-      "expression_hash": "58440735495de431c5ae6c87f574209e3d5fa16378bc78730fd2f19df9ee7553",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "Conservative scanner matches os.open with variable flags; flags are O_RDONLY|O_DIRECTORY|O_NOFOLLOW or explicit O_RDONLY. These expressions open existing directories/files for hash verification, create no file bytes. Rename/unlink erasure remains separately tested.",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "58440735495de431c5ae6c87f574209e3d5fa16378bc78730fd2f19df9ee7553",
-        "reason": "Erasure quarantine temporarily holds personal bytes; directory opens can be false-positive producers, but lifecycle requires observation.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION",
-      "handler_evidence": [
-        "tests/test_coupled_erasure_faults.py",
-        "tests/test_storage_reconciliation.py"
-      ]
-    },
-    "src/shift_scheduler/ops/managed_erasure.py:erase_verified:5621f21e38d5d6c2db6c494dd27ca726203e43fd0590223de48e57f2c8abd130": {
-      "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "symbol": "erase_verified",
-      "line": 36,
-      "expression_hash": "5621f21e38d5d6c2db6c494dd27ca726203e43fd0590223de48e57f2c8abd130",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "Conservative scanner matches os.open with variable flags; flags are O_RDONLY|O_DIRECTORY|O_NOFOLLOW or explicit O_RDONLY. These expressions open existing directories/files for hash verification, create no file bytes. Rename/unlink erasure remains separately tested.",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "5621f21e38d5d6c2db6c494dd27ca726203e43fd0590223de48e57f2c8abd130",
-        "reason": "Erasure quarantine temporarily holds personal bytes; directory opens can be false-positive producers, but lifecycle requires observation.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION",
-      "handler_evidence": [
-        "tests/test_coupled_erasure_faults.py",
-        "tests/test_storage_reconciliation.py"
-      ]
-    },
-    "src/shift_scheduler/ops/managed_writer.py:file_lock:d8811ad3873860d42fffb442673ad8eb158b80a452c87d3fb59b475ba7c7d9d9": {
-      "path": "src/shift_scheduler/ops/managed_writer.py",
-      "symbol": "file_lock",
-      "line": 68,
-      "expression_hash": "d8811ad3873860d42fffb442673ad8eb158b80a452c87d3fb59b475ba7c7d9d9",
-      "call": "os.open",
-      "status": "REGISTERED",
-      "policy": "管理ファイル予約・検証・再試行。実呼出し元の網羅性は別検査",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "d8811ad3873860d42fffb442673ad8eb158b80a452c87d3fb59b475ba7c7d9d9",
-        "reason": "Durable reservation and immutable source/hash are checked before bytes become available; staging/lock residuals must be observed.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "REGISTERED"
-    },
-    "src/shift_scheduler/ops/managed_writer.py:publish_bytes:8539188fbfeea8a47a44bc67159fe009a55d2ba1282f76cddc7c6f29a5bc2351": {
-      "path": "src/shift_scheduler/ops/managed_writer.py",
-      "symbol": "publish_bytes",
-      "line": 116,
-      "expression_hash": "8539188fbfeea8a47a44bc67159fe009a55d2ba1282f76cddc7c6f29a5bc2351",
-      "call": "os.open",
-      "status": "REGISTERED",
-      "policy": "管理ファイル予約・検証・再試行。実呼出し元の網羅性は別検査",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "8539188fbfeea8a47a44bc67159fe009a55d2ba1282f76cddc7c6f29a5bc2351",
-        "reason": "Durable reservation and immutable source/hash are checked before bytes become available; staging/lock residuals must be observed.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "REGISTERED"
     },
     "src/shift_scheduler/ops/managed_writer.py:publish_bytes:6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346": {
       "path": "src/shift_scheduler/ops/managed_writer.py",
@@ -2477,26 +2369,6 @@
         "tests/test_managed_database_backup_postgres.py"
       ]
     },
-    "src/shift_scheduler/ops/managed_writer.py:capture:07b050525c3627d6a6bc159414ba5471d523e01e6cb1a7f14d1ebf50b9ee08c0": {
-      "path": "src/shift_scheduler/ops/managed_writer.py",
-      "symbol": "capture",
-      "line": 279,
-      "expression_hash": "07b050525c3627d6a6bc159414ba5471d523e01e6cb1a7f14d1ebf50b9ee08c0",
-      "call": "os.open",
-      "status": "UNVERIFIED",
-      "policy": "durable-reservation-private-staging-hash-before-availability-source-provenance-unverified-subjects",
-      "handler_status": "REGISTERED_CAPTURE_TESTED",
-      "classification": "PRODUCT_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "07b050525c3627d6a6bc159414ba5471d523e01e6cb1a7f14d1ebf50b9ee08c0",
-        "basis": "source_expression_and_enclosing_function_review",
-        "reason": "Operational managed artifact stream producer; contains data derived from scoped registered sources."
-      },
-      "handler_evidence": [
-        "tests/test_managed_capture_postgres.py",
-        "tests/test_managed_database_backup_postgres.py"
-      ]
-    },
     "src/shift_scheduler/ops/managed_writer.py:capture:6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346": {
       "path": "src/shift_scheduler/ops/managed_writer.py",
       "symbol": "capture",
@@ -4085,6 +3957,367 @@
       "classification_evidence": {
         "expression_hash": "3fb94b2b8e1dc6a1bc206dc19bca3c2e71190137190d141090f14ace7aaa9d73",
         "reason": "ast.dump returns syntax text in memory; no file or application row is written by this expression.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/ops/platform_fs.py:_open_checked:34b0dae4cfbac39459efb747a585ced94db08b6c1b5bf416ba1ff5d08f8cff86": {
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "symbol": "_open_checked",
+      "line": 522,
+      "expression_hash": "34b0dae4cfbac39459efb747a585ced94db08b6c1b5bf416ba1ff5d08f8cff86",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Delegated descriptor primitive (ops/platform_fs). Each caller keeps its registered durable intent; the primitive itself adds no reservation. Moved call sites need re-review of this delegation.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "34b0dae4cfbac39459efb747a585ced94db08b6c1b5bf416ba1ff5d08f8cff86",
+        "reason": "Windows-only path of the storage platform layer: os.open(full, flags | O_BINARY, mode) after per-component reparse-point refusal, followed by an fstat/lstat identity comparison. Same callers and bytes as open_at/open_path on POSIX; runs only on Windows.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED",
+      "handler_evidence": [
+        "tests/test_platform_fs.py",
+        "tests/test_managed_writer.py",
+        "tests/test_erasure_control.py",
+        "tests/test_archive_attacks.py"
+      ]
+    },
+    "src/shift_scheduler/ops/platform_fs.py:open_at:12dca90dc5a15d0f823777f0554af001bbe45e01323994af07ce655f7d0fa8df": {
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "symbol": "open_at",
+      "line": 728,
+      "expression_hash": "12dca90dc5a15d0f823777f0554af001bbe45e01323994af07ce655f7d0fa8df",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Delegated descriptor primitive (ops/platform_fs). Each caller keeps its registered durable intent; the primitive itself adds no reservation. Moved call sites need re-review of this delegation.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "12dca90dc5a15d0f823777f0554af001bbe45e01323994af07ce655f7d0fa8df",
+        "reason": "POSIX primitive of the storage platform layer: os.open(name, flags, mode, dir_fd=directory) with the caller's exact flags. Callers: managed_writer.file_lock (empty .lock-<id>), managed_writer.publish_bytes/capture (.pending-<id> staging, O_CREAT|O_TRUNC|O_NOFOLLOW, then os.fdopen 'wb' inventoried at the caller), managed_erasure.erase_verified and publication_artifacts.read_registered (O_RDONLY). Bytes written through the descriptor are personal managed copies.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED",
+      "handler_evidence": [
+        "tests/test_platform_fs.py",
+        "tests/test_managed_writer.py",
+        "tests/test_erasure_control.py",
+        "tests/test_archive_attacks.py"
+      ],
+      "replaces": [
+        {
+          "entry": "src/shift_scheduler/ops/managed_erasure.py:erase_verified:21cd1b23374c7ee76a9f6653aba58edf3109852d8be3281e2b16d96bd8910135",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_erasure.py:erase_verified:5621f21e38d5d6c2db6c494dd27ca726203e43fd0590223de48e57f2c8abd130",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_erasure.py:erase_verified:58440735495de431c5ae6c87f574209e3d5fa16378bc78730fd2f19df9ee7553",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "READ_ONLY_DESCRIPTOR_EXPRESSION"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_writer.py:capture:07b050525c3627d6a6bc159414ba5471d523e01e6cb1a7f14d1ebf50b9ee08c0",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "REGISTERED_CAPTURE_TESTED"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_writer.py:file_lock:d8811ad3873860d42fffb442673ad8eb158b80a452c87d3fb59b475ba7c7d9d9",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "REGISTERED"
+        },
+        {
+          "entry": "src/shift_scheduler/ops/managed_writer.py:publish_bytes:8539188fbfeea8a47a44bc67159fe009a55d2ba1282f76cddc7c6f29a5bc2351",
+          "classification": "PRODUCT_PERSONAL",
+          "handler_status": "REGISTERED"
+        }
+      ]
+    },
+    "src/shift_scheduler/ops/platform_fs.py:open_path:847226b13f16439f5871c8941de1c2a1d60e208c67ec81bce6824c792e02bc1a": {
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "symbol": "open_path",
+      "line": 731,
+      "expression_hash": "847226b13f16439f5871c8941de1c2a1d60e208c67ec81bce6824c792e02bc1a",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Delegated descriptor primitive (ops/platform_fs). Each caller keeps its registered durable intent; the primitive itself adds no reservation. Moved call sites need re-review of this delegation.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "847226b13f16439f5871c8941de1c2a1d60e208c67ec81bce6824c792e02bc1a",
+        "reason": "POSIX primitive of the storage platform layer: os.open(path, flags, mode) with the caller's exact flags. Callers: erasure_control.locked_control (empty .lock, O_CREAT|O_RDWR|O_NOFOLLOW) and archive backups (O_RDONLY|O_NOFOLLOW|O_NONBLOCK). Classified conservatively as the personal route because the primitive is shared.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED",
+      "handler_evidence": [
+        "tests/test_platform_fs.py",
+        "tests/test_managed_writer.py",
+        "tests/test_erasure_control.py",
+        "tests/test_archive_attacks.py"
+      ],
+      "replaces": [
+        {
+          "entry": "src/shift_scheduler/ops/erasure_control.py:locked_control:c20285fc4bbd4d7ff11b58b2bea5ed72d0f4cf4f080ebe561a69acc32583e114",
+          "classification": "NON_PERSONAL",
+          "handler_status": "UNVERIFIED"
+        }
+      ]
+    },
+    "src/shift_scheduler/desktop/launcher.py:emit:f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "emit",
+      "line": 73,
+      "expression_hash": "f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5",
+      "call": "sys.stdout.write",
+      "status": "UNVERIFIED",
+      "policy": "launcher-protocol-stream",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5",
+        "reason": "Writes launcher protocol lines (stage names, readiness, startup error summaries) or usage text to the shell pipe; no staff or schedule data is processed before readiness.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:main:55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "main",
+      "line": 819,
+      "expression_hash": "55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d",
+      "call": "sys.stderr.write",
+      "status": "UNVERIFIED",
+      "policy": "launcher-protocol-stream",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d",
+        "reason": "Writes launcher protocol lines (stage names, readiness, startup error summaries) or usage text to the shell pipe; no staff or schedule data is processed before readiness.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_log:645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_log",
+      "line": 116,
+      "expression_hash": "645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Owner-only desktop log files (0600 in a 0700 directory), one 10 MB rotation generation checked at each launch; erasure and retention reconciliation are not verified.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf",
+        "reason": "Child process logs may contain personal data in error output (e.g. PostgreSQL statement errors), so the log files are treated as personal-data stores.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_log:ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_log",
+      "line": 117,
+      "expression_hash": "ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6",
+      "call": "os.fdopen",
+      "status": "UNVERIFIED",
+      "policy": "Owner-only desktop log files (0600 in a 0700 directory), one 10 MB rotation generation checked at each launch; erasure and retention reconciliation are not verified.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6",
+        "reason": "Child process logs may contain personal data in error output (e.g. PostgreSQL statement errors), so the log files are treated as personal-data stores.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 68,
+      "expression_hash": "5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 69,
+      "expression_hash": "6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346",
+      "call": "os.fdopen",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 70,
+      "expression_hash": "cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397",
+      "call": "handle.write",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:Supervisor._popen:3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "Supervisor._popen",
+      "line": 148,
+      "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
+      "call": "subprocess.Popen",
+      "status": "UNVERIFIED",
+      "policy": "Desktop launcher starts bundled programs (initdb/pg_ctl/PostgreSQL, alembic, control authority, API, worker, web) whose stores and logs hold application data; per-store reconciliation is not verified.",
+      "classification": "DELEGATED_PROGRAM",
+      "classification_evidence": {
+        "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
+        "reason": "Desktop launcher delegates to bundled native/Python/Node programs; the child programs own database and file bytes. Output goes to owner-only log files.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 381,
+      "expression_hash": "590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec",
+      "call": "conf.write",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 380,
+      "expression_hash": "85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f",
+      "call": "(data.pgdata_new / 'postgresql.conf').open",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 382,
+      "expression_hash": "89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04",
+      "call": "(data.pgdata_new / 'pg_hba.conf').write_text",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:pg_running:e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "pg_running",
+      "line": 335,
+      "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "read-only-status-query",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+        "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:_command_of:8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "_command_of",
+      "line": 235,
+      "expression_hash": "8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "read-only-status-query",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740",
+        "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:wait_http.probe:7b50b567d4a7bcaf40ab5a73257a6900968c84129761e039ee9d8322cf51db95": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "wait_http.probe",
+      "line": 535,
+      "expression_hash": "7b50b567d4a7bcaf40ab5a73257a6900968c84129761e039ee9d8322cf51db95",
+      "call": "opener.open",
+      "status": "UNVERIFIED",
+      "policy": "launcher-readiness-probe",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "7b50b567d4a7bcaf40ab5a73257a6900968c84129761e039ee9d8322cf51db95",
+        "reason": "Requests the launcher's own loopback health and login endpoints and reads only the status code; nothing is written to storage.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_lock:38c42bcb6c33a57f9eb236e83b7036f8bddc0d7c0b7a6067f4c6f60ad3a1637f": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_lock",
+      "line": 707,
+      "expression_hash": "38c42bcb6c33a57f9eb236e83b7036f8bddc0d7c0b7a6067f4c6f60ad3a1637f",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "launcher-instance-lock",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "38c42bcb6c33a57f9eb236e83b7036f8bddc0d7c0b7a6067f4c6f60ad3a1637f",
+        "reason": "Opens the empty state/launcher.lock file (0600 in a 0700 directory) only to hold an exclusive lock for one launcher per data folder; nothing is written to it.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_lock:f2d9594a2330c6bffa6020d167e2292ff4ccbe8e1b91e470307395644582ae23": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_lock",
+      "line": 710,
+      "expression_hash": "f2d9594a2330c6bffa6020d167e2292ff4ccbe8e1b91e470307395644582ae23",
+      "call": "os.fdopen",
+      "status": "UNVERIFIED",
+      "policy": "launcher-instance-lock",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "f2d9594a2330c6bffa6020d167e2292ff4ccbe8e1b91e470307395644582ae23",
+        "reason": "Opens the empty state/launcher.lock file (0600 in a 0700 directory) only to hold an exclusive lock for one launcher per data folder; nothing is written to it.",
         "basis": "source_expression_and_enclosing_function_review"
       },
       "handler_status": "UNVERIFIED"

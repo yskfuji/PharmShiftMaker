@@ -18,6 +18,16 @@ test('two identity slots use the same verified source, independent of malformed 
  expect(screen.queryByText('DEVELOPER')).not.toBeInTheDocument();
 });
 
+test('first-run setup is shown without an identity and does not ask for one',async()=>{
+ path='/setup';
+ global.fetch=jest.fn(async()=>response({},401));render(view());
+ await act(async()=>{await Promise.resolve();});
+ const field=screen.getByLabelText('業務入力');
+ expect(field).toBeVisible();
+ expect(field.closest('[inert]')).toBeNull();
+ expect(fetch).not.toHaveBeenCalled();
+});
+
 test('OIDC ID is an account ID; absent display name is explicit',async()=>{
  global.fetch=jest.fn(async()=>response({...identity,display_name:null,identifier_kind:'account_id'}));render(view());
  expect(await screen.findAllByText('表示名未登録')).toHaveLength(2);

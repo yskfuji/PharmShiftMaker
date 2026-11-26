@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from shift_scheduler.config.profile import is_hardened
+
 
 class DatabaseSettings(BaseModel):
     """Settings for establishing database connections."""
@@ -24,7 +26,7 @@ class DatabaseSettings(BaseModel):
 
         primary = get_secret("DATABASE_URL")
         legacy = getenv("SHIFT_SCHEDULER_DB_URL")
-        if getenv("PHARMSHIFT_ENV") == "production" and not (primary or legacy):
+        if is_hardened() and not (primary or legacy):
             raise RuntimeError(
                 "Production requires an explicit authoritative database URL"
             )

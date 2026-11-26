@@ -4,7 +4,6 @@ Only the returned AVAILABLE path is distributable. Staging is private; failure
 leaves an explicit residual rather than silently deleting audit evidence.
 """
 
-import fcntl
 import hashlib
 import os
 import re
@@ -22,6 +21,7 @@ from shift_scheduler.application.planning import Conflict, lock_facility
 from shift_scheduler.db.compliance_models import CopySubject, ErasedSubject, ManagedCopy
 from shift_scheduler.domain.copies import CopyRegistration
 from shift_scheduler.domain.planning import content_hash
+from shift_scheduler.ops import platform_fs
 
 ROUTES = {
     "publication.json",
@@ -126,25 +126,26 @@ def reserve_in_session(
 
 
 @contextmanager
-def file_lock(root: str | Path, copy_id: str) -> Iterator[int]:
+def file_lock(root: str | Path, copy_id: str) -> Iterator[platform_fs.Directory]:
     if len(copy_id) != 32 or not copy_id.isalnum():
         raise ValueError("copy_id must be a 32-character alphanumeric identifier")
     # The open directory, not an independently re-resolved path, is the trust root.
-    directory = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    directory = platform_fs.open_directory(root)
     # `copy_id` is separator-free and the dir_fd remains the trust root.
     # codeql[py/path-injection]
-    fd = os.open(
+    fd = platform_fs.open_at(
         ".lock-" + copy_id,
-        os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW,
+        os.O_RDWR | os.O_CREAT | platform_fs.O_NOFOLLOW,
         0o600,
-        dir_fd=directory,
+        directory=directory,
     )
     try:
-        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        platform_fs.lock_exclusive(fd, blocking=False)
         yield directory
     finally:
+        platform_fs.unlock(fd)
         os.close(fd)
-        os.close(directory)
+        platform_fs.close_directory(directory)
 
 
 def publish_bytes(
@@ -184,7 +185,9 @@ def publish_bytes(
             row.revision += 1
         try:
             try:
-                fd = os.open(final, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory)
+                fd = platform_fs.open_at(
+                    final, os.O_RDONLY | platform_fs.O_NOFOLLOW, directory=directory
+                )
             except FileNotFoundError:
                 fd = None
             if fd is not None:
@@ -192,8 +195,10 @@ def publish_bytes(
                     if hashlib.file_digest(stream, "sha256").hexdigest() != digest:
                         raise Conflict("Published after-image was changed")
                 try:
-                    staged = os.open(
-                        temporary, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory
+                    staged = platform_fs.open_at(
+                        temporary,
+                        os.O_RDONLY | platform_fs.O_NOFOLLOW,
+                        directory=directory,
                     )
                 except FileNotFoundError:
                     staged = None
@@ -201,29 +206,23 @@ def publish_bytes(
                     with os.fdopen(staged, "rb") as stream:
                         if hashlib.file_digest(stream, "sha256").hexdigest() != digest:
                             raise Conflict("Staging after-image was changed")
-                    os.unlink(temporary, dir_fd=directory)
-                    os.fsync(directory)
+                    platform_fs.unlink_at(temporary, directory=directory)
+                    platform_fs.fsync_directory(directory)
             else:
-                fd = os.open(
+                fd = platform_fs.open_at(
                     temporary,
-                    os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW,
+                    os.O_WRONLY | os.O_CREAT | os.O_TRUNC | platform_fs.O_NOFOLLOW,
                     0o600,
-                    dir_fd=directory,
+                    directory=directory,
                 )
                 with os.fdopen(fd, "wb") as stream:
                     stream.write(data)
                     stream.flush()
                     os.fsync(stream.fileno())
                 # Hard-link publication is atomic and refuses an existing target.
-                os.link(
-                    temporary,
-                    final,
-                    src_dir_fd=directory,
-                    dst_dir_fd=directory,
-                    follow_symlinks=False,
-                )
-                os.unlink(temporary, dir_fd=directory)
-                os.fsync(directory)
+                platform_fs.link_at(temporary, final, directory=directory)
+                platform_fs.unlink_at(temporary, directory=directory)
+                platform_fs.fsync_directory(directory)
             with factory.begin() as session:
                 lock_facility(session, scope)
                 row = registered_copy(session, copy_id)
@@ -283,7 +282,9 @@ def reconcile_files(session: Session) -> dict[str, Any]:
             issues.append({"copy_id": row.copy_id, "reason": "erased_copy_reappeared"})
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root).as_posix()
-        if path.is_symlink() or (not path.is_dir() and relative not in registered):
+        if platform_fs.is_link(path) or (
+            not path.is_dir() and relative not in registered
+        ):
             issues.append({"path": relative, "reason": "unregistered_or_link"})
     return {"complete": not issues, "issues": issues}
 
@@ -454,22 +455,24 @@ def capture(
             if digest is None:
                 # Fresh output must not collide with a pre-existing published file.
                 try:
-                    os.stat(final, dir_fd=directory, follow_symlinks=False)
+                    platform_fs.stat_at(final, directory=directory)
                 except FileNotFoundError:
                     pass
                 else:
                     raise Conflict("Uncommitted capture has a published after-image")
-                fd = os.open(
+                fd = platform_fs.open_at(
                     staged,
-                    os.O_CREAT | os.O_WRONLY | os.O_TRUNC | os.O_NOFOLLOW,
+                    os.O_CREAT | os.O_WRONLY | os.O_TRUNC | platform_fs.O_NOFOLLOW,
                     0o600,
-                    dir_fd=directory,
+                    directory=directory,
                 )
                 with os.fdopen(fd, "wb") as stream:
                     producer(stream)
                     stream.flush()
                     os.fsync(stream.fileno())
-                fd = os.open(staged, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory)
+                fd = platform_fs.open_at(
+                    staged, os.O_RDONLY | platform_fs.O_NOFOLLOW, directory=directory
+                )
                 with os.fdopen(fd, "rb") as stream:
                     digest = hashlib.file_digest(stream, "sha256").hexdigest()
                     size = os.fstat(stream.fileno()).st_size
@@ -488,26 +491,24 @@ def capture(
                     }
                     row.revision += 1
             try:
-                fd = os.open(final, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory)
+                fd = platform_fs.open_at(
+                    final, os.O_RDONLY | platform_fs.O_NOFOLLOW, directory=directory
+                )
             except FileNotFoundError:
-                fd = os.open(staged, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory)
+                fd = platform_fs.open_at(
+                    staged, os.O_RDONLY | platform_fs.O_NOFOLLOW, directory=directory
+                )
                 with os.fdopen(fd, "rb") as stream:
                     if hashlib.file_digest(stream, "sha256").hexdigest() != digest:
                         raise Conflict("Captured staging hash changed")
-                os.link(
-                    staged,
-                    final,
-                    src_dir_fd=directory,
-                    dst_dir_fd=directory,
-                    follow_symlinks=False,
-                )
+                platform_fs.link_at(staged, final, directory=directory)
             else:
                 with os.fdopen(fd, "rb") as stream:
                     if hashlib.file_digest(stream, "sha256").hexdigest() != digest:
                         raise Conflict("Captured final hash changed")
             with suppress(FileNotFoundError):
-                os.unlink(staged, dir_fd=directory)
-            os.fsync(directory)
+                platform_fs.unlink_at(staged, directory=directory)
+            platform_fs.fsync_directory(directory)
             require_access()
             with factory.begin() as session:
                 lock_facility(session, scope)

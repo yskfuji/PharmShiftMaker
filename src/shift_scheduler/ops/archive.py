@@ -23,6 +23,9 @@ from typing import IO
 
 from sqlalchemy.orm import Session, sessionmaker
 
+from shift_scheduler.config.profile import is_hardened
+from shift_scheduler.ops import platform_fs
+
 MAX_FILES = 100_000
 MAX_BYTES = 10 * 1024**3
 SIGNATURE = "manifest.sig"
@@ -58,9 +61,7 @@ def _now() -> datetime:
 
 def _production() -> bool:
     """As legacy_storage: an independent control configuration also means production."""
-    return os.environ.get("PHARMSHIFT_ENV") == "production" or bool(
-        os.environ.get("PHARMSHIFT_CONTROL_URL")
-    )
+    return is_hardened() or bool(os.environ.get("PHARMSHIFT_CONTROL_URL"))
 
 
 def _instant(value: object, name: str) -> datetime | None:
@@ -356,7 +357,10 @@ def create_archive(
                 size = 0
                 # O_NOFOLLOW: a file swapped for a link after the check above is refused.
                 try:
-                    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+                    fd = platform_fs.open_path(
+                        path,
+                        os.O_RDONLY | platform_fs.O_NOFOLLOW | platform_fs.O_NONBLOCK,
+                    )
                 except OSError as exc:
                     raise ValueError("Backup source changed or became a link") from exc
                 with os.fdopen(fd, "rb") as original, staged.open("xb") as copy:
@@ -657,7 +661,9 @@ def create_managed_archive(
         files, total = {}, 0
         with tarfile.open(fileobj=stream, mode="w|gz") as archive:
             for key, path in sorted(paths.items()):
-                fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+                fd = platform_fs.open_path(
+                    path, os.O_RDONLY | platform_fs.O_NOFOLLOW | platform_fs.O_NONBLOCK
+                )
                 with os.fdopen(fd, "rb") as original:
                     before = os.fstat(original.fileno())
                     if not stat.S_ISREG(before.st_mode):

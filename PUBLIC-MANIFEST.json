@@ -1,5 +1,5 @@
 {
-  "file_count": 1956,
+  "file_count": 2050,
   "files": [
     {
       "bytes": 279,
@@ -32,24 +32,34 @@
       "sha256": "ee122fb8ecbfb23545a9e2e2a632069b9f60ec11521f721b6681c53939fdd333"
     },
     {
-      "bytes": 384,
+      "bytes": 1039,
       "path": ".github/dependabot.yml",
-      "sha256": "b15972bf8532551f75aac173e1698f78d4552d5c14f15792a82120de7879fd42"
+      "sha256": "c6c9dab9bb1748aa62bcb372438946e87bc6d135d7c0f38c6a1fceb949e57d66"
     },
     {
-      "bytes": 6929,
+      "bytes": 1060,
+      "path": ".github/workflows/ci-metrics.yml",
+      "sha256": "7f68bf4a3db2b788e17bd8fc63f3610bd133f9970df719f2f641875ac7718720"
+    },
+    {
+      "bytes": 9977,
       "path": ".github/workflows/ci.yml",
-      "sha256": "dd4276f27955d6acb9546892745b8b20d2f1b194a0b9ee0279e1d431739988b9"
+      "sha256": "19e66b576ed2458647064b64fc67b7adc45b2419718005b42fb4cf54949fc09e"
     },
     {
-      "bytes": 1357,
+      "bytes": 14726,
+      "path": ".github/workflows/desktop.yml",
+      "sha256": "65158bda34c0f627ced16859e769783a0fa3e04c435de4672754a77d90afcc81"
+    },
+    {
+      "bytes": 1689,
       "path": ".github/workflows/export-dry-run.yml",
-      "sha256": "529f886b328d5e3fd6a14cc0dd60e99b2239ec4502c3bfd6734e656ddccd2790"
+      "sha256": "fe0fb51ac41f225daf2b42062ffdf77fa56372940168f25ab53a93b9cd477576"
     },
     {
-      "bytes": 1771,
+      "bytes": 3002,
       "path": ".github/workflows/security.yml",
-      "sha256": "4ebcfc20a1302b9774336dc9b37c1bf6094e5e1e601439e8377df8c1c33ca9c5"
+      "sha256": "0c4d449e6b97a5d5df92c400ce7416f15ad4d83df4d68cda97592930922962c2"
     },
     {
       "bytes": 6430,
@@ -102,9 +112,9 @@
       "sha256": "250004dc194dc3abee97c4ecf50ac5b449db09a0c4279ca0e52010590a60fe0e"
     },
     {
-      "bytes": 2076,
+      "bytes": 5701,
       "path": "LICENSE",
-      "sha256": "0e467edf9addfb09214f5a478e992e992473a3eaa9c32905d9dc21b5c68664c2"
+      "sha256": "3bd3a63c70b2e8b8e80f3b87824c441e693ae3ae0053eda486b367ce16e2e45b"
     },
     {
       "bytes": 3149,
@@ -127,9 +137,9 @@
       "sha256": "5c572ea237e8fe271f444a72b1c89be65b71c191c70e4924a7c0066093d3b7ef"
     },
     {
-      "bytes": 2533,
+      "bytes": 4138,
       "path": "THIRD_PARTY_NOTICES.md",
-      "sha256": "4fed6b2c6d4e82c889fd669cf7cd64362c202b1779351c3e4326136cfbae6764"
+      "sha256": "301a4e6de3f997a7f9c3cedeff1f8ef77870314fd3786a9878fdbd22bb3f74bd"
     },
     {
       "bytes": 2079,
@@ -232,14 +242,284 @@
       "sha256": "5f6bc7209d13a3f4d219c21d96378c39eaae78c1b6213a10e06904c2ffc2278e"
     },
     {
+      "bytes": 3182,
+      "path": "alembic/versions/20261119_0017_local_accounts.py",
+      "sha256": "8e6bc53819f55d30905d9e359a1b002094c94f2f36f0a8db787173d81a0a346c"
+    },
+    {
       "bytes": 2773,
       "path": "certs/README.md",
       "sha256": "f4ba8f2bd6d1a47aa9d2440777809a2f078f9e31ba6f00c49f8b9914f462afea"
     },
     {
+      "bytes": 48,
+      "path": "desktop/.gitignore",
+      "sha256": "6af1487679755a574f5384753be152711c9ee926dfb448a84756da02b360948d"
+    },
+    {
+      "bytes": 101,
+      "path": "desktop/licenses/.gitattributes",
+      "sha256": "4dd00dbe8cb0e2ab5f52d0c548c76061fe73333a0eb91b446197549f6927d577"
+    },
+    {
+      "bytes": 3663,
+      "path": "desktop/licenses/README.md",
+      "sha256": "46afd824673915f9d897d379523ba49cd7a2ce883da4842abc5b515e9ea8ff48"
+    },
+    {
+      "bytes": 16006,
+      "path": "desktop/licenses/manifest.json",
+      "sha256": "0046175dac20fdf447319e1d3d0d4b6f2d5708e722e0600d83781ea579faa28b"
+    },
+    {
+      "bytes": 21001,
+      "path": "desktop/licenses/postgresql/icu-67.1-LICENSE.txt",
+      "sha256": "25e21013a7bc2fad735e28c5278a120e4c7f1c327c8c8b9b4df1751748cddbb2"
+    },
+    {
+      "bytes": 21025,
+      "path": "desktop/licenses/postgresql/icu-68.2-LICENSE.txt",
+      "sha256": "7915b19db903070778581ae05d8bf4ea241b34a05deb51ca4f5cbb15ea1cbba3"
+    },
+    {
+      "bytes": 63690,
+      "path": "desktop/licenses/postgresql/krb5-1.22.2-NOTICE.txt",
+      "sha256": "d37fcb886de2ad1c602f61c99c6893bcbd9a1949f54d9a6bb40d191204eb605e"
+    },
+    {
+      "bytes": 26419,
+      "path": "desktop/licenses/postgresql/lgpl-2.1.txt",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95"
+    },
+    {
+      "bytes": 1614,
+      "path": "desktop/licenses/postgresql/libedit-LICENSE.txt",
+      "sha256": "29cea33c32bbc9785142386377915612a2fa786482c46843383384aded2e09b1"
+    },
+    {
+      "bytes": 1314,
+      "path": "desktop/licenses/postgresql/libxml2-2.15.1-Copyright.txt",
+      "sha256": "5d4873884a890122a4b9b20ad56ac6f7da1d796a5bfcf04a427970ac96217626"
+    },
+    {
+      "bytes": 2968,
+      "path": "desktop/licenses/postgresql/libxslt-1.1.45-Copyright.txt",
+      "sha256": "7e48e290b6bfccc2ec1b297023a1d77f2fd87417f71fbb9f50aabef40a851819"
+    },
+    {
+      "bytes": 1311,
+      "path": "desktop/licenses/postgresql/lz4-1.10.0-lib-LICENSE.txt",
+      "sha256": "8b58c446121a109ccf32edc094bba3010a3d85e4ee3702950db55e4d3e87736c"
+    },
+    {
+      "bytes": 10175,
+      "path": "desktop/licenses/postgresql/openssl-3.0.19-LICENSE.txt",
+      "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a"
+    },
+    {
+      "bytes": 1198,
+      "path": "desktop/licenses/postgresql/postgresql-16.13-COPYRIGHT.txt",
+      "sha256": "3d6af92ff8a4c2cdf69afb1cf44edea727922f5cd0cf8b5f72b11cdecac8fdfd"
+    },
+    {
+      "bytes": 2883,
+      "path": "desktop/licenses/postgresql/winpthreads-COPYING.txt",
+      "sha256": "63263614cdd29f2f93cba85e992f041b31f9fc7b4033692f31269489a8a1b177"
+    },
+    {
+      "bytes": 1002,
+      "path": "desktop/licenses/postgresql/zlib-1.3.2-LICENSE.txt",
+      "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2"
+    },
+    {
+      "bytes": 1549,
+      "path": "desktop/licenses/postgresql/zstd-1.5.7-LICENSE.txt",
+      "sha256": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8"
+    },
+    {
+      "bytes": 7293,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.bdb.txt",
+      "sha256": "3bdff06e69991c94664f2ef5c5f8096f60b7dbec071756ea6cc26b445e06ec5b"
+    },
+    {
+      "bytes": 1743,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.bzip2.txt",
+      "sha256": "1f38bbc7caacafd65169276d759c0d88c991b753b643ce35d0e45ea1971dd441"
+    },
+    {
+      "bytes": 36164,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.cpython.txt",
+      "sha256": "86e61415828a8b5b06ec8d024e6f086ce155a8b85fd0c419c0ba4dc004e74fdd"
+    },
+    {
+      "bytes": 1144,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.expat.txt",
+      "sha256": "122f2c27000472a201d337b9b31f7eb2b52d091b02857061a8880371612d9534"
+    },
+    {
+      "bytes": 47018,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.libX11.txt",
+      "sha256": "2daec087a88e7c9b8082557cdeebad5bbb8155a4137472f0b22e269cd99d0c1e"
+    },
+    {
+      "bytes": 1148,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.libXau.txt",
+      "sha256": "56abe29bb1d9806a9e04fa9f80fed2c0f18027594df3f098148d814aef6bddfa"
+    },
+    {
+      "bytes": 1614,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.libedit.txt",
+      "sha256": "29cea33c32bbc9785142386377915612a2fa786482c46843383384aded2e09b1"
+    },
+    {
+      "bytes": 1132,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.libffi.txt",
+      "sha256": "deaf3a42effb551a5b140fa9afefed183a27f1341c6d1bf430d106a5e6931fc0"
+    },
+    {
+      "bytes": 660,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.liblzma.txt",
+      "sha256": "9a4062de0a2c388a98cf35a35d348b62fa97c838a71c3c28ee1a2d7d0a565b02"
+    },
+    {
+      "bytes": 1432,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.libuuid.txt",
+      "sha256": "122ee1f7e258f2c3c0e538a75c037684f420454bf3850ddc74ce750bbf5fe86b"
+    },
+    {
+      "bytes": 1337,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.libxcb.txt",
+      "sha256": "c5ffbfeaa501071ceeb97b7de2c0d703fdaa35de01c0fb6cbac1c28453a3e9fd"
+    },
+    {
+      "bytes": 1284,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.mpdecimal.txt",
+      "sha256": "669512af7219f58be03a398766d7c9da11a3b3df9d3f05cb74c5ceca25c8da3b"
+    },
+    {
+      "bytes": 1447,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.ncurses.txt",
+      "sha256": "87a4c4442337b8968ef956031c406b74f9cb7149b7ba87311bdaba534816201c"
+    },
+    {
+      "bytes": 10175,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.openssl-3.txt",
+      "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a"
+    },
+    {
+      "bytes": 1481,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.sqlite.txt",
+      "sha256": "38bef3d28b24f145ea293bd3b6eb4b20396982abc8303128fb493986ea5bc719"
+    },
+    {
+      "bytes": 2255,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.tcl.txt",
+      "sha256": "c0a69a2bfd757361ec7e6143973b103c90409316b49e9c88db26ad6388e79f16"
+    },
+    {
+      "bytes": 2826,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.tix.txt",
+      "sha256": "3ac5cdd0bef6c43ce34c6a7ced452081d9e5a0bf94082b9f9147d23ec9e214f5"
+    },
+    {
+      "bytes": 867,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.zlib-ng.txt",
+      "sha256": "6c9f0d975b41afaa34d22f55bb8986ce69e5cb7ad327cb2b28820cd425edf5ee"
+    },
+    {
+      "bytes": 995,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.zlib.txt",
+      "sha256": "818922b2620f12801a12bf78e399644a30990e66824abd8ca8ec24d451d6f92c"
+    },
+    {
+      "bytes": 1549,
+      "path": "desktop/licenses/python-build-standalone/LICENSE.zstd.txt",
+      "sha256": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8"
+    },
+    {
+      "bytes": 8456,
+      "path": "desktop/main.js",
+      "sha256": "c4363250195338a5190793e41d31a6659ae7d5651c85c1f591772f7539645797"
+    },
+    {
+      "bytes": 127151,
+      "path": "desktop/package-lock.json",
+      "sha256": "624812ccd8f674ef15d7b668ea8026ca47136ae1f15c13d2e1faf1965cc6b849"
+    },
+    {
+      "bytes": 2243,
+      "path": "desktop/package.json",
+      "sha256": "cba8534eee7f2dfb96f1ba9edea45a5c2c261afd59f7476ff76df324d67bb830"
+    },
+    {
+      "bytes": 93157,
+      "path": "desktop/requirements-windows.lock",
+      "sha256": "206285111537b58ba8e163df9d082950e8aaacc736a9ddf06143165754453301"
+    },
+    {
+      "bytes": 464,
+      "path": "desktop/resources/entitlements.mac.plist",
+      "sha256": "4c415e23ac8dc338a7c3213b074645f42361af9d493b372420709e235b899211"
+    },
+    {
+      "bytes": 153493,
+      "path": "desktop/resources/icon.png",
+      "sha256": "d808fd926d17c889b89092bc723183ad7634b1e92c2e1a2f5c3fda931d74ff7b"
+    },
+    {
+      "bytes": 7650,
+      "path": "desktop/scripts/assemble-runtime.sh",
+      "sha256": "98131b1ceae0f88738f363c7f56c6464675ea599b08fa26548545dd675fe3e7f"
+    },
+    {
+      "bytes": 2487,
+      "path": "desktop/scripts/copy_licenses.py",
+      "sha256": "bc8b48653df99c725329adaac093bbb91b5b7ff98fff080d2155ea36d426cefd"
+    },
+    {
+      "bytes": 6857,
+      "path": "desktop/scripts/smoke.py",
+      "sha256": "5edf376f44a4adba3cf48fb43d0d14f5882f91769ef5c7fc7fcefc4cc7b0941b"
+    },
+    {
+      "bytes": 516,
+      "path": "desktop/splash.html",
+      "sha256": "46f0258bb4eca31e293f5cb96a81a6193829658439198355a901c4bbafba052b"
+    },
+    {
+      "bytes": 1830,
+      "path": "desktop/web/desktop-server.cjs",
+      "sha256": "e0287af68a1880d4e37e0622b0f3d328cd1e21b11bff66defe3f4027558f7d4f"
+    },
+    {
       "bytes": 85,
       "path": "devtools/__init__.py",
       "sha256": "54bc2f68cdd55b1ea665a42934ffae050248ef927a3a4d2ae692ca74d2fb81ed"
+    },
+    {
+      "bytes": 40,
+      "path": "devtools/ci/__init__.py",
+      "sha256": "9ded469e55b1c7f00eb978f3df564f462f47d46c1ccb7ebb77fde1b28d099745"
+    },
+    {
+      "bytes": 6799,
+      "path": "devtools/ci/metrics.py",
+      "sha256": "f4034e1ef2bd0fd9c688d0dec095c6c5e2f7c7671acb5cdacedb90d53b0e87a5"
+    },
+    {
+      "bytes": 6469,
+      "path": "devtools/ci/requirements-zizmor.txt",
+      "sha256": "aa11a9ca01c77da4ef738787f837939c81437d7cebb9606f9b42ffb606f4a56e"
+    },
+    {
+      "bytes": 1866,
+      "path": "devtools/ci/risk_matrix.py",
+      "sha256": "606dedcadbfd7e923b03c19be63c583f593f9b5a78d36a0050590755d4f9540e"
+    },
+    {
+      "bytes": 4032,
+      "path": "devtools/ci/workflow_policy.py",
+      "sha256": "7c922c370bdc74fe50c1006f365972f4e79d3d0a1f7cb8d49b9cfe387f6e44a0"
     },
     {
       "bytes": 3674,
@@ -427,9 +707,9 @@
       "sha256": "d0c11bc78593d710f08f1755ca28f1f4a86e1265639d638e9fad40781f75542b"
     },
     {
-      "bytes": 21971,
+      "bytes": 23378,
       "path": "docs/architecture/er/ia-map.md",
-      "sha256": "e301c620ca71b45e18ac47ed637ba184c2fbe73fb7890128cfa870a0b1b3add8"
+      "sha256": "afd77515149df0d288b2f956c4eeaaf5eaa76f269bc9acae8e52db84816642f1"
     },
     {
       "bytes": 4737,
@@ -457,19 +737,19 @@
       "sha256": "90f844b096ca904fb3de4aaaaa968ea2928b4045e88c35d36dc3c54f21dd4311"
     },
     {
-      "bytes": 30317,
+      "bytes": 32140,
       "path": "docs/architecture/er/physical.dot",
-      "sha256": "511c16c4cb75e76cc6978f9c8cb4cf018914da767616d5463b4b5eafcc7e4a20"
+      "sha256": "af45dcb17bff6eee00a94de05bd261373bb902ba9acc361706ae136baac49c6c"
     },
     {
-      "bytes": 14150,
+      "bytes": 15015,
       "path": "docs/architecture/er/physical.mmd",
-      "sha256": "a35ea727bf943667dada9af50339d272f4573ad9b73932565e0dd88d0d84f914"
+      "sha256": "7ca2aebad75132039438b5c08e666d86fffd592481597f7480a685dcbe88b15e"
     },
     {
-      "bytes": 109072,
+      "bytes": 115568,
       "path": "docs/architecture/er/physical.svg",
-      "sha256": "f09f0b85cb757a4c4e69513ff2768e164401ec6c6161083da8cdfaaa96dcaa1e"
+      "sha256": "0c6af9ecbd85616ca461adedb583b9fa313314cdb28fb88c8d67f30d6ed5ed41"
     },
     {
       "bytes": 56957,
@@ -492,9 +772,9 @@
       "sha256": "6fe1487bfc22bcbcff77c0181150040d168675d22f32f8201d18e8431d8d181a"
     },
     {
-      "bytes": 8911,
+      "bytes": 8967,
       "path": "docs/architecture/navigation.md",
-      "sha256": "1644033e87fa265ff74aa745e65bdff2b2485884454f1b46cf2de4e5f073b07b"
+      "sha256": "a4327fa55c790916aeaa9084cc00e676a833e04779b12a5bafdf1f6323783e4f"
     },
     {
       "bytes": 1080,
@@ -537,6 +817,16 @@
       "sha256": "0ecf661c540b3eef4f12ef470cf256faace0d582bb3d4b8fcbb310684a29eba2"
     },
     {
+      "bytes": 2551,
+      "path": "docs/ci/dependabot.md",
+      "sha256": "8905800c204cfa6e61f2a707cabb2f6881e7bd3136d25f52e0224fb3730a6a23"
+    },
+    {
+      "bytes": 4099,
+      "path": "docs/ci/risk-test-matrix.md",
+      "sha256": "b5c023df9925e2f2fb9cf3b375fb19349ab0d579b9457b7acd204e6dd8c96993"
+    },
+    {
       "bytes": 11134,
       "path": "docs/design-system/README.md",
       "sha256": "5b48dce5137c71b1a9e8037a1adfb04d26fe7d74e40208e966e3d0caa8267366"
@@ -545,6 +835,26 @@
       "bytes": 21371,
       "path": "docs/design-system/interaction-contract.md",
       "sha256": "1584a802cd162fbdbd9d42fe648ff78b06b86707d9864a0257b213d9191e686b"
+    },
+    {
+      "bytes": 19077,
+      "path": "docs/desktop/desktop-shell.md",
+      "sha256": "5daaf53fac3e9574185301990d690cf02d9f1412ef8209f24f9e2debff7e4fef"
+    },
+    {
+      "bytes": 6047,
+      "path": "docs/desktop/m0-verification.md",
+      "sha256": "31026bd3ca2dba8dabfe7292d0cf5f0e2c88e01c09fc9c46a0c3c6cefe7d6733"
+    },
+    {
+      "bytes": 4840,
+      "path": "docs/desktop/macos-signing.md",
+      "sha256": "af6618c95f1f5f7690c73ffb7682d07ffe90fce272339b965f944fd97e4dff0c"
+    },
+    {
+      "bytes": 17419,
+      "path": "docs/desktop/windows-storage.md",
+      "sha256": "5fdc16c61888759551a4f0a02cb5fd2cf1dfd2e3471d4a7edb7d52138e139e99"
     },
     {
       "bytes": 8530,
@@ -2462,9 +2772,9 @@
       "sha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b"
     },
     {
-      "bytes": 1159,
+      "bytes": 1326,
       "path": "frontend/next.config.js",
-      "sha256": "8afcdecaccf4f290c86390d42d5e4a92fbd7b57f807ebe420364db2ffcc44ab4"
+      "sha256": "8e2df60ce51428d722895157caa8fcfb06cee68f9d9fb408d7774920689d0122"
     },
     {
       "bytes": 499258,
@@ -2612,6 +2922,16 @@
       "sha256": "8fd2836df1de22c01b1c2517586ae4dbacc50edfdbe1e971c837113fcbca8585"
     },
     {
+      "bytes": 3528,
+      "path": "frontend/src/app/account/password/PasswordView.tsx",
+      "sha256": "91a9d6c696e01c00279ec4a5b3b8807a20f820446c47d6f2958e63826a0a603b"
+    },
+    {
+      "bytes": 557,
+      "path": "frontend/src/app/account/password/page.tsx",
+      "sha256": "3a525a6214c6c7a01bb73248271f1dc5098a9fdc06a295ff06c52ce26cf5aa49"
+    },
+    {
       "bytes": 1260,
       "path": "frontend/src/app/dashboard/page.tsx",
       "sha256": "0494365bc50d76cdfadaa455f8735bc4bc2856c307c4555aa21481c8ed9751f3"
@@ -2632,9 +2952,9 @@
       "sha256": "e6f8c6240abc4f7c35ca4b4a67ba0f8b4351390692b2624adb18c6de2596d5b3"
     },
     {
-      "bytes": 7315,
+      "bytes": 8230,
       "path": "frontend/src/app/login/LoginView.tsx",
-      "sha256": "9db36e72668db039a387e3e993edecea10ad94a6ad2dc64ae6b812b9c29c6fd8"
+      "sha256": "d767dbc570afd3e33c1dc6988678222588e122be87d3e4991566eceb885647d0"
     },
     {
       "bytes": 1430,
@@ -2707,9 +3027,29 @@
       "sha256": "7acd49de2b95c5d3493fdd63f815e1563016088cb5f4faf6d8c9df60a69e1cbc"
     },
     {
+      "bytes": 8865,
+      "path": "frontend/src/app/settings/accounts/AccountsView.tsx",
+      "sha256": "8465c3b41366c058625f6b1a51ad49f12b955f587bedea4e3b5be143389c1ae8"
+    },
+    {
+      "bytes": 759,
+      "path": "frontend/src/app/settings/accounts/page.tsx",
+      "sha256": "b79c4998654f14889a6b525b219688e049fe1301150ee0e3dfbe25e585102900"
+    },
+    {
       "bytes": 814,
       "path": "frontend/src/app/settings/page.tsx",
       "sha256": "ea96fbef994d2daadd370a3cd73ea6582a0b7e88c5827ea857b38352e080ce61"
+    },
+    {
+      "bytes": 5740,
+      "path": "frontend/src/app/setup/SetupView.tsx",
+      "sha256": "71a091286f5b4689e3152e0e965cef245de31bf0676aa5285d200520056bb643"
+    },
+    {
+      "bytes": 207,
+      "path": "frontend/src/app/setup/page.tsx",
+      "sha256": "b25938036e3f3ad06f0b4cde3421e83e156e4d98b4e4785372fe2fa0ccd4b3b6"
     },
     {
       "bytes": 1131,
@@ -2827,9 +3167,9 @@
       "sha256": "a13e210e7b8712474147da52868d95de7d556319a4f2816593ccfb8ee13b1b4a"
     },
     {
-      "bytes": 5653,
+      "bytes": 5733,
       "path": "frontend/src/components/IdentityProvider.tsx",
-      "sha256": "e18df9060bd14660c7a74e8d5b219ea9fbfd2ae439b4fcc7578155ccf9ab4287"
+      "sha256": "c4450a86e07f7e1c2f081b1d01cdb89ba7b40b73d17f50c499b04ef54b944fb0"
     },
     {
       "bytes": 140,
@@ -2932,9 +3272,9 @@
       "sha256": "8aa6589249412f421f7de73aa68be79b48e2fbf32adbd99331cd9ad62cac1be2"
     },
     {
-      "bytes": 8982,
+      "bytes": 9186,
       "path": "frontend/src/components/SessionControls.tsx",
-      "sha256": "8cca16eb12cfb9b932f5f3188e77d72da6b40384cf2d06ed1acffa2eb36f8b6b"
+      "sha256": "12e847a604ab884620ad08d303238bdfdba42611256b492145822a040fd40964"
     },
     {
       "bytes": 158,
@@ -3032,9 +3372,9 @@
       "sha256": "e32458d201b99693bdf4da98b51aaf703bf5896da62a1e4b6a810d2750b579c6"
     },
     {
-      "bytes": 6778,
+      "bytes": 7168,
       "path": "frontend/src/components/__tests__/IdentityProvider.test.tsx",
-      "sha256": "d8528fabf699d11e4c80ec3f95bb36bf039de6911cf6c931075086cd382bd76a"
+      "sha256": "beefc3ccc0acd19369cd8c97fa4c34b489177e31cbd721b3f0bb827cf6b80acc"
     },
     {
       "bytes": 5630,
@@ -3112,9 +3452,9 @@
       "sha256": "0e7185a9c8da0f71611f08859c4f48c740c1b8bc68da035f98a07023ca0dc965"
     },
     {
-      "bytes": 11695,
+      "bytes": 12135,
       "path": "frontend/src/components/__tests__/SessionControls.test.tsx",
-      "sha256": "a87305c62916d71adf91e718e932a74f138648b6d69bd3168bf7fb64b010d96d"
+      "sha256": "abc4f82322d8a678877090113a5d0cc62a5ccd8679ece000b7bab460b31d6d79"
     },
     {
       "bytes": 936,
@@ -3697,6 +4037,11 @@
       "sha256": "5aa3672b5bf1cae2882fb31eb8e317ba478395f1fe9beb2bdf70886e3db7fe7a"
     },
     {
+      "bytes": 7663,
+      "path": "frontend/src/lib/__tests__/localAccounts.test.tsx",
+      "sha256": "551684edcf8182ec77230a3ce862d2b645cd287a6b7b16795ffcceaba877628f"
+    },
+    {
       "bytes": 2136,
       "path": "frontend/src/lib/__tests__/newStaffProgress.test.ts",
       "sha256": "a46c9bd4df9674ba81fb5723f84eecc6dc40563c8bd6c1b1d71a8119516d2a40"
@@ -3777,9 +4122,19 @@
       "sha256": "77bdf9c1a47db03019a2ad4574dd6c895a69667e8e702e468bdc4a8ac1f7baf5"
     },
     {
+      "bytes": 4016,
+      "path": "frontend/src/lib/localAccounts.ts",
+      "sha256": "b33576c0548b76449e7641be2ad8b2caadd0814b9702390b3ed7b86674bed0e8"
+    },
+    {
       "bytes": 1354,
       "path": "frontend/src/lib/loginPath.ts",
       "sha256": "6ef97d7b87f17c3bb51318c267953128feb8d6d2b832a01b4cfb880f079e100b"
+    },
+    {
+      "bytes": 165,
+      "path": "frontend/src/lib/navigate.ts",
+      "sha256": "d4455bf9512d644f7ff92433b001e87ee4dc0a7b34e9f3ebd7fc6bb3104b14cf"
     },
     {
       "bytes": 1825,
@@ -3822,6 +4177,11 @@
       "sha256": "08d3bd3ae26a2943d0de719bdeaa74489421917be52fbac2eee6b9f9dc93cb0b"
     },
     {
+      "bytes": 468,
+      "path": "frontend/src/lib/sessionlessPages.ts",
+      "sha256": "5194102a785f5e9cd2a6eecba897932177510f18029611364afd95e92f8a90ee"
+    },
+    {
       "bytes": 1641,
       "path": "frontend/src/lib/shiftLabels.ts",
       "sha256": "3ade1418f5e09516ccb517e9a828ea3cb6c8735d74cb851c9c9748c15571c82f"
@@ -3847,9 +4207,9 @@
       "sha256": "6db0f5544ae54ae620122ede060c7ebcb6a6fc3e71e4894b8e5e8bb798d03236"
     },
     {
-      "bytes": 3460,
+      "bytes": 3472,
       "path": "frontend/src/proxy.ts",
-      "sha256": "f7f12cacfaab43ef8e533282aa6f63419fe8330935e911e13db512192e75aa30"
+      "sha256": "a16e8a2566cdc0c3903c6f900c5763544f752b282bd2c3218b14c649d0a8d379"
     },
     {
       "bytes": 8260,
@@ -8027,6 +8387,11 @@
       "sha256": "7293c3be5fc8b01fe0cca22df0c104dc4b31abc58b0976ef54973d160ba42c56"
     },
     {
+      "bytes": 10368,
+      "path": "src/shift_scheduler/api/auth/local.py",
+      "sha256": "0e0357157ff03bec150523e21151ebf021a82321a8b5b6a59c9b79ba6c352b3c"
+    },
+    {
       "bytes": 835,
       "path": "src/shift_scheduler/api/auth/models.py",
       "sha256": "a9c841726cef6e55a3a37a7aa46e1cb533590951c41901ef69091325d00e9d06"
@@ -8037,24 +8402,24 @@
       "sha256": "3d275a60c293bae93ca33bfc5f696d0999c8a1caa3b58658fcdbde097e701ceb"
     },
     {
-      "bytes": 7407,
+      "bytes": 7443,
       "path": "src/shift_scheduler/api/auth/session.py",
-      "sha256": "44d0ba2e940e18c79755a61c51aed6d13dd9621172e27bbb8ddddfb5f40ecc90"
+      "sha256": "9d136f6e86ec1a15091f9a86701903f7f4c2f06bbf51e73ce57be741ae884592"
     },
     {
-      "bytes": 7546,
+      "bytes": 7647,
       "path": "src/shift_scheduler/api/auth/settings.py",
-      "sha256": "23b1af4a76bfb275ee4a660d595fdb997bb74f759b4305cb5684d5f1476f6a05"
+      "sha256": "5fb0faac071c041b1baddb4f7f5cd0315faecad9f4db487417616cc9fe90e49f"
     },
     {
-      "bytes": 7369,
+      "bytes": 8450,
       "path": "src/shift_scheduler/api/dependencies.py",
-      "sha256": "5c48c74600290d2e5e97ac013fda0c767b951a9147d009d938c5a2aabeb513f2"
+      "sha256": "090a47fbc5a672810f2b53792f3cc50e101241fc11806c5089fa2fa659f3d24a"
     },
     {
-      "bytes": 7373,
+      "bytes": 8621,
       "path": "src/shift_scheduler/api/main.py",
-      "sha256": "ce5f1f451273825e204ec8e823242e4e703af916670fc738c9cd8de7ee0761f8"
+      "sha256": "dfca507e883b3a21754ff83c448d758368a2096e9f1b847b2102be4e3e82bf2e"
     },
     {
       "bytes": 211,
@@ -8067,9 +8432,9 @@
       "sha256": "abb8be8fee5efc717d9b1f8fd621bf82dfe50dfd0ff7f7e431f37f0888a64325"
     },
     {
-      "bytes": 12806,
+      "bytes": 17328,
       "path": "src/shift_scheduler/api/routers/auth.py",
-      "sha256": "e11756eefe758189846fd15421fadc24c9f8f8fc006befba2e8bbc976417ce9b"
+      "sha256": "6c25a761a8b539ed0d45b25f68976cc68895ad59d4d00f9734d955ec62fbeb50"
     },
     {
       "bytes": 76632,
@@ -8092,14 +8457,24 @@
       "sha256": "8957fcbdd655698b709588f095fba7da3dbdf62a440fa20000d29d2157297cae"
     },
     {
-      "bytes": 36053,
+      "bytes": 15987,
+      "path": "src/shift_scheduler/api/routers/local_accounts.py",
+      "sha256": "4670e976069424d3d0650df22d94d96b9b3bd01df7304cfa3ad531d1bef15fb8"
+    },
+    {
+      "bytes": 36723,
       "path": "src/shift_scheduler/api/routers/planning.py",
-      "sha256": "02ce1cb218fd70bfc7b62eac154d90c7e9db215ae5b74ded2d880e83b808b08c"
+      "sha256": "e3f3f296cccd4682359d665c32d4b952ed60ee6173fc3dfd6f52ae86f957f297"
     },
     {
       "bytes": 8587,
       "path": "src/shift_scheduler/api/routers/schedules.py",
       "sha256": "2ffc06892be0639be94e88fa901bd970afb479fcd74d54f374f631901125a6ef"
+    },
+    {
+      "bytes": 5261,
+      "path": "src/shift_scheduler/api/routers/setup.py",
+      "sha256": "6564e6eac0113ae9622608ca9760fd4db09a1554da9930b2e92d8a8d8781860f"
     },
     {
       "bytes": 15621,
@@ -8147,9 +8522,9 @@
       "sha256": "de6ed5ae7e5074140dd1d8343a90eba20559892e24dc505d74af2441e0f99e4f"
     },
     {
-      "bytes": 31574,
+      "bytes": 31703,
       "path": "src/shift_scheduler/application/copies.py",
-      "sha256": "c72bcda3aa1df3b6d1066f49af70f2e9fc1217e4c70ea44071fa09697b36ebf5"
+      "sha256": "841b732dac0e702639efb2b84130b1e52e2c3635e6019d3ea12383a9e214b5c6"
     },
     {
       "bytes": 2980,
@@ -8172,9 +8547,9 @@
       "sha256": "334fa5d35e6282902b43d9cf7296a7ce29a56e0a2953fd76b1048e85ff97ef0b"
     },
     {
-      "bytes": 15892,
+      "bytes": 16728,
       "path": "src/shift_scheduler/application/copy_schema_inventory.json",
-      "sha256": "8db0740f63daefd6d76444625e6de2cad60b4522bcd7bf464660428eb4ce4c6d"
+      "sha256": "899e8ba19e1c3a1e2e28f531eaa47e64d6164ea73b0708c5f00ad397416d8daa"
     },
     {
       "bytes": 3407,
@@ -8227,9 +8602,9 @@
       "sha256": "5df568dfe0669ddc607e94f8d28facd7705d0b3f1366fd59586d994401127786"
     },
     {
-      "bytes": 7660,
+      "bytes": 7757,
       "path": "src/shift_scheduler/application/publication_artifacts.py",
-      "sha256": "15693b99387ddec2ea3274dc5ebdcc73312a45a3140a6c7d7d02debe0cf9411c"
+      "sha256": "43a52470dcd3b552ecb70f9bf85849dd1a940d6fe69c2c6ccd2fc996fa352525"
     },
     {
       "bytes": 6268,
@@ -8262,9 +8637,9 @@
       "sha256": "27d97d94e61d849d06509e5ad6e4dbae7b73e4f75c1ed00d43d95816fba3dc2e"
     },
     {
-      "bytes": 239565,
+      "bytes": 252640,
       "path": "src/shift_scheduler/application/storage_routes.json",
-      "sha256": "9ecdfa6ef96a081e252d8dc27b55ea6b21056a0dd9988d332515b03a879a6b44"
+      "sha256": "822b951ba497f94d4bc5c5676fd3ce0c992721921292f685d4899f1dfbe2b6b5"
     },
     {
       "bytes": 5618,
@@ -8292,9 +8667,9 @@
       "sha256": "80d8e2391ba5eb70f3017b9339c73ab6b254bf2b391e1e1f629166185dac3607"
     },
     {
-      "bytes": 5497,
+      "bytes": 5673,
       "path": "src/shift_scheduler/application/worker.py",
-      "sha256": "287f36180208ee27125e8a39728174df19f46fa1366a5453b3ed5cb6260053a6"
+      "sha256": "73bb9ca34c6b121d2779752bd96980634aeda1c2950af2f3c57c6952eded24cb"
     },
     {
       "bytes": 351,
@@ -8317,6 +8692,11 @@
       "sha256": "213a6d1e6af2c203cbfa0bb704a840633c9031e8d0827d35d0754337bc3a92c9"
     },
     {
+      "bytes": 7720,
+      "path": "src/shift_scheduler/config/desktop.py",
+      "sha256": "1af69185168ea9219d000b806477dcd3dbea38a1afedba957ff5399088c16f4c"
+    },
+    {
       "bytes": 712,
       "path": "src/shift_scheduler/config/holiday_requests_2025_02.yaml",
       "sha256": "fd713de45b0ab57c32a500c4d860e5f519289683839f1119f1c0f2b24043ae04"
@@ -8330,6 +8710,11 @@
       "bytes": 1838,
       "path": "src/shift_scheduler/config/production.py",
       "sha256": "5c3203e5fc18c9589b181360e7c6d068e298eaf441de06d52cc0cebcf0896ee6"
+    },
+    {
+      "bytes": 1275,
+      "path": "src/shift_scheduler/config/profile.py",
+      "sha256": "88703172a4097d2d6bb0bc52251b9603bdeba6db665c862d154edb5e4cb426b3"
     },
     {
       "bytes": 592,
@@ -8387,9 +8772,9 @@
       "sha256": "5bc0b2f22aa2f20f01b2889a60e17b08beca5a45e2d586af16d69d5d2bbc0893"
     },
     {
-      "bytes": 3370,
+      "bytes": 3329,
       "path": "src/shift_scheduler/control/client.py",
-      "sha256": "05fe02f41da6337d1417b4741803b3d56512ef5ef97057df98a71ebfcc4a7303"
+      "sha256": "c36b76398953b55195301814da35aa892a01fa55014f202899fdd7019cb2d007"
     },
     {
       "bytes": 3357,
@@ -8467,9 +8852,9 @@
       "sha256": "33b401c0c950666b744c50c562aeccfbb5e48d5c2b07e2b6766a980de80a3538"
     },
     {
-      "bytes": 13538,
+      "bytes": 15984,
       "path": "src/shift_scheduler/db/planning_models.py",
-      "sha256": "889bfa21ada5f64b80990f67ee4bcea19d17a3fa79aad336084c66eacabf2f43"
+      "sha256": "468bde6e37d418c9db2e70f8482c87dcf03af61bcb99f9079bf8729c75471cbd"
     },
     {
       "bytes": 282,
@@ -8502,9 +8887,44 @@
       "sha256": "1e324969539ce9fecee10a203dc8c2349a031710b2e6463c749d4db5bc86c14c"
     },
     {
-      "bytes": 1294,
+      "bytes": 1323,
       "path": "src/shift_scheduler/db/settings.py",
-      "sha256": "860ee93bedb1630613cb8fc44afe4cec33c1a64d621597282a6ad906326cbd09"
+      "sha256": "dc6b9a0623fe1c5e5109cb2f65ed1d08e924c8fe4fd6677b78b3b37ebb5cce27"
+    },
+    {
+      "bytes": 357,
+      "path": "src/shift_scheduler/desktop/__init__.py",
+      "sha256": "2ebee53c390442cc0c35a0f8c2144781f7838c75ea74af405e3a37968d30c07b"
+    },
+    {
+      "bytes": 302,
+      "path": "src/shift_scheduler/desktop/__main__.py",
+      "sha256": "15c416132fd485e1efb5ada656c1041d28db657022c5d95d1fd7b08d16627d7f"
+    },
+    {
+      "bytes": 4527,
+      "path": "src/shift_scheduler/desktop/environment.py",
+      "sha256": "fb5294faa4d8f305000a1302b8ad4cc133b2081e993309cc36f48c6f3bbff835"
+    },
+    {
+      "bytes": 27150,
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "sha256": "48eba9c1c9cfe3d8731a2ea45519e34a9fa02ca9579913fd5bdf7b879cc24c8d"
+    },
+    {
+      "bytes": 3712,
+      "path": "src/shift_scheduler/desktop/layout.py",
+      "sha256": "4b08ef0f0b66cc402e4590376acd6e338a97ed0dfbf4d6523320195d62e7a7ac"
+    },
+    {
+      "bytes": 3073,
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "sha256": "967e3d6e310f51190f2f6b6aca2d53434439636aa97f2027221b5c45672baa38"
+    },
+    {
+      "bytes": 4337,
+      "path": "src/shift_scheduler/desktop/tls.py",
+      "sha256": "80d274a9c1307446c112911c96f8cd1228dd94ecf05db1c7ca2d1e8a84701a5a"
     },
     {
       "bytes": 763,
@@ -8592,9 +9012,9 @@
       "sha256": "0c5bc1615ce8fa4c172c3a65be781d90921be22e8abf438a371ec5b50811ce69"
     },
     {
-      "bytes": 29120,
+      "bytes": 29344,
       "path": "src/shift_scheduler/ops/archive.py",
-      "sha256": "35327a9d8bea31ea3b06672eb7109e412fe7976497735ce792070c725685e7ce"
+      "sha256": "c713cadae6152f9925e3d5908c0bb81a24d12bbe941b18b8b8eb849d0def365d"
     },
     {
       "bytes": 26433,
@@ -8602,9 +9022,9 @@
       "sha256": "66032d57109236603f2fb2bbbb85f9c8e83f173d7c516f59f111e5fd21a578db"
     },
     {
-      "bytes": 4443,
+      "bytes": 4641,
       "path": "src/shift_scheduler/ops/erasure_control.py",
-      "sha256": "96fe0a8c3cbeebe844113b52a8a6c050f15342c7b75e69d2331586a87eaa30ba"
+      "sha256": "6d8f0170dea17cea0407d05fce528a9e8a2226238e1256e553bfb6cd651c687c"
     },
     {
       "bytes": 19717,
@@ -8617,19 +9037,24 @@
       "sha256": "09e133db859f5525797debb9f7b6cea979bf885d335c5b17c9d0e2a027a1e6cd"
     },
     {
-      "bytes": 525,
+      "bytes": 537,
       "path": "src/shift_scheduler/ops/legacy_storage.py",
-      "sha256": "46dce26f93fac0eddd97d94107ac8a093b6033f629496f3a37e02cfb6e14a581"
+      "sha256": "5757ca2a883a9de0d6b11eca626462ea3d416f6f083b0019ce105279bd464ba3"
     },
     {
-      "bytes": 2753,
+      "bytes": 2997,
       "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "sha256": "86efdee62cd886b0b87688dfcbf81cf829b78d76d851db8593a28b2088323644"
+      "sha256": "b9f1dcab7f20a711c69badf43069176c30f159d94a03d2c52f45c7bc209e5f8c"
     },
     {
-      "bytes": 21497,
+      "bytes": 21780,
       "path": "src/shift_scheduler/ops/managed_writer.py",
-      "sha256": "fd8807a951059b6c94eb8ee0bb06371d7409c5468d28ce6d8d657843ae189263"
+      "sha256": "92d108bad4f37cdd050b566fb21447c30ca80b4e0d2bbd0b654f7179a9b33d3f"
+    },
+    {
+      "bytes": 29744,
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "sha256": "182444db7b5febb5e056d61f77545d99b69434a67f616189ba2e7dae4d06c082"
     },
     {
       "bytes": 119,
@@ -8967,6 +9392,21 @@
       "sha256": "0d6409bacaeb93789e59e546cabb9d83f52f4c5add37bc59ce68ff1c01bb35bf"
     },
     {
+      "bytes": 2528,
+      "path": "tests/test_ci_metrics.py",
+      "sha256": "98bbbf274677e4914ca081d648530bf9aadf42feb0e5d1c6f3602aebfc8c9d77"
+    },
+    {
+      "bytes": 519,
+      "path": "tests/test_ci_risk_matrix.py",
+      "sha256": "6681d360e640dfa096424d562bd43fbca7d54412340aefd4d85942a4588edada"
+    },
+    {
+      "bytes": 2251,
+      "path": "tests/test_ci_workflow_policy.py",
+      "sha256": "de21a86671e7d24350318b506cddf6b98e80adc88045af2b49cafc391bfc32e1"
+    },
+    {
       "bytes": 7090,
       "path": "tests/test_codeql_boundaries.py",
       "sha256": "2c29af453ee6537a073f903f9b99454d8de5dfea20e370be69dd43f6af095b67"
@@ -9122,6 +9562,26 @@
       "sha256": "59f0c27e9d743c35853ae9b4e499a3a2f1e29cc8f5ca69ec9f313fcc6d9477c6"
     },
     {
+      "bytes": 10192,
+      "path": "tests/test_desktop_launcher.py",
+      "sha256": "5f1bfc9a3f14ae7704998bf7f9e918b0f8bfa2deb3b0c4466ae5f47d4d5e5958"
+    },
+    {
+      "bytes": 29140,
+      "path": "tests/test_desktop_launcher_process.py",
+      "sha256": "01b551b746682aaead6ea57ac44c7854e5bb866490557cad1bc262a7d08a5e8d"
+    },
+    {
+      "bytes": 4095,
+      "path": "tests/test_desktop_licenses.py",
+      "sha256": "3329ad6fbd96dd25616bc09c395e39bc4b3c9d61f947f2876d4d4c6419f360b4"
+    },
+    {
+      "bytes": 26686,
+      "path": "tests/test_desktop_local_auth.py",
+      "sha256": "d9453ef8369a026343c8d275fde4d1b2ea88bc87c3ed70eac0ec5f0d8adc2a18"
+    },
+    {
       "bytes": 6815,
       "path": "tests/test_domain.py",
       "sha256": "c9b0796fd8ff7f504aabe3a8a9ca507aac156fcefd4d9a895da380270db16b87"
@@ -9147,9 +9607,9 @@
       "sha256": "62b5b5c32598e97b03c939f465790263acaa8543956d63c2cec3f32d3a9b38eb"
     },
     {
-      "bytes": 1657,
+      "bytes": 1715,
       "path": "tests/test_er_fresh.py",
-      "sha256": "af7f1c7f23b789c3a95c036a99a80176df42f402ec06b01bc37ec96ab7c8fb9c"
+      "sha256": "d378d291524a2e06969de91058f95d1386c75d978e350042e100f08ff0114f14"
     },
     {
       "bytes": 1544,
@@ -9477,6 +9937,11 @@
       "sha256": "82f756b2842377a5456bb3a594039d5bea75a217754ea20e2a8c2b3ebe26ba4d"
     },
     {
+      "bytes": 23347,
+      "path": "tests/test_platform_fs.py",
+      "sha256": "008cc52f9b152593348acd5f95064370143a53b183604daff02faea36cec037e"
+    },
+    {
       "bytes": 5365,
       "path": "tests/test_privacy_workflow.py",
       "sha256": "31d8748fb687d9730382f4ac4de29a418af01c0eb492407367149bab1128f69c"
@@ -9707,6 +10172,11 @@
       "sha256": "eb7d0bd923c6d590e0b609feced65e6abe527bff95da7efd63a3836dfa3e3b44"
     },
     {
+      "bytes": 1687,
+      "path": "tests/test_windows_lock.py",
+      "sha256": "4f5cbd4d515d12490bc18fbb4763a0a7e07e702dd303923f2b80d59105c63f90"
+    },
+    {
       "bytes": 4511,
       "path": "tests/test_work_accounting_boundaries.py",
       "sha256": "134dce3a616721aa0b443a3744fa26294ced55ca9b11e05ce9ce0d37bdaac9c9"
@@ -9784,5 +10254,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "a86dfbc536edeba850047132159b9dd032547552"
+  "source_commit": "09ef40b690e3cb8ea1403f562be614e2de74b2a5"
 }

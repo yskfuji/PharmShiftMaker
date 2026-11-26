@@ -74,7 +74,7 @@ class SessionTokenManager:
             raise SessionTokenError("Session revoked")
         from shift_scheduler.api.auth.settings import AuthMode, get_auth_mode
 
-        if get_auth_mode() == AuthMode.OIDC:
+        if get_auth_mode() in (AuthMode.OIDC, AuthMode.LOCAL):
             from shift_scheduler.db.planning_models import RevokedSession
             from shift_scheduler.db.session import get_session_factory
 
@@ -97,7 +97,7 @@ class SessionTokenManager:
             raise SessionTokenError("Missing session ID")
         from shift_scheduler.api.auth.settings import AuthMode, get_auth_mode
 
-        if get_auth_mode() == AuthMode.OIDC:
+        if get_auth_mode() in (AuthMode.OIDC, AuthMode.LOCAL):
             from shift_scheduler.db.planning_models import RevokedSession
             from shift_scheduler.db.session import get_session_factory
 
