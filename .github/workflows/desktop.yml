@@ -7,6 +7,7 @@ on:
       - "desktop/**"
       - "src/shift_scheduler/desktop/**"
       - "src/shift_scheduler/config/desktop.py"
+      - "src/shift_scheduler/ops/platform_fs.py"
       - "frontend/next.config.js"
       - "frontend/package.json"
       - "frontend/package-lock.json"
@@ -21,7 +22,7 @@ on:
   workflow_dispatch:
     inputs:
       sign:
-        description: "Sign and notarize (requires the desktop-release environment approval)"
+        description: "Build release files: macOS signed and notarized, Windows installer (unsigned). Requires the desktop-release environment approval"
         type: boolean
         default: false
 
@@ -80,6 +81,83 @@ jobs:
         if: always()
         with:
           name: desktop-macos-results
+          path: results/
+          retention-days: 14
+
+  windows:
+    name: Desktop (Windows, unsigned)
+    runs-on: windows-latest
+    timeout-minutes: 75
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26.12.1
+          package-manager-cache: false
+      - name: Assemble the bundled runtime
+        run: bash desktop/scripts/assemble-runtime.sh
+      - name: Runtime smoke test (synthetic data, two launches)
+        run: |
+          mkdir -p results
+          desktop/build/runtime/python/python.exe -I -B desktop/scripts/smoke.py \
+            "$(cygpath -w "$PWD/desktop/build/runtime")" "$(cygpath -w "$RUNNER_TEMP/psm-data")" \
+            results/runtime-smoke.json
+      - name: The bundled Visual C++ runtime is the one loaded
+        # The runner has the Redistributable installed system-wide, so a missing
+        # app-local copy would go unnoticed; check where the DLLs are loaded from.
+        shell: pwsh
+        run: |
+          $runtime = (Resolve-Path desktop\build\runtime).Path
+          $py = Start-Process -PassThru -NoNewWindow -FilePath "$runtime\python\python.exe" `
+            -ArgumentList '-I', '-B', '-c', '"import ortools.sat.python.cp_model, time; time.sleep(30)"'
+          Start-Sleep -Seconds 15
+          $mods = (Get-Process -Id $py.Id).Modules | Where-Object { $_.ModuleName -match '^(msvcp140|vcruntime140)' }
+          $mods | Format-Table ModuleName, FileName -AutoSize | Out-String | Tee-Object -FilePath results\vc-runtime.txt
+          Stop-Process -Id $py.Id
+          if (-not ($mods | Where-Object { $_.ModuleName -ieq 'msvcp140.dll' })) { throw "msvcp140.dll was not loaded" }
+          $outside = $mods | Where-Object { -not $_.FileName.StartsWith($runtime, [StringComparison]::OrdinalIgnoreCase) }
+          if ($outside) { throw "loaded from outside the bundle: $($outside.FileName -join ', ')" }
+          foreach ($dll in 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll') {
+            if (-not (Test-Path "$runtime\pg\bin\$dll")) { throw "pg\bin\$dll is missing" }
+          }
+      - name: Data folder is restricted to this user, SYSTEM and Administrators
+        shell: pwsh
+        run: |
+          $acl = Get-Acl -LiteralPath "$env:RUNNER_TEMP\psm-data\storage"
+          $acl.Access | Format-Table IdentityReference, FileSystemRights, IsInherited -AutoSize | Out-String | Tee-Object -FilePath results\data-acl.txt
+          if (-not $acl.AreAccessRulesProtected) { throw "storage DACL is not protected" }
+          $allowed = @("$env:USERDOMAIN\$env:USERNAME", "NT AUTHORITY\SYSTEM", "BUILTIN\Administrators")
+          $other = $acl.Access | Where-Object { $allowed -notcontains $_.IdentityReference.Value }
+          if ($other) { throw "unexpected access: $($other.IdentityReference -join ', ')" }
+      - name: Package the app (unsigned)
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          npm ci --no-audit --no-fund
+          npx --no-install electron-builder --win dir --publish never
+          du -sh dist/win-unpacked | tee ../results/app-size.txt
+      - name: Packaged app smoke test (window loads the pinned login page)
+        run: |
+          PSM_DATA_DIR="$(cygpath -w "$RUNNER_TEMP/psm-data")" PSM_SMOKE_RESULT="$(cygpath -w "$PWD/results/app-smoke.json")" \
+            desktop/dist/win-unpacked/PharmShiftMaker.exe
+          cat results/app-smoke.json
+          node -e "const r=require('./results/app-smoke.json'); process.exit(r.ok && String(r.url).endsWith('/login') ? 0 : 1)"
+          if netstat -ano -p TCP | grep -E ':1851[0-3] .*LISTENING'; then echo "ports still open after quit"; exit 1; fi
+      - name: Collect logs
+        if: always()
+        run: |
+          mkdir -p results/logs
+          cp "$RUNNER_TEMP"/psm-data/logs/*.log results/logs/ 2>/dev/null || true
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: desktop-windows-results
           path: results/
           retention-days: 14
 
@@ -152,4 +230,58 @@ jobs:
             desktop/dist/*.dmg
             desktop/dist/*.zip
             desktop/dist/SHA256SUMS.txt
+          retention-days: 30
+
+  release-windows:
+    name: Desktop release (Windows installer, unsigned)
+    if: startsWith(github.ref, 'refs/tags/desktop-v') || (github.event_name == 'workflow_dispatch' && inputs.sign)
+    needs: windows
+    runs-on: windows-latest
+    timeout-minutes: 90
+    environment: desktop-release
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26.12.1
+          package-manager-cache: false
+      - name: Assemble the bundled runtime
+        run: bash desktop/scripts/assemble-runtime.sh
+      - name: Install the shell's build tools
+        working-directory: desktop
+        run: npm ci --no-audit --no-fund
+      - name: Build the installer (no code signing certificate yet)
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          npx --no-install electron-builder --win nsis --publish never
+          sha256sum dist/*.exe | tee dist/SHA256SUMS-windows.txt
+      - name: Install silently and smoke test the installed app
+        run: |
+          mkdir -p results
+          installer=$(ls desktop/dist/*.exe | head -1)
+          "$installer" //S
+          app="$LOCALAPPDATA/Programs/PharmShiftMaker/PharmShiftMaker.exe"
+          test -f "$app"
+          PSM_DATA_DIR="$(cygpath -w "$RUNNER_TEMP/psm-installed")" PSM_SMOKE_RESULT="$(cygpath -w "$PWD/results/installed-app-smoke.json")" "$app"
+          node -e "const r=require('./results/installed-app-smoke.json'); process.exit(r.ok && String(r.url).endsWith('/login') ? 0 : 1)"
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: desktop/dist/*.exe
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: desktop-windows-release
+          path: |
+            desktop/dist/*.exe
+            desktop/dist/SHA256SUMS-windows.txt
           retention-days: 30

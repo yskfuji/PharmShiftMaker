@@ -78,15 +78,31 @@ def emit(event: str, **fields: Any) -> None:
 
 
 def prepare_directories(data: DataLayout) -> None:
+    if sys.platform == "win32":
+        _prepare_directories_windows(data)
+        return
     for directory in data.directories():
         if directory.is_symlink():
             raise LaunchError("data", f"{directory} must not be a link")
         directory.mkdir(mode=0o700, parents=directory == data.root, exist_ok=True)
-        if sys.platform == "win32":
-            raise LaunchError(
-                "data", "Windows data directories require the M3 ACL support"
-            )
         os.chmod(directory, 0o700)
+
+
+def _prepare_directories_windows(data: DataLayout) -> None:
+    """Give every data directory the protected user/SYSTEM/Administrators DACL.
+
+    platform_fs refuses shares, non-fixed drives, links and reparse points in any
+    component, and folders owned by another user (docs/desktop/windows-storage.md).
+    Each directory gets its own protected DACL because the API checks the managed
+    storage folder itself, not only the data root.
+    """
+    from shift_scheduler.ops import platform_fs
+
+    for directory in data.directories():
+        try:
+            platform_fs.prepare_data_dir(str(directory))
+        except (OSError, RuntimeError) as error:
+            raise LaunchError("data", f"{directory}: {error}") from None
 
 
 def rotate(path: Path) -> None:
@@ -213,8 +229,9 @@ def _terminate(process: subprocess.Popen[bytes]) -> None:
 
 
 def _command_of(pid: int) -> str | None:
+    """The command line (POSIX) or executable path (Windows) of a live process."""
     if sys.platform == "win32":
-        return None
+        return _image_of(pid)
     result = subprocess.run(
         # -ww: never truncate (ps cuts piped output at 80 columns on Linux).
         ["ps", "-ww", "-o", "command=", "-p", str(pid)],
@@ -225,10 +242,64 @@ def _command_of(pid: int) -> str | None:
     return result.stdout.strip() or None
 
 
+def _image_of(pid: int) -> str | None:  # pragma: no cover - Windows CI job
+    if sys.platform != "win32":
+        return None
+    import ctypes
+    from ctypes import wintypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+    kernel32.QueryFullProcessImageNameW.argtypes = (
+        wintypes.HANDLE,
+        wintypes.DWORD,
+        wintypes.LPWSTR,
+        ctypes.POINTER(wintypes.DWORD),
+    )
+    kernel32.GetExitCodeProcess.argtypes = (
+        wintypes.HANDLE,
+        ctypes.POINTER(wintypes.DWORD),
+    )
+    kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+    query_limited_information, still_active = 0x1000, 259
+    handle = kernel32.OpenProcess(query_limited_information, False, pid)
+    if not handle:
+        return None  # gone, or not ours to inspect
+    try:
+        code = wintypes.DWORD()
+        if (
+            not kernel32.GetExitCodeProcess(handle, ctypes.byref(code))
+            or code.value != still_active
+        ):
+            return None
+        size = wintypes.DWORD(32768)
+        buffer = ctypes.create_unicode_buffer(size.value)
+        if not kernel32.QueryFullProcessImageNameW(
+            handle, 0, buffer, ctypes.byref(size)
+        ):
+            return None
+        return buffer.value
+    finally:
+        kernel32.CloseHandle(handle)
+
+
+def _belongs_to(command: str, runtime: RuntimeLayout) -> bool:
+    marker = str(runtime.root)
+    if sys.platform == "win32":  # paths are case-insensitive there
+        return marker.lower() in command.lower()
+    return marker in command
+
+
+# Windows has no SIGKILL; os.kill(pid, SIGTERM) is TerminateProcess there.
+_HARD_STOP = getattr(signal, "SIGKILL", signal.SIGTERM)
+
+
 def reap_previous(data: DataLayout, runtime: RuntimeLayout) -> list[int]:
     """Stop children left by a launcher that died without cleaning up.
 
-    Only processes whose command line points into this runtime are touched, so a
+    Only processes whose command line (executable path on Windows) points into
+    this runtime are touched, so a
     recycled PID that now belongs to an unrelated program is left alone.
     """
     try:
@@ -236,12 +307,11 @@ def reap_previous(data: DataLayout, runtime: RuntimeLayout) -> list[int]:
     except (FileNotFoundError, ValueError):
         return []
     stopped: list[int] = []
-    marker = str(runtime.root)
     for pid in pids if isinstance(pids, list) else []:
         if not isinstance(pid, int) or pid <= 1:
             continue
         command = _command_of(pid)
-        if command is None or marker not in command:
+        if command is None or not _belongs_to(command, runtime):
             continue
         try:
             os.kill(pid, signal.SIGTERM)
@@ -252,7 +322,7 @@ def reap_previous(data: DataLayout, runtime: RuntimeLayout) -> list[int]:
             time.sleep(0.2)
         if _command_of(pid) is not None:
             with contextlib.suppress(ProcessLookupError, PermissionError):
-                os.kill(pid, signal.SIGKILL)
+                os.kill(pid, _HARD_STOP)
         stopped.append(pid)
     data.children.unlink(missing_ok=True)
     return stopped

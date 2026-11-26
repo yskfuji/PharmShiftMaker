@@ -124,13 +124,11 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        # requirements.lock carries hashes for the Linux and macOS wheels only.
-        # This test-only job installs the same pinned versions WITHOUT hashes and
-        # leaves out uvloop, which does not support Windows. The release
-        # dependency audit and SBOM stay in the Linux backend job.
+        # desktop/requirements-windows.lock: the versions of requirements.lock with
+        # hashes, without uvloop (POSIX only) and with colorama (Windows only).
+        # The release dependency audit and SBOM stay in the Linux backend job.
         run: |
-          grep -E '^[A-Za-z0-9_.-]+==' requirements.lock | sed 's/ .*//' | grep -v '^uvloop==' > windows-requirements.txt
-          python -m pip install -r windows-requirements.txt
+          python -m pip install --require-hashes -r desktop/requirements-windows.lock
           python -m pip install --no-deps -e .
           python -m pip install pytest==9.1.1 pytest-cov==7.1.0 pytest-asyncio==1.4.0 hypothesis==6.168.3
 
@@ -144,6 +142,9 @@ jobs:
           tests/test_desktop_local_auth.py
           tests/test_managed_writer.py
           tests/test_erasure_control.py
+          tests/test_desktop_launcher.py
+          tests/test_desktop_launcher_process.py
+          tests/test_windows_lock.py
           --deselect tests/test_managed_writer.py::test_crash_after_publication_before_ack_and_suppression_during_write
 
   frontend:

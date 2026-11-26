@@ -95,7 +95,16 @@ def test_children_are_recorded_watched_and_stopped(tmp_path: Path) -> None:
 
 def test_command_of_reports_full_command_lines() -> None:
     if sys.platform == "win32":
-        assert launcher._command_of(os.getpid()) is None
+        # The executable path stands in for the command line on Windows.
+        image = launcher._command_of(os.getpid())
+        assert image is not None
+        assert os.path.normcase(image) == os.path.normcase(sys.executable)
+        import subprocess
+
+        child = subprocess.Popen(_py("import time; time.sleep(30)"))
+        child.kill()
+        child.wait()
+        assert launcher._command_of(child.pid) is None
         return
     marker = "x" * 120  # longer than the 80 columns ps uses when piped
     import subprocess
@@ -751,3 +760,44 @@ def test_launcher_process_exits_with_its_code_while_stdin_is_open(
     assert code == 2, err
     errors = [e for e in map(json.loads, out.splitlines()) if e["event"] == "error"]
     assert errors[0]["stage"] == "data"
+
+
+def test_windows_directories_get_the_private_folder_treatment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from shift_scheduler.ops import platform_fs
+
+    prepared: list[str] = []
+    real = platform_fs.prepare_data_dir
+
+    def record(path: str) -> str:
+        prepared.append(path)
+        return real(path)
+
+    monkeypatch.setattr(launcher.sys, "platform", "win32")
+    monkeypatch.setattr(platform_fs, "prepare_data_dir", record)
+    data = DataLayout(tmp_path / "data")
+    launcher.prepare_directories(data)
+    # Every directory, the managed storage included, is prepared on its own.
+    assert prepared == [str(directory) for directory in data.directories()]
+    assert all(directory.is_dir() for directory in data.directories())
+
+    def refuse(path: str) -> str:
+        raise RuntimeError("Desktop managed storage must be on this PC, not a share")
+
+    monkeypatch.setattr(platform_fs, "prepare_data_dir", refuse)
+    with pytest.raises(launcher.LaunchError, match="not a share") as raised:
+        launcher.prepare_directories(data)
+    assert raised.value.stage == "data"
+
+
+def test_runtime_marker_ignores_case_only_on_windows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime = RuntimeLayout(Path("/Apps/PharmShiftMaker/resources/runtime"))
+    image = os.path.join(str(runtime.root).swapcase(), "python", "python.exe")
+    monkeypatch.setattr(launcher.sys, "platform", "darwin")
+    assert not launcher._belongs_to(image, runtime)
+    monkeypatch.setattr(launcher.sys, "platform", "win32")
+    assert launcher._belongs_to(image, runtime)
+    assert not launcher._belongs_to(os.path.join("other", "python.exe"), runtime)

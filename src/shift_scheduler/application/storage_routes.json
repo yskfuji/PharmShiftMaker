@@ -4085,7 +4085,7 @@
     "src/shift_scheduler/desktop/launcher.py:main:55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "main",
-      "line": 749,
+      "line": 819,
       "expression_hash": "55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d",
       "call": "sys.stderr.write",
       "status": "UNVERIFIED",
@@ -4101,7 +4101,7 @@
     "src/shift_scheduler/desktop/launcher.py:open_log:645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "open_log",
-      "line": 100,
+      "line": 116,
       "expression_hash": "645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf",
       "call": "os.open",
       "status": "UNVERIFIED",
@@ -4117,7 +4117,7 @@
     "src/shift_scheduler/desktop/launcher.py:open_log:ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "open_log",
-      "line": 101,
+      "line": 117,
       "expression_hash": "ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6",
       "call": "os.fdopen",
       "status": "UNVERIFIED",
@@ -4181,7 +4181,7 @@
     "src/shift_scheduler/desktop/launcher.py:Supervisor._popen:3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "Supervisor._popen",
-      "line": 132,
+      "line": 148,
       "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
       "call": "subprocess.Popen",
       "status": "UNVERIFIED",
@@ -4197,7 +4197,7 @@
     "src/shift_scheduler/desktop/launcher.py:init_cluster:590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "init_cluster",
-      "line": 311,
+      "line": 381,
       "expression_hash": "590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec",
       "call": "conf.write",
       "status": "UNVERIFIED",
@@ -4213,7 +4213,7 @@
     "src/shift_scheduler/desktop/launcher.py:init_cluster:85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "init_cluster",
-      "line": 310,
+      "line": 380,
       "expression_hash": "85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f",
       "call": "(data.pgdata_new / 'postgresql.conf').open",
       "status": "UNVERIFIED",
@@ -4229,7 +4229,7 @@
     "src/shift_scheduler/desktop/launcher.py:init_cluster:89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "init_cluster",
-      "line": 312,
+      "line": 382,
       "expression_hash": "89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04",
       "call": "(data.pgdata_new / 'pg_hba.conf').write_text",
       "status": "UNVERIFIED",
@@ -4245,7 +4245,7 @@
     "src/shift_scheduler/desktop/launcher.py:pg_running:e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "pg_running",
-      "line": 265,
+      "line": 335,
       "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
       "call": "subprocess.run",
       "status": "UNVERIFIED",
@@ -4261,7 +4261,7 @@
     "src/shift_scheduler/desktop/launcher.py:_command_of:8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "_command_of",
-      "line": 218,
+      "line": 235,
       "expression_hash": "8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740",
       "call": "subprocess.run",
       "status": "UNVERIFIED",
@@ -4277,7 +4277,7 @@
     "src/shift_scheduler/desktop/launcher.py:wait_http.probe:7b50b567d4a7bcaf40ab5a73257a6900968c84129761e039ee9d8322cf51db95": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "wait_http.probe",
-      "line": 465,
+      "line": 535,
       "expression_hash": "7b50b567d4a7bcaf40ab5a73257a6900968c84129761e039ee9d8322cf51db95",
       "call": "opener.open",
       "status": "UNVERIFIED",
@@ -4293,7 +4293,7 @@
     "src/shift_scheduler/desktop/launcher.py:open_lock:38c42bcb6c33a57f9eb236e83b7036f8bddc0d7c0b7a6067f4c6f60ad3a1637f": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "open_lock",
-      "line": 637,
+      "line": 707,
       "expression_hash": "38c42bcb6c33a57f9eb236e83b7036f8bddc0d7c0b7a6067f4c6f60ad3a1637f",
       "call": "os.open",
       "status": "UNVERIFIED",
@@ -4309,7 +4309,7 @@
     "src/shift_scheduler/desktop/launcher.py:open_lock:f2d9594a2330c6bffa6020d167e2292ff4ccbe8e1b91e470307395644582ae23": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "open_lock",
-      "line": 640,
+      "line": 710,
       "expression_hash": "f2d9594a2330c6bffa6020d167e2292ff4ccbe8e1b91e470307395644582ae23",
       "call": "os.fdopen",
       "status": "UNVERIFIED",

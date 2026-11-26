@@ -56,6 +56,14 @@ unzip -q "$CACHE/$pg_zip" -d "$WORK/pg"
 rm -rf "$WORK/pg/pgsql/pgAdmin 4" "$WORK/pg/pgsql/pgAdmin 4.app" "$WORK/pg/pgsql/stackbuilder" \
   "$WORK/pg/pgsql/StackBuilder" "$WORK/pg/pgsql/doc" "$WORK/pg/pgsql/include" "$WORK/pg/pgsql/symbols"
 test -n "$(find "$WORK/pg/pgsql/share" -type d -name timezonesets | head -1)"
+if [ "$KIND" = win ]; then
+  # Not loaded by the server, initdb, pg_ctl, the client tools or any module
+  # (checked with the import tables): StackBuilder's wxWidgets, libcurl, ICU
+  # I/O and tools, and test programs.
+  (cd "$WORK/pg/pgsql/bin" && rm -f stackbuilder.exe wx*.dll testplug.dll libcurl.dll libcurl.lib \
+    icuio*.dll icutu*.dll isolationtester.exe pg_isolation_regress.exe pg_regress.exe \
+    pg_regress_ecpg.exe libpq_pipeline.exe libpq_testclient.exe libpq_uri_regress.exe test_cloexec.exe)
+fi
 mv "$WORK/pg/pgsql" "$OUT/pg"
 
 # --- Python (python-build-standalone) + locked dependencies + product code
@@ -70,10 +78,24 @@ pip_install=("$PY" -I -m pip install --disable-pip-version-check --no-input --on
 if [ "$KIND" = mac ]; then
   "${pip_install[@]}" --require-hashes -r "$ROOT/requirements.lock"
 else
-  # requirements.lock carries no Windows hashes yet (M3 adds a Windows lock); until
-  # then the same pinned versions are installed by version, and uvloop (POSIX only) is skipped.
-  grep -E '^[A-Za-z0-9_.-]+(\[[^]]*\])?==' "$ROOT/requirements.lock" | sed -E 's/ .*//' | grep -v '^uvloop==' > "$WORK/pins.txt"
-  "${pip_install[@]}" -r "$WORK/pins.txt"
+  # Same versions as requirements.lock, without uvloop (POSIX only) and with
+  # colorama (Windows only); tests/test_windows_lock.py keeps the two in step.
+  "${pip_install[@]}" --require-hashes -r "$ROOT/desktop/requirements-windows.lock"
+fi
+if [ "$KIND" = win ]; then
+  # PostgreSQL and OR-Tools import MSVCP140.dll / VCRUNTIME140*.dll, which a PC
+  # without the Visual C++ Redistributable lacks. Deploy them app-locally (next to
+  # postgres.exe and python.exe, which Windows searches first), taken from the
+  # build machine's Visual Studio and accepted only with a valid Microsoft signature.
+  vs=$("/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -property installationPath | tr -d '\r')
+  crt=$(ls -d "$(cygpath -u "$vs")"/VC/Redist/MSVC/*/x64/Microsoft.VC14*.CRT | sort -V | tail -1)
+  for dll in msvcp140.dll msvcp140_1.dll msvcp140_2.dll vcruntime140.dll vcruntime140_1.dll; do
+    powershell.exe -NoProfile -Command "\$s = Get-AuthenticodeSignature -LiteralPath '$(cygpath -w "$crt/$dll")'; if (\$s.Status -ne 'Valid' -or \$s.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation') { exit 1 }" \
+      || { echo "untrusted $dll in $crt" >&2; exit 1; }
+    cp "$crt/$dll" "$OUT/pg/bin/$dll"
+    cp "$crt/$dll" "$OUT/python/$dll"
+  done
+  echo "vc runtime from $crt"
 fi
 cp -R "$ROOT/src/shift_scheduler" "$SITE/shift_scheduler"
 find "$SITE/shift_scheduler" -name __pycache__ -type d -prune -exec rm -rf {} +

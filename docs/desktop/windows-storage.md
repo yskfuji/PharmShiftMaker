@@ -24,13 +24,13 @@
 
 ## 3. データフォルダーの準備
 
-1. デスクトップの殻（Electron）は、初回の起動の前に、次のコマンドを1回実行します。既定の場所は `%LOCALAPPDATA%\PharmShiftMaker` の配下です。
+1. デスクトップの起動役（`shift_scheduler.desktop`）は、起動のたびに、データフォルダーと、その配下のフォルダー（`state`、`state\tls`、`storage`、`logs`）のそれぞれに、`platform_fs.prepare_data_dir()` を同じ Python の中で呼びます。既定の場所は `%LOCALAPPDATA%\PharmShiftMaker` です。配下のフォルダーにもそれぞれ保護された DACL を設定するのは、API の起動時の検査（4章）が、管理対象ファイルのフォルダー（`storage`）そのものに、継承しない DACL を求めるためです。手作業で同じ処理を行うときは、次のコマンドを使えます。
 
    ```text
    python -m shift_scheduler.ops.platform_fs prepare-data-dir <絶対パス>
    ```
 
-2. このコマンドは、次の順に処理します。成功すると、標準出力に `{"ok": true, "path": ...}` を1行出し、終了コード0で終わります。失敗すると、標準エラーに `{"ok": false, "error": ...}` を出し、終了コード1で終わります。
+2. この処理は、次の順に進みます。コマンドとして実行したときは、成功すると、標準出力に `{"ok": true, "path": ...}` を1行出し、終了コード0で終わります。失敗すると、標準エラーに `{"ok": false, "error": ...}` を出し、終了コード1で終わります。
    1. UNC パス（`\\server\share`、`\\?\UNC\...`）、ドライブ文字のないパス（`\data` など。Python 3.12 はこれを絶対パスとみなしますが、拒否します）、相対パスを拒否します。
    2. `GetDriveTypeW` で、ドライブが固定ドライブ（`DRIVE_FIXED`）であることを確かめます。ネットワークドライブ（`DRIVE_REMOTE`）、取り外せるドライブ、光学ドライブ、RAM ディスクは拒否します。
    3. すでにある親フォルダーのすべての構成要素を `os.lstat` で調べ、リンクや再解析ポイントがあれば、何も作らずに拒否します。
@@ -86,10 +86,12 @@
 
 ## 7. 未確認の事項
 
-1. Windows での動作は、ローカルの開発機（macOS）では確かめていません。Windows 固有の処理は、CI のジョブ「Backend (Windows)」（`windows-latest`、必須ではない検査）でだけ実行されます。このジョブは、PostgreSQL を使わない次の試験だけを実行します：`tests/test_platform_fs.py`、`tests/test_desktop_local_auth.py`、`tests/test_managed_writer.py`、`tests/test_erasure_control.py`。ただし、`test_managed_writer.py` の `test_crash_after_publication_before_ack_and_suppression_during_write` は除きます。この試験は、ディレクトリの `fsync` に障害を注入しますが、Windows ではその `fsync` を呼ばないためです。同じ障害は、`test_platform_fs.py` の `test_failure_after_publication_is_retried` が、`platform_fs` に注入して確かめます。
-2. このジョブは、`requirements.lock` の版を、ハッシュの照合なしで入れます。`requirements.lock` のハッシュが Linux と macOS の配布物だけを対象にしているためです。`uvloop` は Windows に対応していないため除きます。Python も、同梱する python-build-standalone 3.12.15 ではなく、setup-python が提供する最新の 3.12 です。
+1. Windows での動作は、ローカルの開発機（macOS）では確かめていません。Windows 固有の処理は、CI の2つのジョブ（`windows-latest`、どちらも必須ではない検査）でだけ実行されます。
+   - 「Desktop (Windows, unsigned)」は、同梱の実行環境（python-build-standalone 3.12.15、PostgreSQL、Node.js）を組み立て、起動役の試験と、組み立てたアプリの試験を行います。データフォルダーの DACL が保護され、現在の利用者、SYSTEM、Administrators だけに許可していることも確かめます。
+   - 「Backend (Windows)」は、PostgreSQL を使わない次の試験だけを実行します：`tests/test_platform_fs.py`、`tests/test_desktop_local_auth.py`、`tests/test_managed_writer.py`、`tests/test_erasure_control.py`、`tests/test_desktop_launcher.py`、`tests/test_desktop_launcher_process.py`、`tests/test_windows_lock.py`。ただし、`test_managed_writer.py` の `test_crash_after_publication_before_ack_and_suppression_during_write` は除きます。この試験は、ディレクトリの `fsync` に障害を注入しますが、Windows ではその `fsync` を呼ばないためです。同じ障害は、`test_platform_fs.py` の `test_failure_after_publication_is_retried` が、`platform_fs` に注入して確かめます。
+2. どちらのジョブも、依存を `desktop/requirements-windows.lock` からハッシュを照合して入れます。この一覧の版は `requirements.lock` と同じで、`uvloop`（POSIX 専用）を除き、`colorama`（Windows 専用）を加えています。版とハッシュが `requirements.lock` とずれないことは、`tests/test_windows_lock.py` が確かめます。「Backend (Windows)」の Python は、同梱するものではなく、setup-python が提供する最新の 3.12 です。
 3. 次の点は、実機でも CI でも確かめていません。
-   1. 同梱する python-build-standalone 3.12.15 での動作。
+   1. 同梱する python-build-standalone 3.12.15 での、起動の試験以外の操作（勤務表の作成、出力など）。
    2. 管理者ではない利用者のアカウントでの動作（GitHub のランナーは管理者として動きます）。
    3. 別の利用者のアカウントから、実際にデータフォルダーを開けないこと。
    4. ReFS や Dev Drive での、`st_ino` と `st_dev` の比較の動作。

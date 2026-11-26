@@ -5,7 +5,7 @@
 ## 1. 位置付け
 
 1. 本書は、設計の記録です。配布物の品質や、試行運用の安全性を保証するものではありません。
-2. 本書の対象は macOS（Apple シリコン）版です。Windows 版は、保存処理の対応（M3）が済むまで起動を拒否します。
+2. 本書の対象は、macOS（Apple シリコン）版と Windows（x64）版です。Windows 版は、コード署名の証明書がないため、署名のない配布物です。Windows の保存処理の詳細は [windows-storage.md](windows-storage.md) に記載しています。
 
 ## 2. 構成
 
@@ -24,10 +24,15 @@
 6. 起動役は、各サーバーの応答の確認で、OS の設定や環境変数のプロキシの設定を使いません。病院の端末でプロキシが設定されていても、`127.0.0.1` への確認がプロキシに送られないようにするためです。
 7. 殻は、起動役の Python を `-I -B` で起動します。署名した配布物の中に、`__pycache__` を書かないためです。
 8. macOS では、殻は「アプリ」と「編集」だけのメニューを置きます。コピーと貼り付け（Cmd+C、Cmd+V など）と、終了（Cmd+Q）を使えるようにするためです。再読込や開発者ツールの項目は置きません。
+9. Windows では、次の点が macOS と異なります。
+   - データフォルダーの権限は、所有者の権限（0700）の代わりに、保護された DACL（継承なし。許可は現在の利用者、SYSTEM、Administrators だけ）で締め出します。起動役は、データフォルダーと配下の各フォルダーに、起動のたびにこの DACL を設定し直します。共有フォルダー、固定ドライブ以外、リンクや再解析ポイントを経由するパスは拒否します。
+   - 異常終了の後の回収では、コマンドラインの代わりに、実行ファイルのパス（`QueryFullProcessImageNameW`）がこの実行環境の中にあるかで、自分の子プロセスを見分けます。大文字と小文字は区別しません。
+   - 子プロセスの停止は、終了の求め（SIGTERM）ではなく、即時の終了（TerminateProcess）になります。PostgreSQL は、どちらの OS でも `pg_ctl stop` で止めます。
+   - 排他のロックは、`flock` の代わりに `msvcrt.locking` を使います。
 
 ## 3. データの置き場所
 
-1. データフォルダーは、macOS では `~/Library/Application Support/PharmShiftMaker` です。
+1. データフォルダーは、macOS では `~/Library/Application Support/PharmShiftMaker`、Windows では `%LOCALAPPDATA%\PharmShiftMaker` です。
 2. 中身は次のとおりです。
 
 | 場所 | 内容 |
@@ -40,7 +45,7 @@
 | `storage/` | 管理対象ファイル |
 | `logs/` | 各プロセスの記録（権限 0600。起動のときに 10MB を超えていれば、1世代だけ残して切り替えます。動いている間は切り替えません） |
 
-3. 同じフォルダーには、殻（Electron）の利用者データ（Cookie、画面の保存領域など）も置かれます。Electron の既定の置き場所が、アプリの名前から同じフォルダーになるためです。上の表の名前とは重なりません。
+3. macOS では、同じフォルダーに、殻（Electron）の利用者データ（Cookie、画面の保存領域など）も置かれます。Electron の既定の置き場所が、アプリの名前から同じフォルダーになるためです。上の表の名前とは重なりません。Windows では、殻の利用者データは `%APPDATA%\PharmShiftMaker` に置かれ、データフォルダーとは別の場所になります。
 4. アプリを削除しても、データフォルダーは残ります。消すときは、利用者がフォルダーごと削除します。バックアップと復元は、フォルダーごと、同じ時点のものを扱います。
 
 ## 4. 想定する脅威と対策
@@ -67,11 +72,12 @@
 
 ## 5. 配布物の作り方
 
-1. `desktop/scripts/assemble-runtime.sh` が、PostgreSQL、Python、Node.js をダウンロードし、固定した SHA-256 と照合してから展開します。Python には `requirements.lock` の依存をハッシュ付きで入れ、製品のコードを加えます。画面は standalone で出力します。
+1. `desktop/scripts/assemble-runtime.sh` が、PostgreSQL、Python、Node.js をダウンロードし、固定した SHA-256 と照合してから展開します。Python には、依存をハッシュを照合して入れ（macOS は `requirements.lock`、Windows は `desktop/requirements-windows.lock`）、製品のコードを加えます。画面は standalone で出力します。
 2. electron-builder が `.app`、dmg、zip を作ります。
    - 署名の資格情報がないとき（PR の検証）は、アドホック署名とし、hardened runtime を外します。アドホック署名では、ライブラリの検証で起動できないためです。
    - 正式の配布では、Developer ID で署名し、hardened runtime を有効にして、公証を受けます。来歴の証明（Artifact attestations）も付けます。この手順は、所有者の承認を経て動く environment「desktop-release」で行います。殻のビルドの道具（npm の依存）は、署名の資格情報を読み込む前の手順で入れます。依存のパッケージの導入時のスクリプトが、資格情報を読めないようにするためです。
-3. 現在の容量は、`.app` で約 950MB です（Python と依存 約 290MB、PostgreSQL 約 150MB、Node.js 約 140MB、画面 約 60MB、Electron 本体）。
+3. electron-builder は、Windows では、利用者ごとに入るインストーラー（NSIS、管理者の権限は不要）を作ります。インストール先は `%LOCALAPPDATA%\Programs\PharmShiftMaker` です。コード署名の証明書がないため、署名はしません。このため、Windows の SmartScreen が初回の実行で警告を出します。来歴の証明（Artifact attestations）は、macOS と同じく、environment「desktop-release」の承認を経て付けます。
+4. 現在の容量は、`.app` で約 950MB です（Python と依存 約 290MB、PostgreSQL 約 150MB、Node.js 約 140MB、画面 約 60MB、Electron 本体）。
 
 ## 6. 確かめたこと（2026年11月24日、手元の macOS、合成データ）
 
@@ -109,7 +115,7 @@
 5. バックアップと復元の操作は、画面からはまだ行えません。
 6. PostgreSQL のメジャー版を上げるときのデータの移行は、まだ設計していません。
 7. Intel の Mac には対応していません。
-8. Windows 版は、M3 の保存処理の対応の後に、同じ試験を行います。
+8. Windows 版は、CI のランナー（管理者として動く利用者）でだけ確かめています。実機、管理者ではない利用者、SmartScreen と Microsoft Defender の下での動作は確かめていません。インストーラーの導入と起動は、配布用のジョブ（承認が要る）でだけ確かめます。
 9. 2回目の独立レビューの指摘のうち、次のものは直さずに残しています（いずれも重大度は低）。
    - 電源断の後に `postmaster.pid` の PID がほかのプロセスに再利用されていると、`pg_ctl` がそのプロセスに停止の信号を送るおそれがあります。
    - 異常終了の後の回収は、実行環境のパスで自分の子プロセスを見分けます。アプリを移動した後などでパスが変わると、残った子プロセスを回収できず、ポートが使用中で起動できないことがあります。
@@ -117,3 +123,4 @@
    - 試験用の環境変数（`PSM_SMOKE_RESULT` など）が、正式の配布物でも有効です。
    - Web 版（サーバー配備）でも、`/setup` はログインなしで表示されます。初期設定の要求そのものは、デスクトップ版以外では 404 で拒否します。
    - Electron の fuse の `grantFileProtocolExtraPrivileges` を無効にしていません。
+10. Windows では、照合の処理の一部（`storage_reconciliation.py` のファイルの照合）が動きません（[windows-storage.md](windows-storage.md) 7章の4）。

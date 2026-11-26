@@ -1,5 +1,5 @@
 {
-  "file_count": 2010,
+  "file_count": 2012,
   "files": [
     {
       "bytes": 279,
@@ -42,14 +42,14 @@
       "sha256": "7f68bf4a3db2b788e17bd8fc63f3610bd133f9970df719f2f641875ac7718720"
     },
     {
-      "bytes": 9964,
+      "bytes": 9936,
       "path": ".github/workflows/ci.yml",
-      "sha256": "e2496db0224a5f94ec82a44fa9821c5895b33e583f71047498f9c1e94905b8a1"
+      "sha256": "48be042bbde64fa141942071ae06b8f73c61b4b47d080213a7ab1093dbbad9ab"
     },
     {
-      "bytes": 6718,
+      "bytes": 13348,
       "path": ".github/workflows/desktop.yml",
-      "sha256": "7817fc90bc405f1ee28f417462bee602a221ce27a5561684932885636cd59ad4"
+      "sha256": "7ff0e6da9d36007163838f4171ce75f2ff51ca0494e60e49fa45b0182a6f5f4e"
     },
     {
       "bytes": 1689,
@@ -272,6 +272,11 @@
       "sha256": "cba8534eee7f2dfb96f1ba9edea45a5c2c261afd59f7476ff76df324d67bb830"
     },
     {
+      "bytes": 93157,
+      "path": "desktop/requirements-windows.lock",
+      "sha256": "206285111537b58ba8e163df9d082950e8aaacc736a9ddf06143165754453301"
+    },
+    {
       "bytes": 464,
       "path": "desktop/resources/entitlements.mac.plist",
       "sha256": "4c415e23ac8dc338a7c3213b074645f42361af9d493b372420709e235b899211"
@@ -282,9 +287,9 @@
       "sha256": "d808fd926d17c889b89092bc723183ad7634b1e92c2e1a2f5c3fda931d74ff7b"
     },
     {
-      "bytes": 5735,
+      "bytes": 7226,
       "path": "desktop/scripts/assemble-runtime.sh",
-      "sha256": "8104811f89723ba63101bb90c36f398d2d0907ca154c07cb782a03cbb985cd7e"
+      "sha256": "75e7f8b04484e81290b8888c97de57ab459079ebd286e448c3666af7404e8057"
     },
     {
       "bytes": 6857,
@@ -647,9 +652,9 @@
       "sha256": "1584a802cd162fbdbd9d42fe648ff78b06b86707d9864a0257b213d9191e686b"
     },
     {
-      "bytes": 16334,
+      "bytes": 18807,
       "path": "docs/desktop/desktop-shell.md",
-      "sha256": "39cfc7edf76d2117df40d102f155946b6261d30e0a7550068acfadf9f17edcf3"
+      "sha256": "986c8f683ed75af7f951a067d0bf3c48c4722abe3161a8502bdc54acfd29b4b7"
     },
     {
       "bytes": 6047,
@@ -662,9 +667,9 @@
       "sha256": "af6618c95f1f5f7690c73ffb7682d07ffe90fce272339b965f944fd97e4dff0c"
     },
     {
-      "bytes": 16216,
+      "bytes": 17419,
       "path": "docs/desktop/windows-storage.md",
-      "sha256": "cd5dd324776e5511459e74b6313eb49377d93c4d21b496f2f4c6c4e072ae62ba"
+      "sha256": "5fdc16c61888759551a4f0a02cb5fd2cf1dfd2e3471d4a7edb7d52138e139e99"
     },
     {
       "bytes": 8530,
@@ -8449,7 +8454,7 @@
     {
       "bytes": 252640,
       "path": "src/shift_scheduler/application/storage_routes.json",
-      "sha256": "17372bdcc98b7793b1a579a4779d8a8fe235f38e562ec67fa251af4e8163c7c3"
+      "sha256": "822b951ba497f94d4bc5c5676fd3ce0c992721921292f685d4899f1dfbe2b6b5"
     },
     {
       "bytes": 5618,
@@ -8717,9 +8722,9 @@
       "sha256": "fb5294faa4d8f305000a1302b8ad4cc133b2081e993309cc36f48c6f3bbff835"
     },
     {
-      "bytes": 24572,
+      "bytes": 27150,
       "path": "src/shift_scheduler/desktop/launcher.py",
-      "sha256": "d4c160f9dbabd1c5cf8d999f22f3bc7a735b481d0588c56d0fc63e181d49032b"
+      "sha256": "48eba9c1c9cfe3d8731a2ea45519e34a9fa02ca9579913fd5bdf7b879cc24c8d"
     },
     {
       "bytes": 3712,
@@ -9377,9 +9382,9 @@
       "sha256": "5f1bfc9a3f14ae7704998bf7f9e918b0f8bfa2deb3b0c4466ae5f47d4d5e5958"
     },
     {
-      "bytes": 27099,
+      "bytes": 29140,
       "path": "tests/test_desktop_launcher_process.py",
-      "sha256": "88268c30dc9426e9078ffd71f3b0f75cbb3e4fd1a65127cd765744760ba05ffb"
+      "sha256": "01b551b746682aaead6ea57ac44c7854e5bb866490557cad1bc262a7d08a5e8d"
     },
     {
       "bytes": 26686,
@@ -9977,6 +9982,11 @@
       "sha256": "eb7d0bd923c6d590e0b609feced65e6abe527bff95da7efd63a3836dfa3e3b44"
     },
     {
+      "bytes": 1687,
+      "path": "tests/test_windows_lock.py",
+      "sha256": "4f5cbd4d515d12490bc18fbb4763a0a7e07e702dd303923f2b80d59105c63f90"
+    },
+    {
       "bytes": 4511,
       "path": "tests/test_work_accounting_boundaries.py",
       "sha256": "134dce3a616721aa0b443a3744fa26294ced55ca9b11e05ce9ce0d37bdaac9c9"
@@ -10054,5 +10064,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "751ea496c0cac4ea948f9203a0e5192a1b3c7679"
+  "source_commit": "2f8133e7b4885950f8bbf7c9bcc030ca4372e614"
 }
